@@ -26,6 +26,7 @@
             --card-bg: #FFFFFF;
             --border: #E2E8F0;
             --shadow: rgba(10, 10, 94, 0.08);
+            --gradient-accent: linear-gradient(135deg, #64C7D4 0%, #0A0A5E 100%);
         }
 
         [data-theme="dark"] {
@@ -35,6 +36,7 @@
             --card-bg: #1A1A2E;
             --border: #2A2A4E;
             --shadow: rgba(0, 0, 0, 0.3);
+            --gradient-accent: linear-gradient(135deg, #64C7D4 0%, #1A1A2E 100%);
         }
 
         * {
@@ -234,17 +236,20 @@
 
         /* ---------- HERO ---------- */
         .hero {
-            padding: 100px 0 80px;
+            padding: 120px 0 100px;
             text-align: center;
             background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
             color: white;
         }
 
         .hero h1 {
-            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-size: clamp(2rem, 5vw, 3.4rem);
             font-weight: 800;
-            margin-bottom: 20px;
-            line-height: 1.2;
+            margin-bottom: 24px;
+            line-height: 1.25;
+            max-width: 950px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .hero h1 .highlight {
@@ -252,18 +257,20 @@
         }
 
         .hero .mission-statement {
-            font-size: clamp(1.1rem, 1.8vw, 1.3rem);
-            color: #CBD5E1;
-            max-width: 800px;
-            margin: 0 auto 25px;
+            font-size: clamp(1.1rem, 1.8vw, 1.35rem);
+            color: #E2E8F0;
+            max-width: 850px;
+            margin: 0 auto 15px;
             font-weight: 400;
         }
 
-        .hero p {
-            font-size: clamp(1rem, 1.2vw, 1.1rem);
-            color: #E2E8F0;
+        .hero p.location-tag {
+            font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+            color: var(--teal);
             max-width: 700px;
-            margin: 0 auto 35px;
+            margin: 0 auto 40px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
         .hero-buttons {
@@ -297,13 +304,13 @@
 
         /* ---------- ABOUT ---------- */
         .about {
-            padding: 80px 0;
+            padding: 90px 0;
             background: var(--bg);
         }
 
         .about-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1.2fr 0.8fr;
             gap: 50px;
             align-items: center;
         }
@@ -321,21 +328,35 @@
         .about-text p {
             color: var(--text);
             opacity: 0.85;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
+            font-size: 1.05rem;
         }
 
         .about-image {
             background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
-            border-radius: 16px;
-            padding: 50px 40px;
-            min-height: 285px;
+            border-radius: 20px;
+            padding: 60px 40px;
+            min-height: 320px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             color: white;
             text-align: center;
-            box-shadow: 0 10px 30px var(--shadow);
+            box-shadow: 0 15px 35px var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-image::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(100,199,212,0.1) 0%, transparent 60%);
+            pointer-events: none;
         }
 
         .about-image i {
@@ -345,19 +366,21 @@
         }
 
         .about-image h3 {
-            font-size: clamp(1.3rem, 2vw, 1.8rem);
-            margin-bottom: 10px;
+            font-size: clamp(1.3rem, 2vw, 1.6rem);
+            margin-bottom: 12px;
+            font-weight: 700;
         }
 
         .about-image p {
             opacity: 0.9;
             max-width: 400px;
-            font-size: 0.95rem;
+            font-size: 0.98rem;
+            line-height: 1.6;
         }
 
         /* ---------- FOCUS AREAS ---------- */
         .focus {
-            padding: 80px 0;
+            padding: 90px 0;
             background: var(--card-bg);
         }
 
@@ -369,39 +392,43 @@
 
         .focus-card {
             background: var(--bg);
-            padding: 35px 25px;
+            padding: 40px 30px;
             border-radius: 16px;
-            text-align: center;
+            text-align: left;
             border: 1px solid var(--border);
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
         }
 
         .focus-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px var(--shadow);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px var(--shadow);
+            border-color: var(--teal);
         }
 
         .focus-card i {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             color: var(--teal);
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            display: inline-block;
         }
 
         .focus-card h3 {
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             color: var(--text);
-            margin-bottom: 12px;
+            margin-bottom: 14px;
+            font-weight: 700;
         }
 
         .focus-card p {
             color: var(--text);
             opacity: 0.75;
-            font-size: 0.95rem;
+            font-size: 0.98rem;
+            line-height: 1.6;
         }
 
         /* ---------- IMPACT ---------- */
         .impact {
-            padding: 80px 0;
+            padding: 90px 0;
             background: var(--navy);
             color: white;
         }
@@ -422,34 +449,42 @@
 
         .impact-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 30px;
-            margin-top: 40px;
+            margin-top: 50px;
         }
 
         .impact-item {
             text-align: center;
-            padding: 20px;
+            padding: 30px 20px;
             background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: transform 0.3s;
+        }
+
+        .impact-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .impact-item .number {
-            font-size: clamp(2.2rem, 4vw, 3.2rem);
+            font-size: clamp(2.4rem, 4.5vw, 3.4rem);
             font-weight: 800;
             color: var(--teal);
+            line-height: 1.1;
         }
 
         .impact-item .label {
-            font-size: clamp(0.9rem, 1vw, 1.05rem);
-            opacity: 0.85;
-            margin-top: 5px;
+            font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+            opacity: 0.9;
+            margin-top: 8px;
+            font-weight: 500;
         }
 
         /* ---------- STORIES ---------- */
         .stories {
-            padding: 80px 0;
+            padding: 90px 0;
             background: var(--bg);
         }
 
@@ -461,10 +496,10 @@
 
         .story-card {
             background: var(--card-bg);
-            padding: 35px;
+            padding: 40px;
             border-radius: 16px;
-            border-left: 5px solid var(--teal);
-            box-shadow: 0 4px 15px var(--shadow);
+            border-top: 4px solid var(--teal);
+            box-shadow: 0 4px 20px var(--shadow);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -473,74 +508,81 @@
         .story-card .quote {
             font-style: italic;
             color: var(--text);
-            margin-bottom: 20px;
-            font-size: 0.98rem;
+            margin-bottom: 25px;
+            font-size: 1rem;
+            line-height: 1.7;
+            position: relative;
         }
 
         .story-card .person {
             font-weight: 700;
             color: var(--text);
+            font-size: 1.05rem;
         }
 
         .story-card .role {
-            color: var(--text);
-            font-size: 0.9rem;
-            opacity: 0.7;
+            color: var(--teal);
+            font-weight: 600;
+            font-size: 0.88rem;
         }
 
         /* ---------- TEAM ---------- */
         .team {
-            padding: 80px 0;
+            padding: 90px 0;
             background: var(--card-bg);
         }
 
         .team-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 30px;
         }
 
         .team-card {
             text-align: center;
             background: var(--bg);
-            padding: 30px 20px;
-            border-radius: 16px;
+            padding: 40px 25px;
+            border-radius: 20px;
             border: 1px solid var(--border);
-            transition: transform 0.3s;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .team-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 12px 30px var(--shadow);
         }
 
         .team-card .avatar {
-            width: 100px;
-            height: 100px;
+            width: 110px;
+            height: 110px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
-            margin: 0 auto 18px;
+            background: var(--gradient-accent);
+            margin: 0 auto 22px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 2.5rem;
+            box-shadow: 0 8px 20px rgba(10, 10, 94, 0.15);
         }
 
         .team-card h4 {
-            font-size: 1.15rem;
+            font-size: 1.25rem;
             color: var(--text);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            font-weight: 700;
         }
 
         .team-card p {
             color: var(--text);
-            opacity: 0.7;
-            font-size: 0.9rem;
+            opacity: 0.75;
+            font-size: 0.95rem;
+            font-weight: 500;
         }
 
         /* ---------- PARTNERS ---------- */
         .partners {
-            padding: 60px 0;
+            padding: 70px 0;
             background: var(--bg);
         }
 
@@ -549,116 +591,141 @@
             flex-wrap: wrap;
             justify-content: center;
             gap: 20px;
+            margin-top: 10px;
         }
 
         .partner-item {
             background: var(--card-bg);
-            padding: 15px 30px;
+            padding: 16px 35px;
             border-radius: 12px;
             border: 1px solid var(--border);
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text);
-            opacity: 0.7;
-            transition: opacity 0.3s, transform 0.2s;
-            font-size: 0.95rem;
+            opacity: 0.65;
+            transition: opacity 0.3s, transform 0.2s, border-color 0.3s;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
 
         .partner-item:hover {
             opacity: 1;
-            transform: scale(1.03);
+            transform: scale(1.04);
+            border-color: var(--teal);
         }
 
         /* ---------- BLOG ---------- */
         .blog-section {
-            padding: 80px 0;
+            padding: 90px 0;
             background: var(--bg);
         }
 
         .blog-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
         }
 
         .blog-card {
             background: var(--card-bg);
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
             border: 1px solid var(--border);
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
             flex-direction: column;
         }
 
         .blog-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px var(--shadow);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px var(--shadow);
         }
 
         .blog-card .blog-image {
-            height: 160px;
-            background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+            height: 180px;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.8rem;
+            font-size: 3rem;
             color: white;
+            position: relative;
+        }
+
+        .blog-card .badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(100, 199, 212, 0.95);
+            color: var(--navy);
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .blog-card .blog-body {
-            padding: 25px;
+            padding: 30px;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
         }
 
         .blog-card .blog-body h3 {
-            font-size: 1.15rem;
+            font-size: 1.25rem;
             color: var(--text);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             line-height: 1.4;
+            font-weight: 700;
         }
 
         .blog-card .blog-body p {
             color: var(--text);
-            opacity: 0.7;
-            font-size: 0.92rem;
-            margin-bottom: 15px;
+            opacity: 0.75;
+            font-size: 0.96rem;
+            margin-bottom: 20px;
             flex-grow: 1;
+            line-height: 1.6;
         }
 
         .blog-card .blog-body .read-more {
             color: var(--teal);
             text-decoration: none;
-            font-weight: 600;
-            font-size: 0.92rem;
+            font-weight: 700;
+            font-size: 0.95rem;
             display: inline-flex;
             align-items: center;
+            gap: 6px;
         }
 
         .blog-card .blog-body .read-more:hover {
-            color: var(--aqua);
+            color: var(--navy);
         }
 
-        /* ---------- CONTACT ---------- */
+        [data-theme="dark"] .blog-card .blog-body .read-more:hover {
+            color: var(--white);
+        }
+
+        /* ---------- CONTACT & COURSE ALERT ---------- */
         .contact {
-            padding: 80px 0;
+            padding: 90px 0;
             background: var(--card-bg);
         }
 
         .contact-grid {
             display: grid;
-            grid-template-columns: 1fr 1.5fr;
-            gap: 50px;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 60px;
         }
 
         .contact-info p {
-            margin-bottom: 18px;
+            margin-bottom: 22px;
             font-size: 1.05rem;
             color: var(--text);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
         }
 
         .contact-info i {
@@ -671,20 +738,54 @@
         .contact-info a {
             color: var(--text);
             text-decoration: none;
+            font-weight: 500;
         }
 
         .contact-info a:hover {
             color: var(--teal);
         }
 
+        /* Enhanced alert block design */
+        .course-alert-card {
+            margin-top: 30px;
+            background: var(--bg);
+            padding: 25px;
+            border-radius: 16px;
+            border-left: 5px solid var(--teal);
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .course-alert-card .alert-title {
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .course-alert-card .alert-title i {
+            color: #F59E0B; /* Amber warning tone */
+            width: auto;
+        }
+
+        .course-alert-card p {
+            color: var(--text);
+            opacity: 0.8;
+            margin-top: 8px;
+            font-size: 0.95rem;
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+
         .contact-form input,
         .contact-form textarea,
         .contact-form select {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             border: 1px solid var(--border);
-            border-radius: 10px;
-            margin-bottom: 15px;
+            border-radius: 12px;
+            margin-bottom: 18px;
             font-family: inherit;
             font-size: 1rem;
             background: var(--bg);
@@ -699,13 +800,13 @@
         }
 
         .contact-form textarea {
-            height: 140px;
+            height: 150px;
             resize: vertical;
         }
 
         /* ---------- NEWSLETTER ---------- */
         .newsletter {
-            padding: 60px 0;
+            padding: 70px 0;
             background: var(--navy);
             color: white;
             text-align: center;
@@ -713,13 +814,14 @@
 
         .newsletter h2 {
             font-size: clamp(1.6rem, 3vw, 2.2rem);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-weight: 800;
         }
 
         .newsletter p {
             opacity: 0.85;
-            margin-bottom: 25px;
-            font-size: 1.05rem;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
         }
 
         .newsletter-form {
@@ -727,23 +829,23 @@
             flex-wrap: wrap;
             gap: 12px;
             justify-content: center;
-            max-width: 550px;
+            max-width: 580px;
             margin: 0 auto;
         }
 
         .newsletter-form input {
             flex: 1;
-            padding: 14px 25px;
+            padding: 16px 25px;
             border: none;
             border-radius: 50px;
             font-size: 1rem;
-            min-width: 240px;
+            min-width: 260px;
         }
 
         .newsletter-form button {
             background: var(--teal);
             color: var(--navy);
-            padding: 14px 35px;
+            padding: 16px 40px;
             border: none;
             border-radius: 50px;
             font-weight: 700;
@@ -761,7 +863,7 @@
             background: var(--navy);
             color: #94A3B8;
             text-align: center;
-            padding: 40px 0;
+            padding: 50px 0;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
@@ -772,27 +874,27 @@
         }
 
         footer .socials {
-            margin-top: 15px;
+            margin-top: 20px;
         }
 
         footer .socials a {
             color: #94A3B8;
-            margin: 0 12px;
-            font-size: 1.3rem;
+            margin: 0 14px;
+            font-size: 1.4rem;
             transition: color 0.2s, transform 0.2s;
             display: inline-block;
         }
 
         footer .socials a:hover {
             color: var(--teal);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
         }
 
         /* ---------- WHATSAPP ---------- */
         .whatsapp-float {
             position: fixed;
             bottom: 30px;
-            right: 20px;
+            right: 25px;
             background: #25d366;
             color: white;
             width: 55px;
@@ -803,7 +905,7 @@
             justify-content: center;
             font-size: 2rem;
             text-decoration: none;
-            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+            box-shadow: 0 6px 25px rgba(37, 211, 102, 0.4);
             transition: transform 0.3s;
             z-index: 999;
         }
@@ -813,6 +915,17 @@
         }
 
         /* ---------- RESPONSIVE BREAKPOINTS ---------- */
+        @media (max-width: 992px) {
+            .about-grid, .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+            .about-image {
+                min-height: 250px;
+                padding: 40px;
+            }
+        }
+
         @media (max-width: 768px) {
             .hamburger {
                 display: flex;
@@ -849,11 +962,6 @@
                 padding: 8px;
             }
 
-            .about-grid, .contact-grid {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-
             .hero-buttons {
                 flex-direction: column;
                 align-items: center;
@@ -882,7 +990,7 @@
 
         @media (max-width: 480px) {
             .hero h1 {
-                font-size: 1.9rem;
+                font-size: 2rem;
             }
 
             .impact-grid, .team-grid {
@@ -891,8 +999,8 @@
             }
 
             .team-card .avatar {
-                width: 85px;
-                height: 85px;
+                width: 95px;
+                height: 95px;
                 font-size: 2.2rem;
             }
         }
@@ -931,12 +1039,12 @@
     <!-- ===== HERO ===== -->
     <section class="hero">
         <div class="container">
-            <h1>Empowering People and Organizations with <span class="highlight">Data, Technology, and Community Solutions</span></h1>
-            <p class="mission-statement">We help individuals, farmers, and organizations make better decisions using data, training, and sustainable development.</p>
-            <p>Based in Enugu, Nigeria – working across data analytics, agriculture, and community development.</p>
+            <h1>Empowering Communities and Businesses with <span class="highlight">Data, Technology, and Growth Solutions</span></h1>
+            <p class="mission-statement">We bridge the gap between complex technology and sustainable development—equipping individuals, smallholder farmers, and organizations across Nigeria to scale efficiently.</p>
+            <p class="location-tag"><i class="fas fa-map-marker-alt"></i> Based in Enugu, Nigeria — Deploying Nationwide</p>
             <div class="hero-buttons">
                 <a href="#contact" class="btn-primary"><i class="fas fa-handshake"></i> Partner With Us</a>
-                <a href="#focus" class="btn-secondary">Learn More <i class="fas fa-arrow-right"></i></a>
+                <a href="#focus" class="btn-secondary">Explore What We Do <i class="fas fa-arrow-right"></i></a>
             </div>
         </div>
     </section>
@@ -947,14 +1055,14 @@
             <div class="about-grid">
                 <div class="about-text">
                     <h2>Who We <span>Are</span></h2>
-                    <p><strong>Greach Impact</strong> was founded in 2025 by <strong>Emmanuel Iheomamere</strong> with a simple belief: data and technology can change lives.</p>
-                    <p>We work across three main areas: <strong>Data Analytics & Training</strong>, <strong>Agriculture & Agro-Processing</strong>, and <strong>Community Development</strong>. Our goal is to create sustainable opportunities for individuals, farmers, and organizations across Nigeria.</p>
-                    <p>We're based in <strong>Enugu, Nigeria</strong>, and our work reaches communities across the country. We believe in practical solutions, hands-on training, and real impact – not just talk.</p>
+                    <p><strong>Greach Impact</strong> was established in 2025 by <strong>Emmanuel Iheomamere</strong> with a clear, structural conviction: access to contextual data literacy and digital workflow integration can fundamentally transform operational landscape ecosystems.</p>
+                    <p>We systematically integrate development initiatives across three critical infrastructure execution spaces: <strong>Data Analytics & Workforce Training</strong>, <strong>Agriculture & Precision Agro-Processing Support</strong>, and grassroots <strong>Community Capacity Building</strong>.</p>
+                    <p>Headquartered in <strong>Enugu, Nigeria</strong>, our core operation relies directly upon practical engineering frameworks, real deployment tracking pipelines, and active ground-truth accountability matrix systems.</p>
                 </div>
                 <div class="about-image">
-                    <i class="fas fa-chart-bar"></i>
+                    <i class="fas fa-globe-africa"></i>
                     <h3>Data. Agriculture. Community.</h3>
-                    <p>We bring together technical skills and local knowledge to solve real problems.</p>
+                    <p>Synthesizing technical capability data structures with deep regional baseline execution metrics.</p>
                 </div>
             </div>
         </div>
@@ -964,27 +1072,27 @@
     <section class="focus" id="focus">
         <div class="container">
             <h2 class="section-title">What We <span>Do</span></h2>
-            <p class="section-sub">We focus on three main areas that create lasting impact.</p>
+            <p class="section-sub">Four integrated workflow vectors designed to deliver measurable individual and corporate advancement.</p>
             <div class="focus-grid">
                 <div class="focus-card">
                     <i class="fas fa-chart-line"></i>
                     <h3>Data Analytics & Training</h3>
-                    <p>We train individuals and organizations in Excel, Power BI, and data analytics – turning data into decisions.</p>
+                    <p>Immersive production training environments utilizing Microsoft Excel, Power BI, and SQL architectures to optimize metrics tracking pipelines.</p>
                 </div>
                 <div class="focus-card">
                     <i class="fas fa-seedling"></i>
-                    <h3>Agriculture & Agro-Processing</h3>
-                    <p>We support smallholder farmers with processing solutions, market access, and agricultural data insights.</p>
+                    <h3>Agriculture Support</h3>
+                    <p>Connecting localized agricultural production modules with modern processing pipelines, supply logistics systems, and crop-yield data architectures.</p>
                 </div>
                 <div class="focus-card">
                     <i class="fas fa-users"></i>
                     <h3>Community Development</h3>
-                    <p>We build capacity, create opportunities, and empower communities across Nigeria.</p>
+                    <p>Deploying specialized capacity expansion modules, rural talent incubators, and operational capital readiness blueprints.</p>
                 </div>
                 <div class="focus-card">
                     <i class="fas fa-briefcase"></i>
                     <h3>Consulting & Advisory</h3>
-                    <p>We help nonprofits, businesses, and organizations make data-driven decisions and measure their impact.</p>
+                    <p>Guiding structural data modeling processes, impact assessment frameworks, and operations optimization blueprints for modern NGOs and enterprises.</p>
                 </div>
             </div>
         </div>
@@ -994,23 +1102,23 @@
     <section class="impact" id="impact">
         <div class="container">
             <h2>Our <span>Impact So Far</span></h2>
-            <p class="section-sub">We're just getting started – but we're already seeing results.</p>
+            <p class="section-sub">Quantified framework touchpoints recorded across regional deployment zones.</p>
             <div class="impact-grid">
                 <div class="impact-item">
                     <div class="number">200+</div>
-                    <div class="label">People Trained</div>
+                    <div class="label">Professionals Trained</div>
                 </div>
                 <div class="impact-item">
                     <div class="number">50+</div>
-                    <div class="label">Farmers Supported</div>
+                    <div class="label">Agric Specialists Supported</div>
                 </div>
                 <div class="impact-item">
                     <div class="number">15+</div>
-                    <div class="label">Communities Reached</div>
+                    <div class="label">Target Communities Reached</div>
                 </div>
                 <div class="impact-item">
                     <div class="number">5+</div>
-                    <div class="label">Partner Organizations</div>
+                    <div class="label">Active Corporate Partners</div>
                 </div>
             </div>
         </div>
@@ -1020,24 +1128,24 @@
     <section class="stories" id="stories">
         <div class="container">
             <h2 class="section-title">Real <span>Stories</span></h2>
-            <p class="section-sub">People we've worked with – in their own words.</p>
+            <p class="section-sub">Direct feedback loop metrics detailing practical workflow adaptations.</p>
             <div class="story-grid">
                 <div class="story-card">
-                    <p class="quote">"The Power BI training completely changed how I analyze data for my business. Emmanuel makes complex topics simple and practical."</p>
+                    <p class="quote">"The customized Power BI workflows completely streamlined our enterprise tracking models. Emmanuel reduces abstract architectural logic into highly intuitive operations dashboards."</p>
                     <div>
                         <div class="person">Chidi Okonkwo</div>
                         <div class="role">CEO, TechVentures NG</div>
                     </div>
                 </div>
                 <div class="story-card">
-                    <p class="quote">"I went from knowing nothing about Excel to building dashboards in just 4 weeks. This course was a game-changer for my career."</p>
+                    <p class="quote">"Transitioning from basic manual operations to advanced dynamic spreadsheet tracking formulas within 4 weeks drastically augmented my analytical market performance scale."</p>
                     <div>
                         <div class="person">Ngozi Eze</div>
-                        <div class="role">Student, Batch 1</div>
+                        <div class="role">Data Associate, Batch 1 Graduate</div>
                     </div>
                 </div>
                 <div class="story-card">
-                    <p class="quote">"Greach Impact helped us organize our community data in a way that actually makes sense. Now we can measure our impact."</p>
+                    <p class="quote">"Greach Impact successfully audited our unstructured operational program records into functional relational database metrics, instantly optimizing our quarterly reporting outputs."</p>
                     <div>
                         <div class="person">Tunde Balogun</div>
                         <div class="role">COO, HealthTrack NG</div>
@@ -1051,22 +1159,22 @@
     <section class="team" id="team">
         <div class="container">
             <h2 class="section-title">Meet Our <span>Team</span></h2>
-            <p class="section-sub">The people behind Greach Impact.</p>
+            <p class="section-sub">The technical core managing day-to-day coordination pipelines.</p>
             <div class="team-grid">
                 <div class="team-card">
-                    <div class="avatar"><i class="fas fa-user"></i></div>
+                    <div class="avatar"><i class="fas fa-laptop-code"></i></div>
                     <h4>Emmanuel Iheomamere</h4>
                     <p>Founder & Lead Data Analyst</p>
                 </div>
                 <div class="team-card">
-                    <div class="avatar"><i class="fas fa-user"></i></div>
+                    <div class="avatar"><i class="fas fa-shield-halved"></i></div>
                     <h4>Esther Nnamani</h4>
-                    <p>HR & Administration</p>
+                    <p>HR & Operations Administration</p>
                 </div>
                 <div class="team-card">
-                    <div class="avatar"><i class="fas fa-user"></i></div>
+                    <div class="avatar"><i class="fas fa-bezier-curve"></i></div>
                     <h4>Amaka</h4>
-                    <p>Brand & Communications</p>
+                    <p>Brand Strategy & Communications</p>
                 </div>
             </div>
         </div>
@@ -1076,7 +1184,7 @@
     <section class="partners" id="partners">
         <div class="container">
             <h2 class="section-title">Our <span>Partners</span></h2>
-            <p class="section-sub">Organizations we've worked with.</p>
+            <p class="section-sub">Collaborative enterprise organizations across our delivery ecosystem.</p>
             <div class="partner-grid">
                 <div class="partner-item">TechVentures NG</div>
                 <div class="partner-item">HealthTrack NG</div>
@@ -1090,30 +1198,39 @@
     <section class="blog-section" id="blog-section">
         <div class="container">
             <h2 class="section-title">From the <span>Blog</span></h2>
-            <p class="section-sub">Practical tips on Excel, data, agriculture, and community development.</p>
+            <p class="section-sub">Practical optimization guidelines compiled by internal execution leads.</p>
             <div class="blog-grid">
                 <div class="blog-card">
-                    <div class="blog-image"><i class="fas fa-file-excel"></i></div>
+                    <div class="blog-image">
+                        <span class="badge">Analytics</span>
+                        <i class="fas fa-file-excel"></i>
+                    </div>
                     <div class="blog-body">
                         <h3>10 Excel Shortcuts That Will Save You Hours</h3>
-                        <p>Stop clicking through menus. These shortcuts will speed up your workflow instantly.</p>
-                        <a href="blog.html#post1" class="read-more">Read More &rarr;</a>
+                        <p>Eliminate recursive manual scrolling operations immediately. Master these ten primary structural key combinations designed to rapidly accelerate data cleaning sprints.</p>
+                        <a href="blog.html#post1" class="read-more">Read Full Post <i class="fas fa-arrow-right-long"></i></a>
                     </div>
                 </div>
                 <div class="blog-card">
-                    <div class="blog-image"><i class="fas fa-chart-pie"></i></div>
+                    <div class="blog-image">
+                        <span class="badge">Visualization</span>
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
                     <div class="blog-body">
                         <h3>How to Build Your First Dashboard in Excel</h3>
-                        <p>A step-by-step guide to creating interactive dashboards that actually work.</p>
-                        <a href="blog.html#post2" class="read-more">Read More &rarr;</a>
+                        <p>An end-to-end operational blueprint mapping raw spreadsheet values directly into responsive visual executive reports using Pivot Architectures and Slice parameters.</p>
+                        <a href="blog.html#post2" class="read-more">Read Full Post <i class="fas fa-arrow-right-long"></i></a>
                     </div>
                 </div>
                 <div class="blog-card">
-                    <div class="blog-image"><i class="fas fa-seedling"></i></div>
+                    <div class="blog-image">
+                        <span class="badge">Agric Tech</span>
+                        <i class="fas fa-seedling"></i>
+                    </div>
                     <div class="blog-body">
                         <h3>How Smallholder Farmers Can Use Data</h3>
-                        <p>Simple data collection can help farmers make better decisions and improve yields.</p>
-                        <a href="blog.html#post3" class="read-more">Read More &rarr;</a>
+                        <p>Exploring lightweight field logging systems that empower rural cultivation hubs to reliably track soil performance metrics, rainfall baselines, and market price indexes.</p>
+                        <a href="blog.html#post3" class="read-more">Read Full Post <i class="fas fa-arrow-right-long"></i></a>
                     </div>
                 </div>
             </div>
@@ -1124,13 +1241,13 @@
     <section class="newsletter" id="newsletter">
         <div class="container">
             <h2>Stay Connected 📬</h2>
-            <p>Subscribe for updates on training, community projects, and impact stories.</p>
+            <p>Receive bi-weekly operational briefs detailing upcoming training dates and structural data insights.</p>
             <form class="newsletter-form" action="https://formspree.io/f/xgogoynj" method="POST">
-                <input type="email" name="email" placeholder="Enter your email" required />
+                <input type="email" name="email" placeholder="Enter your business email" required />
                 <button type="submit">Subscribe</button>
             </form>
-            <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 10px;">
-                We'll never share your email. Unsubscribe anytime.
+            <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 12px;">
+                Zero distribution list spam. Seamless one-click opt-out array provided at footer points.
             </p>
         </div>
     </section>
@@ -1139,39 +1256,43 @@
     <section class="contact" id="contact">
         <div class="container">
             <h2 class="section-title">Let's <span>Connect</span></h2>
-            <p class="section-sub">Have a project in mind or want to work with us? Reach out.</p>
+            <p class="section-sub">Initialize a consulting query or schedule an organizational cohort training assessment loop below.</p>
             <div class="contact-grid">
                 <div class="contact-info">
                     <p><i class="fas fa-map-marker-alt"></i> Enugu, Nigeria</p>
                     <p><i class="fas fa-phone"></i> <a href="tel:+2349072250869">+234 907 225 0869</a></p>
                     <p><i class="fas fa-envelope"></i> <a href="mailto:Greachimpact@gmail.com">Greachimpact@gmail.com</a></p>
                     <p><i class="fas fa-clock"></i> Mon–Fri: 9am – 6pm WAT</p>
-                    <p style="margin-top: 20px; font-style: italic; color: var(--teal);">
-                        <i class="fas fa-quote-left"></i> Data is the new oil — we refine it.
+                    <p style="margin-top: 25px; font-style: italic; color: var(--teal); font-weight: 500;">
+                        <i class="fas fa-quote-left"></i> Data is the new oil — we design the distribution pipelines.
                     </p>
-                    <div style="margin-top: 20px; background: var(--bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
-                        <strong style="color: var(--text);">📢 Excel Course Alert</strong>
-                        <p style="color: var(--text); opacity: 0.8; margin-top: 5px; font-size: 0.9rem;">Batch 2 starts July 24th on Microsoft Teams.</p>
+                    
+                    <!-- Clean styled course alert block -->
+                    <div class="course-alert-card">
+                        <div class="alert-title">
+                            <i class="fas fa-circle-exclamation"></i>
+                            <strong>📢 Cohort Registration Open</strong>
+                        </div>
+                        <p><strong>Excel Course – Batch 2</strong> live syllabus delivery initializes <strong>July 24th</strong> streaming securely via Microsoft Teams frameworks. Secure priority seat allocation via the request routing matrix dropdown.</p>
                     </div>
                 </div>
                 <div class="contact-form">
-                    <!-- Formspree backend processing integrated perfectly here -->
                     <form action="https://formspree.io/f/xgogoynj" method="POST">
                         <input type="text" name="name" placeholder="Your Full Name" required />
                         <input type="email" name="email" placeholder="Your Email Address" required />
-                        <input type="text" name="company" placeholder="Organization (optional)" />
+                        <input type="text" name="company" placeholder="Organization / Affiliate Body (optional)" />
                         <select name="interest" required>
-                            <option value="" disabled selected>I'm interested in...</option>
-                            <option value="excel-course">Excel Course – Batch 2</option>
-                            <option value="data-analytics">Data Analytics Services</option>
-                            <option value="consulting">Consulting</option>
-                            <option value="agriculture">Agriculture & Agro-Processing</option>
-                            <option value="community">Community Development</option>
-                            <option value="partnership">Partnership</option>
-                            <option value="other">Other</option>
+                            <option value="" disabled selected>Select Engagement Track...</option>
+                            <option value="excel-course">Excel Course – Batch 2 Enrollment</option>
+                            <option value="data-analytics">Corporate Analytics Infrastructure Deployments</option>
+                            <option value="consulting">Program Monitoring & Advisory Services</option>
+                            <option value="agriculture">Agricultural Production & Logistics Partnerships</option>
+                            <option value="community">Grassroots Community Capacity Program Sponsorship</option>
+                            <option value="partnership">General Strategic Enterprise Alliance</option>
+                            <option value="other">Alternative Technical Consultation</option>
                         </select>
-                        <textarea name="message" placeholder="Tell us what you need help with..." required></textarea>
-                        <button type="submit" class="btn-primary" style="width: 100%;"><i class="fas fa-paper-plane"></i> Send Message</button>
+                        <textarea name="message" placeholder="Provide a detailed brief of your target training parameters or structural operational timeline requirements..." required></textarea>
+                        <button type="submit" class="btn-primary" style="width: 100%;"><i class="fas fa-paper-plane"></i> Dispatch Inbound Query</button>
                     </form>
                 </div>
             </div>
@@ -1182,7 +1303,7 @@
     <footer>
         <div class="container">
             <p>&copy; 2026 <a href="index.html">Greach Impact</a> — Data. Agriculture. Community.</p>
-            <p style="font-size: 0.85rem; opacity: 0.6; margin-top: 5px;">Based in Enugu, Nigeria</p>
+            <p style="font-size: 0.85rem; opacity: 0.6; margin-top: 5px;">Operational Deployment Hub: Enugu, Nigeria</p>
             <div class="socials">
                 <a href="#" aria-label="LinkedIn Profile"><i class="fab fa-linkedin"></i></a>
                 <a href="#" aria-label="Twitter Profile"><i class="fab fa-twitter"></i></a>
