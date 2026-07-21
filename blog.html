@@ -4,11 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blog – Greach Impact</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <!-- Markdown to HTML Converter Script -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <meta name="description" content="Practical insights on data analytics, Excel training, Power BI, agriculture, and community development from Greach Impact." />
+    
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    
     <style>
-        /* ===== BRAND COLORS ===== */
+        /* ===== BRAND COLORS & VARIABLES ===== */
         :root {
             --navy: #0A0A5E;
             --slate: #3A4574;
@@ -35,21 +37,18 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--bg);
             color: var(--text);
-            line-height: 1.8;
+            line-height: 1.7;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
@@ -61,15 +60,13 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 4px 20px rgba(10, 10, 94, 0.3);
+            box-shadow: 0 4px 20px rgba(10, 10, 94, 0.2);
         }
 
         .header-flex {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
         }
 
         .logo {
@@ -77,133 +74,270 @@
             align-items: center;
             text-decoration: none;
             color: var(--white);
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 800;
-        }
-
-        .logo .teal {
-            color: var(--teal);
+            gap: 10px;
         }
 
         .logo img {
-            height: 45px;
-            width: auto;
-            margin-right: 10px;
+            height: 40px;
+            border-radius: 4px;
+        }
+
+        .logo .teal { color: var(--teal); }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
         nav a {
             text-decoration: none;
-            color: var(--white);
+            color: rgba(255, 255, 255, 0.8);
             font-weight: 600;
-            transition: color 0.2s;
-            font-size: 0.9rem;
-            padding: 5px 10px;
+            font-size: 0.95rem;
         }
 
-        nav a:hover {
+        nav a:hover, nav a.active { color: var(--teal); }
+
+        .btn-back {
+            background: rgba(100, 199, 212, 0.15);
             color: var(--teal);
+            padding: 8px 18px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.88rem;
+            border: 1px solid rgba(100, 199, 212, 0.3);
         }
 
-        .back-btn {
+        .btn-back:hover {
             background: var(--teal);
-            color: var(--navy) !important;
-            padding: 8px 20px !important;
+            color: var(--navy);
+        }
+
+        /* ---------- HERO SECTION ---------- */
+        .blog-hero {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
+            color: white;
+            text-align: center;
+            padding: 90px 0 80px;
+        }
+
+        .blog-hero h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .blog-hero h1 span { color: var(--teal); }
+
+        .blog-hero p {
+            color: #E2E8F0;
+            font-size: clamp(1rem, 1.5vw, 1.2rem);
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        /* ---------- MAIN FEED GRID ---------- */
+        .blog-container { padding: 80px 0; }
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 35px;
+        }
+
+        .blog-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px var(--shadow);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 25px var(--shadow);
+            border-color: var(--teal);
+        }
+
+        .card-image-placeholder {
+            height: 200px;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            color: var(--teal);
+            position: relative;
+        }
+
+        .card-image-placeholder .tag {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--teal);
+            color: var(--navy);
+            padding: 4px 12px;
             border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-content {
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-meta {
+            font-size: 0.85rem;
+            color: var(--text);
+            opacity: 0.6;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .card-content h2 {
+            font-size: 1.3rem;
+            color: var(--text);
+            margin-bottom: 12px;
+            line-height: 1.4;
             font-weight: 700;
         }
 
-        .back-btn:hover {
-            background: var(--aqua) !important;
-            color: var(--navy) !important;
+        .card-content p {
+            color: var(--text);
+            opacity: 0.8;
+            font-size: 0.96rem;
+            margin-bottom: 24px;
+            flex-grow: 1;
         }
 
-        /* ---------- BLOG CONTENT ---------- */
-        .blog-header {
-            padding: 60px 0 30px;
-            text-align: center;
-            background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
-            color: white;
-        }
-
-        .blog-header h1 {
-            font-size: 2.8rem;
-            font-weight: 800;
-        }
-
-        .blog-header h1 span {
+        .read-btn {
             color: var(--teal);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            width: fit-content;
         }
 
-        .blog-header p {
-            color: #CBD5E1;
-            font-size: 1.2rem;
-            margin-top: 10px;
-        }
+        .read-btn:hover { color: var(--navy); }
+        [data-theme="dark"] .read-btn:hover { color: var(--white); }
 
-        .blog-post {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 40px;
-            margin: 40px 0;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 20px var(--shadow);
-        }
-
-        .blog-post h2 {
-            font-size: 2rem;
-            color: var(--navy);
-            margin-bottom: 5px;
-        }
-
-        .blog-post .post-meta {
-            color: var(--text);
-            opacity: 0.6;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
+        /* ---------- MODAL POPUP LAYER ---------- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 94, 0.65);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
             display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
         }
 
-        .blog-post .post-meta i {
-            margin-right: 5px;
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
         }
 
-        .blog-post h3 {
-            font-size: 1.4rem;
-            color: var(--navy);
-            margin: 30px 0 10px;
+        .modal-wrapper {
+            background: var(--card-bg);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 750px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            transform: translateY(30px);
+            transition: transform 0.3s ease;
+            position: relative;
         }
 
-        .blog-post h4 {
+        .modal-overlay.active .modal-wrapper {
+            transform: translateY(0);
+        }
+
+        .modal-header-banner {
+            min-height: 120px;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
+            display: flex;
+            align-items: center;
+            padding: 30px 40px;
+            color: white;
+            position: relative;
+        }
+
+        .modal-header-banner h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            max-width: 85%;
+            line-height: 1.3;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
             font-size: 1.1rem;
+        }
+
+        .modal-close-btn:hover {
+            background: var(--teal);
             color: var(--navy);
-            margin: 20px 0 10px;
         }
 
-        .blog-post p {
-            color: var(--text);
-            opacity: 0.85;
-            margin-bottom: 16px;
-        }
-
-        .blog-post ul, .blog-post ol {
-            padding-left: 25px;
-            margin-bottom: 16px;
-            color: var(--text);
-            opacity: 0.85;
-        }
-
-        .blog-post ul li, .blog-post ol li {
-            margin-bottom: 8px;
-        }
-
-        /* Loading and Error states styling */
-        .loading-text, .error-text {
-            text-align: center;
+        .modal-body-content {
             padding: 40px;
-            font-size: 1.2rem;
-            color: var(--slate);
+            color: var(--text);
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+
+        .modal-body-content p {
+            margin-bottom: 20px;
+        }
+
+        .modal-body-content ul, .modal-body-content ol {
+            margin: 0 0 20px 25px;
+        }
+
+        .modal-body-content li {
+            margin-bottom: 8px;
         }
 
         /* ---------- FOOTER ---------- */
@@ -211,38 +345,21 @@
             background: var(--navy);
             color: #94A3B8;
             text-align: center;
-            padding: 30px 0;
+            padding: 40px 0;
             margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        footer a {
-            color: var(--teal);
-            text-decoration: none;
-            font-weight: 600;
-        }
+        footer a { color: var(--teal); text-decoration: none; font-weight: 600; }
+        footer .socials { margin-top: 15px; }
+        footer .socials a { color: #94A3B8; margin: 0 10px; font-size: 1.25rem; }
+        footer .socials a:hover { color: var(--teal); }
 
-        footer .socials {
-            margin-top: 10px;
-        }
-
-        footer .socials a {
-            color: #94A3B8;
-            margin: 0 10px;
-            font-size: 1.2rem;
-        }
-
-        footer .socials a:hover {
-            color: var(--teal);
-        }
-
-        /* ---------- RESPONSIVE ---------- */
         @media (max-width: 768px) {
-            .blog-header h1 { font-size: 2rem; }
-            .blog-post { padding: 25px; }
-            .blog-post h2 { font-size: 1.6rem; }
-            .header-flex { flex-direction: column; gap: 10px; }
-            nav { display: flex; flex-wrap: wrap; justify-content: center; }
-            .blog-post .post-meta { font-size: 0.8rem; gap: 10px; }
+            nav { display: none; }
+            .blog-grid { grid-template-columns: 1fr; }
+            .modal-body-content { padding: 25px; }
+            .modal-header-banner { padding: 25px; }
         }
     </style>
 </head>
@@ -258,25 +375,40 @@
             <nav>
                 <a href="index.html">Home</a>
                 <a href="index.html#about">About</a>
-                <a href="index.html#services">Services</a>
+                <a href="index.html#focus">Services</a>
                 <a href="index.html#contact">Contact</a>
-                <a href="blog.html">Blog</a>
-                <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Site</a>
+                <a href="blog.html" class="active">Blog</a>
+                <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Site</a>
             </nav>
         </div>
     </header>
 
-    <!-- ===== BLOG HEADER ===== -->
-    <section class="blog-header">
+    <!-- ===== HERO SECTION ===== -->
+    <section class="blog-hero">
         <div class="container">
             <h1>Greach Impact <span>Blog</span></h1>
-            <p>Practical tips on Excel, data, agriculture, and community development</p>
+            <p>Practical guides and strategic insights on Excel, data analytics, scalable agriculture, and community development frameworks.</p>
         </div>
     </section>
 
-    <!-- ===== DYNAMIC BLOG HOLDER ===== -->
-    <div class="container" id="blog-posts-container">
-        <div class="loading-text"><i class="fas fa-spinner fa-spin"></i> Loading latest stories...</div>
+    <!-- ===== ARTICLES GRID CONTAINER ===== -->
+    <main class="container blog-container">
+        <div class="blog-grid" id="blogFeed">
+            <!-- Dynamic Cards render here via JavaScript -->
+        </div>
+    </main>
+
+    <!-- ===== DYNAMIC MODAL LAYER ===== -->
+    <div class="modal-overlay" id="articleModal" onclick="closeModal(event)">
+        <div class="modal-wrapper">
+            <button class="modal-close-btn" onclick="forceCloseModal()"><i class="fas fa-times"></i></button>
+            <div class="modal-header-banner">
+                <h2 id="modalTitle">Article Title</h2>
+            </div>
+            <div class="modal-body-content" id="modalBody">
+                <!-- Article text injected here -->
+            </div>
+        </div>
     </div>
 
     <!-- ===== FOOTER ===== -->
@@ -284,96 +416,136 @@
         <div class="container">
             <p>&copy; 2026 <a href="index.html">Greach Impact</a> — Data. Agriculture. Community. Impact.</p>
             <div class="socials">
-                <a href="#"><i class="fab fa-linkedin"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-youtube"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
             </div>
         </div>
     </footer>
 
-    <!-- ===== DYNAMIC LOAD ENGINE ===== -->
+    <!-- ===== DYNAMIC FEED & MODAL ENGINE ===== -->
     <script>
-        async function fetchBlogPosts() {
-            const container = document.getElementById('blog-posts-container');
-            
-            try {
-                // Fetching the files repository inventory map generated by GitHub/Netlify
-                const response = await fetch('https://api.github.com/repos/YOUR_GITHUB_USERNAME/greach-impact-website/contents/blog');
-                
-                if (!response.ok) {
-                    throw new Error("Could not find the blog contents path");
-                }
-                
-                const files = await response.json();
-                
-                // Clear out loading status label text
-                container.innerHTML = '';
-                
-                // Filter down to process markdown articles exclusively
-                const markdownFiles = files.filter(file => file.name.endsWith('.md') || file.name.endsWith('.markdown'));
+        // Local Article Database (Fills feed automatically without external dependencies)
+        const articles = [
+            {
+                id: 'excel-shortcuts',
+                tag: 'Analytics',
+                icon: 'fas fa-file-excel',
+                date: 'July 2026',
+                author: 'Emmanuel I.',
+                title: '10 Excel Shortcuts That Will Save You Hours',
+                summary: 'Stop doing tasks manually. Master these primary structural key combinations designed to rapidly accelerate data cleaning sprints and daily tracking operations.',
+                content: `
+                    <p>Manual data entry and scrolling waste valuable hours every week. By mastering native key setups, you can navigate vast datasets effortlessly.</p>
+                    <p><strong>Top Essential Shortcuts:</strong></p>
+                    <ul>
+                        <li><strong>Ctrl + T:</strong> Instantly convert a messy data array into an organized, sortable Excel Table.</li>
+                        <li><strong>Ctrl + Shift + L:</strong> Toggle data filters on or off in a split second.</li>
+                        <li><strong>F4:</strong> Repeat your last action, or instantly lock cell coordinates ($A$1) absolute.</li>
+                        <li><strong>Alt + =:</strong> Trigger AutoSum automatically over adjacent values.</li>
+                    </ul>
+                    <p>Implementing these simple frameworks changes data cleaning from a grueling chore into an optimized, high-speed routine.</p>
+                `
+            },
+            {
+                id: 'excel-dashboards',
+                tag: 'Visualization',
+                icon: 'fas fa-chart-pie',
+                date: 'July 2026',
+                author: 'Emmanuel I.',
+                title: 'How to Build Your First Dashboard in Excel',
+                summary: 'An end-to-end operational blueprint mapping raw spreadsheet values directly into clean, responsive corporate executive views using Pivot structures and slicers.',
+                content: `
+                    <p>A great dashboard transforms raw rows and columns into visual indicators that help leadership make clear strategic corporate decisions.</p>
+                    <p><strong>The Core Development Phases:</strong></p>
+                    <ol>
+                        <li><strong>Data Structuring:</strong> Ensure your source records have clear headings, consistent row logs, and zero blank breaks.</li>
+                        <li><strong>Pivot Generation:</strong> Aggregate metrics onto isolated staging calculation views using Pivot Tables.</li>
+                        <li><strong>Visual Wiring:</strong> Connect clean charts (Bar, Line, and Area) explicitly to the summarized Pivot views.</li>
+                        <li><strong>Slicer Integration:</strong> Add interactive Slicers so users can instantly filter timelines and focus areas with one click.</li>
+                    </ol>
+                `
+            },
+            {
+                id: 'agric-data',
+                tag: 'Agric Tech',
+                icon: 'fas fa-seedling',
+                date: 'June 2026',
+                author: 'Field Team Lead',
+                title: 'How Smallholder Farmers Can Use Data',
+                summary: 'Exploring lightweight tracking systems that empower rural cultivation hubs to reliably track soil performance metrics, rainfall patterns, and market price indexes.',
+                content: `
+                    <p>Data analytics isn't just for corporate environments; it is actively modernizing smallholder agriculture frameworks across rural hubs.</p>
+                    <p>By capturing basic metrics like daily rainfall amounts, exact fertilizer usage rates, and historical planting cycles, local farm groups can track accurate performance baselines.</p>
+                    <p>This organized field documentation allows organizations like Greach Impact to match smallholders directly with targeted market logistics chains, reliable crop-yield insurance protections, and modern processing systems.</p>
+                `
+            },
+            {
+                id: 'community-dev',
+                tag: 'Community',
+                icon: 'fas fa-users-gear',
+                date: 'May 2026',
+                author: 'Greach Impact',
+                title: 'Building Tech Literacy in Rural Communities',
+                summary: 'A scalable framework for delivering practical digital tool training to community leaders, driving sustainable development and local resource management.',
+                content: `
+                    <p>Sustainable development relies heavily on local empowerment and capacity building.</p>
+                    <p>By teaching fundamental digital skills—such as basic spreadsheet management, digital record keeping, and cloud collaboration—community leaders can better manage public resources, track project milestones, and secure developmental funding.</p>
+                `
+            }
+        ];
 
-                if(markdownFiles.length === 0) {
-                    container.innerHTML = '<div class="error-text">No articles found in the workspace yet.</div>';
-                    return;
-                }
-
-                // Process every single markdown post found
-                for (const file of markdownFiles) {
-                    const postDataResponse = await fetch(file.download_url);
-                    const rawText = await postDataResponse.text();
-                    
-                    // Parse Decap Metadata Frontmatter syntax blocks (--- tags ---)
-                    const frontmatterRegex = /^---\s*([\s\S]*?)\r?\n---\s*/;
-                    const match = rawText.match(frontmatterRegex);
-                    
-                    let metadata = { title: "Untitled Post", date: "Unknown Date", author: "Emmanuel Iheomamere" };
-                    let bodyMarkdown = rawText;
-                    
-                    if (match) {
-                        bodyMarkdown = rawText.replace(frontmatterRegex, '');
-                        const lines = match[1].split('\n');
-                        lines.forEach(line => {
-                            const [key, ...valParts] = line.split(':');
-                            if (key && valParts.length) {
-                                const val = valParts.join(':').trim().replace(/^["']|["']$/g, '');
-                                metadata[key.trim()] = val;
-                            }
-                        });
-                    }
-
-                    // Format beautiful timestamp strings safely
-                    let formattedDate = metadata.date;
-                    if(metadata.date !== "Unknown Date") {
-                        const parsedDate = new Date(metadata.date);
-                        formattedDate = parsedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-                    }
-
-                    // Generate complete layout component block card string dynamically
-                    const articleElement = document.createElement('article');
-                    articleElement.className = 'blog-post';
-                    articleElement.innerHTML = `
-                        <h2>${metadata.title}</h2>
-                        <div class="post-meta">
-                            <span><i class="far fa-calendar-alt"></i> ${formattedDate}</span>
-                            <span><i class="far fa-user"></i> ${metadata.author}</span>
+        // Render Cards dynamically into the DOM
+        function renderFeed() {
+            const feedContainer = document.getElementById('blogFeed');
+            feedContainer.innerHTML = articles.map(post => `
+                <article class="blog-card">
+                    <div class="card-image-placeholder">
+                        <span class="tag">${post.tag}</span>
+                        <i class="${post.icon}"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-meta">
+                            <span><i class="far fa-calendar"></i> ${post.date}</span>
+                            <span><i class="far fa-user"></i> ${post.author}</span>
                         </div>
-                        <div class="post-body">
-                            ${marked.parse(bodyMarkdown)}
-                        </div>
-                    `;
-                    
-                    // Prepend makes sure the newest article shows up first
-                    container.insertBefore(articleElement, container.firstChild);
-                }
-                
-            } catch (error) {
-                console.error("Error building the timeline context grid:", error);
-                container.innerHTML = '<div class="error-text"><i class="fas fa-exclamation-triangle"></i> Dynamic feed currently offline. Please refresh or try again later.</div>';
+                        <h2>${post.title}</h2>
+                        <p>${post.summary}</p>
+                        <button class="read-btn" onclick="openPost('${post.id}')">Read Full Post <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        // Modal Logic
+        const modal = document.getElementById('articleModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+
+        function openPost(postId) {
+            const article = articles.find(a => a.id === postId);
+            if (article) {
+                modalTitle.innerText = article.title;
+                modalBody.innerHTML = article.content;
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
             }
         }
 
-        document.addEventListener('DOMContentLoaded', fetchBlogPosts);
+        function forceCloseModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function closeModal(event) {
+            if (event.target === modal) {
+                forceCloseModal();
+            }
+        }
+
+        // Initialize feed on load
+        document.addEventListener('DOMContentLoaded', renderFeed);
     </script>
 </body>
 </html>

@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "title": "Mastering XLOOKUP for Cleaner Data Analysis",
+    "category": "Excel & Data",
+    "date": "July 20, 2026",
+    "summary": "Say goodbye to VLOOKUP limitations. Learn how XLOOKUP simplifies data retrieval, handles missing values gracefully, and speeds up financial modeling.",
+    "readTime": "4 min read"
+  },
+  {
+    "id": 2,
+    "title": "Data-Driven Crop Yield Optimization in Smallholder Farming",
+    "category": "Agriculture",
+    "date": "July 18, 2026",
+    "summary": "How simple soil sensor data combined with regional rainfall trends helps smallholder farmers reduce water usage by 25% while boosting seasonal yield.",
+    "readTime": "5 min read"
+  },
+  {
+    "id": 3,
+    "title": "Building Grassroots Tech Literacy in Rural Communities",
+    "category": "Community Development",
+    "date": "July 12, 2026",
+    "summary": "A practical framework for introducing basic spreadsheet and data entry tools to local community managers, enabling better resource allocation.",
+    "readTime": "6 min read"
+  },
+  {
+    "id": 4,
+    "title": "Clean Data First: 5 Common Spreadsheet Errors to Avoid",
+    "category": "Excel & Data",
+    "date": "July 05, 2026",
+    "summary": "From mixed date formats to trailing spaces, discover the five most common data quality traps and how Power Query can clean them automatically.",
+    "readTime": "3 min read"
+  }
+]
