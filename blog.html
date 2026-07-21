@@ -6,7 +6,7 @@
     <title>Blog – Greach Impact</title>
     <meta name="description" content="Practical insights on data analytics, Excel training, Power BI, agriculture, and community development from Greach Impact." />
     
-    <!-- FontAwesome for icons -->
+    <!-- FontAwesome for layout icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     
     <style>
@@ -328,17 +328,9 @@
             line-height: 1.8;
         }
 
-        .modal-body-content p {
-            margin-bottom: 20px;
-        }
-
-        .modal-body-content ul, .modal-body-content ol {
-            margin: 0 0 20px 25px;
-        }
-
-        .modal-body-content li {
-            margin-bottom: 8px;
-        }
+        .modal-body-content p { margin-bottom: 20px; }
+        .modal-body-content ul, .modal-body-content ol { margin: 0 0 20px 25px; }
+        .modal-body-content li { margin-bottom: 8px; }
 
         /* ---------- FOOTER ---------- */
         footer {
@@ -394,7 +386,7 @@
     <!-- ===== ARTICLES GRID CONTAINER ===== -->
     <main class="container blog-container">
         <div class="blog-grid" id="blogFeed">
-            <!-- Dynamic Cards render here via JavaScript -->
+            <p style="text-align: center; grid-column: 1 / -1;">Loading blog posts...</p>
         </div>
     </main>
 
@@ -406,7 +398,7 @@
                 <h2 id="modalTitle">Article Title</h2>
             </div>
             <div class="modal-body-content" id="modalBody">
-                <!-- Article text injected here -->
+                <!-- Dynamic Article content -->
             </div>
         </div>
     </div>
@@ -424,107 +416,62 @@
         </div>
     </footer>
 
-    <!-- ===== DYNAMIC FEED & MODAL ENGINE ===== -->
+    <!-- ===== DYNAMIC SHEETY API ENGINE ===== -->
     <script>
-        // Local Article Database (Fills feed automatically without external dependencies)
-        const articles = [
-            {
-                id: 'excel-shortcuts',
-                tag: 'Analytics',
-                icon: 'fas fa-file-excel',
-                date: 'July 2026',
-                author: 'Emmanuel I.',
-                title: '10 Excel Shortcuts That Will Save You Hours',
-                summary: 'Stop doing tasks manually. Master these primary structural key combinations designed to rapidly accelerate data cleaning sprints and daily tracking operations.',
-                content: `
-                    <p>Manual data entry and scrolling waste valuable hours every week. By mastering native key setups, you can navigate vast datasets effortlessly.</p>
-                    <p><strong>Top Essential Shortcuts:</strong></p>
-                    <ul>
-                        <li><strong>Ctrl + T:</strong> Instantly convert a messy data array into an organized, sortable Excel Table.</li>
-                        <li><strong>Ctrl + Shift + L:</strong> Toggle data filters on or off in a split second.</li>
-                        <li><strong>F4:</strong> Repeat your last action, or instantly lock cell coordinates ($A$1) absolute.</li>
-                        <li><strong>Alt + =:</strong> Trigger AutoSum automatically over adjacent values.</li>
-                    </ul>
-                    <p>Implementing these simple frameworks changes data cleaning from a grueling chore into an optimized, high-speed routine.</p>
-                `
-            },
-            {
-                id: 'excel-dashboards',
-                tag: 'Visualization',
-                icon: 'fas fa-chart-pie',
-                date: 'July 2026',
-                author: 'Emmanuel I.',
-                title: 'How to Build Your First Dashboard in Excel',
-                summary: 'An end-to-end operational blueprint mapping raw spreadsheet values directly into clean, responsive corporate executive views using Pivot structures and slicers.',
-                content: `
-                    <p>A great dashboard transforms raw rows and columns into visual indicators that help leadership make clear strategic corporate decisions.</p>
-                    <p><strong>The Core Development Phases:</strong></p>
-                    <ol>
-                        <li><strong>Data Structuring:</strong> Ensure your source records have clear headings, consistent row logs, and zero blank breaks.</li>
-                        <li><strong>Pivot Generation:</strong> Aggregate metrics onto isolated staging calculation views using Pivot Tables.</li>
-                        <li><strong>Visual Wiring:</strong> Connect clean charts (Bar, Line, and Area) explicitly to the summarized Pivot views.</li>
-                        <li><strong>Slicer Integration:</strong> Add interactive Slicers so users can instantly filter timelines and focus areas with one click.</li>
-                    </ol>
-                `
-            },
-            {
-                id: 'agric-data',
-                tag: 'Agric Tech',
-                icon: 'fas fa-seedling',
-                date: 'June 2026',
-                author: 'Field Team Lead',
-                title: 'How Smallholder Farmers Can Use Data',
-                summary: 'Exploring lightweight tracking systems that empower rural cultivation hubs to reliably track soil performance metrics, rainfall patterns, and market price indexes.',
-                content: `
-                    <p>Data analytics isn't just for corporate environments; it is actively modernizing smallholder agriculture frameworks across rural hubs.</p>
-                    <p>By capturing basic metrics like daily rainfall amounts, exact fertilizer usage rates, and historical planting cycles, local farm groups can track accurate performance baselines.</p>
-                    <p>This organized field documentation allows organizations like Greach Impact to match smallholders directly with targeted market logistics chains, reliable crop-yield insurance protections, and modern processing systems.</p>
-                `
-            },
-            {
-                id: 'community-dev',
-                tag: 'Community',
-                icon: 'fas fa-users-gear',
-                date: 'May 2026',
-                author: 'Greach Impact',
-                title: 'Building Tech Literacy in Rural Communities',
-                summary: 'A scalable framework for delivering practical digital tool training to community leaders, driving sustainable development and local resource management.',
-                content: `
-                    <p>Sustainable development relies heavily on local empowerment and capacity building.</p>
-                    <p>By teaching fundamental digital skills—such as basic spreadsheet management, digital record keeping, and cloud collaboration—community leaders can better manage public resources, track project milestones, and secure developmental funding.</p>
-                `
-            }
-        ];
+        let articles = [];
 
-        // Render Cards dynamically into the DOM
-        function renderFeed() {
+        // Linked directly to your Sheety project URL
+        const SHEETY_API_URL = 'https://api.sheety.co/greachImpactBlog/sheet1';
+
+        async function renderFeed() {
             const feedContainer = document.getElementById('blogFeed');
-            feedContainer.innerHTML = articles.map(post => `
-                <article class="blog-card">
-                    <div class="card-image-placeholder">
-                        <span class="tag">${post.tag}</span>
-                        <i class="${post.icon}"></i>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-meta">
-                            <span><i class="far fa-calendar"></i> ${post.date}</span>
-                            <span><i class="far fa-user"></i> ${post.author}</span>
+            
+            try {
+                const response = await fetch(SHEETY_API_URL);
+                const data = await response.json();
+
+                articles = data.sheet1 || [];
+
+                if (articles.length === 0) {
+                    feedContainer.innerHTML = '<p style="text-align:center; grid-column: 1 / -1;">No blog posts available yet.</p>';
+                    return;
+                }
+
+                feedContainer.innerHTML = articles.map(post => `
+                    <article class="blog-card">
+                        <div class="card-image-placeholder">
+                            <span class="tag">${post.tag || 'General'}</span>
+                            <i class="${post.icon || 'fas fa-newspaper'}"></i>
                         </div>
-                        <h2>${post.title}</h2>
-                        <p>${post.summary}</p>
-                        <button class="read-btn" onclick="openPost('${post.id}')">Read Full Post <i class="fas fa-arrow-right"></i></button>
-                    </div>
-                </article>
-            `).join('');
+                        <div class="card-content">
+                            <div class="card-meta">
+                                <span><i class="far fa-calendar"></i> ${post.date || ''}</span>
+                                <span><i class="far fa-user"></i> ${post.author || 'Greach Impact'}</span>
+                            </div>
+                            <h2>${post.title}</h2>
+                            <p>${post.summary}</p>
+                            <button class="read-btn" onclick="openPost('${post.id}')">Read Full Post <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </article>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error fetching blog posts:', error);
+                feedContainer.innerHTML = `
+                    <p style="text-align:center; grid-column: 1 / -1;">
+                        Unable to load live posts right now. Please check back shortly.
+                    </p>
+                `;
+            }
         }
 
-        // Modal Logic
+        // Modal Handler Logic
         const modal = document.getElementById('articleModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalBody = document.getElementById('modalBody');
 
         function openPost(postId) {
-            const article = articles.find(a => a.id === postId);
+            const article = articles.find(a => String(a.id) === String(postId));
             if (article) {
                 modalTitle.innerText = article.title;
                 modalBody.innerHTML = article.content;
@@ -544,7 +491,6 @@
             }
         }
 
-        // Initialize feed on load
         document.addEventListener('DOMContentLoaded', renderFeed);
     </script>
 </body>
