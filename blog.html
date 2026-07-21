@@ -6,9 +6,12 @@
     <title>Blog – Greach Impact</title>
     <meta name="description" content="Practical insights on data analytics, Excel training, Power BI, agriculture, and community development from Greach Impact." />
     
-    <!-- FontAwesome 6 (All Icons Included) -->
+    <!-- FontAwesome 6 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     
+    <!-- Cusdis Comment Engine Script -->
+    <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
+
     <style>
         /* ===== BRAND COLORS & VARIABLES ===== */
         :root {
@@ -167,7 +170,6 @@
             border-color: var(--teal);
         }
 
-        /* Enhanced Card Header & Icon Backdrop */
         .card-image-placeholder {
             height: 200px;
             background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
@@ -412,7 +414,7 @@
         </div>
     </main>
 
-    <!-- ===== DYNAMIC MODAL LAYER ===== -->
+    <!-- ===== DYNAMIC MODAL LAYER WITH COMMENTS ===== -->
     <div class="modal-overlay" id="articleModal" onclick="closeModal(event)">
         <div class="modal-wrapper">
             <button class="modal-close-btn" onclick="forceCloseModal()"><i class="fa-solid fa-xmark"></i></button>
@@ -420,7 +422,7 @@
                 <h2 id="modalTitle">Article Title</h2>
             </div>
             <div class="modal-body-content" id="modalBody">
-                <!-- Dynamic Article content -->
+                <!-- Article Content + Cusdis Thread -->
             </div>
         </div>
     </div>
@@ -438,11 +440,11 @@
         </div>
     </footer>
 
-    <!-- ===== DYNAMIC SHEETY API ENGINE ===== -->
+    <!-- ===== JAVASCRIPT ENGINE ===== -->
     <script>
         let articles = [];
 
-        // Your exact Sheety endpoint URL
+        // Sheety API Link
         const SHEETY_API_URL = 'https://api.sheety.co/d2a521b51f2439d009d4aaf3bbdea4f3/greachImpactBlog/sheet1';
 
         async function renderFeed() {
@@ -460,7 +462,6 @@
                 }
 
                 feedContainer.innerHTML = articles.map(post => {
-                    // Fallback icon handler if column is empty or unformatted
                     const iconClass = post.icon && post.icon.trim() !== '' 
                         ? post.icon 
                         : 'fa-solid fa-file-excel';
@@ -486,15 +487,11 @@
 
             } catch (error) {
                 console.error('Error fetching blog posts:', error);
-                feedContainer.innerHTML = `
-                    <p style="text-align:center; grid-column: 1 / -1;">
-                        Unable to load live posts right now. Please check back shortly.
-                    </p>
-                `;
+                feedContainer.innerHTML = `<p style="text-align:center; grid-column: 1 / -1;">Unable to load live posts right now.</p>`;
             }
         }
 
-        // Modal Handler Logic
+        // Modal Handler Logic with Cusdis Comments
         const modal = document.getElementById('articleModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalBody = document.getElementById('modalBody');
@@ -503,7 +500,31 @@
             const article = articles.find(a => String(a.id) === String(postId));
             if (article) {
                 modalTitle.innerText = article.title;
-                modalBody.innerHTML = article.content;
+                
+                // Inject Article HTML + Cusdis Thread
+                modalBody.innerHTML = `
+                    <div class="article-text">
+                        ${article.content}
+                    </div>
+                    
+                    <hr style="margin: 40px 0 30px; border: 0; border-top: 1px solid var(--border);" />
+                    
+                    <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-comments"></i> Leave a Comment</h3>
+                    
+                    <div id="cusdis_thread"
+                      data-host="https://cusdis.com"
+                      data-app-id="774483a9-96b4-493e-9b63-821ec4c6765b"
+                      data-page-id="${article.id}"
+                      data-page-url="${window.location.href}#${article.id}"
+                      data-page-title="${article.title}">
+                    </div>
+                `;
+
+                // Reload Cusdis Engine for opened article
+                if (window.CUSDIS) {
+                    window.CUSDIS.initial();
+                }
+
                 modal.classList.add('active');
                 document.body.style.overflow = 'hidden';
             }
