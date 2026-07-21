@@ -10,7 +10,7 @@
     <meta name="keywords" content="data analytics, Excel training, Power BI, agriculture, community development, Nigeria, Enugu" />
     <meta name="author" content="Emmanuel Iheomamere" />
     
-    <!-- Stable FontAwesome CDN to fix broken icon unicode blocks -->
+    <!-- Stable FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     
     <style>
@@ -1178,45 +1178,15 @@
         </div>
     </section>
 
-    <!-- ===== BLOG ===== -->
+    <!-- ===== DYNAMIC BLOG SECTION ===== -->
     <section class="blog-section" id="blog-section">
         <div class="container">
             <h2 class="section-title">From the <span>Blog</span></h2>
             <p class="section-sub">Practical optimization guidelines compiled by internal execution leads.</p>
-            <div class="blog-grid">
-                <div class="blog-card">
-                    <div class="blog-image">
-                        <span class="badge">Analytics</span>
-                        <i class="fas fa-file-excel"></i>
-                    </div>
-                    <div class="blog-body">
-                        <h3>10 Excel Shortcuts That Will Save You Hours</h3>
-                        <p>Eliminate recursive manual scrolling operations immediately. Master these ten primary structural key combinations designed to rapidly accelerate data cleaning sprints.</p>
-                        <a href="blog.html#post1" class="read-more">Read Full Post <i class="fas fa-arrow-right-long"></i></a>
-                    </div>
-                </div>
-                <div class="blog-card">
-                    <div class="blog-image">
-                        <span class="badge">Visualization</span>
-                        <i class="fas fa-chart-pie"></i>
-                    </div>
-                    <div class="blog-body">
-                        <h3>How to Build Your First Dashboard in Excel</h3>
-                        <p>An end-to-end operational blueprint mapping raw spreadsheet values directly into responsive visual executive reports using Pivot Architectures and Slice parameters.</p>
-                        <a href="blog.html#post2" class="read-more">Read Full Post <i class="fas fa-arrow-right-long"></i></a>
-                    </div>
-                </div>
-                <div class="blog-card">
-                    <div class="blog-image">
-                        <span class="badge">Agric Tech</span>
-                        <i class="fas fa-seedling"></i>
-                    </div>
-                    <div class="blog-body">
-                        <h3>How Smallholder Farmers Can Use Data</h3>
-                        <p>Exploring lightweight field logging systems that empower rural cultivation hubs to reliably track soil performance metrics, rainfall baselines, and market price indexes.</p>
-                        <a href="blog.html#post3" class="read-more">Read Full Post <i class="fas fa-arrow-right-long"></i></a>
-                    </div>
-                </div>
+
+            <!-- Dynamic Blog Feed Container -->
+            <div class="blog-grid" id="mainBlogFeed">
+                <p style="text-align: center; grid-column: 1 / -1;">Loading latest blog posts...</p>
             </div>
         </div>
     </section>
@@ -1305,7 +1275,7 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <!-- ===== JAVASCRIPT ===== -->
+    <!-- ===== JAVASCRIPT ENGINE ===== -->
     <script>
         // ---------- HAMBURGER MENU ----------
         const hamburger = document.getElementById('hamburger');
@@ -1334,13 +1304,70 @@
             localStorage.setItem('theme', newTheme);
         }
 
-        // Load saved theme configuration on startup
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme) {
             document.documentElement.setAttribute('data-theme', savedTheme);
             const icon = document.querySelector('.theme-toggle i');
             if (icon) icon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
+
+        // ---------- DYNAMIC SHEETY BLOG FETCH FOR HOMEPAGE ----------
+        const SHEETY_BLOG_API = 'https://api.sheety.co/d2a521b51f2439d009d4aaf3bbdea4f3/greachImpactBlog/sheet1';
+
+        async function loadMainBlogFeed() {
+            const feedContainer = document.getElementById('mainBlogFeed');
+            if (!feedContainer) return;
+
+            try {
+                const response = await fetch(SHEETY_BLOG_API);
+                const data = await response.json();
+                const articles = data.sheet1 || [];
+
+                if (articles.length === 0) {
+                    feedContainer.innerHTML = '<p style="text-align:center; grid-column: 1 / -1;">No blog posts available yet.</p>';
+                    return;
+                }
+
+                // Show up to the 3 newest posts on main homepage
+                const latestArticles = articles.slice(0, 3);
+
+                feedContainer.innerHTML = latestArticles.map(post => {
+                    // Sanitize icon string for Font Awesome 6
+                    let rawIcon = (post.icon || '').trim();
+                    let iconClass = 'fa-solid fa-file-excel';
+
+                    if (rawIcon) {
+                        if (rawIcon.startsWith('fa-')) {
+                            iconClass = rawIcon.startsWith('fas ') 
+                                ? rawIcon.replace('fas ', 'fa-solid ') 
+                                : (rawIcon.includes('fa-solid') || rawIcon.includes('fa-brands') ? rawIcon : `fa-solid ${rawIcon}`);
+                        } else {
+                            iconClass = `fa-solid fa-${rawIcon}`;
+                        }
+                    }
+
+                    return `
+                        <div class="blog-card">
+                            <div class="blog-image">
+                                <span class="badge">${post.tag || 'Analytics'}</span>
+                                <i class="${iconClass}"></i>
+                            </div>
+                            <div class="blog-body">
+                                <h3>${post.title}</h3>
+                                <p>${post.summary}</p>
+                                <a href="blog.html#${post.id}" class="read-more">Read Full Post <i class="fas fa-arrow-right-long"></i></a>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Error fetching blog posts for main feed:', error);
+                feedContainer.innerHTML = `<p style="text-align:center; grid-column: 1 / -1;">Unable to load live posts right now.</p>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadMainBlogFeed);
     </script>
 
 </body>
