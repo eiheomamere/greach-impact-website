@@ -6,7 +6,7 @@
     <title>Blog – Greach Impact</title>
     <meta name="description" content="Practical insights on data analytics, Excel training, Power BI, agriculture, and community development from Greach Impact." />
     
-    <!-- FontAwesome for layout icons -->
+    <!-- FontAwesome 6 (All Icons Included) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     
     <style>
@@ -167,15 +167,36 @@
             border-color: var(--teal);
         }
 
+        /* Enhanced Card Header & Icon Backdrop */
         .card-image-placeholder {
             height: 200px;
             background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3.5rem;
-            color: var(--teal);
             position: relative;
+            overflow: hidden;
+        }
+
+        .card-image-placeholder::before {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: rgba(100, 199, 212, 0.12);
+            border-radius: 50%;
+            filter: blur(10px);
+        }
+
+        .card-image-placeholder i {
+            font-size: 3.8rem;
+            color: var(--teal);
+            z-index: 2;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .blog-card:hover .card-image-placeholder i {
+            transform: scale(1.15) rotate(-3deg);
         }
 
         .card-image-placeholder .tag {
@@ -190,6 +211,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            z-index: 3;
         }
 
         .card-content {
@@ -370,7 +392,7 @@
                 <a href="index.html#focus">Services</a>
                 <a href="index.html#contact">Contact</a>
                 <a href="blog.html" class="active">Blog</a>
-                <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Site</a>
+                <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Back to Site</a>
             </nav>
         </div>
     </header>
@@ -393,7 +415,7 @@
     <!-- ===== DYNAMIC MODAL LAYER ===== -->
     <div class="modal-overlay" id="articleModal" onclick="closeModal(event)">
         <div class="modal-wrapper">
-            <button class="modal-close-btn" onclick="forceCloseModal()"><i class="fas fa-times"></i></button>
+            <button class="modal-close-btn" onclick="forceCloseModal()"><i class="fa-solid fa-xmark"></i></button>
             <div class="modal-header-banner">
                 <h2 id="modalTitle">Article Title</h2>
             </div>
@@ -408,10 +430,10 @@
         <div class="container">
             <p>&copy; 2026 <a href="index.html">Greach Impact</a> — Data. Agriculture. Community. Impact.</p>
             <div class="socials">
-                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
             </div>
         </div>
     </footer>
@@ -420,7 +442,7 @@
     <script>
         let articles = [];
 
-        // Linked directly to your Sheety project URL
+        // Your exact Sheety endpoint URL
         const SHEETY_API_URL = 'https://api.sheety.co/d2a521b51f2439d009d4aaf3bbdea4f3/greachImpactBlog/sheet1';
 
         async function renderFeed() {
@@ -437,23 +459,30 @@
                     return;
                 }
 
-                feedContainer.innerHTML = articles.map(post => `
-                    <article class="blog-card">
-                        <div class="card-image-placeholder">
-                            <span class="tag">${post.tag || 'General'}</span>
-                            <i class="${post.icon || 'fas fa-newspaper'}"></i>
-                        </div>
-                        <div class="card-content">
-                            <div class="card-meta">
-                                <span><i class="far fa-calendar"></i> ${post.date || ''}</span>
-                                <span><i class="far fa-user"></i> ${post.author || 'Greach Impact'}</span>
+                feedContainer.innerHTML = articles.map(post => {
+                    // Fallback icon handler if column is empty or unformatted
+                    const iconClass = post.icon && post.icon.trim() !== '' 
+                        ? post.icon 
+                        : 'fa-solid fa-file-excel';
+
+                    return `
+                        <article class="blog-card">
+                            <div class="card-image-placeholder">
+                                <span class="tag">${post.tag || 'Analytics'}</span>
+                                <i class="${iconClass}"></i>
                             </div>
-                            <h2>${post.title}</h2>
-                            <p>${post.summary}</p>
-                            <button class="read-btn" onclick="openPost('${post.id}')">Read Full Post <i class="fas fa-arrow-right"></i></button>
-                        </div>
-                    </article>
-                `).join('');
+                            <div class="card-content">
+                                <div class="card-meta">
+                                    <span><i class="fa-regular fa-calendar"></i> ${post.date || ''}</span>
+                                    <span><i class="fa-regular fa-user"></i> ${post.author || 'Greach Impact'}</span>
+                                </div>
+                                <h2>${post.title}</h2>
+                                <p>${post.summary}</p>
+                                <button class="read-btn" onclick="openPost('${post.id}')">Read Full Post <i class="fa-solid fa-arrow-right"></i></button>
+                            </div>
+                        </article>
+                    `;
+                }).join('');
 
             } catch (error) {
                 console.error('Error fetching blog posts:', error);
