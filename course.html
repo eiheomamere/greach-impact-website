@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Excel Course – Learn Excel in 4 Weeks | Greach Impact</title>
+    <meta name="description" content="Practical, hands-on Excel training for professionals, students, and business owners. Learn Excel in 4 weeks – live classes, certificate, and lifetime access." />
+    
+    <!-- ===== FAVICON ===== -->
+    <link rel="icon" href="https://i.ibb.co/GvPZJc1D/Greach-Impact-Logo.jpg" type="image/jpeg" />
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    
+    <style>
+        /* ===== BRAND COLORS ===== */
+        :root {
+            --navy: #0A0A5E;
+            --slate: #3A4574;
+            --teal: #64C7D4;
+            --aqua: #6ED2DC;
+            --white: #FFFFFF;
+            --bg: #F8FAFC;
+            --text: #0F172A;
+            --card-bg: #FFFFFF;
+            --border: #E2E8F0;
+            --shadow: rgba(10, 10, 94, 0.08);
+        }
+
+        [data-theme="dark"] {
+            --white: #1A1A2E;
+            --bg: #0F0F1A;
+            --text: #E2E8F0;
+            --card-bg: #1A1A2E;
+            --border: #2A2A4E;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ---------- HEADER ---------- */
+        header {
+            background: var(--navy);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(10, 10, 94, 0.3);
+        }
+
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            font-weight: 800;
+            gap: 10px;
+        }
+
+        .logo img { height: 40px; border-radius: 4px; }
+        .logo .teal { color: var(--teal); }
+
+        nav a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 5px 10px;
+        }
+
+        nav a:hover { color: var(--teal); }
+
+        .btn-back {
+            background: var(--teal);
+            color: var(--navy) !important;
+            padding: 8px 20px !important;
+            border-radius: 50px;
+            font-weight: 700;
+        }
+
+        .btn-back:hover {
+            background: var(--aqua) !important;
+            color: var(--navy) !important;
+        }
+
+        /* ---------- HERO ---------- */
+        .course-hero {
+            padding: 80px 0 60px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
+            color: white;
+        }
+
+        .course-hero .badge {
+            display: inline-block;
+            background: #EA580C;
+            padding: 6px 20px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .course-hero h1 {
+            font-size: clamp(2.2rem, 4vw, 3.2rem);
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .course-hero h1 span { color: var(--teal); }
+
+        .course-hero p {
+            color: #E2E8F0;
+            font-size: clamp(1rem, 1.3vw, 1.2rem);
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        .course-hero .price-tag {
+            display: inline-block;
+            background: rgba(100, 199, 212, 0.15);
+            border: 2px solid var(--teal);
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--teal);
+            margin-bottom: 25px;
+        }
+
+        .course-hero .price-tag small {
+            font-size: 1rem;
+            font-weight: 400;
+            opacity: 0.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ===== COUNTDOWN ===== */
+        .countdown-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px 20px;
+            border-radius: 16px;
+            margin: 25px auto 30px;
+            max-width: 650px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .countdown-section .label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.7;
+            margin-bottom: 12px;
+        }
+
+        .countdown-grid {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .countdown-item {
+            text-align: center;
+            min-width: 70px;
+        }
+
+        .countdown-item .number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--teal);
+            line-height: 1.2;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .countdown-item .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .countdown-ended {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #F59E0B;
+        }
+
+        .countdown-ended i {
+            margin-right: 10px;
+        }
+
+        /* ---------- BUTTONS ---------- */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--teal);
+            color: var(--navy);
+            padding: 16px 45px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.05rem;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--aqua);
+            transform: scale(1.02);
+        }
+
+        .btn-enroll {
+            background: #EA580C;
+            color: white;
+            box-shadow: 0 4px 20px rgba(234, 88, 12, 0.4);
+        }
+
+        .btn-enroll:hover {
+            background: #c2410c;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid var(--teal);
+        }
+
+        .btn-secondary:hover {
+            background: var(--teal);
+            color: var(--navy);
+        }
+
+        /* ---------- SECTION ---------- */
+        .section-title {
+            text-align: center;
+            font-size: clamp(1.8rem, 3vw, 2.2rem);
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+
+        .section-title span { color: var(--teal); }
+
+        .section-sub {
+            text-align: center;
+            color: var(--text);
+            opacity: 0.7;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            font-size: 1.05rem;
+        }
+
+        /* ---------- DETAILS GRID ---------- */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .detail-card {
+            background: var(--card-bg);
+            padding: 30px 25px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .detail-card i {
+            font-size: 2.2rem;
+            color: var(--teal);
+            margin-bottom: 12px;
+        }
+
+        .detail-card h4 {
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+
+        .detail-card p {
+            color: var(--text);
+            opacity: 0.7;
+            font-size: 0.95rem;
+        }
+
+        /* ---------- CURRICULUM ---------- */
+        .curriculum {
+            padding: 60px 0;
+            background: var(--bg);
+        }
+
+        .curriculum-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .week-card {
+            background: var(--card-bg);
+            padding: 25px 30px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .week-card h4 {
+            color: var(--teal);
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .week-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .week-card ul li {
+            padding: 6px 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            color: var(--text);
+            opacity: 0.85;
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .week-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        .week-card ul li i {
+            color: var(--teal);
+            font-size: 0.8rem;
+        }
+
+        /* ---------- PRICING ---------- */
+        .pricing-section {
+            padding: 60px 0;
+            background: var(--card-bg);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .pricing-card {
+            background: var(--bg);
+            padding: 35px 25px;
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .pricing-card.popular {
+            border-color: var(--teal);
+            position: relative;
+        }
+
+        .pricing-card.popular::before {
+            content: '⭐ Most Popular';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--teal);
+            color: var(--navy);
+            padding: 4px 20px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .pricing-card h3 { color: var(--text); margin-bottom: 5px; }
+        .pricing-card .price {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text);
+            margin: 10px 0;
+        }
+
+        .pricing-card .price small {
+            font-size: 1rem;
+            font-weight: 400;
+            opacity: 0.6;
+        }
+
+        .pricing-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .pricing-card ul li {
+            padding: 8px 0;
+            color: var(--text);
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .pricing-card ul li i { color: var(--teal); }
+
+        .pricing-card .btn-primary {
+            width: 100%;
+            justify-content: center;
+            padding: 14px;
+        }
+
+        /* ---------- FAQ ---------- */
+        .faq-section {
+            padding: 60px 0;
+            background: var(--bg);
+        }
+
+        .faq-item {
+            background: var(--card-bg);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 18px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--text);
+            transition: background 0.3s;
+        }
+
+        .faq-question:hover { background: var(--bg); }
+        .faq-question i { color: var(--teal); transition: transform 0.3s; }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            padding: 0 25px;
+            color: var(--text);
+            opacity: 0.8;
+        }
+
+        .faq-answer.open {
+            max-height: 300px;
+            padding: 0 25px 20px 25px;
+        }
+
+        .faq-question.open i { transform: rotate(180deg); }
+
+        /* ---------- CTA BANNER ---------- */
+        .cta-banner {
+            padding: 60px 0;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .cta-banner h2 {
+            font-size: clamp(1.8rem, 3vw, 2.4rem);
+            margin-bottom: 10px;
+        }
+
+        .cta-banner p {
+            color: #E2E8F0;
+            max-width: 600px;
+            margin: 0 auto 25px;
+            font-size: 1.05rem;
+        }
+
+        /* ---------- FOOTER ---------- */
+        footer {
+            background: var(--navy);
+            color: #94A3B8;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        footer a { color: var(--teal); text-decoration: none; font-weight: 600; }
+        footer .socials { margin-top: 15px; }
+        footer .socials a { color: #94A3B8; margin: 0 10px; font-size: 1.25rem; }
+        footer .socials a:hover { color: var(--teal); }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 768px) {
+            .curriculum-grid { grid-template-columns: 1fr; }
+            .course-hero { padding: 60px 0 40px; }
+            .course-hero .price-tag { font-size: 1.2rem; padding: 8px 20px; }
+            .hero-buttons .btn-primary { width: 100%; justify-content: center; }
+            .countdown-grid { gap: 10px; }
+            .countdown-item { min-width: 55px; }
+            .countdown-item .number { font-size: 1.8rem; padding: 4px 8px; }
+            .countdown-item .label { font-size: 0.6rem; }
+        }
+
+        @media (max-width: 480px) {
+            .countdown-grid { gap: 8px; }
+            .countdown-item { min-width: 45px; }
+            .countdown-item .number { font-size: 1.4rem; padding: 4px 6px; }
+            .countdown-item .label { font-size: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== STICKY COURSE BANNER ===== -->
+    <div style="
+        background: linear-gradient(135deg, #EA580C 0%, #c2410c 100%);
+        color: white;
+        text-align: center;
+        padding: 12px 20px;
+        font-weight: 700;
+        font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+        position: sticky;
+        top: 0;
+        z-index: 1001;
+        box-shadow: 0 2px 10px rgba(234, 88, 12, 0.3);
+        border-bottom: 3px solid #FFD700;
+    ">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <span>
+                <i class="fas fa-fire" style="margin-right: 8px;"></i>
+                <strong>🔥 Batch 2 – Excel Course</strong>
+                <span style="opacity: 0.9; margin: 0 8px;">|</span>
+                <span style="opacity: 0.95;">Starts July 24 – Limited Spots</span>
+            </span>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <span style="background: rgba(255,255,255,0.2); padding: 4px 14px; border-radius: 50px; font-size: 0.8rem; letter-spacing: 1px;">
+                    ⏰ <span id="bannerCountdown">loading...</span>
+                </span>
+                <a href="course.html" style="
+                    background: white;
+                    color: #c2410c;
+                    padding: 6px 20px;
+                    border-radius: 50px;
+                    text-decoration: none;
+                    font-weight: 800;
+                    font-size: 0.85rem;
+                    transition: transform 0.2s, box-shadow 0.2s;
+                    display: inline-block;
+                    white-space: nowrap;
+                " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.2)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';">
+                    <i class="fas fa-arrow-right"></i> Register Now
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== HEADER ===== -->
+    <header>
+        <div class="container header-flex">
+            <a href="index.html" class="logo">
+                <img src="https://i.ibb.co/GvPZJc1D/Greach-Impact-Logo.jpg" alt="Greach Impact Logo" />
+                <span>Greach<span class="teal">Impact</span></span>
+            </a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="index.html#about">About</a>
+                <a href="index.html#focus">What We Do</a>
+                <a href="course.html" style="color: var(--teal); font-weight: 700;">Excel Course</a>
+                <a href="blog.html">Blog</a>
+                <a href="index.html#contact">Contact</a>
+                <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Back</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ===== HERO ===== -->
+    <section class="course-hero">
+        <div class="container">
+            <span class="badge"><i class="fas fa-fire"></i> Batch 2 – Enrolling Now</span>
+            <h1>Learn Excel in <span>4 Weeks</span></h1>
+            <p>Practical, hands-on training that turns you from a beginner into a confident Excel user. Live classes, real projects, and a certificate – all from the comfort of your home.</p>
+
+            <!-- ===== COUNTDOWN TIMER ===== -->
+            <div class="countdown-section">
+                <div class="label">🚀 Starts In</div>
+                <div class="countdown-grid" id="countdownTimer">
+                    <div class="countdown-item">
+                        <div class="number" id="days">00</div>
+                        <span class="label">Days</span>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="number" id="hours">00</div>
+                        <span class="label">Hours</span>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="number" id="minutes">00</div>
+                        <span class="label">Minutes</span>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="number" id="seconds">00</div>
+                        <span class="label">Seconds</span>
+                    </div>
+                </div>
+                <div id="countdownEnded" class="countdown-ended" style="display: none;">
+                    <i class="fas fa-check-circle"></i> Course Started!
+                </div>
+            </div>
+
+            <div class="price-tag">
+                ₦25,000 <small>per participant</small>
+            </div>
+            <div class="hero-buttons">
+                <a href="https://forms.gle/vuKkJ7AGyKhNgEZA8" target="_blank" class="btn-primary btn-enroll">
+                    <i class="fas fa-user-plus"></i> Register – Nigeria
+                </a>
+                <a href="https://forms.gle/devrFhJXt5ShpRGs5" target="_blank" class="btn-primary btn-enroll" style="background: var(--teal); color: var(--navy); box-shadow: none;">
+                    <i class="fas fa-user-plus"></i> Register – UK
+                </a>
+            </div>
+            <p style="font-size: 0.85rem; opacity: 0.7; margin-top: 15px;">Limited spots available. Secure yours today.</p>
+        </div>
+    </section>
+
+    <!-- ===== COURSE DETAILS ===== -->
+    <section style="padding: 60px 0; background: var(--bg);">
+        <div class="container">
+            <h2 class="section-title">Course <span>Details</span></h2>
+            <p class="section-sub">Everything you need to know about the program.</p>
+            <div class="details-grid">
+                <div class="detail-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h4>Start Date</h4>
+                    <p>July 24 – August 15, 2026</p>
+                </div>
+                <div class="detail-card">
+                    <i class="fas fa-clock"></i>
+                    <h4>Schedule</h4>
+                    <p>Fridays & Saturdays, 6pm – 8pm WAT</p>
+                </div>
+                <div class="detail-card">
+                    <i class="fas fa-video"></i>
+                    <h4>Platform</h4>
+                    <p>Microsoft Teams (Live & Recorded)</p>
+                </div>
+                <div class="detail-card">
+                    <i class="fas fa-certificate"></i>
+                    <h4>Certificate</h4>
+                    <p>Recognized certificate upon completion</p>
+                </div>
+                <div class="detail-card">
+                    <i class="fas fa-download"></i>
+                    <h4>Materials</h4>
+                    <p>Lifetime access to all course materials</p>
+                </div>
+                <div class="detail-card">
+                    <i class="fas fa-users"></i>
+                    <h4>Class Size</h4>
+                    <p>Limited to 15 participants for personalized attention</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CURRICULUM ===== -->
+    <section class="curriculum" id="curriculum">
+        <div class="container">
+            <h2 class="section-title">What You'll <span>Learn</span></h2>
+            <p class="section-sub">A practical, step-by-step curriculum designed to build your confidence.</p>
+            <div class="curriculum-grid">
+                <div class="week-card">
+                    <h4>📘 Week 1: Excel Foundations</h4>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Excel Interface & Navigation</li>
+                        <li><i class="fas fa-check-circle"></i> Basic Data Entry & Formatting</li>
+                        <li><i class="fas fa-check-circle"></i> Cell References (Relative & Absolute)</li>
+                        <li><i class="fas fa-check-circle"></i> Basic Functions (SUM, AVERAGE, COUNT)</li>
+                        <li><i class="fas fa-check-circle"></i> Sorting & Filtering Data</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Assignment:</strong> Personal Budget Tracker</li>
+                    </ul>
+                </div>
+                <div class="week-card">
+                    <h4>🔍 Week 2: Lookups & Logic</h4>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> <strong>INDEX & MATCH</strong> – Ultimate Lookup</li>
+                        <li><i class="fas fa-check-circle"></i> IF Functions (Nested IF, IFS)</li>
+                        <li><i class="fas fa-check-circle"></i> Data Cleaning & Text Functions</li>
+                        <li><i class="fas fa-check-circle"></i> Conditional Formatting</li>
+                        <li><i class="fas fa-check-circle"></i> Data Validation & Dropdown Lists</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Assignment:</strong> Sales Data Analysis</li>
+                    </ul>
+                </div>
+                <div class="week-card">
+                    <h4>⚙️ Week 3: Data Transformation</h4>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> <strong>Power Query</strong> – Data Transformation</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Power Pivot</strong> – Data Modeling</li>
+                        <li><i class="fas fa-check-circle"></i> What-If Analysis (Goal Seek, Scenario)</li>
+                        <li><i class="fas fa-check-circle"></i> Advanced Pivot Tables</li>
+                        <li><i class="fas fa-check-circle"></i> Working with Multiple Worksheets</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Assignment:</strong> Multi-Sheet Business Report</li>
+                    </ul>
+                </div>
+                <div class="week-card">
+                    <h4>📊 Week 4: Dashboard Capstone</h4>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Charts & Data Visualization</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>INDEX & MATCH Advanced</strong></li>
+                        <li><i class="fas fa-check-circle"></i> Dashboard Fundamentals</li>
+                        <li style="background: var(--bg); padding: 8px 12px; border-radius: 8px; font-weight: 700; color: var(--teal);">
+                            <i class="fas fa-tachometer-alt"></i> Capstone Project: Full Interactive Dashboard
+                        </li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Certificate & Next Steps</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== PRICING ===== -->
+    <section class="pricing-section" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Choose Your <span>Plan</span></h2>
+            <p class="section-sub">Flexible options to fit your needs.</p>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Early Bird</h3>
+                    <div class="price">₦20,000</div>
+                    <p style="color: var(--text); opacity: 0.7; font-size: 0.9rem;">Limited offer</p>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Full 4-week course</li>
+                        <li><i class="fas fa-check"></i> Certificate included</li>
+                        <li><i class="fas fa-check"></i> Course materials</li>
+                        <li><i class="fas fa-check"></i> Lifetime access</li>
+                    </ul>
+                    <a href="https://forms.gle/vuKkJ7AGyKhNgEZA8" target="_blank" class="btn-primary">Enroll Now</a>
+                </div>
+
+                <div class="pricing-card popular">
+                    <h3>Standard</h3>
+                    <div class="price">₦25,000</div>
+                    <p style="color: var(--text); opacity: 0.7; font-size: 0.9rem;">Most popular</p>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Full 4-week course</li>
+                        <li><i class="fas fa-check"></i> Certificate included</li>
+                        <li><i class="fas fa-check"></i> Course materials</li>
+                        <li><i class="fas fa-check"></i> Lifetime access</li>
+                        <li><i class="fas fa-check"></i> 1-on-1 support session</li>
+                    </ul>
+                    <a href="https://forms.gle/vuKkJ7AGyKhNgEZA8" target="_blank" class="btn-primary btn-enroll">Enroll Now</a>
+                </div>
+
+                <div class="pricing-card">
+                    <h3>Group Discount</h3>
+                    <div class="price">₦18,000</div>
+                    <p style="color: var(--text); opacity: 0.7; font-size: 0.9rem;">Per person (3+ people)</p>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Full 4-week course</li>
+                        <li><i class="fas fa-check"></i> Certificate included</li>
+                        <li><i class="fas fa-check"></i> Course materials</li>
+                        <li><i class="fas fa-check"></i> Lifetime access</li>
+                        <li><i class="fas fa-check"></i> Group support session</li>
+                    </ul>
+                    <a href="index.html#contact" class="btn-primary">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section class="faq-section" id="faq">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked <span>Questions</span></h2>
+            <p class="section-sub">Everything you need to know before joining.</p>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>📅 What if I miss a class?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        All sessions are recorded. You'll get access to the recordings so you can catch up at your own pace.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>📜 Do I get a certificate?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Yes! Upon successful completion, you'll receive a certificate you can add to your CV or LinkedIn profile.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>👶 Is this course for beginners?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Absolutely! The course is designed for beginners with no prior Excel experience.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>💻 What platform is used?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Classes are held on Microsoft Teams. You'll receive a link and all materials before the course starts.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>💰 How do I pay?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Payment details will be sent to you after you complete the registration form. We accept bank transfers and mobile payments.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>🎯 Who is this course for?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Students, fresh graduates, entrepreneurs, remote workers, admin assistants, and small business owners who want to master Excel.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CTA BANNER ===== -->
+    <section class="cta-banner">
+        <div class="container">
+            <h2>Ready to Master Excel?</h2>
+            <p>Join Batch 2 and transform your skills in just 4 weeks. Limited spots available.</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+                <a href="https://forms.gle/vuKkJ7AGyKhNgEZA8" target="_blank" class="btn-primary btn-enroll" style="font-size: 1.1rem; padding: 16px 50px;">
+                    <i class="fas fa-user-plus"></i> Register – Nigeria
+                </a>
+                <a href="https://forms.gle/devrFhJXt5ShpRGs5" target="_blank" class="btn-primary" style="background: var(--teal); color: var(--navy); font-size: 1.1rem; padding: 16px 50px; box-shadow: none;">
+                    <i class="fas fa-user-plus"></i> Register – UK
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 <a href="index.html">Greach Impact</a> — Data. Agriculture. Community.</p>
+            <div class="socials">
+                <a href="https://www.linkedin.com/in/emmanuel-iheomamere/" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        // ---------- BANNER COUNTDOWN ----------
+        function updateBannerCountdown() {
+            const targetDate = new Date('July 24, 2026 00:00:00').getTime();
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                document.getElementById('bannerCountdown').textContent = 'Started!';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+            document.getElementById('bannerCountdown').textContent = `${days}d ${hours}h ${minutes}m`;
+        }
+
+        updateBannerCountdown();
+        setInterval(updateBannerCountdown, 60000);
+
+        // ---------- FAQ ----------
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const isOpen = answer.classList.contains('open');
+            document.querySelectorAll('.faq-answer').forEach(item => {
+                if (item !== answer) {
+                    item.classList.remove('open');
+                    item.previousElementSibling.classList.remove('open');
+                }
+            });
+            if (isOpen) {
+                answer.classList.remove('open');
+                element.classList.remove('open');
+            } else {
+                answer.classList.add('open');
+                element.classList.add('open');
+            }
+        }
+
+        // ---------- COURSE COUNTDOWN ----------
+        function startCountdown() {
+            const targetDate = new Date('July 24, 2026 00:00:00').getTime();
+
+            const daysElement = document.getElementById('days');
+            const hoursElement = document.getElementById('hours');
+            const minutesElement = document.getElementById('minutes');
+            const secondsElement = document.getElementById('seconds');
+            const countdownGrid = document.getElementById('countdownTimer');
+            const endedMessage = document.getElementById('countdownEnded');
+
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const distance = targetDate - now;
+
+                if (distance < 0) {
+                    countdownGrid.style.display = 'none';
+                    endedMessage.style.display = 'block';
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                daysElement.textContent = String(days).padStart(2, '0');
+                hoursElement.textContent = String(hours).padStart(2, '0');
+                minutesElement.textContent = String(minutes).padStart(2, '0');
+                secondsElement.textContent = String(seconds).padStart(2, '0');
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+
+        document.addEventListener('DOMContentLoaded', startCountdown);
+    </script>
+</body>
+</html>

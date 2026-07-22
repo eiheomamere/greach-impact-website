@@ -10,11 +10,14 @@
     <meta name="keywords" content="data analytics, Excel training, Power BI, agriculture, community development, Nigeria, Enugu" />
     <meta name="author" content="Emmanuel Iheomamere" />
     
-    <!-- Stable FontAwesome CDN -->
+    <!-- ===== FAVICON ===== -->
+    <link rel="icon" href="https://i.ibb.co/GvPZJc1D/Greach-Impact-Logo.jpg" type="image/jpeg" />
+    
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     
     <style>
-        /* ===== GREACH IMPACT BRAND COLORS ===== */
+        /* ===== BRAND COLORS ===== */
         :root {
             --navy: #0A0A5E;
             --slate: #3A4574;
@@ -92,15 +95,8 @@
             gap: 12px;
         }
 
-        .logo .teal {
-            color: var(--teal);
-        }
-
-        .logo img {
-            height: 45px;
-            width: auto;
-            border-radius: 6px;
-        }
+        .logo .teal { color: var(--teal); }
+        .logo img { height: 45px; width: auto; border-radius: 6px; }
 
         .hamburger {
             display: none;
@@ -145,9 +141,8 @@
             padding: 5px 12px;
         }
 
-        nav a:hover {
-            color: var(--teal);
-        }
+        nav a:hover { color: var(--teal); }
+        .course-link { color: var(--teal) !important; font-weight: 700 !important; }
 
         .theme-toggle {
             background: transparent;
@@ -236,9 +231,7 @@
             margin-right: auto;
         }
 
-        .hero h1 .highlight {
-            color: var(--teal);
-        }
+        .hero h1 .highlight { color: var(--teal); }
 
         .hero .mission-statement {
             font-size: clamp(1.1rem, 1.8vw, 1.35rem);
@@ -274,9 +267,7 @@
             color: var(--text);
         }
 
-        .section-title span {
-            color: var(--teal);
-        }
+        .section-title span { color: var(--teal); }
 
         .section-sub {
             text-align: center;
@@ -306,10 +297,7 @@
             color: var(--text);
         }
 
-        .about-text h2 span {
-            color: var(--teal);
-        }
-
+        .about-text h2 span { color: var(--teal); }
         .about-text p {
             color: var(--text);
             opacity: 0.85;
@@ -424,13 +412,8 @@
             margin-bottom: 15px;
         }
 
-        .impact h2 span {
-            color: var(--teal);
-        }
-
-        .impact .section-sub {
-            color: #CBD5E1;
-        }
+        .impact h2 span { color: var(--teal); }
+        .impact .section-sub { color: #CBD5E1; }
 
         .impact-grid {
             display: grid;
@@ -541,7 +524,6 @@
             width: 110px;
             height: 110px;
             border-radius: 50%;
-            background: var(--gradient-accent);
             margin: 0 auto 22px;
             display: flex;
             align-items: center;
@@ -549,6 +531,15 @@
             color: white;
             font-size: 2.5rem;
             box-shadow: 0 8px 20px rgba(10, 10, 94, 0.15);
+            overflow: hidden;
+            background: var(--gradient-accent);
+        }
+
+        .team-card .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
 
         .team-card h4 {
@@ -687,12 +678,11 @@
         .blog-card .blog-body .read-more:hover {
             color: var(--navy);
         }
-
         [data-theme="dark"] .blog-card .blog-body .read-more:hover {
             color: var(--white);
         }
 
-        /* ---------- CONTACT & COURSE ALERT ---------- */
+        /* ---------- CONTACT ---------- */
         .contact {
             padding: 90px 0;
             background: var(--card-bg);
@@ -851,16 +841,8 @@
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        footer a {
-            color: var(--teal);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        footer .socials {
-            margin-top: 20px;
-        }
-
+        footer a { color: var(--teal); text-decoration: none; font-weight: 600; }
+        footer .socials { margin-top: 20px; }
         footer .socials a {
             color: #94A3B8;
             margin: 0 14px;
@@ -898,7 +880,7 @@
             transform: scale(1.1);
         }
 
-        /* ---------- RESPONSIVE BREAKPOINTS ---------- */
+        /* ---------- RESPONSIVE ---------- */
         @media (max-width: 992px) {
             .about-grid, .contact-grid {
                 grid-template-columns: 1fr;
@@ -992,6 +974,49 @@
 </head>
 <body>
 
+    <!-- ===== STICKY COURSE BANNER ===== -->
+    <div style="
+        background: linear-gradient(135deg, #EA580C 0%, #c2410c 100%);
+        color: white;
+        text-align: center;
+        padding: 12px 20px;
+        font-weight: 700;
+        font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+        position: sticky;
+        top: 0;
+        z-index: 1001;
+        box-shadow: 0 2px 10px rgba(234, 88, 12, 0.3);
+        border-bottom: 3px solid #FFD700;
+    ">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <span>
+                <i class="fas fa-fire" style="margin-right: 8px;"></i>
+                <strong>🔥 Batch 2 – Excel Course</strong>
+                <span style="opacity: 0.9; margin: 0 8px;">|</span>
+                <span style="opacity: 0.95;">Starts July 24 – Limited Spots</span>
+            </span>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <span style="background: rgba(255,255,255,0.2); padding: 4px 14px; border-radius: 50px; font-size: 0.8rem; letter-spacing: 1px;">
+                    ⏰ <span id="bannerCountdown">loading...</span>
+                </span>
+                <a href="course.html" style="
+                    background: white;
+                    color: #c2410c;
+                    padding: 6px 20px;
+                    border-radius: 50px;
+                    text-decoration: none;
+                    font-weight: 800;
+                    font-size: 0.85rem;
+                    transition: transform 0.2s, box-shadow 0.2s;
+                    display: inline-block;
+                    white-space: nowrap;
+                " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.2)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';">
+                    <i class="fas fa-arrow-right"></i> Register Now
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- ===== HEADER ===== -->
     <header>
         <div class="container header-flex">
@@ -1011,6 +1036,7 @@
                 <a href="#impact">Impact</a>
                 <a href="#stories">Stories</a>
                 <a href="#team">Team</a>
+                <a href="course.html" class="course-link">Excel Course</a>
                 <a href="#blog-section">Blog</a>
                 <a href="#contact">Contact</a>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
@@ -1023,8 +1049,8 @@
     <!-- ===== HERO ===== -->
     <section class="hero">
         <div class="container">
-            <h1>Empowering Communities and Businesses with <span class="highlight">Data, Technology, and Growth Solutions</span></h1>
-            <p class="mission-statement">We bridge the gap between complex technology and sustainable development—equipping individuals, smallholder farmers, and organizations across Nigeria to scale efficiently.</p>
+            <h1>Helping Communities and Businesses Grow with <span class="highlight">Data and Technology</span></h1>
+            <p class="mission-statement">We turn complex data and technology into practical tools — helping individuals, smallholder farmers, and organizations across Nigeria grow sustainably.</p>
             <p class="location-tag"><i class="fas fa-map-marker-alt"></i> Based in Enugu, Nigeria — Deploying Nationwide</p>
             <div class="hero-buttons">
                 <a href="#contact" class="btn-primary"><i class="fas fa-handshake"></i> Partner With Us</a>
@@ -1039,14 +1065,14 @@
             <div class="about-grid">
                 <div class="about-text">
                     <h2>Who We <span>Are</span></h2>
-                    <p><strong>Greach Impact</strong> was established in 2025 by <strong>Emmanuel Iheomamere</strong> with a clear, structural conviction: access to contextual data literacy and digital tools can fundamentally transform communities and businesses.</p>
-                    <p>We work across three critical implementation channels: <strong>Data Analytics & Workforce Training</strong>, <strong>Agriculture & Agro-Processing Support</strong>, and grassroots <strong>Community Capacity Building</strong>.</p>
-                    <p>Headquartered in <strong>Enugu, Nigeria</strong>, our focus relies on practical training frameworks, field tracking pipelines, and active ground-truth accountability to deliver real, measurable metrics.</p>
+                    <p><strong>Greach Impact</strong> was founded in 2025 by <strong>Emmanuel Iheomamere</strong> on a simple belief: giving people practical data skills and digital tools can change communities and businesses for the better.</p>
+                    <p>We focus on three areas: <strong>Data Analytics & Workforce Training</strong>, <strong>Agriculture & Agro-Processing Support</strong>, and grassroots <strong>Community Development</strong>.</p>
+                    <p>Based in <strong>Enugu, Nigeria</strong>, we believe in hands-on training, real field data, and honest accountability — so the results we report are results you can actually measure.</p>
                 </div>
                 <div class="about-image">
                     <i class="fas fa-globe-africa"></i>
                     <h3>Data. Agriculture. Community.</h3>
-                    <p>Synthesizing technical capability data structures with deep regional baseline execution metrics.</p>
+                    <p>Combining technical skill with real, on-the-ground understanding.</p>
                 </div>
             </div>
         </div>
@@ -1056,27 +1082,27 @@
     <section class="focus" id="focus">
         <div class="container">
             <h2 class="section-title">What We <span>Do</span></h2>
-            <p class="section-sub">Four integrated workflow vectors designed to deliver measurable individual and corporate advancement.</p>
+            <p class="section-sub">Four areas where we help people and organizations grow.</p>
             <div class="focus-grid">
                 <div class="focus-card">
                     <i class="fas fa-chart-line"></i>
                     <h3>Data Analytics & Training</h3>
-                    <p>Immersive production training environments utilizing Microsoft Excel, Power BI, and SQL architectures to optimize metrics tracking pipelines.</p>
+                    <p>Hands-on training in Microsoft Excel, Power BI, and SQL — so you can track and understand your own data with confidence.</p>
                 </div>
                 <div class="focus-card">
                     <i class="fas fa-seedling"></i>
                     <h3>Agriculture Support</h3>
-                    <p>Connecting localized agricultural production modules with modern processing pipelines, supply logistics systems, and crop-yield data architectures.</p>
+                    <p>Connecting local farmers with modern processing methods, supply chains, and crop-yield data to help them grow more and earn more.</p>
                 </div>
                 <div class="focus-card">
                     <i class="fas fa-users"></i>
                     <h3>Community Development</h3>
-                    <p>Deploying specialized capacity expansion modules, rural talent incubators, and operational capital readiness blueprints.</p>
+                    <p>Running skills programs, mentoring rural talent, and helping communities get ready for the funding and opportunities they deserve.</p>
                 </div>
                 <div class="focus-card">
                     <i class="fas fa-briefcase"></i>
                     <h3>Consulting & Advisory</h3>
-                    <p>Guiding structural data modeling processes, impact assessment frameworks, and operations optimization blueprints for modern NGOs and enterprises.</p>
+                    <p>Helping NGOs and businesses build better data systems, measure their real-world impact, and run more efficiently.</p>
                 </div>
             </div>
         </div>
@@ -1085,51 +1111,48 @@
     <!-- ===== IMPACT ===== -->
     <section class="impact" id="impact">
         <div class="container">
-            <h2>Our <span>Impact So Far</span></h2>
-            <p class="section-sub">Quantified framework touchpoints recorded across regional deployment zones.</p>
-            <div class="impact-grid">
-                <div class="impact-item">
-                    <div class="number">200+</div>
-                    <div class="label">Professionals Trained</div>
+            <h2>Ready to <span>Partner</span></h2>
+            <p class="section-sub">We're looking for organizations and individuals who share our vision.</p>
+            <div style="text-align: center; max-width: 700px; margin: 30px auto; background: rgba(255,255,255,0.05); padding: 40px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);">
+                <p style="font-size: 1.2rem; color: #E2E8F0; margin-bottom: 20px;">
+                    We're actively seeking partners in:
+                </p>
+                <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+                    <span style="background: rgba(100,199,212,0.15); color: var(--teal); padding: 8px 20px; border-radius: 50px; font-weight: 600;">📊 Data Analytics</span>
+                    <span style="background: rgba(100,199,212,0.15); color: var(--teal); padding: 8px 20px; border-radius: 50px; font-weight: 600;">🌾 Agriculture</span>
+                    <span style="background: rgba(100,199,212,0.15); color: var(--teal); padding: 8px 20px; border-radius: 50px; font-weight: 600;">👥 Community Development</span>
+                    <span style="background: rgba(100,199,212,0.15); color: var(--teal); padding: 8px 20px; border-radius: 50px; font-weight: 600;">🏢 Corporate Training</span>
+                    <span style="background: rgba(100,199,212,0.15); color: var(--teal); padding: 8px 20px; border-radius: 50px; font-weight: 600;">🌍 NGO Partnerships</span>
                 </div>
-                <div class="impact-item">
-                    <div class="number">50+</div>
-                    <div class="label">Agric Specialists Supported</div>
-                </div>
-                <div class="impact-item">
-                    <div class="number">15+</div>
-                    <div class="label">Target Communities Reached</div>
-                </div>
-                <div class="impact-item">
-                    <div class="number">5+</div>
-                    <div class="label">Active Corporate Partners</div>
+                <div style="margin-top: 25px;">
+                    <a href="#contact" class="btn-primary">Let's Partner →</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== SUCCESS STORIES ===== -->
+    <!-- ===== STORIES ===== -->
     <section class="stories" id="stories">
         <div class="container">
             <h2 class="section-title">Real <span>Stories</span></h2>
-            <p class="section-sub">Direct feedback loop metrics detailing practical workflow adaptations.</p>
+            <p class="section-sub">What people we've worked with have to say.</p>
             <div class="story-grid">
                 <div class="story-card">
-                    <p class="quote">"The customized Power BI workflows completely streamlined our enterprise tracking models. Emmanuel reduces abstract architectural logic into highly intuitive operations dashboards."</p>
+                    <p class="quote">"The custom Power BI dashboards completely changed how we track our business. Emmanuel has a real gift for turning complicated data problems into simple, clear tools."</p>
                     <div>
                         <div class="person">Chidi Okonkwo</div>
                         <div class="role">CEO, TechVentures NG</div>
                     </div>
                 </div>
                 <div class="story-card">
-                    <p class="quote">"Transitioning from basic manual operations to advanced dynamic spreadsheet tracking formulas within 4 weeks drastically augmented my analytical market performance scale."</p>
+                    <p class="quote">"In just 4 weeks, I went from basic manual spreadsheets to advanced formulas that completely changed how I work with data every day."</p>
                     <div>
                         <div class="person">Ngozi Eze</div>
                         <div class="role">Data Associate, Batch 1 Graduate</div>
                     </div>
                 </div>
                 <div class="story-card">
-                    <p class="quote">"Greach Impact successfully audited our unstructured operational program records into functional relational database metrics, instantly optimizing our quarterly reporting outputs."</p>
+                    <p class="quote">"Greach Impact took our messy, disorganized records and turned them into a clean, structured database. Our quarterly reports have never been easier to put together."</p>
                     <div>
                         <div class="person">Tunde Balogun</div>
                         <div class="role">COO, HealthTrack NG</div>
@@ -1143,20 +1166,26 @@
     <section class="team" id="team">
         <div class="container">
             <h2 class="section-title">Meet Our <span>Team</span></h2>
-            <p class="section-sub">The technical core managing day-to-day coordination pipelines.</p>
+            <p class="section-sub">The people behind the work.</p>
             <div class="team-grid">
                 <div class="team-card">
-                    <div class="avatar"><i class="fas fa-laptop-code"></i></div>
+                    <div class="avatar">
+                        <img src="emmanuel.jpg" alt="Emmanuel Iheomamere" />
+                    </div>
                     <h4>Emmanuel Iheomamere</h4>
                     <p>Founder & Lead Data Analyst</p>
                 </div>
                 <div class="team-card">
-                    <div class="avatar"><i class="fas fa-shield-halved"></i></div>
+                    <div class="avatar" style="background: var(--gradient-accent);">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
                     <h4>Esther Nnamani</h4>
                     <p>HR & Operations Administration</p>
                 </div>
                 <div class="team-card">
-                    <div class="avatar"><i class="fas fa-bezier-curve"></i></div>
+                    <div class="avatar" style="background: var(--gradient-accent);">
+                        <i class="fas fa-bezier-curve"></i>
+                    </div>
                     <h4>Amaka</h4>
                     <p>Brand Strategy & Communications</p>
                 </div>
@@ -1168,7 +1197,7 @@
     <section class="partners" id="partners">
         <div class="container">
             <h2 class="section-title">Our <span>Partners</span></h2>
-            <p class="section-sub">Collaborative enterprise organizations across our delivery ecosystem.</p>
+            <p class="section-sub">Organizations we've worked with.</p>
             <div class="partner-grid">
                 <div class="partner-item">TechVentures NG</div>
                 <div class="partner-item">HealthTrack NG</div>
@@ -1178,13 +1207,11 @@
         </div>
     </section>
 
-    <!-- ===== DYNAMIC BLOG SECTION ===== -->
+    <!-- ===== BLOG ===== -->
     <section class="blog-section" id="blog-section">
         <div class="container">
             <h2 class="section-title">From the <span>Blog</span></h2>
-            <p class="section-sub">Practical optimization guidelines compiled by internal execution leads.</p>
-
-            <!-- Dynamic Blog Feed Container -->
+            <p class="section-sub">Practical guides on data, agriculture, and community development.</p>
             <div class="blog-grid" id="mainBlogFeed">
                 <p style="text-align: center; grid-column: 1 / -1;">Loading latest blog posts...</p>
             </div>
@@ -1195,13 +1222,13 @@
     <section class="newsletter" id="newsletter">
         <div class="container">
             <h2>Stay Connected 📬</h2>
-            <p>Receive bi-weekly operational briefs detailing upcoming training dates and structural data insights.</p>
+            <p>Get updates on upcoming training dates and practical data tips every couple of weeks.</p>
             <form class="newsletter-form" action="https://formspree.io/f/xgogoynj" method="POST">
                 <input type="email" name="email" placeholder="Enter your business email" required />
                 <button type="submit">Subscribe</button>
             </form>
             <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 12px;">
-                Zero distribution list spam. Seamless one-click opt-out array provided at footer points.
+                No spam, ever. Unsubscribe anytime.
             </p>
         </div>
     </section>
@@ -1210,7 +1237,7 @@
     <section class="contact" id="contact">
         <div class="container">
             <h2 class="section-title">Let's <span>Connect</span></h2>
-            <p class="section-sub">Initialize a consulting query or schedule an organizational cohort training assessment loop below.</p>
+            <p class="section-sub">Reach out to ask about consulting or book a training for your team.</p>
             <div class="contact-grid">
                 <div class="contact-info">
                     <p><i class="fas fa-map-marker-alt"></i> Enugu, Nigeria</p>
@@ -1226,26 +1253,26 @@
                             <i class="fas fa-circle-exclamation"></i>
                             <strong>📢 Cohort Registration Open</strong>
                         </div>
-                        <p><strong>Excel Course – Batch 2</strong> live syllabus delivery initializes <strong>July 24th</strong> streaming securely via Microsoft Teams frameworks. Secure priority seat allocation via the request routing matrix dropdown.</p>
+                        <p><strong>Excel Course – Batch 2</strong> starts <strong>July 24th</strong>, held live on Microsoft Teams. Reserve your spot using the dropdown in the form below.</p>
                     </div>
                 </div>
                 <div class="contact-form">
                     <form action="https://formspree.io/f/xgogoynj" method="POST">
                         <input type="text" name="name" placeholder="Your Full Name" required />
                         <input type="email" name="email" placeholder="Your Email Address" required />
-                        <input type="text" name="company" placeholder="Organization / Affiliate Body (optional)" />
+                        <input type="text" name="company" placeholder="Organization (optional)" />
                         <select name="interest" required>
-                            <option value="" disabled selected>Select Engagement Track...</option>
+                            <option value="" disabled selected>Select an option...</option>
                             <option value="excel-course">Excel Course – Batch 2 Enrollment</option>
-                            <option value="data-analytics">Corporate Analytics Infrastructure Deployments</option>
-                            <option value="consulting">Program Monitoring & Advisory Services</option>
-                            <option value="agriculture">Agricultural Production & Logistics Partnerships</option>
-                            <option value="community">Grassroots Community Capacity Program Sponsorship</option>
-                            <option value="partnership">General Strategic Enterprise Alliance</option>
-                            <option value="other">Alternative Technical Consultation</option>
+                            <option value="data-analytics">Corporate Data & Analytics Services</option>
+                            <option value="consulting">Consulting & Advisory Services</option>
+                            <option value="agriculture">Agriculture Partnerships</option>
+                            <option value="community">Community Program Sponsorship</option>
+                            <option value="partnership">General Partnership Inquiry</option>
+                            <option value="other">Other</option>
                         </select>
-                        <textarea name="message" placeholder="Provide a detailed brief of your target training parameters or structural operational timeline requirements..." required></textarea>
-                        <button type="submit" class="btn-primary" style="width: 100%;"><i class="fas fa-paper-plane"></i> Dispatch Inbound Query</button>
+                        <textarea name="message" placeholder="Tell us a bit about what you need..." required></textarea>
+                        <button type="submit" class="btn-primary" style="width: 100%;"><i class="fas fa-paper-plane"></i> Send Message</button>
                     </form>
                 </div>
             </div>
@@ -1256,28 +1283,23 @@
     <footer>
         <div class="container">
             <p>&copy; 2026 <a href="index.html">Greach Impact</a> — Data. Agriculture. Community.</p>
-            <p style="font-size: 0.85rem; opacity: 0.6; margin-top: 5px;">Operational Deployment Hub: Enugu, Nigeria</p>
+            <p style="font-size: 0.85rem; opacity: 0.6; margin-top: 5px;">Proudly based in Enugu, Nigeria</p>
             <div class="socials">
-                <a href="#" aria-label="LinkedIn Profile"><i class="fab fa-linkedin"></i></a>
-                <a href="#" aria-label="Twitter Profile"><i class="fab fa-twitter"></i></a>
-                <a href="#" aria-label="Instagram Profile"><i class="fab fa-instagram"></i></a>
-                <a href="#" aria-label="YouTube Channel"><i class="fab fa-youtube"></i></a>
+                <a href="https://www.linkedin.com/in/emmanuel-iheomamere/" target="_blank" rel="noopener"><i class="fab fa-linkedin"></i></a>
             </div>
         </div>
     </footer>
 
-    <!-- ===== WHATSAPP FLOAT ===== -->
+    <!-- ===== WHATSAPP ===== -->
     <a href="https://wa.me/2349072250869?text=Hello%20Greach%20Impact!%20I'd%20like%20to%20learn%20more." 
        class="whatsapp-float" 
-       target="_blank"
-       rel="noopener"
-       aria-label="Chat on WhatsApp">
+       target="_blank" rel="noopener">
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <!-- ===== JAVASCRIPT ENGINE ===== -->
+    <!-- ===== JAVASCRIPT ===== -->
     <script>
-        // ---------- HAMBURGER MENU ----------
+        // ---------- HAMBURGER ----------
         const hamburger = document.getElementById('hamburger');
         const navMenu = document.getElementById('navMenu');
 
@@ -1311,7 +1333,29 @@
             if (icon) icon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
 
-        // ---------- DYNAMIC SHEETY BLOG FETCH FOR HOMEPAGE ----------
+        // ---------- BANNER COUNTDOWN ----------
+        function updateBannerCountdown() {
+            const targetDate = new Date('July 24, 2026 00:00:00').getTime();
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                document.getElementById('bannerCountdown').textContent = 'Started!';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+            document.getElementById('bannerCountdown').textContent = `${days}d ${hours}h ${minutes}m`;
+        }
+
+        // Update immediately and then every minute
+        updateBannerCountdown();
+        setInterval(updateBannerCountdown, 60000);
+
+        // ---------- BLOG FEED ----------
         const SHEETY_BLOG_API = 'https://api.sheety.co/d2a521b51f2439d009d4aaf3bbdea4f3/greachImpactBlog/sheet1';
 
         async function loadMainBlogFeed() {
@@ -1328,14 +1372,11 @@
                     return;
                 }
 
-                // Show up to the 3 newest posts on main homepage
                 const latestArticles = articles.slice(0, 3);
 
                 feedContainer.innerHTML = latestArticles.map(post => {
-                    // Sanitize icon string for Font Awesome 6
                     let rawIcon = (post.icon || '').trim();
                     let iconClass = 'fa-solid fa-file-excel';
-
                     if (rawIcon) {
                         if (rawIcon.startsWith('fa-')) {
                             iconClass = rawIcon.startsWith('fas ') 
@@ -1345,7 +1386,6 @@
                             iconClass = `fa-solid fa-${rawIcon}`;
                         }
                     }
-
                     return `
                         <div class="blog-card">
                             <div class="blog-image">
@@ -1362,13 +1402,12 @@
                 }).join('');
 
             } catch (error) {
-                console.error('Error fetching blog posts for main feed:', error);
+                console.error('Error fetching blog posts:', error);
                 feedContainer.innerHTML = `<p style="text-align:center; grid-column: 1 / -1;">Unable to load live posts right now.</p>`;
             }
         }
 
         document.addEventListener('DOMContentLoaded', loadMainBlogFeed);
     </script>
-
 </body>
 </html>

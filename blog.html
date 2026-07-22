@@ -6,14 +6,15 @@
     <title>Blog – Greach Impact</title>
     <meta name="description" content="Practical insights on data analytics, Excel training, Power BI, agriculture, and community development from Greach Impact." />
     
-    <!-- FontAwesome 6 Icons -->
+    <!-- ===== FAVICON ===== -->
+    <link rel="icon" href="https://i.ibb.co/GvPZJc1D/Greach-Impact-Logo.jpg" type="image/jpeg" />
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     
-    <!-- Cusdis Comment Engine Script -->
     <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
 
     <style>
-        /* ===== BRAND COLORS & VARIABLES ===== */
+        /* ===== BRAND COLORS ===== */
         :root {
             --navy: #0A0A5E;
             --slate: #3A4574;
@@ -70,6 +71,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .logo {
@@ -82,27 +85,53 @@
             gap: 10px;
         }
 
-        .logo img {
-            height: 40px;
-            border-radius: 4px;
+        .logo img { height: 40px; border-radius: 4px; }
+        .logo .teal { color: var(--teal); }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+            background: transparent;
+            border: none;
         }
 
-        .logo .teal { color: var(--teal); }
+        .hamburger span {
+            width: 28px;
+            height: 3px;
+            background: var(--white);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
 
         nav {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         nav a {
             text-decoration: none;
             color: rgba(255, 255, 255, 0.8);
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            padding: 5px 10px;
         }
 
         nav a:hover, nav a.active { color: var(--teal); }
+        .course-link { color: var(--teal) !important; font-weight: 700 !important; }
 
         .btn-back {
             background: rgba(100, 199, 212, 0.15);
@@ -120,7 +149,7 @@
             color: var(--navy);
         }
 
-        /* ---------- HERO SECTION ---------- */
+        /* ---------- HERO ---------- */
         .blog-hero {
             background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
             color: white;
@@ -136,7 +165,6 @@
         }
 
         .blog-hero h1 span { color: var(--teal); }
-
         .blog-hero p {
             color: #E2E8F0;
             font-size: clamp(1rem, 1.5vw, 1.2rem);
@@ -145,7 +173,7 @@
             opacity: 0.9;
         }
 
-        /* ---------- MAIN FEED GRID ---------- */
+        /* ---------- BLOG GRID ---------- */
         .blog-container { padding: 80px 0; }
         .blog-grid {
             display: grid;
@@ -265,7 +293,7 @@
         .read-btn:hover { color: var(--navy); }
         [data-theme="dark"] .read-btn:hover { color: var(--white); }
 
-        /* ---------- MODAL POPUP LAYER ---------- */
+        /* ---------- MODAL ---------- */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -371,8 +399,18 @@
         footer .socials a { color: #94A3B8; margin: 0 10px; font-size: 1.25rem; }
         footer .socials a:hover { color: var(--teal); }
 
+        /* ---------- RESPONSIVE ---------- */
         @media (max-width: 768px) {
-            nav { display: none; }
+            .hamburger { display: flex; }
+            nav {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                padding: 15px 0 5px;
+                gap: 5px;
+            }
+            nav.open { display: flex; }
+            nav a { width: 100%; text-align: center; padding: 12px; }
             .blog-grid { grid-template-columns: 1fr; }
             .modal-body-content { padding: 25px; }
             .modal-header-banner { padding: 25px; }
@@ -381,6 +419,49 @@
 </head>
 <body>
 
+    <!-- ===== STICKY COURSE BANNER ===== -->
+    <div style="
+        background: linear-gradient(135deg, #EA580C 0%, #c2410c 100%);
+        color: white;
+        text-align: center;
+        padding: 12px 20px;
+        font-weight: 700;
+        font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+        position: sticky;
+        top: 0;
+        z-index: 1001;
+        box-shadow: 0 2px 10px rgba(234, 88, 12, 0.3);
+        border-bottom: 3px solid #FFD700;
+    ">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <span>
+                <i class="fas fa-fire" style="margin-right: 8px;"></i>
+                <strong>🔥 Batch 2 – Excel Course</strong>
+                <span style="opacity: 0.9; margin: 0 8px;">|</span>
+                <span style="opacity: 0.95;">Starts July 24 – Limited Spots</span>
+            </span>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <span style="background: rgba(255,255,255,0.2); padding: 4px 14px; border-radius: 50px; font-size: 0.8rem; letter-spacing: 1px;">
+                    ⏰ <span id="bannerCountdown">loading...</span>
+                </span>
+                <a href="course.html" style="
+                    background: white;
+                    color: #c2410c;
+                    padding: 6px 20px;
+                    border-radius: 50px;
+                    text-decoration: none;
+                    font-weight: 800;
+                    font-size: 0.85rem;
+                    transition: transform 0.2s, box-shadow 0.2s;
+                    display: inline-block;
+                    white-space: nowrap;
+                " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.2)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';">
+                    <i class="fas fa-arrow-right"></i> Register Now
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- ===== HEADER ===== -->
     <header>
         <div class="container header-flex">
@@ -388,33 +469,39 @@
                 <img src="https://i.ibb.co/GvPZJc1D/Greach-Impact-Logo.jpg" alt="Greach Impact Logo" />
                 <span>Greach<span class="teal">Impact</span></span>
             </a>
-            <nav>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav id="navMenu">
                 <a href="index.html">Home</a>
                 <a href="index.html#about">About</a>
-                <a href="index.html#focus">Services</a>
-                <a href="index.html#contact">Contact</a>
+                <a href="index.html#focus">What We Do</a>
+                <a href="course.html" class="course-link">Excel Course</a>
                 <a href="blog.html" class="active">Blog</a>
-                <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Back to Site</a>
+                <a href="index.html#contact">Contact</a>
+                <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Back</a>
             </nav>
         </div>
     </header>
 
-    <!-- ===== HERO SECTION ===== -->
+    <!-- ===== HERO ===== -->
     <section class="blog-hero">
         <div class="container">
             <h1>Greach Impact <span>Blog</span></h1>
-            <p>Practical guides and strategic insights on Excel, data analytics, scalable agriculture, and community development frameworks.</p>
+            <p>Practical guides on Excel, data analytics, agriculture, and community development.</p>
         </div>
     </section>
 
-    <!-- ===== ARTICLES GRID CONTAINER ===== -->
+    <!-- ===== ARTICLES ===== -->
     <main class="container blog-container">
         <div class="blog-grid" id="blogFeed">
             <p style="text-align: center; grid-column: 1 / -1;">Loading blog posts...</p>
         </div>
     </main>
 
-    <!-- ===== DYNAMIC MODAL LAYER WITH COMMENTS ===== -->
+    <!-- ===== MODAL ===== -->
     <div class="modal-overlay" id="articleModal" onclick="closeModal(event)">
         <div class="modal-wrapper">
             <button class="modal-close-btn" onclick="forceCloseModal()"><i class="fa-solid fa-xmark"></i></button>
@@ -432,28 +519,59 @@
         <div class="container">
             <p>&copy; 2026 <a href="index.html">Greach Impact</a> — Data. Agriculture. Community. Impact.</p>
             <div class="socials">
-                <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
-                <a href="#" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
-                <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                <a href="https://www.linkedin.com/in/emmanuel-iheomamere/" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin"></i></a>
             </div>
         </div>
     </footer>
 
-    <!-- ===== JAVASCRIPT ENGINE ===== -->
+    <!-- ===== JAVASCRIPT ===== -->
     <script>
-        let articles = [];
+        // ---------- HAMBURGER ----------
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
 
-        // Sheety API Link
+        hamburger.addEventListener('click', function() {
+            this.classList.toggle('active');
+            navMenu.classList.toggle('open');
+        });
+
+        navMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('open');
+            });
+        });
+
+        // ---------- BANNER COUNTDOWN ----------
+        function updateBannerCountdown() {
+            const targetDate = new Date('July 24, 2026 00:00:00').getTime();
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                document.getElementById('bannerCountdown').textContent = 'Started!';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+            document.getElementById('bannerCountdown').textContent = `${days}d ${hours}h ${minutes}m`;
+        }
+
+        updateBannerCountdown();
+        setInterval(updateBannerCountdown, 60000);
+
+        // ---------- BLOG ENGINE ----------
+        let articles = [];
         const SHEETY_API_URL = 'https://api.sheety.co/d2a521b51f2439d009d4aaf3bbdea4f3/greachImpactBlog/sheet1';
 
         async function renderFeed() {
             const feedContainer = document.getElementById('blogFeed');
-            
             try {
                 const response = await fetch(SHEETY_API_URL);
                 const data = await response.json();
-
                 articles = data.sheet1 || [];
 
                 if (articles.length === 0) {
@@ -465,7 +583,6 @@
                     const iconClass = post.icon && post.icon.trim() !== '' 
                         ? post.icon 
                         : 'fa-solid fa-file-excel';
-
                     return `
                         <article class="blog-card">
                             <div class="card-image-placeholder">
@@ -491,7 +608,7 @@
             }
         }
 
-        // Modal Handler Logic with Cusdis Comments
+        // ---------- MODAL ----------
         const modal = document.getElementById('articleModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalBody = document.getElementById('modalBody');
@@ -500,48 +617,67 @@
             const article = articles.find(a => String(a.id) === String(postId));
             if (article) {
                 modalTitle.innerText = article.title;
-                
-                // Inject Article HTML + Cusdis Thread
                 modalBody.innerHTML = `
-                    <div class="article-text">
-                        ${article.content}
-                    </div>
-                    
+                    <div class="article-text">${article.content}</div>
                     <hr style="margin: 40px 0 30px; border: 0; border-top: 1px solid var(--border);" />
-                    
                     <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-comments"></i> Leave a Comment</h3>
-                    
                     <div id="cusdis_thread"
                       data-host="https://cusdis.com"
                       data-app-id="774483a9-96b4-493e-9b63-821ec4c6765b"
                       data-page-id="${article.id}"
-                      data-page-url="${window.location.href}#${article.id}"
+                      data-page-url="${window.location.href.split('#')[0]}#${article.id}"
                       data-page-title="${article.title}">
                     </div>
                 `;
-
-                // Reload Cusdis Engine for opened article
-                if (window.CUSDIS) {
-                    window.CUSDIS.initial();
-                }
-
+                if (window.CUSDIS) { window.CUSDIS.initial(); }
                 modal.classList.add('active');
                 document.body.style.overflow = 'hidden';
+                history.pushState(null, '', '#${article.id}');
             }
         }
 
         function forceCloseModal() {
             modal.classList.remove('active');
             document.body.style.overflow = '';
+            history.pushState(null, '', window.location.pathname);
         }
 
         function closeModal(event) {
-            if (event.target === modal) {
-                forceCloseModal();
+            if (event.target === modal) { forceCloseModal(); }
+        }
+
+        // ---------- AUTO-OPEN FROM URL ----------
+        function checkHashAndOpen() {
+            const hash = window.location.hash;
+            if (hash) {
+                const postId = hash.replace('#', '');
+                if (articles.length > 0) {
+                    const article = articles.find(a => String(a.id) === String(postId));
+                    if (article) { setTimeout(() => openPost(postId), 300); }
+                } else {
+                    const checkInterval = setInterval(() => {
+                        if (articles.length > 0) {
+                            clearInterval(checkInterval);
+                            const article = articles.find(a => String(a.id) === String(postId));
+                            if (article) { openPost(postId); }
+                        }
+                    }, 200);
+                }
             }
         }
 
-        document.addEventListener('DOMContentLoaded', renderFeed);
+        document.addEventListener('DOMContentLoaded', function() {
+            renderFeed().then(() => { checkHashAndOpen(); });
+        });
+
+        window.addEventListener('hashchange', function() {
+            const hash = window.location.hash;
+            if (hash) {
+                const postId = hash.replace('#', '');
+                const article = articles.find(a => String(a.id) === String(postId));
+                if (article) { openPost(postId); }
+            } else { forceCloseModal(); }
+        });
     </script>
 </body>
 </html>
