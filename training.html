@@ -43,7 +43,6 @@
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
-        /* ---------- HEADER ---------- */
         header {
             background: var(--navy);
             padding: 15px 0;
@@ -137,7 +136,6 @@
         }
         .btn-enroll:hover { background: #c2410c; color: white; }
 
-        /* ---------- STICKY BANNER ---------- */
         .sticky-banner {
             background: linear-gradient(135deg, #EA580C 0%, #c2410c 100%);
             color: white;
@@ -177,7 +175,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        /* ---------- HERO ---------- */
         .training-hero {
             padding: 80px 0 60px;
             text-align: center;
@@ -214,57 +211,6 @@
             flex-wrap: wrap;
         }
 
-        /* ---------- NEXT BATCH ADVERT ---------- */
-        .next-batch-advert {
-            display: none;
-            background: linear-gradient(135deg, #0A0A5E 0%, #3A4574 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-            border-bottom: 3px solid #EA580C;
-        }
-        .next-batch-advert .advert-flex {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .next-batch-advert .advert-left { text-align: left; }
-        .next-batch-advert .advert-left .badge {
-            display: inline-block;
-            background: #EA580C;
-            padding: 4px 16px;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-        .next-batch-advert .advert-left h3 {
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-        .next-batch-advert .advert-left h3 span { color: var(--teal); }
-        .next-batch-advert .advert-left p {
-            opacity: 0.8;
-            margin-top: 5px;
-        }
-        .next-batch-advert .advert-right .btn-primary {
-            color: white;
-            padding: 12px 30px;
-            font-size: 0.95rem;
-        }
-        .next-batch-advert .advert-right .note {
-            font-size: 0.75rem;
-            opacity: 0.6;
-            margin-top: 5px;
-        }
-
-        /* ---------- SECTION ---------- */
         .section-title {
             text-align: center;
             font-size: clamp(1.8rem, 3vw, 2.2rem);
@@ -282,7 +228,6 @@
             font-size: 1.05rem;
         }
 
-        /* ---------- PROGRAM CARDS ---------- */
         .programs {
             padding: 60px 0;
             background: var(--bg);
@@ -385,11 +330,6 @@
             font-weight: 400;
             opacity: 0.7;
         }
-        .program-card .program-body .price-section .price-note {
-            font-size: 0.8rem;
-            opacity: 0.6;
-            margin-top: 3px;
-        }
         .program-card .btn-primary { width: 100%; justify-content: center; }
         .program-card .btn-primary.coming-soon {
             background: #94A3B8;
@@ -401,7 +341,6 @@
             box-shadow: none;
         }
 
-        /* ---------- DISCOUNT INFO ---------- */
         .discount-info {
             padding: 40px 0;
             background: var(--card-bg);
@@ -435,7 +374,6 @@
             opacity: 0.7;
         }
 
-        /* ---------- FAQ ---------- */
         .faq-section {
             padding: 60px 0;
             background: var(--bg);
@@ -470,7 +408,6 @@
         .faq-answer.open { max-height: 300px; padding: 0 25px 20px 25px; }
         .faq-question.open i { transform: rotate(180deg); }
 
-        /* ---------- CTA ---------- */
         .cta-banner {
             padding: 60px 0;
             background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
@@ -482,7 +419,6 @@
         .cta-banner .btn-primary { background: var(--teal); color: var(--navy); }
         .cta-banner .btn-primary:hover { background: var(--aqua); }
 
-        /* ===== MODAL ===== */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -585,7 +521,6 @@
             transform: scale(1.01);
         }
 
-        /* ---------- FOOTER ---------- */
         footer {
             background: var(--navy);
             color: #94A3B8;
@@ -608,8 +543,6 @@
             .sticky-banner .banner-flex { flex-direction: column; gap: 8px; }
             .modal-wrapper { padding: 25px; }
             .modal-wrapper h2 { font-size: 1.4rem; }
-            .next-batch-advert .advert-flex { flex-direction: column; text-align: center; }
-            .next-batch-advert .advert-left { text-align: center; }
         }
         @media (max-width: 480px) {
             .discount-grid { grid-template-columns: 1fr; }
@@ -618,7 +551,6 @@
 </head>
 <body>
 
-    <!-- ===== STICKY BANNER ===== -->
     <div class="sticky-banner">
         <div class="banner-flex">
             <span>
@@ -636,7 +568,6 @@
         </div>
     </div>
 
-    <!-- ===== HEADER ===== -->
     <header>
         <div class="container header-flex">
             <a href="index.html" class="logo">
@@ -660,7 +591,6 @@
         </div>
     </header>
 
-    <!-- ===== HERO ===== -->
     <section class="training-hero">
         <div class="container">
             <span class="badge"><i class="fas fa-graduation-cap"></i> Practical Training Programs</span>
@@ -675,31 +605,12 @@
         </div>
     </section>
 
-    <!-- ===== NEXT BATCH ADVERT ===== -->
-    <div class="next-batch-advert" id="nextBatchAdvert">
-        <div class="advert-flex">
-            <div class="advert-left">
-                <span class="badge"><i class="fas fa-clock"></i> Coming Soon</span>
-                <h3>Next Beginner Batch Starts <span id="nextBatchDate">Loading...</span></h3>
-                <p>Pre-enrollment is now open – secure your spot early and save!</p>
-            </div>
-            <div class="advert-right">
-                <a href="https://forms.gle/DTLwSZjzYP3dxmma8" target="_blank" class="btn-primary btn-enroll">
-                    <i class="fas fa-user-plus"></i> Pre-Enroll Now
-                </a>
-                <p class="note">Early bird pricing available</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== PROGRAMS ===== -->
     <section class="programs" id="programs">
         <div class="container">
             <h2 class="section-title">Our <span>Training Programs</span></h2>
             <p class="section-sub">Choose the program that fits your goals – from beginner to advanced.</p>
             <div class="program-grid">
 
-                <!-- Excel Beginners -->
                 <div class="program-card" id="excel-beginners">
                     <div class="program-header">
                         <span class="status-badge">Enrolling Now</span>
@@ -715,15 +626,13 @@
                             <span><i class="fas fa-calendar-check"></i> 4 Weeks</span>
                         </div>
                         <div class="price-section">
-                            <div class="price-full">₦25,000 <small>regular price</small></div>
-                            <div class="price-early">Early Bird: ₦17,500 <small>(limited time)</small></div>
-                            <div class="price-note">Price increases weekly – register early to save!</div>
+                            <div class="price-full">₦10,000 <small>regular price</small></div>
+                            <div class="price-early">Early Bird: ₦7,500 <small>(25% off – limited time)</small></div>
                         </div>
-                        <a href="https://forms.gle/DTLwSZjzYP3dxmma8" target="_blank" class="btn-primary btn-enroll"><i class="fas fa-user-plus"></i> Enroll Now</a>
+                        <a href="excel-beginners.html" class="btn-primary btn-enroll"><i class="fas fa-arrow-right"></i> Learn More</a>
                     </div>
                 </div>
 
-                <!-- Excel Advanced -->
                 <div class="program-card" id="excel-advanced">
                     <div class="program-header">
                         <span class="status-badge">Enrolling Now</span>
@@ -739,15 +648,33 @@
                             <span><i class="fas fa-calendar-check"></i> 4 Weeks</span>
                         </div>
                         <div class="price-section">
-                            <div class="price-full">₦30,000 <small>regular price</small></div>
-                            <div class="price-early">Early Bird: ₦17,500 <small>(limited time)</small></div>
-                            <div class="price-note">Price increases weekly – register early to save!</div>
+                            <div class="price-full">₦25,000 <small>regular price</small></div>
+                            <div class="price-early">Early Bird: ₦18,750 <small>(25% off – limited time)</small></div>
                         </div>
-                        <a href="https://forms.gle/DTLwSZjzYP3dxmma8" target="_blank" class="btn-primary btn-enroll"><i class="fas fa-user-plus"></i> Enroll Now</a>
+                        <a href="excel-advanced.html" class="btn-primary btn-enroll"><i class="fas fa-arrow-right"></i> Learn More</a>
                     </div>
                 </div>
 
-                <!-- Power BI -->
+                <div class="program-card" id="excel-complete">
+                    <div class="program-header">
+                        <span class="status-badge soon">Coming Soon</span>
+                        <i class="fas fa-file-excel"></i>
+                        <h3>Excel Complete Package</h3>
+                        <div class="level">Beginner → Advanced</div>
+                    </div>
+                    <div class="program-body">
+                        <p>The complete Excel journey – from absolute beginner to advanced power user. Master everything from basic formulas to Power Query, VBA, and complex dashboards.</p>
+                        <div class="program-meta">
+                            <span><i class="fas fa-clock"></i> 8 Weeks</span>
+                            <span><i class="fas fa-calendar-alt"></i> Coming Soon</span>
+                        </div>
+                        <div class="price-section">
+                            <div class="price-full">₦35,000 <small>estimated price</small></div>
+                        </div>
+                        <a href="#" class="btn-primary coming-soon request-btn" data-program="Excel Complete Package"><i class="fas fa-clock"></i> Coming Soon</a>
+                    </div>
+                </div>
+
                 <div class="program-card" id="power-bi">
                     <div class="program-header">
                         <span class="status-badge soon">Coming Soon</span>
@@ -768,7 +695,6 @@
                     </div>
                 </div>
 
-                <!-- SQL -->
                 <div class="program-card" id="sql">
                     <div class="program-header">
                         <span class="status-badge soon">Coming Soon</span>
@@ -793,7 +719,6 @@
         </div>
     </section>
 
-    <!-- ===== DISCOUNT INFO ===== -->
     <section class="discount-info">
         <div class="container">
             <h2 class="section-title">Ways to <span>Save</span></h2>
@@ -802,7 +727,7 @@
                 <div class="discount-item">
                     <i class="fas fa-clock"></i>
                     <h4>Early Bird Discount</h4>
-                    <p>Register early and save up to 42% on your course fee. Prices increase weekly.</p>
+                    <p>Register early and save 25% on your course fee.</p>
                 </div>
                 <div class="discount-item">
                     <i class="fas fa-users"></i>
@@ -823,7 +748,6 @@
         </div>
     </section>
 
-    <!-- ===== FAQ ===== -->
     <section class="faq-section" id="faq">
         <div class="container">
             <h2 class="section-title">Frequently Asked <span>Questions</span></h2>
@@ -880,14 +804,13 @@
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="faq-answer">
-                        If you're new to Excel, start with Excel Beginners. If you already know the basics and want to go deeper, choose Excel Advanced. For data visualization, choose Power BI. For working with databases, choose SQL.
+                        If you're new to Excel, start with Excel Beginners. If you already know the basics and want to go deeper, choose Excel Advanced. For a complete journey, choose the Excel Complete Package. For data visualization, choose Power BI. For working with databases, choose SQL.
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== CTA ===== -->
     <section class="cta-banner" id="contact">
         <div class="container">
             <h2>Ready to Build Your Data Skills?</h2>
@@ -903,7 +826,6 @@
         </div>
     </section>
 
-    <!-- ===== MODAL ===== -->
     <div class="modal-overlay" id="programModal">
         <div class="modal-wrapper">
             <button class="modal-close-btn" id="modalCloseBtn"><i class="fas fa-times"></i></button>
@@ -919,6 +841,7 @@
                     <option value="" disabled selected>Select a program you're interested in...</option>
                     <option value="Excel Beginners">Excel Beginners</option>
                     <option value="Excel Advanced">Excel Advanced</option>
+                    <option value="Excel Complete Package">Excel Complete Package</option>
                     <option value="Power BI Analytics">Power BI Analytics</option>
                     <option value="SQL for Data Analysis">SQL for Data Analysis</option>
                     <option value="Group Training">Group Training</option>
@@ -936,19 +859,16 @@
         </div>
     </div>
 
-    <!-- ===== FOOTER ===== -->
     <footer>
         <div class="container">
-            <p>&copy; 2026 <a href="index.html">Greach Impact</a> — Data. Agriculture. Community.</p>
+            <p>&copy; 2026 <a href="index.html">Greach Impact</a> — Data. Training. Community.</p>
             <div class="socials">
                 <a href="https://www.linkedin.com/in/emmanuel-iheomamere/" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin"></i></a>
             </div>
         </div>
     </footer>
 
-    <!-- ===== JAVASCRIPT ===== -->
     <script>
-        // ---------- HAMBURGER ----------
         const hamburger = document.getElementById('hamburger');
         const navMenu = document.getElementById('navMenu');
         hamburger.addEventListener('click', function() {
@@ -962,7 +882,6 @@
             });
         });
 
-        // ---------- BANNER COUNTDOWN ----------
         function updateBannerCountdown() {
             const targetDate = new Date('July 24, 2026 19:30:00 GMT+0100').getTime();
             const now = new Date().getTime();
@@ -980,7 +899,6 @@
         updateBannerCountdown();
         setInterval(updateBannerCountdown, 1000);
 
-        // ---------- FAQ ----------
         function toggleFAQ(element) {
             const answer = element.nextElementSibling;
             const isOpen = answer.classList.contains('open');
@@ -999,57 +917,34 @@
             }
         }
 
-        // ---------- PRICE INCREASE ----------
         function updatePrices() {
             const startDate = new Date('July 10, 2026 00:00:00').getTime();
             const now = new Date().getTime();
             const weeksSinceStart = Math.floor((now - startDate) / (7 * 24 * 60 * 60 * 1000));
             const weeks = Math.min(weeksSinceStart, 10);
-            const beginnerBase = 17500;
-            const beginnerIncrease = 1000;
-            const beginnerCurrent = Math.min(beginnerBase + (weeks * beginnerIncrease), 25000);
+            const beginnerBase = 7500;
+            const beginnerIncrease = 500;
+            const beginnerCurrent = Math.min(beginnerBase + (weeks * beginnerIncrease), 10000);
 
             const startDateAdvanced = new Date('July 20, 2026 00:00:00').getTime();
             const weeksSinceStartAdvanced = Math.floor((now - startDateAdvanced) / (7 * 24 * 60 * 60 * 1000));
-            const advancedBase = 17500;
-            const advancedIncrease = 1500;
-            const advancedCurrent = Math.min(advancedBase + (weeksSinceStartAdvanced * advancedIncrease), 30000);
+            const advancedBase = 18750;
+            const advancedIncrease = 1000;
+            const advancedCurrent = Math.min(advancedBase + (weeksSinceStartAdvanced * advancedIncrease), 25000);
 
             const beginnerPriceElement = document.querySelector('#excel-beginners .price-early');
             if (beginnerPriceElement) {
-                beginnerPriceElement.innerHTML = `Early Bird: ₦${beginnerCurrent.toLocaleString()} <small>(limited time)</small>`;
+                beginnerPriceElement.innerHTML = `Early Bird: ₦${beginnerCurrent.toLocaleString()} <small>(25% off – limited time)</small>`;
             }
 
             const advancedPriceElement = document.querySelector('#excel-advanced .price-early');
             if (advancedPriceElement) {
-                advancedPriceElement.innerHTML = `Early Bird: ₦${advancedCurrent.toLocaleString()} <small>(limited time)</small>`;
+                advancedPriceElement.innerHTML = `Early Bird: ₦${advancedCurrent.toLocaleString()} <small>(25% off – limited time)</small>`;
             }
         }
         updatePrices();
         setInterval(updatePrices, 6 * 60 * 60 * 1000);
 
-        // ---------- NEXT BATCH ADVERT ----------
-        function updateNextBatchAdvert() {
-            const currentBatchEnd = new Date('August 15, 2026 23:59:59').getTime();
-            const now = new Date().getTime();
-            const oneWeekAfterStart = new Date('July 31, 2026 00:00:00').getTime();
-            const oneMonthAfterEnd = new Date('September 15, 2026 00:00:00').getTime();
-
-            const advertElement = document.getElementById('nextBatchAdvert');
-
-            if (now >= oneWeekAfterStart) {
-                advertElement.style.display = 'block';
-                const nextBatchDate = new Date(oneMonthAfterEnd);
-                const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-                document.getElementById('nextBatchDate').textContent = nextBatchDate.toLocaleDateString('en-US', dateOptions);
-            } else {
-                advertElement.style.display = 'none';
-            }
-        }
-        updateNextBatchAdvert();
-        setInterval(updateNextBatchAdvert, 60000);
-
-        // ---------- MODAL ----------
         const modal = document.getElementById('programModal');
         const openBtns = document.querySelectorAll('#requestProgramBtn, #requestProgramBtn2, .request-btn');
         const closeBtn = document.getElementById('modalCloseBtn');
@@ -1086,7 +981,6 @@
             if (e.key === 'Escape') { closeModal(); }
         });
 
-        // ---------- FORM SUBMIT ----------
         document.getElementById('programRequestForm').addEventListener('submit', function(e) {
             const btn = this.querySelector('.btn-submit');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';

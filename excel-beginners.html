@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Excel for Beginners – Greach Impact</title>
+    <meta name="description" content="Learn Excel from scratch with Greach Impact. Live online classes, certificate, lifetime access to recordings. Perfect for beginners, students, and professionals." />
+    
+    <link rel="icon" href="https://i.ibb.co/GvPZJc1D/Greach-Impact-Logo.jpg" type="image/jpeg" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    
+    <style>
+        :root {
+            --navy: #0A0A5E;
+            --slate: #3A4574;
+            --teal: #64C7D4;
+            --aqua: #6ED2DC;
+            --white: #FFFFFF;
+            --bg: #F8FAFC;
+            --text: #0F172A;
+            --card-bg: #FFFFFF;
+            --border: #E2E8F0;
+            --shadow: rgba(10, 10, 94, 0.08);
+        }
+
+        [data-theme="dark"] {
+            --white: #1A1A2E;
+            --bg: #0F0F1A;
+            --text: #E2E8F0;
+            --card-bg: #1A1A2E;
+            --border: #2A2A4E;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+        /* ---------- HEADER ---------- */
+        header {
+            background: var(--navy);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(10, 10, 94, 0.3);
+        }
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            font-weight: 800;
+            gap: 10px;
+        }
+        .logo img { height: 40px; border-radius: 4px; }
+        .logo .teal { color: var(--teal); }
+
+        nav a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 5px 10px;
+        }
+        nav a:hover { color: var(--teal); }
+        .btn-back {
+            background: var(--teal);
+            color: var(--navy) !important;
+            padding: 8px 20px !important;
+            border-radius: 50px;
+            font-weight: 700;
+        }
+        .btn-back:hover { background: var(--aqua) !important; color: var(--navy) !important; }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+            background: transparent;
+            border: none;
+        }
+        .hamburger span { width: 28px; height: 3px; background: var(--white); border-radius: 3px; transition: all 0.3s ease; }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        /* ---------- HERO ---------- */
+        .course-hero {
+            padding: 80px 0 60px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
+            color: white;
+        }
+        .course-hero .badge {
+            display: inline-block;
+            background: #EA580C;
+            padding: 6px 20px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        .course-hero h1 {
+            font-size: clamp(2.2rem, 4vw, 3.2rem);
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+        .course-hero h1 span { color: var(--teal); }
+        .course-hero p {
+            color: #E2E8F0;
+            font-size: clamp(1rem, 1.3vw, 1.2rem);
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        .course-hero .price-tag {
+            display: inline-block;
+            background: rgba(100, 199, 212, 0.15);
+            border: 2px solid var(--teal);
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--teal);
+            margin-bottom: 25px;
+        }
+        .course-hero .price-tag small { font-size: 1rem; font-weight: 400; opacity: 0.7; }
+        .course-hero .price-tag .early {
+            display: block;
+            font-size: 1rem;
+            color: #EA580C;
+            margin-top: 5px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--teal);
+            color: var(--navy);
+            padding: 16px 45px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.05rem;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .btn-primary:hover { background: var(--aqua); transform: scale(1.02); }
+        .btn-enroll { background: #EA580C; color: white; box-shadow: 0 4px 20px rgba(234, 88, 12, 0.4); }
+        .btn-enroll:hover { background: #c2410c; color: white; }
+
+        /* ---------- SECTION ---------- */
+        .section-title {
+            text-align: center;
+            font-size: clamp(1.8rem, 3vw, 2.2rem);
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+        .section-title span { color: var(--teal); }
+        .section-sub {
+            text-align: center;
+            color: var(--text);
+            opacity: 0.7;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            font-size: 1.05rem;
+        }
+
+        /* ---------- WHAT YOU GET ---------- */
+        .features {
+            padding: 60px 0;
+            background: var(--bg);
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .feature-card {
+            background: var(--card-bg);
+            padding: 30px 25px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+        .feature-card i {
+            font-size: 2.2rem;
+            color: var(--teal);
+            margin-bottom: 15px;
+        }
+        .feature-card h4 {
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .feature-card p {
+            color: var(--text);
+            opacity: 0.7;
+            font-size: 0.95rem;
+        }
+
+        /* ---------- CURRICULUM ---------- */
+        .curriculum {
+            padding: 60px 0;
+            background: var(--card-bg);
+        }
+        .curriculum-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .week-card {
+            background: var(--bg);
+            padding: 25px 30px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+        .week-card h4 {
+            color: var(--teal);
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        .week-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        .week-card ul li {
+            padding: 6px 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            color: var(--text);
+            opacity: 0.85;
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .week-card ul li:last-child { border-bottom: none; }
+        .week-card ul li i { color: var(--teal); font-size: 0.8rem; }
+
+        /* ---------- WHO THIS IS FOR ---------- */
+        .who-for {
+            padding: 60px 0;
+            background: var(--bg);
+        }
+        .who-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .who-item {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+            font-weight: 600;
+            color: var(--text);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .who-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--teal);
+        }
+        .who-item i { color: var(--teal); margin-right: 8px; }
+
+        /* ---------- FAQ ---------- */
+        .faq-section {
+            padding: 60px 0;
+            background: var(--card-bg);
+        }
+        .faq-item {
+            background: var(--bg);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .faq-question {
+            padding: 18px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--text);
+            transition: background 0.3s;
+        }
+        .faq-question:hover { background: var(--card-bg); }
+        .faq-question i { color: var(--teal); transition: transform 0.3s; }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            padding: 0 25px;
+            color: var(--text);
+            opacity: 0.8;
+        }
+        .faq-answer.open { max-height: 300px; padding: 0 25px 20px 25px; }
+        .faq-question.open i { transform: rotate(180deg); }
+
+        /* ---------- CTA ---------- */
+        .cta-banner {
+            padding: 60px 0;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
+            color: white;
+            text-align: center;
+        }
+        .cta-banner h2 { font-size: clamp(1.8rem, 3vw, 2.4rem); margin-bottom: 10px; }
+        .cta-banner p { color: #E2E8F0; max-width: 600px; margin: 0 auto 25px; font-size: 1.05rem; }
+
+        /* ---------- FOOTER ---------- */
+        footer {
+            background: var(--navy);
+            color: #94A3B8;
+            text-align: center;
+            padding: 40px 0;
+        }
+        footer a { color: var(--teal); text-decoration: none; font-weight: 600; }
+        footer .socials { margin-top: 15px; }
+        footer .socials a { color: #94A3B8; margin: 0 10px; font-size: 1.25rem; }
+        footer .socials a:hover { color: var(--teal); }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 768px) {
+            .hamburger { display: flex; }
+            nav {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                padding: 15px 0 5px;
+                gap: 5px;
+            }
+            nav.open { display: flex; }
+            nav a { width: 100%; text-align: center; padding: 12px; }
+            .curriculum-grid { grid-template-columns: 1fr; }
+            .course-hero { padding: 60px 0 40px; }
+            .hero-buttons .btn-primary { width: 100%; justify-content: center; }
+        }
+        @media (max-width: 480px) {
+            .who-grid { grid-template-columns: 1fr 1fr; }
+            .features-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header>
+        <div class="container header-flex">
+            <a href="index.html" class="logo">
+                <img src="https://i.ibb.co/GvPZJc1D/Greach-Impact-Logo.jpg" alt="Greach Impact Logo" />
+                <span>Greach<span class="teal">Impact</span></span>
+            </a>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav id="navMenu">
+                <a href="index.html">Home</a>
+                <a href="index.html#about">About</a>
+                <a href="index.html#focus">What We Do</a>
+                <a href="training.html" style="color: var(--teal); font-weight: 700;">Training</a>
+                <a href="blog.html">Blog</a>
+                <a href="index.html#contact">Contact</a>
+                <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Back</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ===== HERO ===== -->
+    <section class="course-hero">
+        <div class="container">
+            <span class="badge"><i class="fas fa-fire"></i> Batch 2 – Enrolling Now</span>
+            <h1>Excel for Beginners – <span>Live Online Class</span></h1>
+            <p>Learn Excel from scratch. Build real-world skills. Grow your confidence.</p>
+            <div class="price-tag">
+                ₦10,000 <small>regular price</small>
+                <span class="early">Early Bird: ₦7,500 (25% off – limited time)</span>
+            </div>
+            <div class="hero-buttons">
+                <a href="https://forms.gle/DTLwSZjzYP3dxmma8" target="_blank" class="btn-primary btn-enroll">
+                    <i class="fas fa-user-plus"></i> Register Now
+                </a>
+                <a href="#curriculum" class="btn-primary" style="background: transparent; color: white; border: 2px solid var(--teal);">
+                    <i class="fas fa-arrow-down"></i> See What You'll Learn
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== COURSE DETAILS ===== -->
+    <section style="padding: 40px 0; background: var(--bg);">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; text-align: center;">
+                <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+                    <i class="fas fa-calendar-alt" style="color: var(--teal); font-size: 1.5rem;"></i>
+                    <h4 style="margin-top: 8px; font-size: 1rem;">Start Date</h4>
+                    <p style="font-size: 0.95rem; opacity: 0.8;"><strong>July 24, 2026</strong></p>
+                </div>
+                <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+                    <i class="fas fa-clock" style="color: var(--teal); font-size: 1.5rem;"></i>
+                    <h4 style="margin-top: 8px; font-size: 1rem;">Schedule</h4>
+                    <p style="font-size: 0.95rem; opacity: 0.8;"><strong>Fridays & Saturdays</strong><br>7:30 – 8:30pm WAT</p>
+                </div>
+                <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+                    <i class="fas fa-calendar-check" style="color: var(--teal); font-size: 1.5rem;"></i>
+                    <h4 style="margin-top: 8px; font-size: 1rem;">Duration</h4>
+                    <p style="font-size: 0.95rem; opacity: 0.8;"><strong>4 Weeks</strong><br>Jul 24 – Aug 15, 2026</p>
+                </div>
+                <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+                    <i class="fas fa-video" style="color: var(--teal); font-size: 1.5rem;"></i>
+                    <h4 style="margin-top: 8px; font-size: 1rem;">Platform</h4>
+                    <p style="font-size: 0.95rem; opacity: 0.8;"><strong>Microsoft Teams</strong><br>Live & Recorded</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== WHAT YOU GET ===== -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">What You <span>Get</span></h2>
+            <p class="section-sub">Everything you need to learn Excel confidently.</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <h4>Live Instructor-Led Classes</h4>
+                    <p>Learn directly from an instructor through practical, easy-to-understand lessons.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-slideshare"></i>
+                    <h4>Class Slides & Materials</h4>
+                    <p>Get access to the presentation slides and other materials used during the training.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-video"></i>
+                    <h4>Lifetime Access to Recordings</h4>
+                    <p>Missed a class? No problem. Rewatch the recorded lessons whenever you need them.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-pencil-alt"></i>
+                    <h4>Practical Class Assignments</h4>
+                    <p>Put what you learn into practice through hands-on assignments.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-question-circle"></i>
+                    <h4>Interactive Quizzes</h4>
+                    <p>Test your understanding and track your progress throughout the course.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-certificate"></i>
+                    <h4>Certificate of Completion</h4>
+                    <p>Receive a certificate after successfully completing the course requirements.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CURRICULUM ===== -->
+    <section class="curriculum" id="curriculum">
+        <div class="container">
+            <h2 class="section-title">What You'll <span>Learn</span></h2>
+            <p class="section-sub">A practical, step-by-step curriculum designed to build your confidence.</p>
+            <div class="curriculum-grid">
+                <div class="week-card">
+                    <h4>📘 Week 1: Excel Foundations</h4>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Excel Interface & Navigation</li>
+                        <li><i class="fas fa-check-circle"></i> Basic Data Entry & Formatting</li>
+                        <li><i class="fas fa-check-circle"></i> Cell References (Relative & Absolute)</li>
+                        <li><i class="fas fa-check-circle"></i> Basic Functions (SUM, AVERAGE, COUNT)</li>
+                        <li><i class="fas fa-check-circle"></i> Sorting & Filtering Data</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Assignment:</strong> Personal Budget Tracker</li>
+                    </ul>
+                </div>
+                <div class="week-card">
+                    <h4>🔍 Week 2: Essential Functions</h4>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> <strong>INDEX & MATCH</strong> – The Ultimate Lookup</li>
+                        <li><i class="fas fa-check-circle"></i> IF Functions (Nested IF, IFS)</li>
+                        <li><i class="fas fa-check-circle"></i> Data Cleaning & Text Functions</li>
+                        <li><i class="fas fa-check-circle"></i> Conditional Formatting</li>
+                        <li><i class="fas fa-check-circle"></i> Data Validation & Dropdown Lists</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Assignment:</strong> Sales Data Analysis</li>
+                    </ul>
+                </div>
+                <div class="week-card">
+                    <h4>📊 Week 3: Data Analysis</h4>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Introduction to Pivot Tables</li>
+                        <li><i class="fas fa-check-circle"></i> Pivot Table Analysis & Reporting</li>
+                        <li><i class="fas fa-check-circle"></i> Charts & Data Visualization</li>
+                        <li><i class="fas fa-check-circle"></i> Working with Multiple Worksheets</li>
+                        <li><i class="fas fa-check-circle"></i> Named Ranges & Dynamic Ranges</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Assignment:</strong> Sales Dashboard</li>
+                    </ul>
+                </div>
+                <div class="week-card">
+                    <h4>🚀 Week 4: Advanced Skills & Capstone</h4>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> <strong>Introduction to Power Pivot</strong></li>
+                        <li><i class="fas fa-check-circle"></i> What-If Analysis (Goal Seek, Scenario)</li>
+                        <li><i class="fas fa-check-circle"></i> Dashboard Fundamentals</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Capstone Project:</strong> Full Interactive Dashboard</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Certificate & Next Steps</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== WHO THIS IS FOR ===== -->
+    <section class="who-for">
+        <div class="container">
+            <h2 class="section-title">Who This Course Is <span>For</span></h2>
+            <p class="section-sub">This class is perfect for anyone who wants to become confident using Excel.</p>
+            <div class="who-grid">
+                <div class="who-item"><i class="fas fa-user-graduate"></i> Students</div>
+                <div class="who-item"><i class="fas fa-rocket"></i> Beginners</div>
+                <div class="who-item"><i class="fas fa-flag"></i> NYSC Members</div>
+                <div class="who-item"><i class="fas fa-briefcase"></i> Job Seekers</div>
+                <div class="who-item"><i class="fas fa-store"></i> Business Owners</div>
+                <div class="who-item"><i class="fas fa-chart-line"></i> Professionals</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section class="faq-section" id="faq">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked <span>Questions</span></h2>
+            <p class="section-sub">Everything you need to know before joining.</p>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>📅 What if I miss a class?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        All sessions are recorded. You'll get access to the recordings so you can catch up at your own pace.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>📜 Do I get a certificate?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Yes! Upon successful completion, you'll receive a certificate you can add to your CV or LinkedIn profile.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>👶 Is this course for beginners?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Absolutely! The course is designed for beginners with no prior Excel experience.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>💻 What platform is used?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Classes are held on Microsoft Teams. You'll receive links and materials before the course starts.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>💰 How do I pay?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Payment details are sent after registration. We accept bank transfers and mobile payments.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>📆 When does the next batch start?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        The next batch starts July 24, 2026. Classes run for 4 weeks, every Friday and Saturday at 7:30 – 8:30pm WAT.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CTA ===== -->
+    <section class="cta-banner">
+        <div class="container">
+            <h2>Start Your Excel Journey Today</h2>
+            <p>Don't let Excel intimidate you. Start with the basics, learn step by step, and build a skill you can use for years to come.</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+                <a href="https://forms.gle/DTLwSZjzYP3dxmma8" target="_blank" class="btn-primary btn-enroll" style="font-size: 1.1rem; padding: 16px 50px; color: white;">
+                    <i class="fas fa-user-plus"></i> Register Now – ₦10,000
+                </a>
+                <a href="training.html" class="btn-primary" style="background: var(--teal); color: var(--navy); font-size: 1.1rem; padding: 16px 50px; box-shadow: none;">
+                    <i class="fas fa-arrow-left"></i> View All Programs
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 <a href="index.html">Greach Impact</a> — Data. Agriculture. Community.</p>
+            <div class="socials">
+                <a href="https://www.linkedin.com/in/emmanuel-iheomamere/" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+        hamburger.addEventListener('click', function() {
+            this.classList.toggle('active');
+            navMenu.classList.toggle('open');
+        });
+        navMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('open');
+            });
+        });
+
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const isOpen = answer.classList.contains('open');
+            document.querySelectorAll('.faq-answer').forEach(item => {
+                if (item !== answer) {
+                    item.classList.remove('open');
+                    item.previousElementSibling.classList.remove('open');
+                }
+            });
+            if (isOpen) {
+                answer.classList.remove('open');
+                element.classList.remove('open');
+            } else {
+                answer.classList.add('open');
+                element.classList.add('open');
+            }
+        }
+    </script>
+</body>
+</html>

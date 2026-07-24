@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <!-- ===== SEO ===== -->
-    <title>Greach Impact – Data, Agriculture, Community</title>
-    <meta name="description" content="Greach Impact is a Nigerian social enterprise using data, technology, and community-driven solutions to create sustainable opportunities." />
-    <meta name="keywords" content="data analytics, Excel training, Power BI, agriculture, community development, Nigeria, Enugu" />
+    <title>Greach Impact – Data Analytics & Training</title>
+    <meta name="description" content="Greach Impact is a Nigerian social enterprise using data, technology, and training to create sustainable opportunities." />
+    <meta name="keywords" content="data analytics, Excel training, Power BI, community development, Nigeria, Enugu" />
     <meta name="author" content="Emmanuel Iheomamere" />
     
     <!-- ===== FAVICON ===== -->
@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     
     <style>
-        /* ===== BRAND COLORS ===== */
         :root {
             --navy: #0A0A5E;
             --slate: #3A4574;
@@ -67,7 +66,6 @@
             padding: 0 20px;
         }
 
-        /* ---------- HEADER (Always Visible) ---------- */
         header {
             background: var(--navy);
             padding: 15px 0;
@@ -85,7 +83,6 @@
             gap: 15px;
         }
 
-        /* Menu always visible on all devices */
         nav {
             display: flex;
             align-items: center;
@@ -93,7 +90,6 @@
             flex-wrap: wrap;
         }
 
-        /* Hide hamburger on all devices – menu is always visible */
         .hamburger {
             display: none !important;
         }
@@ -146,7 +142,6 @@
             color: var(--navy);
         }
 
-        /* ---------- BUTTONS ---------- */
         .btn-primary {
             display: inline-flex;
             align-items: center;
@@ -195,9 +190,9 @@
             transform: translateY(-2px);
         }
 
-        /* ---------- HERO ---------- */
+        /* ===== HERO ===== */
         .hero {
-            padding: 140px 0 120px;
+            padding: 100px 0 80px;
             text-align: center;
             background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
             color: white;
@@ -240,7 +235,165 @@
             margin-top: 10px;
         }
 
-        /* ---------- SECTIONS ---------- */
+        /* ===== ADVERT CAROUSEL ===== */
+        .advert-carousel {
+            max-width: 600px;
+            margin: 30px auto 10px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            background: #0A0A5E;
+            cursor: pointer;
+        }
+
+        .advert-carousel .slide-track {
+            display: flex;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform;
+        }
+
+        .advert-carousel .slide {
+            min-width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .advert-carousel .slide .flyer-content {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .advert-carousel .slide .flyer-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+        }
+
+        .advert-carousel .slide .flyer-content .flyer-text {
+            margin-top: 15px;
+        }
+
+        .advert-carousel .slide .flyer-content .flyer-text h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--teal);
+            line-height: 1.2;
+        }
+
+        .advert-carousel .slide .flyer-content .flyer-text .price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #EA580C;
+            margin: 8px 0;
+        }
+
+        .advert-carousel .slide .flyer-content .flyer-text .meta {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin: 5px 0;
+        }
+
+        .advert-carousel .slide .flyer-content .flyer-text .btn-advert {
+            display: inline-block;
+            background: #EA580C;
+            color: white;
+            padding: 10px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .advert-carousel .slide .flyer-content .flyer-text .btn-advert:hover {
+            background: #c2410c;
+            transform: scale(1.05);
+        }
+
+        /* Carousel indicators */
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 0 8px;
+        }
+
+        .carousel-indicators .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: background 0.3s, transform 0.3s;
+            cursor: pointer;
+        }
+
+        .carousel-indicators .dot.active {
+            background: var(--teal);
+            transform: scale(1.2);
+        }
+
+        .carousel-indicators .dot:hover {
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Pause indicator */
+        .carousel-pause-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .advert-carousel:hover .carousel-pause-badge {
+            opacity: 1;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .advert-carousel .slide .flyer-content .flyer-text h2 {
+                font-size: 1.4rem;
+            }
+            .advert-carousel .slide .flyer-content .flyer-text .price {
+                font-size: 1.2rem;
+            }
+            .advert-carousel .slide {
+                padding: 20px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .advert-carousel .slide .flyer-content .flyer-text h2 {
+                font-size: 1.1rem;
+            }
+            .advert-carousel .slide .flyer-content .flyer-text .meta {
+                font-size: 0.75rem;
+            }
+            .advert-carousel .slide .flyer-content .flyer-text .btn-advert {
+                font-size: 0.8rem;
+                padding: 8px 20px;
+            }
+        }
+
+        /* ---------- OTHER SECTIONS ---------- */
         .section-title {
             text-align: center;
             font-size: clamp(1.8rem, 3.5vw, 2.4rem);
@@ -260,7 +413,6 @@
             font-size: clamp(0.95rem, 1.2vw, 1.1rem);
         }
 
-        /* ---------- ABOUT ---------- */
         .about {
             padding: 90px 0;
             background: var(--bg);
@@ -333,7 +485,6 @@
             line-height: 1.6;
         }
 
-        /* ---------- FOCUS AREAS ---------- */
         .focus {
             padding: 90px 0;
             background: var(--card-bg);
@@ -381,7 +532,6 @@
             line-height: 1.6;
         }
 
-        /* ---------- IMPACT ---------- */
         .impact {
             padding: 90px 0;
             background: var(--navy);
@@ -432,7 +582,6 @@
             font-weight: 500;
         }
 
-        /* ---------- STORIES ---------- */
         .stories {
             padding: 90px 0;
             background: var(--bg);
@@ -476,7 +625,6 @@
             font-size: 0.88rem;
         }
 
-        /* ---------- TEAM ---------- */
         .team {
             padding: 90px 0;
             background: var(--card-bg);
@@ -551,7 +699,6 @@
             max-width: 400px;
         }
 
-        /* ---------- BLOG ---------- */
         .blog-section {
             padding: 90px 0;
             background: var(--bg);
@@ -644,7 +791,6 @@
             color: var(--white);
         }
 
-        /* ---------- CONTACT (UPDATED – More Fields) ---------- */
         .contact {
             padding: 90px 0;
             background: var(--card-bg);
@@ -728,7 +874,6 @@
             width: 100%;
         }
 
-        /* ---------- NEWSLETTER ---------- */
         .newsletter {
             padding: 70px 0;
             background: var(--navy);
@@ -782,7 +927,6 @@
             transform: scale(1.02);
         }
 
-        /* ---------- STICKY COURSE BANNER ---------- */
         .sticky-course-banner {
             background: linear-gradient(135deg, #EA580C 0%, #c2410c 100%);
             color: white;
@@ -822,7 +966,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        /* ---------- FOOTER ---------- */
         footer {
             background: var(--navy);
             color: #94A3B8;
@@ -846,7 +989,6 @@
             transform: translateY(-3px);
         }
 
-        /* ---------- WHATSAPP ---------- */
         .whatsapp-float {
             position: fixed;
             bottom: 30px;
@@ -870,8 +1012,6 @@
             transform: scale(1.1);
         }
 
-        /* ---------- RESPONSIVE ---------- */
-        /* Menu always visible – no hamburger on any device */
         .hamburger {
             display: none !important;
         }
@@ -1000,12 +1140,65 @@
     <!-- ===== HERO ===== -->
     <section class="hero">
         <div class="container">
-            <h1>Helping Communities and Businesses Grow with <span class="highlight">Data and Technology</span></h1>
-            <p class="mission-statement">We turn complex data and technology into practical tools — helping individuals, farmers, and organizations across Nigeria grow sustainably.</p>
-            <p class="location-tag"><i class="fas fa-map-marker-alt"></i> Based in Enugu, Nigeria — Deploying Nationwide</p>
+            <h1>Empowering People with <span class="highlight">Data Skills</span> and Technology</h1>
+            <p class="mission-statement">We turn complex data and technology into practical tools — helping individuals, professionals, and organizations across Nigeria grow sustainably.</p>
+            <p class="location-tag"><i class="fas fa-map-marker-alt"></i> Based in Enugu, Nigeria</p>
             <div class="hero-buttons">
                 <a href="#contact" class="btn-primary"><i class="fas fa-handshake"></i> Partner With Us</a>
                 <a href="#focus" class="btn-secondary">Explore What We Do <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+            <!-- ===== ADVERT CAROUSEL ===== -->
+            <div class="advert-carousel" id="advertCarousel">
+                <div class="carousel-pause-badge">⏸️ Paused</div>
+                <div class="slide-track" id="slideTrack">
+                    <!-- Slide 1: Excel Beginners Flyer -->
+                    <div class="slide" data-slide="0">
+                        <div class="flyer-content">
+                            <div class="flyer-text">
+                                <h2>📊 Learn Excel in 4 Weeks</h2>
+                                <p style="opacity: 0.9; font-size: 1rem; margin: 8px 0;">Turn every data into an insightful decision tool</p>
+                                <div class="price">₦10,000</div>
+                                <div class="meta">📅 July 24 – August 15, 2026</div>
+                                <div class="meta">📍 Google Meet</div>
+                                <a href="excel-beginners.html" class="btn-advert">Register Now →</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 2: Excel Advanced (Coming Soon placeholder) -->
+                    <div class="slide" data-slide="1">
+                        <div class="flyer-content">
+                            <div class="flyer-text">
+                                <h2>🚀 Excel Advanced</h2>
+                                <p style="opacity: 0.9; font-size: 1rem; margin: 8px 0;">Master Power Query, VBA, and complex dashboards</p>
+                                <div class="price">₦25,000</div>
+                                <div class="meta">📅 August 28 – September 19, 2026</div>
+                                <div class="meta">📍 Google Meet</div>
+                                <a href="excel-advanced.html" class="btn-advert">Learn More →</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3: Excel Complete Package (Coming Soon) -->
+                    <div class="slide" data-slide="2">
+                        <div class="flyer-content">
+                            <div class="flyer-text">
+                                <h2>🎯 Excel Complete Package</h2>
+                                <p style="opacity: 0.9; font-size: 1rem; margin: 8px 0;">From Beginner to Advanced – The Full Journey</p>
+                                <div class="price">₦35,000</div>
+                                <div class="meta">📅 Coming Soon</div>
+                                <div class="meta">📍 Google Meet</div>
+                                <a href="training.html" class="btn-advert">Coming Soon →</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-indicators" id="indicators">
+                    <span class="dot active" data-index="0"></span>
+                    <span class="dot" data-index="1"></span>
+                    <span class="dot" data-index="2"></span>
+                </div>
             </div>
         </div>
     </section>
@@ -1017,12 +1210,12 @@
                 <div class="about-text">
                     <h2>Who We <span>Are</span></h2>
                     <p><strong>Greach Impact</strong> was founded in 2025 by <strong>Emmanuel Iheomamere</strong> on a simple belief: giving people practical data skills and digital tools can change communities and businesses for the better.</p>
-                    <p>We focus on three areas: <strong>Data Analytics & Workforce Training</strong>, <strong>Agriculture & Agro-Processing Support</strong>, and grassroots <strong>Community Development</strong>.</p>
+                    <p>We focus on two areas: <strong>Data Analytics & Workforce Training</strong> and grassroots <strong>Community Development</strong>.</p>
                     <p>Based in <strong>Enugu, Nigeria</strong>, we believe in hands-on training, real field data, and honest accountability — so the results we report are results you can actually measure.</p>
                 </div>
                 <div class="about-image">
-                    <i class="fas fa-globe-africa"></i>
-                    <h3>Data. Agriculture. Community.</h3>
+                    <i class="fas fa-chart-bar"></i>
+                    <h3>Data. Training. Community.</h3>
                     <p>Combining technical skill with real, on-the-ground understanding.</p>
                 </div>
             </div>
@@ -1113,7 +1306,6 @@
             <h2 class="section-title">Meet Our <span>Team</span></h2>
             <p class="section-sub">The people behind the work.</p>
             <div class="team-grid">
-                <!-- Emmanuel Iheomamere -->
                 <div class="team-card">
                     <div class="avatar">
                         <img src="emmanuel.jpg" alt="Emmanuel Iheomamere" />
@@ -1121,11 +1313,9 @@
                     <h4>Emmanuel Iheomamere</h4>
                     <p class="role-title">Founder & Lead Data Analyst</p>
                     <p class="bio">
-                        Emmanuel is a data analyst with a passion for turning complex data into clear, actionable insights. 
-                        He founded Greach Impact to bridge the gap between technology and real-world impact across Nigeria.
+                        Emmanuel is a Data Analyst and Data Management professional with experience in data analytics, database management, business intelligence, and data quality. He is passionate about turning complex data into clear insights that help people and organizations make better decisions. He founded Greach Impact to bridge the gap between data, technology, digital skills, and real-world impact across Nigeria.
                     </p>
                 </div>
-                <!-- Esther Nnamani -->
                 <div class="team-card">
                     <div class="avatar">
                         <img src="esther.jpg" alt="Esther Nnamani" />
@@ -1133,20 +1323,17 @@
                     <h4>Esther Nnamani</h4>
                     <p class="role-title">HR & Operations Administration</p>
                     <p class="bio">
-                        Esther manages the day-to-day operations and people strategy at Greach Impact. 
-                        She ensures smooth coordination of training programs and community initiatives.
+                        Esther manages the day-to-day operations and people strategy at Greach Impact. She ensures smooth coordination of training programs and community initiatives.
                     </p>
                 </div>
-                <!-- Amaka -->
                 <div class="team-card">
-                    <div class="avatar" style="background: var(--gradient-accent);">
-                        <i class="fas fa-bezier-curve"></i>
+                    <div class="avatar">
+                        <img src="blessing.jpg" alt="Blessing" />
                     </div>
-                    <h4>Amaka</h4>
+                    <h4>Blessing</h4>
                     <p class="role-title">Brand Strategy & Communications</p>
                     <p class="bio">
-                        Amaka leads brand development and communication strategy, helping Greach Impact 
-                        tell its story and connect with partners, trainees, and communities across Nigeria.
+                        Blessing leads brand development and communication strategy, helping Greach Impact tell its story and connect with partners, trainees, and communities across Nigeria.
                     </p>
                 </div>
             </div>
@@ -1157,7 +1344,7 @@
     <section class="blog-section" id="blog-section">
         <div class="container">
             <h2 class="section-title">From the <span>Blog</span></h2>
-            <p class="section-sub">Practical guides on data, agriculture, and community development.</p>
+            <p class="section-sub">Practical guides on data, analytics, and community development.</p>
             <div class="blog-grid" id="mainBlogFeed">
                 <p style="text-align: center; grid-column: 1 / -1;">Loading latest blog posts...</p>
             </div>
@@ -1179,14 +1366,13 @@
         </div>
     </section>
 
-    <!-- ===== CONTACT (UPDATED) ===== -->
+    <!-- ===== CONTACT ===== -->
     <section class="contact" id="contact">
         <div class="container">
             <h2 class="section-title">Let's <span>Connect</span></h2>
             <p class="section-sub">Fill in the form below and we'll get back to you within 24 hours.</p>
 
             <div class="contact-grid">
-                <!-- Contact Info -->
                 <div class="contact-info">
                     <p><i class="fas fa-map-marker-alt"></i> Enugu, Nigeria</p>
                     <p><i class="fas fa-phone"></i> <a href="tel:+2349072250869">+234 907 225 0869</a></p>
@@ -1208,7 +1394,6 @@
                     </div>
                 </div>
 
-                <!-- Contact Form -->
                 <div class="contact-form">
                     <form action="https://formspree.io/f/xgogoynj" method="POST">
                         <input type="text" name="name" placeholder="Your Full Name *" required />
@@ -1255,7 +1440,7 @@
     <!-- ===== FOOTER ===== -->
     <footer>
         <div class="container">
-            <p>&copy; 2026 <a href="index.html">Greach Impact</a> — Data. Agriculture. Community.</p>
+            <p>&copy; 2026 <a href="index.html">Greach Impact</a> — Data. Training. Community.</p>
             <p style="font-size: 0.85rem; opacity: 0.6; margin-top: 5px;">Proudly based in Enugu, Nigeria</p>
             <div class="socials">
                 <a href="https://www.linkedin.com/in/emmanuel-iheomamere/" target="_blank" rel="noopener"><i class="fab fa-linkedin"></i></a>
@@ -1272,7 +1457,7 @@
 
     <!-- ===== JAVASCRIPT ===== -->
     <script>
-        // ---------- DARK MODE ----------
+        // ---------- THEME ----------
         function toggleTheme() {
             const html = document.documentElement;
             const currentTheme = html.getAttribute('data-theme');
@@ -1311,6 +1496,103 @@
 
         updateBannerCountdown();
         setInterval(updateBannerCountdown, 1000);
+
+        // ---------- CAROUSEL ----------
+        (function() {
+            const track = document.getElementById('slideTrack');
+            const indicators = document.querySelectorAll('.dot');
+            const carousel = document.getElementById('advertCarousel');
+            const totalSlides = document.querySelectorAll('.slide').length;
+            let currentIndex = 0;
+            let intervalId = null;
+            let isPaused = false;
+
+            // Update slide position
+            function goToSlide(index) {
+                if (index < 0) index = totalSlides - 1;
+                if (index >= totalSlides) index = 0;
+                currentIndex = index;
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+                indicators.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === currentIndex);
+                });
+            }
+
+            // Next slide
+            function nextSlide() {
+                if (!isPaused) {
+                    goToSlide(currentIndex + 1);
+                }
+            }
+
+            // Start auto-slide
+            function startAutoSlide() {
+                if (intervalId) clearInterval(intervalId);
+                intervalId = setInterval(nextSlide, 10000); // 10 seconds
+            }
+
+            // Stop auto-slide
+            function stopAutoSlide() {
+                if (intervalId) {
+                    clearInterval(intervalId);
+                    intervalId = null;
+                }
+            }
+
+            // Pause/Resume on hover
+            carousel.addEventListener('mouseenter', function() {
+                isPaused = true;
+                stopAutoSlide();
+                document.querySelector('.carousel-pause-badge').style.opacity = '1';
+            });
+
+            carousel.addEventListener('mouseleave', function() {
+                isPaused = false;
+                document.querySelector('.carousel-pause-badge').style.opacity = '0';
+                startAutoSlide();
+            });
+
+            // Click on indicators
+            indicators.forEach(dot => {
+                dot.addEventListener('click', function() {
+                    const index = parseInt(this.dataset.index);
+                    goToSlide(index);
+                    // Restart timer after manual click
+                    stopAutoSlide();
+                    startAutoSlide();
+                });
+            });
+
+            // Click on slide to pause temporarily (toggle pause)
+            carousel.addEventListener('click', function(e) {
+                // Don't trigger if clicking a link or button inside
+                if (e.target.closest('a') || e.target.closest('.btn-advert')) return;
+                
+                isPaused = !isPaused;
+                if (isPaused) {
+                    stopAutoSlide();
+                    document.querySelector('.carousel-pause-badge').style.opacity = '1';
+                    document.querySelector('.carousel-pause-badge').textContent = '⏸️ Paused';
+                } else {
+                    document.querySelector('.carousel-pause-badge').style.opacity = '0';
+                    startAutoSlide();
+                }
+            });
+
+            // Initialize
+            goToSlide(0);
+            startAutoSlide();
+
+            // Handle visibility change (pause when tab is hidden)
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    stopAutoSlide();
+                } else {
+                    startAutoSlide();
+                }
+            });
+
+        })();
 
         // ---------- BLOG FEED ----------
         const SHEETY_BLOG_API = 'https://api.sheety.co/d2a521b51f2439d009d4aaf3bbdea4f3/greachImpactBlog/sheet1';
