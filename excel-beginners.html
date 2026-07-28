@@ -375,13 +375,194 @@
 </head>
 <body>
 
-    <!-- ===== HEADER ===== -->
     <header>
         <div class="container header-flex">
+            <!-- ===== LOGO ===== -->
             <a href="index.html" class="logo">
                 <img src="https://i.ibb.co/GvPZJc1D/Greach-Impact-Logo.jpg" alt="Greach Impact Logo" />
                 <span>Greach<span class="teal">Impact</span></span>
             </a>
+
+            <!-- ===== STUDENT ACCESS BAR ===== -->
+            <div id="studentBar" style="
+                width: 100%;
+                background: linear-gradient(135deg, #0A0A5E 0%, #3A4574 100%);
+                color: white;
+                padding: 12px 20px;
+                border-bottom: 3px solid #64C7D4;
+                border-radius: 12px;
+                margin-top: 5px;
+                flex-shrink: 0;
+            ">
+                <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    
+                    <!-- Option 1: Already a Student -->
+                    <button onclick="openStudentLogin()" style="
+                        background: #64C7D4;
+                        color: #0A0A5E;
+                        padding: 8px 24px;
+                        border: none;
+                        border-radius: 50px;
+                        font-weight: 700;
+                        font-size: 0.9rem;
+                        cursor: pointer;
+                        transition: transform 0.2s;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        <i class="fas fa-key"></i> Already a Student? Access Modules
+                    </button>
+
+                    <!-- Option 2: Not a Student / Register -->
+                    <a href="https://forms.gle/DTLwSZjzYP3dxmma8" target="_blank" style="
+                        background: #EA580C;
+                        color: white;
+                        padding: 8px 24px;
+                        border-radius: 50px;
+                        text-decoration: none;
+                        font-weight: 700;
+                        font-size: 0.9rem;
+                        transition: transform 0.2s;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        <i class="fas fa-user-plus"></i> Not a Student? Register Here
+                    </a>
+
+                    <!-- Option 3: Continue Tour -->
+                    <button onclick="document.getElementById('studentBar').style.display='none'" style="
+                        background: transparent;
+                        color: rgba(255,255,255,0.7);
+                        padding: 8px 16px;
+                        border: 1px solid rgba(255,255,255,0.2);
+                        border-radius: 50px;
+                        font-weight: 600;
+                        font-size: 0.85rem;
+                        cursor: pointer;
+                        transition: all 0.2s;
+                    " onmouseover="this.style.color='white'; this.style.borderColor='white'" onmouseout="this.style.color='rgba(255,255,255,0.7)'; this.style.borderColor='rgba(255,255,255,0.2)'">
+                        <i class="fas fa-arrow-right"></i> Continue Tour (Hide This)
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== PASSWORD MODAL (Hidden by default) ===== -->
+            <div id="studentPasswordModal" style="
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(10, 10, 94, 0.85);
+                backdrop-filter: blur(8px);
+                z-index: 2000;
+                align-items: center;
+                justify-content: center;
+            ">
+                <div style="
+                    background: white;
+                    border-radius: 20px;
+                    padding: 40px;
+                    max-width: 450px;
+                    width: 90%;
+                    text-align: center;
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                    position: relative;
+                ">
+                    <button onclick="closeStudentLogin()" style="
+                        position: absolute;
+                        top: 15px;
+                        right: 20px;
+                        background: none;
+                        border: none;
+                        font-size: 1.5rem;
+                        color: #94A3B8;
+                        cursor: pointer;
+                    ">✕</button>
+                    
+                    <div style="font-size: 3rem; color: #64C7D4; margin-bottom: 15px;">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h2 style="color: #0A0A5E; margin-bottom: 5px;">Student Access</h2>
+                    <p style="color: #64748B; margin-bottom: 25px; font-size: 0.95rem;">Enter your course password to unlock the full module slides.</p>
+                    
+                    <form id="studentPasswordForm" style="display: flex; flex-direction: column; gap: 15px;">
+                        <input type="password" id="studentPasswordInput" placeholder="Enter your password..." style="
+                            padding: 14px 20px;
+                            border: 2px solid #E2E8F0;
+                            border-radius: 12px;
+                            font-size: 1rem;
+                            text-align: center;
+                            letter-spacing: 2px;
+                            font-family: inherit;
+                        " />
+                        <button type="submit" style="
+                            padding: 14px;
+                            background: #64C7D4;
+                            color: #0A0A5E;
+                            border: none;
+                            border-radius: 12px;
+                            font-weight: 700;
+                            font-size: 1rem;
+                            cursor: pointer;
+                            transition: background 0.3s;
+                        " onmouseover="this.style.background='#6ED2DC'" onmouseout="this.style.background='#64C7D4'">
+                            <i class="fas fa-arrow-right"></i> Unlock & Go to Modules
+                        </button>
+                    </form>
+                    
+                    <div id="studentPasswordError" style="color: #ef4444; margin-top: 15px; font-size: 0.9rem; display: none;">
+                        ❌ Incorrect password. Please try again.
+                    </div>
+                    
+                    <p style="margin-top: 20px; font-size: 0.8rem; color: #94A3B8;">
+                        Not a student yet? <a href="https://forms.gle/DTLwSZjzYP3dxmma8" target="_blank" style="color: #64C7D4; font-weight: 600; text-decoration: none;">Register here</a>
+                    </p>
+                </div>
+            </div>
+
+            <script>
+                // ---------- PASSWORD LOGIC ----------
+                const PASSWORD_MODULE_MAP = {
+                    "excel101": "1", "formulas123": "2", "functions456": "3", 
+                    "data789": "4", "lookups101": "5", "dashboard2026": "6"
+                };
+
+                function openStudentLogin() {
+                    document.getElementById('studentPasswordModal').style.display = 'flex';
+                    document.getElementById('studentPasswordInput').focus();
+                }
+
+                function closeStudentLogin() {
+                    document.getElementById('studentPasswordModal').style.display = 'none';
+                    document.getElementById('studentPasswordError').style.display = 'none';
+                    document.getElementById('studentPasswordInput').value = '';
+                }
+
+                document.getElementById('studentPasswordForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const password = document.getElementById('studentPasswordInput').value.trim();
+                    const errorEl = document.getElementById('studentPasswordError');
+                    
+                    if (PASSWORD_MODULE_MAP.hasOwnProperty(password)) {
+                        const moduleId = PASSWORD_MODULE_MAP[password];
+                        window.location.href = `excel-course.html?module=${moduleId}`;
+                    } else {
+                        errorEl.style.display = 'block';
+                        document.getElementById('studentPasswordInput').value = '';
+                        document.getElementById('studentPasswordInput').focus();
+                    }
+                });
+
+                document.getElementById('studentPasswordInput').addEventListener('input', function() {
+                    document.getElementById('studentPasswordError').style.display = 'none';
+                });
+
+                document.getElementById('studentPasswordModal').addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeStudentLogin();
+                    }
+                });
+            </script>
+
+            <!-- ===== HAMBURGER & NAV ===== -->
             <button class="hamburger" id="hamburger" aria-label="Toggle menu">
                 <span></span>
                 <span></span>
