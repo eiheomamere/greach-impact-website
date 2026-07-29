@@ -2089,10 +2089,11 @@
             for (let i = currentIndex; i < allSlides.length; i++) {
                 const slide = allSlides[i];
                 const mod = parseInt(slide.getAttribute('data-module'));
-                if (mod !== moduleNum && mod !== 0) break; // Stop if we hit a new module
-                if (mod === moduleNum || mod === 0) {
-                    slides.push(slide);
-                }
+                // FIX: Only stop if we reach a different module. 
+                // Remove the mod !== 0 exception so we don't accidentally capture the Completion slide (data-module="0").
+                if (mod !== moduleNum) break; 
+                
+                slides.push(slide);
             }
 
             // Build the HTML content for the print view
