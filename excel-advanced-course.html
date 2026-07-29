@@ -437,6 +437,38 @@
             transform: scale(1.3);
         }
 
+        /* ---------- DOWNLOAD BUTTON ---------- */
+        .download-btn-wrapper {
+            text-align: right;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #E2E8F0;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #EA580C;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .download-btn:hover {
+            background: #c2410c;
+            transform: scale(1.05);
+        }
+
+        .download-btn i {
+            font-size: 1.1rem;
+        }
+
         /* ---------- QUIZ STYLES ---------- */
         .quiz-container {
             margin: 20px 0;
@@ -777,7 +809,7 @@
 
                 <div style="text-align: center; margin: 30px 0 20px;">
                     <span style="background: linear-gradient(135deg, var(--navy), var(--slate)); color: white; padding: 12px 40px; border-radius: 50px; font-weight: 700; font-size: 1.1rem; display: inline-block; box-shadow: 0 4px 20px rgba(10, 10, 94, 0.2);">
-                        <i class="fas fa-play-circle" style="color: var(--teal);"></i> 6 Modules · 31 Lessons · Quizzes · Final Project
+                        <i class="fas fa-play-circle" style="color: var(--teal);"></i> 6 Modules · 37 Lessons · Quizzes · Final Project
                     </span>
                 </div>
 
@@ -803,6 +835,12 @@
                 <h1>Advanced Formulas &amp; <span>Array Magic</span></h1>
                 <p class="subhead">Supercharge your calculations with dynamic arrays and advanced logic.</p>
 
+                <div class="download-btn-wrapper">
+                    <button class="download-btn" onclick="downloadModule(1)">
+                        <i class="fas fa-file-pdf"></i> Download Module 1 (PDF / Print)
+                    </button>
+                </div>
+
                 <div class="goal-box">
                     <i class="fas fa-bullseye"></i> <strong>What You Will Achieve:</strong>
                     <ul>
@@ -814,24 +852,34 @@
                     </ul>
                 </div>
 
-                <div class="code-block">=SORT(FILTER(A2:C100, B2:B100="Active"), 3, -1)<br>=XLOOKUP("ProductX", A2:A100, C2:C100, "Not found")</div>
+                <div class="code-block">=SORT(FILTER(A2:C100, B2:B100="Active"), 3, -1)<br>=XLOOKUP("ProductX", A2:A100, C2:C100, "Not found")<br>=SUMPRODUCT((Region="West") * (Sales))</div>
 
                 <div class="tip"><i class="fas fa-lightbulb"></i> Dynamic arrays automatically spill results into adjacent cells — no more Ctrl+Shift+Enter!</div>
             </div>
 
             <div class="slide" data-module="1" data-slide="2">
                 <span class="module-tag">Module 1</span>
-                <h2>Dynamic Array Functions</h2>
-                <div class="grid-2">
-                    <div class="card"><i class="fas fa-sort-alpha-down"></i> <strong>SORT</strong><br>Sort data dynamically based on one or more columns.</div>
-                    <div class="card"><i class="fas fa-filter"></i> <strong>FILTER</strong><br>Extract rows that meet any condition (e.g., "Active" status).</div>
-                    <div class="card"><i class="fas fa-star"></i> <strong>UNIQUE</strong><br>Extract unique values from a range — remove duplicates instantly.</div>
-                    <div class="card"><i class="fas fa-list"></i> <strong>SEQUENCE</strong><br>Generate lists of numbers, dates, or times automatically.</div>
+                <h2>Dynamic Array Functions Deep Dive</h2>
+                <div class="grid-3">
+                    <div class="card"><i class="fas fa-sort-alpha-down"></i> <strong>SORT</strong><br>Sort data dynamically. `=SORT(A2:C10, 2, 1)` sorts by column 2 ascending.</div>
+                    <div class="card"><i class="fas fa-filter"></i> <strong>FILTER</strong><br>Extract rows that meet conditions. `=FILTER(A2:C10, B2:B10="Active")`.</div>
+                    <div class="card"><i class="fas fa-star"></i> <strong>UNIQUE</strong><br>Extract unique values. `=UNIQUE(A2:A100)` removes duplicates instantly.</div>
+                    <div class="card"><i class="fas fa-list"></i> <strong>SEQUENCE</strong><br>Generate lists. `=SEQUENCE(12, 1, 2026, 1)` generates months for 2026.</div>
+                    <div class="card"><i class="fas fa-sort-amount-down"></i> <strong>SORTBY</strong><br>Sort by multiple columns. `=SORTBY(A2:C10, B2:B10, -1, C2:C10, 1)`.</div>
+                    <div class="card"><i class="fas fa-random"></i> <strong>RANDARRAY</strong><br>Generate random numbers. `=RANDARRAY(10, 1, 1, 100, TRUE)` for 10 integers 1-100.</div>
                 </div>
-                <div class="highlight-box"><i class="fas fa-magic"></i> Dynamic arrays are a game-changer. They make complex data manipulation simple and instant!</div>
+                <div class="highlight-box"><i class="fas fa-magic"></i> Dynamic arrays make complex data manipulation simple and instant. They auto-expand when new data is added!</div>
             </div>
 
             <div class="slide" data-module="1" data-slide="3">
+                <span class="module-tag">Module 1</span>
+                <h2>Using TAKE, DROP, CHOOSECOLS, CHOOSEROWS</h2>
+                <p>These functions let you manipulate arrays by selecting or removing specific parts.</p>
+                <div class="code-block">=TAKE(A2:C10, 5)       ' Returns the first 5 rows.<br>=DROP(A2:C10, -3)      ' Removes the last 3 rows.<br>=CHOOSECOLS(A2:C10, 1, 3) ' Returns only columns 1 and 3.<br>=CHOOSEROWS(A2:C10, 2, 4, 6) ' Returns rows 2, 4, and 6.</div>
+                <div class="tip"><i class="fas fa-cut"></i> These functions are perfect for creating dynamic dashboards and reports that automatically adjust to data size.</div>
+            </div>
+
+            <div class="slide" data-module="1" data-slide="4">
                 <span class="module-tag">Module 1</span>
                 <h2>SUMPRODUCT – The Ultimate Aggregator</h2>
                 <p>SUMPRODUCT multiplies corresponding arrays and sums the results. It's incredibly powerful for weighted calculations and conditional sums.</p>
@@ -840,7 +888,7 @@
                 <div class="tip"><i class="fas fa-calculator"></i> SUMPRODUCT is a hidden gem — it replaces multiple SUMIFS, COUNTIFS, and AVERAGEIFS in one elegant formula!</div>
             </div>
 
-            <div class="slide" data-module="1" data-slide="4">
+            <div class="slide" data-module="1" data-slide="5">
                 <span class="module-tag">Module 1</span>
                 <h2>INDEX &amp; MATCH – The Ultimate Lookup</h2>
                 <p>INDEX &amp; MATCH is more flexible than VLOOKUP. It can search in any column and return values from any column.</p>
@@ -854,7 +902,7 @@
                 <div class="highlight-box"><i class="fas fa-code"></i> INDEX & MATCH is the professional's choice for lookups. It works in all Excel versions!</div>
             </div>
 
-            <div class="slide" data-module="1" data-slide="5">
+            <div class="slide" data-module="1" data-slide="6">
                 <span class="module-tag">Module 1</span>
                 <h2>XLOOKUP – The Modern Replacement</h2>
                 <p>XLOOKUP is the future of lookups (available in Excel 365 and 2021). It's simpler and more intuitive than VLOOKUP.</p>
@@ -868,10 +916,20 @@
                 </div>
             </div>
 
+            <div class="slide" data-module="1" data-slide="7">
+                <span class="module-tag">Module 1</span>
+                <h2>LET and LAMBDA – Named Formulas</h2>
+                <p>LET allows you to assign names to intermediate calculations, making complex formulas readable and efficient.</p>
+                <div class="code-block">=LET(Sales, C2:C100, TaxRate, 0.1, TotalSales, SUM(Sales), TotalSales * TaxRate)</div>
+                <p>LAMBDA lets you create custom, reusable functions without VBA.</p>
+                <div class="code-block">=LAMBDA(x, y, x * y)(5, 10)  ' Returns 50</div>
+                <div class="tip"><i class="fas fa-brain"></i> LET and LAMBDA are game-changers. They make your formulas faster, cleaner, and easier to debug!</div>
+            </div>
+
             <!-- ========================================== -->
             <!-- MODULE 1 QUIZ (10 Questions)               -->
             <!-- ========================================== -->
-            <div class="slide" data-module="1" data-slide="6">
+            <div class="slide" data-module="1" data-slide="8">
                 <span class="module-tag">Module 1</span>
                 <h2>🧠 Module 1 Quiz</h2>
                 <p>Select the correct answer for each question, then click <strong>Submit Quiz</strong> to see your score.</p>
@@ -998,32 +1056,18 @@
             </div>
 
             <!-- ========================================== -->
-            <!-- MODULE 1 ASSIGNMENT                         -->
-            <!-- ========================================== -->
-            <div class="slide" data-module="1" data-slide="7">
-                <span class="module-tag">Module 1</span>
-                <h2>Module 1 Assignment</h2>
-                <div class="project-box">
-                    <i class="fas fa-pencil-alt"></i> <strong>Your Task:</strong> Advanced Data Analysis
-                    <ul>
-                        <li>Create a dataset of 50 employees with: ID, Name, Department, Salary, Performance Score.</li>
-                        <li>Use FILTER to extract high performers (score ≥ 80).</li>
-                        <li>Use SORT to sort employees by salary (descending).</li>
-                        <li>Use UNIQUE to list all departments.</li>
-                        <li>Use SUMPRODUCT to calculate total salary for the Sales department.</li>
-                        <li>Use XLOOKUP to find an employee's details by ID.</li>
-                    </ul>
-                </div>
-                <div class="tip"><i class="fas fa-check-circle" style="color: #2e7d32;"></i> This assignment will prove you've mastered Module 1. Great job!</div>
-            </div>
-
-            <!-- ========================================== -->
             <!-- MODULE 2: POWER QUERY                       -->
             <!-- ========================================== -->
-            <div class="slide" data-module="2" data-slide="8">
+            <div class="slide" data-module="2" data-slide="9">
                 <span class="module-tag">Module 2</span>
                 <h1>Power Query – <span>Data Transformation Wizard</span></h1>
                 <p class="subhead">Connect, clean, and reshape data from any source with just a few clicks.</p>
+
+                <div class="download-btn-wrapper">
+                    <button class="download-btn" onclick="downloadModule(2)">
+                        <i class="fas fa-file-pdf"></i> Download Module 2 (PDF / Print)
+                    </button>
+                </div>
 
                 <div class="goal-box">
                     <i class="fas fa-bullseye"></i> <strong>What You Will Achieve:</strong>
@@ -1039,33 +1083,65 @@
                 <div class="highlight-box"><i class="fas fa-database"></i> Power Query is a game-changer. It remembers every step you take, so you can apply the same transformation to new data instantly.</div>
             </div>
 
-            <div class="slide" data-module="2" data-slide="9">
+            <div class="slide" data-module="2" data-slide="10">
                 <span class="module-tag">Module 2</span>
-                <h2>Power Query Interface</h2>
+                <h2>Power Query Interface Deep Dive</h2>
                 <ul>
                     <li><strong>Get Data:</strong> Import from Excel, CSV, Text, Web, SQL Server, and many more.</li>
                     <li><strong>Transform Data:</strong> Use the Power Query Editor to clean, filter, and reshape data.</li>
                     <li><strong>Applied Steps:</strong> Every action you take is recorded. You can reorder, edit, or delete steps.</li>
                     <li><strong>Close &amp; Load:</strong> Load the transformed data back into Excel as a table or connection.</li>
                     <li><strong>Refresh:</strong> One click updates your data from the source.</li>
+                    <li><strong>M Language:</strong> Power Query uses M, a powerful formula language for advanced transformations.</li>
                 </ul>
                 <div class="tip"><i class="fas fa-lightbulb"></i> The Applied Steps pane is your best friend. It lets you go back and fix mistakes without starting over!</div>
             </div>
 
-            <div class="slide" data-module="2" data-slide="10">
+            <div class="slide" data-module="2" data-slide="11">
                 <span class="module-tag">Module 2</span>
                 <h2>Merging &amp; Appending Queries</h2>
                 <div class="grid-2">
                     <div class="card"><i class="fas fa-merge"></i> <strong>Merge Queries</strong><br>Join two tables like SQL — left, right, inner, full outer. Combine data from different sources.</div>
                     <div class="card"><i class="fas fa-plus-circle"></i> <strong>Append Queries</strong><br>Combine multiple tables with the same structure. Like "copy and paste" but dynamic.</div>
                 </div>
+                <div class="code-block">= Table.Combine({Table1, Table2})  ' Append in M<br>= Table.Join(Table1, "ID", Table2, "ID", JoinKind.Inner)  ' Merge in M</div>
                 <div class="highlight-box"><i class="fas fa-link"></i> Merging is how you bring together sales, customers, and products. Appending is how you combine monthly sales into yearly data.</div>
+            </div>
+
+            <div class="slide" data-module="2" data-slide="12">
+                <span class="module-tag">Module 2</span>
+                <h2>Power Query Transformation Tools</h2>
+                <ul>
+                    <li><strong>Split Column:</strong> Split text by delimiter (e.g., space, comma) into multiple columns.</li>
+                    <li><strong>Unpivot:</strong> Convert wide tables to long format (essential for analysis).</li>
+                    <li><strong>Conditional Column:</strong> Add new columns based on If/Else logic.</li>
+                    <li><strong>Group By:</strong> Aggregate data (Sum, Count, Average) by groups.</li>
+                    <li><strong>Replace Values:</strong> Find and replace specific values easily.</li>
+                    <li><strong>Remove Duplicates:</strong> Remove duplicate rows in one click.</li>
+                </ul>
+                <div class="tip"><i class="fas fa-wrench"></i> These tools cover 95% of data cleaning tasks. Master them and you'll save hours of manual work!</div>
+            </div>
+
+            <div class="slide" data-module="2" data-slide="13">
+                <span class="module-tag">Module 2</span>
+                <h2>Real-World Power Query Workflow</h2>
+                <p><strong>Scenario:</strong> You have monthly sales data in multiple Excel files. You need to combine them and clean the data.</p>
+                <ol>
+                    <li>Get Data → From Folder → Select the folder with monthly files.</li>
+                    <li>Power Query automatically combines all files into one table.</li>
+                    <li>Remove the "Source.Name" column (not needed).</li>
+                    <li>Split the "Date" column into Year, Month, and Day.</li>
+                    <li>Filter out rows with missing Sales values.</li>
+                    <li>Group by Product to get total sales per product.</li>
+                    <li>Close &amp; Load to Excel.</li>
+                </ol>
+                <div class="highlight-box"><i class="fas fa-sync"></i> This entire workflow takes less than 2 minutes. And it updates automatically when new files are added!</div>
             </div>
 
             <!-- ========================================== -->
             <!-- MODULE 2 QUIZ (10 Questions)               -->
             <!-- ========================================== -->
-            <div class="slide" data-module="2" data-slide="11">
+            <div class="slide" data-module="2" data-slide="14">
                 <span class="module-tag">Module 2</span>
                 <h2>🧠 Module 2 Quiz</h2>
 
@@ -1159,23 +1235,23 @@
                     </div>
 
                     <div class="quiz-question">
-                        <div class="q-text">9. What is "M" in Power Query?</div>
+                        <div class="q-text">9. What is the language used in Power Query?</div>
                         <div class="options">
-                            <label><input type="radio" name="q2_9" value="A"> A) The formula language</label>
-                            <label><input type="radio" name="q2_9" value="B"> B) A function</label>
-                            <label><input type="radio" name="q2_9" value="C"> C) A data source</label>
-                            <label><input type="radio" name="q2_9" value="D"> D) A chart type</label>
+                            <label><input type="radio" name="q2_9" value="A"> A) M</label>
+                            <label><input type="radio" name="q2_9" value="B"> B) DAX</label>
+                            <label><input type="radio" name="q2_9" value="C"> C) VBA</label>
+                            <label><input type="radio" name="q2_9" value="D"> D) SQL</label>
                         </div>
                         <div class="feedback" data-correct="A"></div>
                     </div>
 
                     <div class="quiz-question">
-                        <div class="q-text">10. What does "Remove Duplicates" in Power Query do?</div>
+                        <div class="q-text">10. What does "Unpivot" do in Power Query?</div>
                         <div class="options">
-                            <label><input type="radio" name="q2_10" value="A"> A) Removes duplicate rows</label>
-                            <label><input type="radio" name="q2_10" value="B"> B) Removes duplicate columns</label>
-                            <label><input type="radio" name="q2_10" value="C"> C) Removes duplicate values</label>
-                            <label><input type="radio" name="q2_10" value="D"> D) All of the above</label>
+                            <label><input type="radio" name="q2_10" value="A"> A) Converts wide to long format</label>
+                            <label><input type="radio" name="q2_10" value="B"> B) Converts long to wide format</label>
+                            <label><input type="radio" name="q2_10" value="C"> C) Sorts data</label>
+                            <label><input type="radio" name="q2_10" value="D"> D) Filters data</label>
                         </div>
                         <div class="feedback" data-correct="A"></div>
                     </div>
@@ -1193,10 +1269,16 @@
             <!-- ========================================== -->
             <!-- MODULE 3: POWER PIVOT & DAX                 -->
             <!-- ========================================== -->
-            <div class="slide" data-module="3" data-slide="12">
+            <div class="slide" data-module="3" data-slide="15">
                 <span class="module-tag">Module 3</span>
                 <h1>Power Pivot &amp; <span>DAX</span></h1>
                 <p class="subhead">Build powerful data models and write DAX formulas like a pro.</p>
+
+                <div class="download-btn-wrapper">
+                    <button class="download-btn" onclick="downloadModule(3)">
+                        <i class="fas fa-file-pdf"></i> Download Module 3 (PDF / Print)
+                    </button>
+                </div>
 
                 <div class="goal-box">
                     <i class="fas fa-bullseye"></i> <strong>What You Will Achieve:</strong>
@@ -1214,7 +1296,7 @@
                 <div class="tip"><i class="fas fa-rocket"></i> DAX is the language of Power Pivot. It's like Excel formulas on steroids!</div>
             </div>
 
-            <div class="slide" data-module="3" data-slide="13">
+            <div class="slide" data-module="3" data-slide="16">
                 <span class="module-tag">Module 3</span>
                 <h2>Understanding the Data Model</h2>
                 <ul>
@@ -1223,37 +1305,53 @@
                     <li><strong>One-to-Many:</strong> The most common relationship (e.g., one Product has many Sales).</li>
                     <li><strong>Many-to-Many:</strong> For complex scenarios (e.g., many Products in many Orders).</li>
                     <li><strong>Benefits:</strong> No more VLOOKUP! The Data Model automatically handles connections.</li>
+                    <li><strong>Creating Relationships:</strong> Drag fields between tables in the Diagram View.</li>
                 </ul>
                 <div class="highlight-box"><i class="fas fa-cubes"></i> The Data Model is the foundation of Power Pivot. It transforms Excel into a powerful BI tool.</div>
             </div>
 
-            <div class="slide" data-module="3" data-slide="14">
+            <div class="slide" data-module="3" data-slide="17">
                 <span class="module-tag">Module 3</span>
                 <h2>DAX Functions – The Power of CALCULATE</h2>
                 <p>CALCULATE is the most powerful DAX function. It changes the context of a calculation.</p>
                 <div class="code-block">=CALCULATE(SUM(Sales[Amount]), Sales[Product]="Laptop")</div>
                 <p><strong>Example:</strong> Calculate total sales for only the "Laptop" product.</p>
+                <p><strong>More examples:</strong></p>
+                <div class="code-block">=CALCULATE(SUM(Sales[Amount]), Sales[Region]="North", Sales[Year]=2026)<br>=CALCULATE(AVERAGE(Sales[Amount]), Sales[Product]="Phone")</div>
                 <div class="tip"><i class="fas fa-brain"></i> CALCULATE is the key to advanced DAX. Master it, and you master Power Pivot!</div>
             </div>
 
-            <div class="slide" data-module="3" data-slide="15">
+            <div class="slide" data-module="3" data-slide="18">
                 <span class="module-tag">Module 3</span>
                 <h2>Time Intelligence with DAX</h2>
                 <ul>
                     <li><strong>TotalYTD:</strong> Year-to-date total.</li>
                     <li><strong>TotalQTD:</strong> Quarter-to-date total.</li>
                     <li><strong>TotalMTD:</strong> Month-to-date total.</li>
+                    <li><strong>DATESINPERIOD:</strong> Returns a set of dates for a moving period.</li>
                     <li><strong>Moving Average:</strong> Average over a period (e.g., 3-month moving average).</li>
                     <li><strong>ParallelPeriod:</strong> Compare to previous period (e.g., same month last year).</li>
                 </ul>
-                <div class="code-block">=TOTALYTD(SUM(Sales[Amount]), 'Date'[Date])<br>=CALCULATE(SUM(Sales[Amount]), DATESINPERIOD('Date'[Date], LASTDATE('Date'[Date]), -3, MONTH))</div>
-                <div class="highlight-box"><i class="fas fa-clock"></i> Time Intelligence is essential for dashboards. It allows you to compare performance over time.</div>
+                <div class="code-block">=TOTALYTD(SUM(Sales[Amount]), 'Date'[Date])<br>=CALCULATE(SUM(Sales[Amount]), DATESINPERIOD('Date'[Date], LASTDATE('Date'[Date]), -3, MONTH))<br>=CALCULATE(SUM(Sales[Amount]), PARALLELPERIOD('Date'[Date], -1, YEAR))</div>
+                <div class="highlight-box"><i class="fas fa-clock"></i> Time Intelligence is essential for dashboards. It allows you to compare performance over time and spot trends.</div>
+            </div>
+
+            <div class="slide" data-module="3" data-slide="19">
+                <span class="module-tag">Module 3</span>
+                <h2>DAX Functions for Aggregation and Filtering</h2>
+                <ul>
+                    <li><strong>SUMX:</strong> Iterates over a table and sums the result of an expression. `=SUMX(Sales, Sales[Quantity] * Sales[UnitPrice])`</li>
+                    <li><strong>RELATED:</strong> Returns a related value from another table. `=RELATED(Products[ProductName])`</li>
+                    <li><strong>FILTER:</strong> Creates a filtered table for calculations. `=CALCULATE(SUM(Sales[Amount]), FILTER(Products, Products[Category]="Electronics"))`</li>
+                    <li><strong>ALL:</strong> Removes all filters from a column. `=CALCULATE(SUM(Sales[Amount]), ALL(Products))`</li>
+                </ul>
+                <div class="tip"><i class="fas fa-calculator"></i> These functions give you complete control over your data. You can calculate exactly what you need, no matter how complex.</div>
             </div>
 
             <!-- ========================================== -->
             <!-- MODULE 3 QUIZ (10 Questions)               -->
             <!-- ========================================== -->
-            <div class="slide" data-module="3" data-slide="16">
+            <div class="slide" data-module="3" data-slide="20">
                 <span class="module-tag">Module 3</span>
                 <h2>🧠 Module 3 Quiz</h2>
 
@@ -1381,10 +1479,16 @@
             <!-- ========================================== -->
             <!-- MODULE 4: DYNAMIC DASHBOARDS & VISUALS     -->
             <!-- ========================================== -->
-            <div class="slide" data-module="4" data-slide="17">
+            <div class="slide" data-module="4" data-slide="21">
                 <span class="module-tag">Module 4</span>
                 <h1>Dynamic Dashboards &amp; <span>Visuals</span></h1>
                 <p class="subhead">Create interactive dashboards that tell compelling stories.</p>
+
+                <div class="download-btn-wrapper">
+                    <button class="download-btn" onclick="downloadModule(4)">
+                        <i class="fas fa-file-pdf"></i> Download Module 4 (PDF / Print)
+                    </button>
+                </div>
 
                 <div class="goal-box">
                     <i class="fas fa-bullseye"></i> <strong>What You Will Achieve:</strong>
@@ -1400,7 +1504,7 @@
                 <div class="highlight-box"><i class="fas fa-palette"></i> Dashboards are how you communicate insights. A well-designed dashboard is worth a thousand spreadsheets!</div>
             </div>
 
-            <div class="slide" data-module="4" data-slide="18">
+            <div class="slide" data-module="4" data-slide="22">
                 <span class="module-tag">Module 4</span>
                 <h2>Advanced Chart Types</h2>
                 <div class="grid-2">
@@ -1412,7 +1516,7 @@
                 <div class="tip"><i class="fas fa-chart-simple"></i> Choose the right chart for your data. A well-chosen chart makes your point instantly!</div>
             </div>
 
-            <div class="slide" data-module="4" data-slide="19">
+            <div class="slide" data-module="4" data-slide="23">
                 <span class="module-tag">Module 4</span>
                 <h2>Slicers &amp; Timelines – Interactive Filtering</h2>
                 <ul>
@@ -1424,7 +1528,7 @@
                 <div class="highlight-box"><i class="fas fa-hand-pointer"></i> Slicers make your dashboards interactive and professional. They're one of the best features for user-friendly reports!</div>
             </div>
 
-            <div class="slide" data-module="4" data-slide="20">
+            <div class="slide" data-module="4" data-slide="24">
                 <span class="module-tag">Module 4</span>
                 <h2>Dashboard Design Principles</h2>
                 <ul>
@@ -1434,14 +1538,28 @@
                     <li><strong>Use white space:</strong> Give elements room to breathe.</li>
                     <li><strong>Make it interactive:</strong> Add slicers and timelines so users can explore.</li>
                     <li><strong>Place the most important metrics top-left:</strong> The "golden triangle" of dashboard design.</li>
+                    <li><strong>Tell a story:</strong> Arrange charts in a logical order that guides the viewer through your data.</li>
                 </ul>
                 <div class="tip"><i class="fas fa-paint-brush"></i> A well-designed dashboard tells a story at a glance. Keep it clean, consistent, and focused on the key metrics that matter.</div>
+            </div>
+
+            <div class="slide" data-module="4" data-slide="25">
+                <span class="module-tag">Module 4</span>
+                <h2>Conditional Formatting for Dashboards</h2>
+                <ul>
+                    <li><strong>Data Bars:</strong> Show bars inside cells to represent values.</li>
+                    <li><strong>Color Scales:</strong> Gradient colors from low to high.</li>
+                    <li><strong>Icon Sets:</strong> Use arrows, flags, or traffic lights to show status.</li>
+                    <li><strong>Highlight Cells:</strong> Highlight values above/below thresholds.</li>
+                    <li><strong>Custom Rules:</strong> Create your own rules using formulas.</li>
+                </ul>
+                <div class="highlight-box"><i class="fas fa-eye"></i> Conditional formatting makes your data pop. It helps users quickly identify trends, outliers, and key insights.</div>
             </div>
 
             <!-- ========================================== -->
             <!-- MODULE 4 QUIZ (10 Questions)               -->
             <!-- ========================================== -->
-            <div class="slide" data-module="4" data-slide="21">
+            <div class="slide" data-module="4" data-slide="26">
                 <span class="module-tag">Module 4</span>
                 <h2>🧠 Module 4 Quiz</h2>
 
@@ -1569,10 +1687,16 @@
             <!-- ========================================== -->
             <!-- MODULE 5: AUTOMATION WITH VBA & MACROS     -->
             <!-- ========================================== -->
-            <div class="slide" data-module="5" data-slide="22">
+            <div class="slide" data-module="5" data-slide="27">
                 <span class="module-tag">Module 5</span>
                 <h1>Automation with VBA &amp; <span>Macros</span></h1>
                 <p class="subhead">Stop repeating yourself – let Excel do the work for you.</p>
+
+                <div class="download-btn-wrapper">
+                    <button class="download-btn" onclick="downloadModule(5)">
+                        <i class="fas fa-file-pdf"></i> Download Module 5 (PDF / Print)
+                    </button>
+                </div>
 
                 <div class="goal-box">
                     <i class="fas fa-bullseye"></i> <strong>What You Will Achieve:</strong>
@@ -1588,7 +1712,7 @@
                 <div class="highlight-box"><i class="fas fa-gem"></i> VBA is the ultimate power tool. With it, you can make Excel do almost anything!</div>
             </div>
 
-            <div class="slide" data-module="5" data-slide="23">
+            <div class="slide" data-module="5" data-slide="28">
                 <span class="module-tag">Module 5</span>
                 <h2>Macro Recorder – Your First Step into Automation</h2>
                 <p>The Macro Recorder is the easiest way to start learning VBA. You record your actions, and Excel writes the code for you.</p>
@@ -1597,11 +1721,12 @@
                     <li><strong>How to run:</strong> Developer tab → Macros → Select → Run.</li>
                     <li><strong>Assign to a button:</strong> Insert a shape → Right-click → Assign Macro.</li>
                     <li><strong>Save macros:</strong> Save as .xlsm (macro-enabled workbook).</li>
+                    <li><strong>Enable macros:</strong> You'll need to enable macros when opening a .xlsm file.</li>
                 </ul>
                 <div class="tip"><i class="fas fa-video"></i> This is the easiest way to start learning VBA — record, then modify the code!</div>
             </div>
 
-            <div class="slide" data-module="5" data-slide="24">
+            <div class="slide" data-module="5" data-slide="29">
                 <span class="module-tag">Module 5</span>
                 <h2>Writing Your Own VBA Code</h2>
                 <p>Once you've recorded a few macros, you can start writing your own code in the VBA Editor.</p>
@@ -1612,11 +1737,13 @@
                     <li><strong>Range:</strong> Refers to cells or ranges.</li>
                     <li><strong>Interior:</strong> Refers to cell formatting.</li>
                     <li><strong>RGB:</strong> Sets cell color using Red, Green, Blue values.</li>
+                    <li><strong>For Loop:</strong> Repeats actions multiple times. `For i = 1 To 10 ... Next i`</li>
+                    <li><strong>If...Then:</strong> Conditional logic. `If Range("A1").Value > 100 Then ... End If`</li>
                 </ul>
                 <div class="highlight-box"><i class="fas fa-code"></i> Start with simple tasks like formatting. As you get comfortable, you'll automate complex reports!</div>
             </div>
 
-            <div class="slide" data-module="5" data-slide="25">
+            <div class="slide" data-module="5" data-slide="30">
                 <span class="module-tag">Module 5</span>
                 <h2>Debugging VBA Code</h2>
                 <p>Debugging is the process of finding and fixing errors in your code. VBA has powerful debugging tools.</p>
@@ -1630,10 +1757,24 @@
                 <div class="tip"><i class="fas fa-bug"></i> Debugging is a skill. The more you practice, the faster you'll find and fix errors!</div>
             </div>
 
+            <div class="slide" data-module="5" data-slide="31">
+                <span class="module-tag">Module 5</span>
+                <h2>Real-World VBA Automation</h2>
+                <p><strong>Scenario:</strong> You need to generate a weekly report that:</p>
+                <ol>
+                    <li>Formats the data with borders and bold headers.</li>
+                    <li>Adds a total row at the bottom.</li>
+                    <li>Creates a chart from the data.</li>
+                    <li>Exports the report as PDF.</li>
+                </ol>
+                <div class="code-block">Sub GenerateReport()<br>  Range("A1:D10").Borders.LineStyle = xlContinuous<br>  Range("A1:D1").Font.Bold = True<br>  Range("A11").Formula = "=SUM(D2:D10)"<br>  Charts.Add<br>  ActiveChart.Export "C:\Reports\Report.pdf"<br>End Sub</div>
+                <div class="highlight-box"><i class="fas fa-robot"></i> This entire workflow can be automated in VBA. With one click, your report is generated and saved!</div>
+            </div>
+
             <!-- ========================================== -->
             <!-- MODULE 5 QUIZ (10 Questions)               -->
             <!-- ========================================== -->
-            <div class="slide" data-module="5" data-slide="26">
+            <div class="slide" data-module="5" data-slide="32">
                 <span class="module-tag">Module 5</span>
                 <h2>🧠 Module 5 Quiz</h2>
 
@@ -1759,12 +1900,18 @@
             </div>
 
             <!-- ========================================== -->
-            <!-- MODULE 6: FINAL CAPSTONE PROJECT            -->
+            <!-- MODULE 6: FINAL CAPSTONE PROJECT (33-36)    -->
             <!-- ========================================== -->
-            <div class="slide" data-module="6" data-slide="27">
+            <div class="slide" data-module="6" data-slide="33">
                 <span class="module-tag">Module 6</span>
                 <h1>Capstone Project – <span>Executive Dashboard</span></h1>
                 <p class="subhead">Bring everything together in a professional dashboard.</p>
+
+                <div class="download-btn-wrapper">
+                    <button class="download-btn" onclick="downloadModule(6)">
+                        <i class="fas fa-file-pdf"></i> Download Module 6 (PDF / Print)
+                    </button>
+                </div>
 
                 <div class="goal-box">
                     <i class="fas fa-bullseye"></i> <strong>What You Will Achieve:</strong>
@@ -1777,24 +1924,24 @@
                 </div>
             </div>
 
-            <div class="slide" data-module="6" data-slide="28">
+            <div class="slide" data-module="6" data-slide="34">
                 <span class="module-tag">Module 6</span>
-                <h2>🎯 Project Requirements</h2>
+                <h2>🎯 Project Requirements – Step by Step</h2>
                 <div class="project-box">
                     <p><strong>Your mission:</strong> Build an executive dashboard that includes:</p>
-                    <p><strong>Data Preparation (Power Query):</strong></p>
+                    <p><strong>Step 1: Data Preparation (Power Query)</strong></p>
                     <ul>
                         <li>Import data from a CSV or Excel file (at least 50 rows of sales data).</li>
                         <li>Clean and transform the data: remove duplicates, filter rows, rename columns.</li>
                         <li>Load the cleaned data into Excel as a table.</li>
                     </ul>
-                    <p><strong>Data Model &amp; DAX (Power Pivot):</strong></p>
+                    <p><strong>Step 2: Data Model &amp; DAX (Power Pivot)</strong></p>
                     <ul>
                         <li>Create a Data Model with at least two tables (e.g., Sales and Products).</li>
                         <li>Create relationships between the tables.</li>
                         <li>Write DAX measures for: Total Sales, Average Sales, Year-to-Date Sales, and a custom KPI (e.g., Sales vs Target).</li>
                     </ul>
-                    <p><strong>Dashboard &amp; Visuals:</strong></p>
+                    <p><strong>Step 3: Dashboard &amp; Visuals</strong></p>
                     <ul>
                         <li>KPI cards at the top (Total Sales, Average Sales, YTD Sales).</li>
                         <li>Column chart: Sales by Product.</li>
@@ -1802,7 +1949,7 @@
                         <li>Pie chart: Sales by Region.</li>
                         <li>Add slicers for Region and Product.</li>
                     </ul>
-                    <p><strong>Automation (VBA):</strong></p>
+                    <p><strong>Step 4: Automation (VBA)</strong></p>
                     <ul>
                         <li>Record a macro that formats the dashboard (adds borders, bold headers, color coding).</li>
                         <li>Assign the macro to a "Refresh Dashboard" button.</li>
@@ -1810,7 +1957,7 @@
                 </div>
             </div>
 
-            <div class="slide" data-module="6" data-slide="29">
+            <div class="slide" data-module="6" data-slide="35">
                 <span class="module-tag">Module 6</span>
                 <h2>📋 Project Checklist &amp; Tips</h2>
                 <ul>
@@ -1824,7 +1971,7 @@
                 <div class="highlight-box"><i class="fas fa-rocket"></i> This project is your chance to show off everything you've learned. Take your time, have fun, and be proud of what you build!</div>
             </div>
 
-            <div class="slide" data-module="6" data-slide="30">
+            <div class="slide" data-module="6" data-slide="36">
                 <span class="module-tag">Module 6</span>
                 <h2>📚 What's Next? – Continue Your Excel Journey</h2>
                 <ul>
@@ -1839,7 +1986,7 @@
             <!-- ========================================== -->
             <!-- COURSE COMPLETION SLIDE                     -->
             <!-- ========================================== -->
-            <div class="slide" data-module="0" data-slide="31">
+            <div class="slide" data-module="0" data-slide="37">
                 <h1 style="text-align: center;">🎉 Course <span>Complete!</span></h1>
                 <p style="text-align: center; font-size: 1.3rem; color: var(--slate);">Congratulations! You've completed the Advanced Excel Masterclass.</p>
                 <div style="text-align: center; margin: 30px 0;">
@@ -1924,7 +2071,96 @@
         const unlockForm = document.getElementById('unlockForm');
         const errorMsg = document.getElementById('errorMsg');
 
-        // ---------- FUNCTIONS ----------
+        // ---------- DOWNLOAD FUNCTION ----------
+        function downloadModule(moduleNum) {
+            // Find all slides belonging to this module
+            let slides = [];
+            let currentIndex = 0;
+            
+            // Find the first slide of this module
+            for (let i = 0; i < allSlides.length; i++) {
+                if (parseInt(allSlides[i].getAttribute('data-module')) === moduleNum) {
+                    currentIndex = i;
+                    break;
+                }
+            }
+
+            // Collect all slides for this module (until we hit a new module or end)
+            for (let i = currentIndex; i < allSlides.length; i++) {
+                const slide = allSlides[i];
+                const mod = parseInt(slide.getAttribute('data-module'));
+                if (mod !== moduleNum && mod !== 0) break; // Stop if we hit a new module
+                if (mod === moduleNum || mod === 0) {
+                    slides.push(slide);
+                }
+            }
+
+            // Build the HTML content for the print view
+            let content = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Advanced Excel Masterclass - Module ${moduleNum}</title>
+                    <style>
+                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.8; padding: 40px; max-width: 900px; margin: 0 auto; color: #333; }
+                        h1 { color: #0A0A5E; }
+                        h2 { color: #0A0A5E; border-left: 6px solid #64C7D4; padding-left: 20px; }
+                        h3 { color: #3A4574; }
+                        .code-block { background: #0f1f30; color: #dae9ff; padding: 15px; border-radius: 8px; overflow-x: auto; font-family: monospace; margin: 15px 0; }
+                        .goal-box, .highlight-box, .tip, .project-box { padding: 15px 20px; border-radius: 8px; margin: 15px 0; border-left: 6px solid #2e7d32; }
+                        .goal-box { background: #eaf4e8; }
+                        .highlight-box { background: #e9f3fa; border-left-color: #1f7aa6; }
+                        .tip { background: #fff8e1; border-left-color: #f9a825; }
+                        .project-box { background: #e3edf7; border-left-color: #1f6b9c; }
+                        .card { border: 1px solid #e2ebf5; border-radius: 8px; padding: 15px; margin: 10px 0; }
+                        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+                        ul, ol { padding-left: 20px; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+                        th { background: #0A0A5E; color: white; }
+                        .module-tag { display: none; }
+                        .subhead { font-size: 1.3rem; color: #3A4574; }
+                        .download-btn-wrapper, .progress-dots { display: none; }
+                        .quiz-container, .quiz-submit-btn, .quiz-results { display: none; }
+                        @media print { .slide { display: block !important; } }
+                    </style>
+                </head>
+                <body>
+            `;
+
+            // Add the content of each slide
+            slides.forEach(slide => {
+                // Clone the slide content to avoid affecting the live DOM
+                const clone = slide.cloneNode(true);
+                // Remove any quiz or interactive elements for clean printing
+                const quiz = clone.querySelector('.quiz-container');
+                if (quiz) quiz.remove();
+                const submitBtn = clone.querySelector('.quiz-submit-btn');
+                if (submitBtn) submitBtn.remove();
+                const results = clone.querySelector('.quiz-results');
+                if (results) results.remove();
+                const downloadWrapper = clone.querySelector('.download-btn-wrapper');
+                if (downloadWrapper) downloadWrapper.remove();
+                const progressDots = clone.querySelector('.progress-dots');
+                if (progressDots) progressDots.remove();
+                
+                content += clone.innerHTML;
+            });
+
+            content += `</body></html>`;
+
+            // Create a new window for printing
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(content);
+            printWindow.document.close();
+            
+            // Wait for content to load then print
+            printWindow.onload = function() {
+                printWindow.print();
+            };
+        }
+
+        // ---------- SLIDE FUNCTIONS ----------
         function updateSlide(index) {
             allSlides.forEach(s => s.classList.remove('active'));
             allSlides[index].classList.add('active');
