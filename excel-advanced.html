@@ -552,15 +552,35 @@
                     <p style="color: #64748B; margin-bottom: 25px; font-size: 0.95rem;">Enter your course password to unlock the full module slides.</p>
                     
                     <form id="studentPasswordForm" style="display: flex; flex-direction: column; gap: 15px;">
-                        <input type="password" id="studentPasswordInput" placeholder="Enter your password..." style="
-                            padding: 14px 20px;
-                            border: 2px solid #E2E8F0;
-                            border-radius: 12px;
-                            font-size: 1rem;
-                            text-align: center;
-                            letter-spacing: 2px;
-                            font-family: inherit;
-                        " />
+                        <div style="position: relative;">
+                            <input type="password" id="studentPasswordInput" placeholder="Enter your password..." style="
+                                width: 100%;
+                                padding: 14px 46px 14px 20px;
+                                border: 2px solid #E2E8F0;
+                                border-radius: 12px;
+                                font-size: 1rem;
+                                text-align: center;
+                                letter-spacing: 2px;
+                                font-family: inherit;
+                            " />
+                            <button type="button" id="toggleStudentPassword" aria-label="Show password" title="Show password" style="
+                                position: absolute;
+                                right: 14px;
+                                top: 50%;
+                                transform: translateY(-50%);
+                                background: none;
+                                border: none;
+                                padding: 4px;
+                                color: #94A3B8;
+                                cursor: pointer;
+                                font-size: 1.05rem;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            ">
+                                <i class="fas fa-eye" id="studentToggleIcon"></i>
+                            </button>
+                        </div>
                         <button type="submit" style="
                             padding: 14px;
                             background: #64C7D4;
@@ -589,9 +609,12 @@
             <script>
                 // ---------- PASSWORD LOGIC ----------
                 const PASSWORD_MODULE_MAP = {
-                    "excel101": "1", "formulas123": "2", "functions456": "3", 
-                    "data789": "4", "lookups101": "5", "dashboard2026": "6"
+                    "adv101": "1", "advpivot": "2", "advdax": "3", 
+                    "advdash": "4", "advvba": "5", "advcap": "6"
                 };
+                
+                // ✅ MASTER ADMIN PASSWORD - UNLOCKS EVERYTHING
+                const ADMIN_PASSWORD = "greach2026";
 
                 function openStudentLogin() {
                     document.getElementById('studentPasswordModal').style.display = 'flex';
@@ -609,9 +632,17 @@
                     const password = document.getElementById('studentPasswordInput').value.trim();
                     const errorEl = document.getElementById('studentPasswordError');
                     
+                    // ✅ CHECK FOR ADMIN PASSWORD FIRST
+                    if (password === ADMIN_PASSWORD) {
+                        // Admin password -> unlock everything (go to module 1)
+                        window.location.href = `excel-advanced-course.html?admin=1`;
+                        return;
+                    }
+                    
+                    // ✅ CHECK FOR REGULAR MODULE PASSWORD
                     if (PASSWORD_MODULE_MAP.hasOwnProperty(password)) {
                         const moduleId = PASSWORD_MODULE_MAP[password];
-                        window.location.href = `excel-course.html?module=${moduleId}`;
+                        window.location.href = `excel-advanced-course.html?module=${moduleId}`;
                     } else {
                         errorEl.style.display = 'block';
                         document.getElementById('studentPasswordInput').value = '';
@@ -627,6 +658,17 @@
                     if (e.target === this) {
                         closeStudentLogin();
                     }
+                });
+
+                // ✅ PASSWORD TOGGLE (Eye Icon)
+                document.getElementById('toggleStudentPassword').addEventListener('click', function() {
+                    const input = document.getElementById('studentPasswordInput');
+                    const icon = document.getElementById('studentToggleIcon');
+                    const isHidden = input.type === 'password';
+                    input.type = isHidden ? 'text' : 'password';
+                    icon.className = isHidden ? 'fas fa-eye-slash' : 'fas fa-eye';
+                    this.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+                    input.focus();
                 });
             </script>
 
