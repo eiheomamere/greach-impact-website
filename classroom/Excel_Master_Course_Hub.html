@@ -3737,8 +3737,43 @@ Automated Direct Link: ${s.magicLink}`;
 
         const session = JSON.parse(localStorage.getItem(ACTIVE_SESSION_KEY) || 'null');
         if (session && session.verified) {
+          // Check if session has been forcefully terminated by admin
+          if (session.id && window.GreachDB && window.GreachDB.isSessionTerminated && window.GreachDB.isSessionTerminated(session.id)) {
+            alert('Your active session has been terminated by the administrator.');
+            localStorage.removeItem(ACTIVE_SESSION_KEY);
+            document.getElementById('securityGateOverlay').classList.remove('unlocked');
+            location.reload();
+            return;
+          }
+
+          // Verify with database that the code is still active and not revoked/expired
+          if (window.GreachDB && session.id) {
+            const student = window.GreachDB.findStudent(session.id) || window.GreachDB.findStudent(session.email);
+            if (student) {
+              const expiry = window.GreachDB.checkAccessExpiry(student);
+              if (expiry.isExpired || student.isCodeActive === false) {
+                alert('Your access code is inactive or has expired (1 month limit).');
+                localStorage.removeItem(ACTIVE_SESSION_KEY);
+                document.getElementById('securityGateOverlay').classList.remove('unlocked');
+                return;
+              }
+            }
+          }
+
           document.getElementById('securityGateOverlay').classList.add('unlocked');
           updateUserIdentityHeader(session.role === 'instructor');
+
+          // Send presence heartbeat every 45 seconds
+          if (window.GreachDB && window.GreachDB.updateStudentHeartbeat && session.id) {
+            window.GreachDB.updateStudentHeartbeat(session.id);
+            if (!window.__hubHeartbeatInterval) {
+              window.__hubHeartbeatInterval = setInterval(() => {
+                if (window.GreachDB && window.GreachDB.updateStudentHeartbeat && session.id) {
+                  window.GreachDB.updateStudentHeartbeat(session.id);
+                }
+              }, 45000);
+            }
+          }
         } else {
           document.getElementById('securityGateOverlay').classList.remove('unlocked');
         }
@@ -4021,6 +4056,22 @@ Automated Direct Link: ${s.magicLink}`;
         });
       }
 
+      
+      function showLockedModuleAlert(lessonOrModule, studentCourse, requiredCourse) {
+        const modal = document.getElementById('moduleLockModal');
+        if (modal) {
+          const modEl = document.getElementById('lockModalTargetModule');
+          const stuEl = document.getElementById('lockModalStudentCourse');
+          const reqEl = document.getElementById('lockModalRequiredCourse');
+          if (modEl) modEl.textContent = lessonOrModule;
+          if (stuEl) stuEl.textContent = studentCourse;
+          if (reqEl) reqEl.textContent = requiredCourse;
+          modal.style.display = 'flex';
+        } else {
+          alert('🔒 Module Access Restricted\n\nYour enrollment: ' + studentCourse + '\n\n' + lessonOrModule + ' requires ' + requiredCourse + '. Contact greachimpact@gmail.com to upgrade.');
+        }
+      }
+  
       function updateProgress() {
         const count = completedSet.size;
         const pct = Math.round((count / total) * 100);
@@ -4031,6 +4082,18 @@ Automated Direct Link: ${s.magicLink}`;
 
       function updateSlide(index) {
         if (index < 0 || index >= total) return;
+
+        // RBAC Access Control Check
+        const session = JSON.parse(localStorage.getItem(ACTIVE_SESSION_KEY) || '{}');
+        const isLead = (localStorage.getItem(INSTRUCTOR_LOGIN_KEY) === 'true') || session.role === 'instructor' || session.isSuperAdmin;
+        if (!isLead && window.GreachDB && window.GreachDB.canAccessSlide) {
+          const slideAccess = window.GreachDB.canAccessSlide(session.courseKey || session.course, index);
+          if (!slideAccess.allowed) {
+            showLockedModuleAlert(`Lesson ${index + 1}`, session.course || 'Microsoft Excel for Beginners', slideAccess.requiredCourse);
+            return;
+          }
+        }
+
         current = index;
 
         slides.forEach((s, i) => {
@@ -4827,5 +4890,41 @@ Automated Direct Link: ${s.magicLink}`;
       updateSlide(0);
     })();
   </script>
+
+  <!-- 🔒 GRANULAR COURSE ACCESS RESTRICTION MODAL -->
+  <div id="moduleLockModal" style="display:none; position:fixed; inset:0; background:rgba(11,26,45,0.85); backdrop-filter:blur(6px); z-index:99999; align-items:center; justify-content:center; padding:1.5rem;">
+    <div style="background:white; border-radius:18px; max-width:520px; width:100%; padding:2rem; box-shadow:0 25px 50px rgba(0,0,0,0.3); border:2px solid #ef4444; text-align:center; animation:fadeIn 0.2s ease;">
+      <div style="width:65px; height:65px; background:#fef2f2; border:2px solid #fecaca; border-radius:50%; margin:0 auto 1.2rem; display:flex; align-items:center; justify-content:center; color:#dc2626; font-size:1.8rem;">
+        <i class="fas fa-lock"></i>
+      </div>
+      <h3 style="font-size:1.35rem; color:#0f172a; font-weight:800; margin-bottom:0.5rem;">Module Access Restricted</h3>
+      <p style="color:#64748b; font-size:0.92rem; line-height:1.5; margin-bottom:1.2rem;">
+        You are currently enrolled in:
+        <br><strong id="lockModalStudentCourse" style="color:#0284c7; font-size:1.05rem;">Microsoft Excel for Beginners</strong>
+      </p>
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1rem; margin-bottom:1.5rem; text-align:left; font-size:0.85rem; color:#334155;">
+        <div style="margin-bottom:0.4rem;">
+          <span style="color:#94a3b8; font-size:0.75rem; text-transform:uppercase; font-weight:700;">Locked Module:</span>
+          <div id="lockModalTargetModule" style="font-weight:700; color:#0f172a;">Section 4: Data Cleaning & Advanced Tables</div>
+        </div>
+        <div>
+          <span style="color:#94a3b8; font-size:0.75rem; text-transform:uppercase; font-weight:700;">Required Enrollment:</span>
+          <div id="lockModalRequiredCourse" style="font-weight:700; color:#107c41;">Excel Advanced or Complete Analytics Suite</div>
+        </div>
+      </div>
+      <p style="font-size:0.82rem; color:#64748b; margin-bottom:1.5rem;">
+        To upgrade your enrollment code or request access, contact the Lead Instructor at <a href="mailto:greachimpact@gmail.com" style="color:#0284c7; font-weight:700;">greachimpact@gmail.com</a> or via WhatsApp.
+      </p>
+      <div style="display:flex; gap:0.8rem; justify-content:center;">
+        <button onclick="document.getElementById('moduleLockModal').style.display='none'" style="background:#0f172a; color:white; border:none; padding:0.75rem 1.6rem; border-radius:10px; font-weight:700; cursor:pointer; font-size:0.92rem;">
+          <i class="fas fa-arrow-left"></i> Return to Enrolled Lessons
+        </button>
+        <a href="https://wa.me/2349072250869?text=Hello%20Greach%20Impact!%20I%20would%20like%20to%20upgrade%20my%20course%20enrollment." target="_blank" style="background:#25D366; color:white; text-decoration:none; padding:0.75rem 1.4rem; border-radius:10px; font-weight:700; display:inline-flex; align-items:center; gap:6px; font-size:0.92rem;">
+          <i class="fab fa-whatsapp"></i> Upgrade on WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

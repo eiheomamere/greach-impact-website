@@ -14,6 +14,9 @@
   const SESSION_PASSES_KEY = 'greach_session_passes_v2';
   const SUPER_ADMIN_KEY = 'greach_super_admin_credentials_v2';
   const SETTINGS_KEY = 'greach_db_config_v2';
+  const STUDENT_ACTIVITY_KEY = 'greach_student_activity_log_v2';
+  const ACTIVE_SESSIONS_KEY = 'greach_active_sessions_v2';
+  const TERMINATED_SESSIONS_KEY = 'greach_terminated_sessions_v2';
 
   // 1. DEFAULT SUPER ADMIN MASTER CREDENTIALS
   const DEFAULT_SUPER_ADMIN = {
@@ -36,6 +39,87 @@
   }
 
   // 1b. DEFAULT COURSE SCHEDULES & CLASS TIMES
+  
+  // ==============================================================
+  // GRANULAR COURSE-BASED ACCESS CONTROL (ROLE-BASED CURRICULUM GATING)
+  // ==============================================================
+  const COURSE_PERMISSIONS = {
+    excel_beginners: {
+      key: 'excel_beginners',
+      label: 'Microsoft Excel for Beginners',
+      allowedSections: [0, 1, 2], // Sections 1, 2, 3: Basics, Math, Logic & Text (Lessons 0 to 30)
+      allowedModulesText: 'Modules 1–3 (Excel Basics, Formatting, Formulas, Logic & Text Functions)',
+      maxSlide: 30,
+      badge: 'Beginner Access'
+    },
+    excel_advanced: {
+      key: 'excel_advanced',
+      label: 'Microsoft Excel Advanced & Analytics',
+      allowedSections: [3, 4, 5], // Sections 4, 5, 6: Data Cleaning, Tables, Lookups, PivotTables, Dashboards
+      allowedModulesText: 'Modules 4–6 (Advanced Data Cleaning, Dynamic Arrays, XLOOKUP, PivotTables & Dashboards)',
+      minSlide: 31,
+      maxSlide: 63,
+      badge: 'Advanced Access'
+    },
+    dashboard: {
+      key: 'excel_dashboard',
+      label: 'Executive Interactive Dashboard Design',
+      allowedSections: [5], // Section 6: Dashboards, Slicers & Capstone Tracker
+      allowedModulesText: 'Module 6 (Executive Dashboards, Slicers, KPI Cards & Capstone)',
+      minSlide: 48,
+      maxSlide: 63,
+      badge: 'Dashboard Specialist'
+    },
+    excel_dashboard: {
+      key: 'excel_dashboard',
+      label: 'Executive Interactive Dashboard Design',
+      allowedSections: [5], // Section 6: Dashboards, Slicers & Capstone Tracker
+      allowedModulesText: 'Module 6 (Executive Dashboards, Slicers, KPI Cards & Capstone)',
+      minSlide: 48,
+      maxSlide: 63,
+      badge: 'Dashboard Specialist'
+    },
+    sql_beginners: {
+      key: 'sql_beginners',
+      label: 'SQL for Beginners',
+      allowedSections: [], // Standalone SQL portal
+      allowedModulesText: 'SQL Analytics & Database Queries Portal',
+      badge: 'SQL Specialist'
+    },
+    sql: {
+      key: 'sql_beginners',
+      label: 'SQL for Beginners',
+      allowedSections: [],
+      allowedModulesText: 'SQL Analytics & Database Queries Portal',
+      badge: 'SQL Specialist'
+    },
+    power_bi: {
+      key: 'power_bi',
+      label: 'Power BI for Beginners',
+      allowedSections: [], // Standalone Power BI portal
+      allowedModulesText: 'Power BI Business Intelligence & Reporting Portal',
+      badge: 'Power BI Specialist'
+    },
+    complete_package: {
+      key: 'complete_package',
+      label: 'Complete Analytics Suite (Excel + SQL + Power BI)',
+      allowedSections: [0, 1, 2, 3, 4, 5], // Full All-Inclusive Access
+      allowedModulesText: 'Full Suite Access: All 6 Modules (64 Lessons) + SQL + Power BI',
+      minSlide: 0,
+      maxSlide: 63,
+      badge: 'Full Suite VIP'
+    },
+    complete_course: {
+      key: 'complete_package',
+      label: 'Complete Analytics Suite (Excel + SQL + Power BI)',
+      allowedSections: [0, 1, 2, 3, 4, 5],
+      allowedModulesText: 'Full Suite Access: All 6 Modules (64 Lessons) + SQL + Power BI',
+      minSlide: 0,
+      maxSlide: 63,
+      badge: 'Full Suite VIP'
+    }
+  };
+
   const DEFAULT_SCHEDULES = {
     excel_beginners: {
       courseKey: 'excel_beginners',
@@ -4876,6 +4960,8 @@
         email: email,
         password: pass,
         cohort: data.cohort || 'Batch 2: 2026 Masterclass',
+        course: data.course || 'Microsoft Excel for Beginners',
+        courseKey: this.normalizeCourseKey(data.courseKey || data.course || 'excel_beginners'),
         status: (data.isFree || data.paymentConfirmed) ? 'Active' : 'Pending Payment',
         paymentStatus: (data.isFree || data.paymentConfirmed) ? 'Verified & Paid' : 'Pending Verification',
         isCodeActive: !!(data.isFree || data.paymentConfirmed),
@@ -5429,7 +5515,11 @@ Greach Impact Automated Registration Engine`);
     getPrices: function() {
       try {
         const stored = localStorage.getItem(PRICES_KEY);
-        return stored ? JSON.parse(stored) : DEFAULT_PRICES;
+        const res = stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(DEFAULT_PRICES));
+        if (res.dashboard && !res.excel_dashboard) res.excel_dashboard = res.dashboard;
+        if (res.sql && !res.sql_beginners) res.sql_beginners = res.sql;
+        if (res.complete_course && !res.complete_package) res.complete_package = res.complete_course;
+        return res;
       } catch(e) {
         return DEFAULT_PRICES;
       }
@@ -5438,12 +5528,20 @@ Greach Impact Automated Registration Engine`);
     updateCoursePrice: function(rawKey, newCurrent, newRegular, updatedBy) {
       const prices = this.getPrices();
       const courseKey = this.normalizeCourseKey ? this.normalizeCourseKey(rawKey) : rawKey;
-      if (prices[courseKey]) {
-        const oldVal = prices[courseKey].current;
-        prices[courseKey].current = Number(newCurrent);
-        if (newRegular) prices[courseKey].regular = Number(newRegular);
-        const discountPct = Math.round((1 - (prices[courseKey].current / prices[courseKey].regular)) * 100);
-        prices[courseKey].discount = `${discountPct}% OFF`;
+      const targetKey = prices[rawKey] ? rawKey : (prices[courseKey] ? courseKey : null);
+      if (targetKey && prices[targetKey]) {
+        const oldVal = prices[targetKey].current;
+        prices[targetKey].current = Number(newCurrent);
+        if (newRegular) prices[targetKey].regular = Number(newRegular);
+        const discountPct = Math.round((1 - (prices[targetKey].current / prices[targetKey].regular)) * 100);
+        prices[targetKey].discount = `${discountPct}% OFF`;
+        // Sync alias keys
+        if (targetKey === 'dashboard') prices.excel_dashboard = prices.dashboard;
+        if (targetKey === 'excel_dashboard') prices.dashboard = prices.excel_dashboard;
+        if (targetKey === 'sql') prices.sql_beginners = prices.sql;
+        if (targetKey === 'sql_beginners') prices.sql = prices.sql_beginners;
+        if (targetKey === 'complete_course') prices.complete_package = prices.complete_course;
+        if (targetKey === 'complete_package') prices.complete_course = prices.complete_package;
         localStorage.setItem(PRICES_KEY, JSON.stringify(prices));
 
         if (this.logAudit) {
@@ -5468,7 +5566,14 @@ Greach Impact Automated Registration Engine`);
     getSchedules: function() {
       try {
         const stored = localStorage.getItem(SCHEDULES_KEY);
-        return stored ? JSON.parse(stored) : DEFAULT_SCHEDULES;
+        const res = stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(DEFAULT_SCHEDULES));
+        if (res.dashboard && !res.excel_dashboard) res.excel_dashboard = Object.assign({}, res.dashboard, { courseKey: 'excel_dashboard' });
+        if (res.excel_dashboard && !res.dashboard) res.dashboard = Object.assign({}, res.excel_dashboard, { courseKey: 'dashboard' });
+        if (res.sql && !res.sql_beginners) res.sql_beginners = Object.assign({}, res.sql, { courseKey: 'sql_beginners' });
+        if (res.sql_beginners && !res.sql) res.sql = Object.assign({}, res.sql_beginners, { courseKey: 'sql' });
+        if (res.complete_course && !res.complete_package) res.complete_package = Object.assign({}, res.complete_course, { courseKey: 'complete_package' });
+        if (res.complete_package && !res.complete_course) res.complete_course = Object.assign({}, res.complete_package, { courseKey: 'complete_course' });
+        return res;
       } catch(e) {
         return DEFAULT_SCHEDULES;
       }
@@ -5476,23 +5581,33 @@ Greach Impact Automated Registration Engine`);
 
     getSchedule: function(courseKey) {
       const list = this.getSchedules();
-      return list[courseKey] || DEFAULT_SCHEDULES[courseKey] || null;
+      const norm = this.normalizeCourseKey ? this.normalizeCourseKey(courseKey) : courseKey;
+      return list[courseKey] || list[norm] || DEFAULT_SCHEDULES[courseKey] || DEFAULT_SCHEDULES[norm] || null;
     },
 
     updateSchedule: function(rawKey, data, updatedBy) {
       const schedules = this.getSchedules();
-      const courseKey = this.normalizeCourseKey ? this.normalizeCourseKey(rawKey) : rawKey;
-      if (!schedules[courseKey]) {
-        schedules[courseKey] = { courseKey: courseKey, label: data.label || courseKey };
+      const normKey = this.normalizeCourseKey ? this.normalizeCourseKey(rawKey) : rawKey;
+      const targetKey = schedules[rawKey] ? rawKey : (schedules[normKey] ? normKey : rawKey);
+      if (!schedules[targetKey]) {
+        schedules[targetKey] = { courseKey: targetKey, label: data.label || targetKey };
       }
-      if (data.startDate) schedules[courseKey].startDate = data.startDate;
-      if (data.endDate) schedules[courseKey].endDate = data.endDate;
-      if (data.startTime) schedules[courseKey].startTime = data.startTime;
-      if (data.endTime) schedules[courseKey].endTime = data.endTime;
-      if (data.days) schedules[courseKey].days = data.days;
-      if (data.cohort) schedules[courseKey].cohort = data.cohort;
-      if (data.deliveryMode) schedules[courseKey].deliveryMode = data.deliveryMode;
-      if (data.mode) schedules[courseKey].mode = data.mode;
+      if (data.startDate !== undefined) schedules[targetKey].startDate = data.startDate;
+      if (data.endDate !== undefined) schedules[targetKey].endDate = data.endDate;
+      if (data.startTime !== undefined) schedules[targetKey].startTime = data.startTime;
+      if (data.endTime !== undefined) schedules[targetKey].endTime = data.endTime;
+      if (data.days !== undefined) schedules[targetKey].days = data.days;
+      if (data.cohort !== undefined) schedules[targetKey].cohort = data.cohort;
+      if (data.deliveryMode !== undefined) schedules[targetKey].deliveryMode = data.deliveryMode;
+      if (data.mode !== undefined) schedules[targetKey].mode = data.mode;
+
+      // Sync aliases
+      if (targetKey === 'dashboard') schedules.excel_dashboard = Object.assign({}, schedules.dashboard, { courseKey: 'excel_dashboard' });
+      if (targetKey === 'excel_dashboard') schedules.dashboard = Object.assign({}, schedules.excel_dashboard, { courseKey: 'dashboard' });
+      if (targetKey === 'sql') schedules.sql_beginners = Object.assign({}, schedules.sql, { courseKey: 'sql_beginners' });
+      if (targetKey === 'sql_beginners') schedules.sql = Object.assign({}, schedules.sql_beginners, { courseKey: 'sql' });
+      if (targetKey === 'complete_course') schedules.complete_package = Object.assign({}, schedules.complete_course, { courseKey: 'complete_package' });
+      if (targetKey === 'complete_package') schedules.complete_course = Object.assign({}, schedules.complete_package, { courseKey: 'complete_course' });
 
       localStorage.setItem(SCHEDULES_KEY, JSON.stringify(schedules));
 
@@ -5500,14 +5615,14 @@ Greach Impact Automated Registration Engine`);
         this.logAudit(
           updatedBy || 'Super Admin',
           'Schedule & Delivery Mode Update',
-          `Updated ${schedules[courseKey].label}: Delivery: ${schedules[courseKey].deliveryMode || 'live'}, Dates: ${schedules[courseKey].startDate || ''} to ${schedules[courseKey].endDate || ''}, Time: ${schedules[courseKey].startTime || ''}`
+          `Updated ${schedules[targetKey].label}: Delivery: ${schedules[targetKey].deliveryMode || 'live'}, Dates: ${schedules[targetKey].startDate || ''} to ${schedules[targetKey].endDate || ''}, Time: ${schedules[targetKey].startTime || ''}`
         );
       }
 
       if (typeof window !== 'undefined' && window.GreachSync && window.GreachSync.refresh) {
         window.GreachSync.refresh();
       }
-      return { success: true, schedule: schedules[courseKey] };
+      return { success: true, schedule: schedules[targetKey] };
     },
 
     // ==============================================================
@@ -5594,22 +5709,7 @@ Greach Impact Automated Registration Engine`);
         };
       }
 
-      // Check general batch tokens
-      if (clean.toUpperCase() === 'GREACH-2026' || clean.toUpperCase() === 'B2-EXCEL') {
-        const batchStudent = {
-          id: 'STU-BATCH2-GUEST',
-          name: 'Batch 2 Verified Student',
-          email: 'student.batch2@greach.academy',
-          cohort: 'Batch 2: 2026 Masterclass',
-          accessType: 'batch_token',
-          expiresAt: null
-        };
-        return {
-          success: true,
-          student: batchStudent,
-          expiry: { isExpired: false, message: 'Batch Token Verified - Active Access' }
-        };
-      }
+      // Note: Generic bypass tokens (GREACH-2026/B2-EXCEL) have been permanently disabled for strict paywall & security enforcement.
 
       // Find student by password/code OR Student ID OR Email
       const roster = this.getAllStudents();
@@ -5653,7 +5753,306 @@ Greach Impact Automated Registration Engine`);
         expiry: expiry
       };
     }
+  ,
+
+// ==============================================================
+    // COURSE ACCESS RESTRICTION & ROLE-BASED ACCESS CONTROL (RBAC)
+    // ==============================================================
+
+    normalizeCourseKey: function(rawKey) {
+      if (!rawKey) return 'excel_beginners';
+      const k = String(rawKey).toLowerCase().trim();
+      if (k.includes('complete') || k.includes('suite')) return 'complete_package';
+      if (k.includes('dash')) return 'excel_dashboard';
+      if (k.includes('adv')) return 'excel_advanced';
+      if (k.includes('sql')) return 'sql_beginners';
+      if (k.includes('power') || k.includes('bi')) return 'power_bi';
+      return 'excel_beginners';
+    },
+
+    getCoursePermissions: function(courseKey) {
+      const normalized = this.normalizeCourseKey(courseKey);
+      return COURSE_PERMISSIONS[normalized] || COURSE_PERMISSIONS.excel_beginners;
+    },
+
+    canAccessSection: function(studentOrCourseKey, sectionIndex) {
+      // 1. Super Admin or Instructor has unrestricted global access
+      if (!studentOrCourseKey) return { allowed: false, reason: 'No student credentials provided.' };
+      
+      let key = typeof studentOrCourseKey === 'string' 
+        ? studentOrCourseKey 
+        : (studentOrCourseKey.courseKey || studentOrCourseKey.course || 'excel_beginners');
+      
+      const role = typeof studentOrCourseKey === 'object' ? studentOrCourseKey.role : null;
+      if (role === 'instructor' || role === 'super_admin' || studentOrCourseKey.isSuperAdmin) {
+        return { allowed: true, reason: 'Super Admin Unrestricted Access', isInstructor: true };
+      }
+
+      const perm = this.getCoursePermissions(key);
+      const allowed = perm.allowedSections.includes(Number(sectionIndex));
+
+      let requiredCourse = 'Excel Advanced or Complete Suite';
+      if (sectionIndex === 5) requiredCourse = 'Executive Dashboard or Complete Suite';
+      else if (sectionIndex >= 3) requiredCourse = 'Excel Advanced or Complete Suite';
+
+      return {
+        allowed: allowed,
+        studentCourse: perm.label,
+        studentCourseKey: perm.key,
+        allowedModulesText: perm.allowedModulesText,
+        requiredCourse: requiredCourse,
+        reason: allowed 
+          ? 'Module included in your ' + perm.label + ' enrollment.'
+          : 'Module restricted. Your access code is enrolled for ' + perm.label + ' only. Requires ' + requiredCourse + '.'
+      };
+    },
+
+    canAccessSlide: function(studentOrCourseKey, slideIndex) {
+      // Map slide number to section index:
+      // Sec 0: 0-12 | Sec 1: 13-21 | Sec 2: 22-30 | Sec 3: 31-39 | Sec 4: 40-47 | Sec 5: 48-63
+      const idx = Number(slideIndex);
+      let sIdx = 0;
+      if (idx <= 12) sIdx = 0;
+      else if (idx <= 21) sIdx = 1;
+      else if (idx <= 30) sIdx = 2;
+      else if (idx <= 39) sIdx = 3;
+      else if (idx <= 47) sIdx = 4;
+      else sIdx = 5;
+
+      return this.canAccessSection(studentOrCourseKey, sIdx);
+    },
+
+    // ==============================================================
+    // STUDENT LOGIN / LOGOUT TRACKING & REAL-TIME PRESENCE
+    // ==============================================================
+
+    recordStudentLogin: function(student, metadata = {}) {
+      if (!student || !student.id) return null;
+      try {
+        const activeSessions = this.getActiveStudentSessionsRaw();
+        const now = new Date().toISOString();
+        const courseName = student.course || 'Microsoft Excel for Beginners';
+        const courseKey = this.normalizeCourseKey(student.courseKey || student.course);
+
+        // Remove existing session for same student to avoid duplicate entries
+        const filtered = activeSessions.filter(s => s.studentId !== student.id);
+
+        const newSession = {
+          sessionId: 'SESS-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+          studentId: student.id,
+          name: student.name,
+          email: student.email,
+          course: courseName,
+          courseKey: courseKey,
+          cohort: student.cohort || 'Batch 2',
+          loginTime: now,
+          lastHeartbeat: now,
+          status: 'online',
+          userAgent: metadata.userAgent || (typeof navigator !== 'undefined' ? navigator.userAgent : 'Browser Client'),
+          device: (typeof navigator !== 'undefined' && /Mobile|Android|iPhone/i.test(navigator.userAgent)) ? 'Mobile Device' : 'Desktop Browser'
+        };
+
+        filtered.unshift(newSession);
+        localStorage.setItem(ACTIVE_SESSIONS_KEY, JSON.stringify(filtered));
+
+        // Add to persistent activity log
+        this.addStudentActivityLog({
+          type: 'LOGIN',
+          studentId: student.id,
+          name: student.name,
+          email: student.email,
+          course: courseName,
+          courseKey: courseKey,
+          timestamp: now,
+          details: `Student ${student.name} (${student.id}) logged into ${courseName}`
+        });
+
+        // Clear any previous termination flag
+        localStorage.removeItem('greach_terminated_' + student.id);
+
+        return newSession;
+      } catch(e) {
+        console.error('[GreachDB] Error recording student login:', e);
+        return null;
+      }
+    },
+
+    recordStudentLogout: function(studentId, reason = 'User Logout') {
+      if (!studentId) return false;
+      try {
+        const activeSessions = this.getActiveStudentSessionsRaw();
+        const match = activeSessions.find(s => s.studentId === studentId);
+        const now = new Date().toISOString();
+
+        let durationStr = 'Unknown';
+        if (match && match.loginTime) {
+          const ms = new Date(now).getTime() - new Date(match.loginTime).getTime();
+          const mins = Math.floor(ms / 60000);
+          const secs = Math.floor((ms % 60000) / 1000);
+          durationStr = `${mins}m ${secs}s`;
+        }
+
+        // Remove from active sessions
+        const remaining = activeSessions.filter(s => s.studentId !== studentId);
+        localStorage.setItem(ACTIVE_SESSIONS_KEY, JSON.stringify(remaining));
+
+        // Add to persistent activity log
+        this.addStudentActivityLog({
+          type: 'LOGOUT',
+          studentId: studentId,
+          name: match ? match.name : studentId,
+          email: match ? match.email : '',
+          course: match ? match.course : '',
+          courseKey: match ? match.courseKey : '',
+          timestamp: now,
+          duration: durationStr,
+          reason: reason,
+          details: `Student ${match ? match.name : studentId} logged out (${reason}). Session Duration: ${durationStr}`
+        });
+
+        return true;
+      } catch(e) {
+        console.error('[GreachDB] Error recording student logout:', e);
+        return false;
+      }
+    },
+
+    updateStudentHeartbeat: function(studentId) {
+      if (!studentId) return;
+      try {
+        const activeSessions = this.getActiveStudentSessionsRaw();
+        const now = new Date().toISOString();
+        let changed = false;
+
+        activeSessions.forEach(s => {
+          if (s.studentId === studentId) {
+            s.lastHeartbeat = now;
+            s.status = 'online';
+            changed = true;
+          }
+        });
+
+        if (changed) {
+          localStorage.setItem(ACTIVE_SESSIONS_KEY, JSON.stringify(activeSessions));
+        }
+      } catch(e) {}
+    },
+
+    getActiveStudentSessionsRaw: function() {
+      try {
+        const stored = localStorage.getItem(ACTIVE_SESSIONS_KEY);
+        return stored ? JSON.parse(stored) : [];
+      } catch(e) {
+        return [];
+      }
+    },
+
+    getActiveStudentSessions: function() {
+      try {
+        const sessions = this.getActiveStudentSessionsRaw();
+        const now = Date.now();
+        const TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes inactivity timeout
+        const valid = [];
+
+        sessions.forEach(s => {
+          const last = new Date(s.lastHeartbeat || s.loginTime).getTime();
+          if (now - last < TIMEOUT_MS) {
+            valid.push(s);
+          } else {
+            // Auto-log idle logout
+            this.addStudentActivityLog({
+              type: 'LOGOUT',
+              studentId: s.studentId,
+              name: s.name,
+              email: s.email,
+              course: s.course,
+              courseKey: s.courseKey,
+              timestamp: new Date().toISOString(),
+              duration: 'Timed Out (>5m idle)',
+              reason: 'Idle Session Timeout',
+              details: `Student ${s.name} session ended due to 5m inactivity.`
+            });
+          }
+        });
+
+        if (valid.length !== sessions.length) {
+          localStorage.setItem(ACTIVE_SESSIONS_KEY, JSON.stringify(valid));
+        }
+        return valid;
+      } catch(e) {
+        return [];
+      }
+    },
+
+    forceLogoutStudent: function(studentId, adminUser = 'Greachimpact') {
+      if (!studentId) return { success: false, error: 'No student specified.' };
+      try {
+        const activeSessions = this.getActiveStudentSessionsRaw();
+        const match = activeSessions.find(s => s.studentId === studentId);
+
+        // Mark termination flag for client immediate kick
+        localStorage.setItem('greach_terminated_' + studentId, String(Date.now()));
+
+        this.recordStudentLogout(studentId, `Terminated by Admin (${adminUser})`);
+
+        this.logAudit({
+          action: 'Force Student Logout',
+          user: adminUser,
+          details: `Terminated live session for student ${match ? match.name : studentId} (${studentId})`
+        });
+
+        return { success: true, message: `Student session for ${studentId} terminated.` };
+      } catch(e) {
+        return { success: false, error: e.message };
+      }
+    },
+
+    isSessionTerminated: function(studentId) {
+      if (!studentId) return false;
+      try {
+        return !!localStorage.getItem('greach_terminated_' + studentId);
+      } catch(e) {
+        return false;
+      }
+    },
+
+    addStudentActivityLog: function(entry) {
+      try {
+        const stored = localStorage.getItem(STUDENT_ACTIVITY_KEY);
+        const logs = stored ? JSON.parse(stored) : [];
+        logs.unshift({
+          id: 'ACT-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+          ...entry
+        });
+        // Retain last 300 activities
+        if (logs.length > 300) logs.length = 300;
+        localStorage.setItem(STUDENT_ACTIVITY_KEY, JSON.stringify(logs));
+        return true;
+      } catch(e) {
+        return false;
+      }
+    },
+
+    getStudentActivityLogs: function() {
+      try {
+        const stored = localStorage.getItem(STUDENT_ACTIVITY_KEY);
+        return stored ? JSON.parse(stored) : [];
+      } catch(e) {
+        return [];
+      }
+    },
+
+    clearStudentActivityLogs: function() {
+      try {
+        localStorage.removeItem(STUDENT_ACTIVITY_KEY);
+        return true;
+      } catch(e) {
+        return false;
+      }
+    },
   };
+
+    
 
   // Initialize immediately
   GreachDB.init();

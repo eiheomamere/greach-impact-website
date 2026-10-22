@@ -1068,11 +1068,32 @@
       try {
         const session = JSON.parse(localStorage.getItem(ACTIVE_SESSION_KEY));
         if (session && session.verified) {
+          // Check if session has been forcefully terminated by admin
+          if (session.id && window.GreachDB && window.GreachDB.isSessionTerminated(session.id)) {
+            alert('Your active session has been terminated by the administrator.');
+            localStorage.removeItem(ACTIVE_SESSION_KEY);
+            location.reload();
+            return;
+          }
+
           if (securityGateOverlay) securityGateOverlay.classList.add('unlocked');
           if (studentStatusPill) studentStatusPill.style.display = 'inline-flex';
           const stuId = session.id || 'STU';
+          const courseName = session.course || 'Microsoft Excel for Beginners';
           if (verifiedStudentName) {
-            verifiedStudentName.textContent = '🎓 ' + session.name + ' (' + stuId + ')';
+            verifiedStudentName.innerHTML = '🎓 <strong>' + session.name + '</strong> (' + stuId + ') &bull; <span style="background:rgba(2,132,199,0.25); color:#38bdf8; padding:2px 8px; border-radius:12px; font-size:0.75rem; font-weight:700;">' + courseName + '</span>';
+          }
+
+          // Real-time heartbeat
+          if (window.GreachDB && window.GreachDB.updateStudentHeartbeat && session.id) {
+            window.GreachDB.updateStudentHeartbeat(session.id);
+            if (!window.__heartbeatInterval) {
+              window.__heartbeatInterval = setInterval(() => {
+                if (window.GreachDB && window.GreachDB.updateStudentHeartbeat && session.id) {
+                  window.GreachDB.updateStudentHeartbeat(session.id);
+                }
+              }, 45000);
+            }
           }
         } else {
           if (securityGateOverlay) securityGateOverlay.classList.remove('unlocked');
@@ -1114,21 +1135,31 @@
         }
         if (verifyRes.success) {
           const s = verifyRes.student;
+          const courseName = s.course || 'Microsoft Excel for Beginners';
+          const courseKey = window.GreachDB ? window.GreachDB.normalizeCourseKey(s.courseKey || s.course) : 'excel_beginners';
           const session = {
             role: 'student',
             id: s.id,
             name: s.name,
             email: s.email,
-            cohort: s.cohort,
+            course: courseName,
+            courseKey: courseKey,
+            cohort: s.cohort || 'Batch 2: 2026 Masterclass',
             expiresAt: s.expiresAt,
             verified: true,
             loginTime: new Date().toISOString()
           };
           localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
           localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
+
+          // Record live presence in database
+          if (window.GreachDB && window.GreachDB.recordStudentLogin) {
+            window.GreachDB.recordStudentLogin(s);
+          }
+
           if (errBox) errBox.style.display = 'none';
           checkAccessSecurity();
-          alert(`Welcome back, ${s.name}! Signed in successfully as ${s.id}.\nAccess Status: ${verifyRes.expiry.message}`);
+          alert(`Welcome back, ${s.name}!\n\nSigned in successfully as ${s.id}.\nEnrolled Course: ${courseName}\nAccess Status: ${verifyRes.expiry.message}`);
           return;
         } else if (verifyRes.isExpired) {
           if (errBox && errText) {
@@ -1228,11 +1259,22 @@
 
     window.logoutStudent = function() {
       if (confirm('Log out of this session?')) {
+        const session = JSON.parse(localStorage.getItem(ACTIVE_SESSION_KEY) || '{}');
+        if (session && session.id && window.GreachDB && window.GreachDB.recordStudentLogout) {
+          window.GreachDB.recordStudentLogout(session.id, 'User clicked logout');
+        }
         localStorage.removeItem(ACTIVE_SESSION_KEY);
         localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
         checkAccessSecurity();
       }
     };
+
+    window.addEventListener('beforeunload', () => {
+      const session = JSON.parse(localStorage.getItem(ACTIVE_SESSION_KEY) || '{}');
+      if (session && session.id && window.GreachDB && window.GreachDB.recordStudentLogout) {
+        window.GreachDB.recordStudentLogout(session.id, 'Browser Window Closed');
+      }
+    });
 
     // Run security check immediately
     checkAccessSecurity();

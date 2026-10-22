@@ -523,6 +523,11 @@
 
     <!-- KPI Metric Cards -->
     <section class="stats-grid">
+      <div class="stat-card green" style="border-left: 5px solid #22c55e;">
+        <div class="stat-title"><span>Students Online</span> <i class="fas fa-satellite-dish" style="color:#22c55e;"></i></div>
+        <div class="stat-val" id="statOnlineStudents">0</div>
+        <div class="stat-sub"><span style="display:inline-block; width:8px; height:8px; background:#22c55e; border-radius:50%; margin-right:4px;"></span>Live Presence Active</div>
+      </div>
       <div class="stat-card">
         <div class="stat-title"><span>Total Enrolled</span> <i class="fas fa-users" style="color:var(--accent-blue);"></i></div>
         <div class="stat-val" id="statTotalStudents">0</div>
@@ -573,12 +578,89 @@
       <button class="tab-btn" onclick="switchAdminTab('superuser')"><i class="fas fa-user-cog"></i> Superuser Settings</button>
       <button class="tab-btn" onclick="switchAdminTab('admins')"><i class="fas fa-user-shield"></i> Sub-Admins Manager</button>
       <button class="tab-btn" onclick="switchAdminTab('certificates')"><i class="fas fa-certificate"></i> Certificate Vault</button>
+      <button class="tab-btn" onclick="switchAdminTab('activity')"><i class="fas fa-satellite-dish"></i> Live Student Logins &amp; Presence</button>
       <button class="tab-btn" onclick="switchAdminTab('broadcast')"><i class="fas fa-bullhorn"></i> Live Stream &amp; Broadcast</button>
     </div>
 
     <!-- ========================================== -->
     <!-- TAB 1: STUDENT ROSTER & ACCESS CODES -->
     <!-- ========================================== -->
+    
+    <!-- ========================================== -->
+    <!-- TAB: LIVE STUDENT PRESENCE & ACTIVITY LOG -->
+    <!-- ========================================== -->
+    <section id="tabActivity" class="admin-card" style="display:none;">
+      <div class="card-head">
+        <div>
+          <h2><i class="fas fa-satellite-dish" style="color:#22c55e;"></i> Live Student Presence &amp; Login / Logout Activity</h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+            Real-time presence monitoring of enrolled students. View who is currently in class, their enrolled course, active duration, and force-terminate any suspicious session.
+          </p>
+        </div>
+        <div style="display:flex; gap:0.6rem;">
+          <button class="btn-primary" onclick="renderStudentActivity()"><i class="fas fa-sync-alt"></i> Refresh Presence</button>
+          <button class="btn-gold" style="background:#dc2626;" onclick="clearActivityHistory()"><i class="fas fa-trash-alt"></i> Clear Activity History</button>
+        </div>
+      </div>
+
+      <!-- SUB-SECTION 1: STUDENTS CURRENTLY ONLINE -->
+      <div style="margin-top:1.5rem; margin-bottom:2rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem;">
+          <h3 style="font-size:1.1rem; color:var(--navy-900); display:flex; align-items:center; gap:8px;">
+            <span style="display:inline-block; width:10px; height:10px; background:#22c55e; border-radius:50%;"></span>
+            Students Currently Online (<span id="activeSessionsCount">0</span>)
+          </h3>
+          <small style="color:#64748b; font-size:0.8rem;">Auto-expires after 5 minutes of inactivity</small>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Student ID &amp; Name</th>
+                <th>Enrolled Course</th>
+                <th>Status</th>
+                <th>Login Time</th>
+                <th>Device / Client</th>
+                <th>Last Active (Heartbeat)</th>
+                <th style="text-align:right;">Super Admin Action</th>
+              </tr>
+            </thead>
+            <tbody id="activeSessionsTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SUB-SECTION 2: LOGIN & LOGOUT ACTIVITY AUDIT LOG -->
+      <div style="margin-top:2rem;">
+        <h3 style="font-size:1.1rem; color:var(--navy-900); margin-bottom:0.8rem; display:flex; align-items:center; gap:8px;">
+          <i class="fas fa-history" style="color:var(--accent-blue);"></i>
+          Complete Student Login / Logout Audit Log (<span id="activityLogCount">0</span> events)
+        </h3>
+        
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Student ID &amp; Name</th>
+                <th>Enrolled Course</th>
+                <th>Event Type</th>
+                <th>Session Duration</th>
+                <th>Trigger / Reason</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="studentActivityTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  
     <section id="tabStudents" class="admin-card">
       <div class="card-head">
         <div>
@@ -1620,7 +1702,9 @@
         if (el) el.style.display = (t === tabKey) ? 'block' : 'none';
       });
 
-      if (tabKey === 'superuser') {
+      if (tabKey === 'activity') {
+        renderStudentActivity();
+      } else if (tabKey === 'superuser') {
         populateSuperUserForm();
       } else if (tabKey === 'schedules') {
         renderScheduleCards();
@@ -1639,6 +1723,7 @@
 
     // Refresh All Data
     function refreshAllData() {
+      if (typeof renderStudentActivity === 'function') renderStudentActivity();
       renderStats();
       renderStudentsTable();
       renderSubAdminsTable();
@@ -1694,6 +1779,116 @@
     }
 
     // 3. Render Student Roster Table
+    
+    // Render Live Presence & Activity Tracker
+    function renderStudentActivity() {
+      if (!window.GreachDB) return;
+      const activeSessions = window.GreachDB.getActiveStudentSessions ? window.GreachDB.getActiveStudentSessions() : [];
+      const activityLogs = window.GreachDB.getStudentActivityLogs ? window.GreachDB.getStudentActivityLogs() : [];
+
+      // Update KPI
+      const kpiEl = document.getElementById('statOnlineStudents');
+      if (kpiEl) kpiEl.textContent = activeSessions.length;
+
+      const activeCountEl = document.getElementById('activeSessionsCount');
+      if (activeCountEl) activeCountEl.textContent = activeSessions.length;
+
+      const logCountEl = document.getElementById('activityLogCount');
+      if (logCountEl) logCountEl.textContent = activityLogs.length;
+
+      // Render Active Sessions Table
+      const activeTbody = document.getElementById('activeSessionsTableBody');
+      if (activeTbody) {
+        if (activeSessions.length === 0) {
+          activeTbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:#94a3b8;"><i class="fas fa-user-slash" style="font-size:1.5rem; margin-bottom:0.5rem; display:block;"></i>No students currently online. All enrolled students are offline.</td></tr>';
+        } else {
+          activeTbody.innerHTML = activeSessions.map(s => {
+            const loginDate = new Date(s.loginTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const lastActive = new Date(s.lastHeartbeat || s.loginTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            return `
+              <tr>
+                <td>
+                  <strong style="color:var(--navy-900);">${escapeHtml(s.name)}</strong>
+                  <div style="font-family:monospace; font-size:0.78rem; color:#64748b;">${escapeHtml(s.studentId)}</div>
+                </td>
+                <td>
+                  <span class="badge-status badge-active" style="background:#eff6ff; color:#1e40af; border-color:#bfdbfe; font-size:0.75rem;">
+                    ${escapeHtml(s.course || 'Excel for Beginners')}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge-status badge-active" style="background:#ecfdf5; color:#065f46; border-color:#a7f3d0; font-weight:800;">
+                    <span style="display:inline-block; width:7px; height:7px; background:#10b981; border-radius:50%; margin-right:4px;"></span> ONLINE
+                  </span>
+                </td>
+                <td>${loginDate}</td>
+                <td style="font-size:0.8rem; color:#475569;">${escapeHtml(s.device || 'Desktop')}</td>
+                <td style="font-size:0.82rem; color:#059669; font-weight:600;">${lastActive}</td>
+                <td style="text-align:right;">
+                  <button class="btn-action" style="background:#fee2e2; color:#dc2626; border-color:#fca5a5; font-weight:700;" onclick="handleForceLogout('${escapeHtml(s.studentId)}')">
+                    <i class="fas fa-ban"></i> Force Logout
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      }
+
+      // Render Activity History Table
+      const logTbody = document.getElementById('studentActivityTableBody');
+      if (logTbody) {
+        if (activityLogs.length === 0) {
+          logTbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:#94a3b8;"><i class="fas fa-history" style="font-size:1.5rem; margin-bottom:0.5rem; display:block;"></i>No login or logout activity recorded yet.</td></tr>';
+        } else {
+          logTbody.innerHTML = activityLogs.map(l => {
+            const timeStr = new Date(l.timestamp).toLocaleString();
+            const isLogin = l.type === 'LOGIN';
+            const badgeClass = isLogin 
+              ? 'background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0;' 
+              : 'background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;';
+            const icon = isLogin ? 'fa-sign-in-alt' : 'fa-sign-out-alt';
+            return `
+              <tr>
+                <td style="font-size:0.8rem; color:#64748b; white-space:nowrap;">${timeStr}</td>
+                <td>
+                  <strong style="color:var(--navy-900);">${escapeHtml(l.name)}</strong>
+                  <div style="font-family:monospace; font-size:0.75rem; color:#64748b;">${escapeHtml(l.studentId)}</div>
+                </td>
+                <td style="font-size:0.82rem;">${escapeHtml(l.course || 'Excel')}</td>
+                <td>
+                  <span style="${badgeClass} padding:3px 8px; border-radius:12px; font-weight:800; font-size:0.74rem; display:inline-flex; align-items:center; gap:4px;">
+                    <i class="fas ${icon}"></i> ${l.type}
+                  </span>
+                </td>
+                <td style="font-size:0.82rem; font-weight:600; color:#334155;">${escapeHtml(l.duration || '—')}</td>
+                <td style="font-size:0.8rem; color:#64748b;">${escapeHtml(l.reason || 'Normal Session')}</td>
+                <td style="font-size:0.8rem; color:#475569;">${escapeHtml(l.details || '')}</td>
+              </tr>
+            `;
+          }).join('');
+        }
+      }
+    }
+
+    function handleForceLogout(studentId) {
+      if (!confirm(`Are you sure you want to terminate live classroom session for student ${studentId}?`)) return;
+      const res = window.GreachDB.forceLogoutStudent(studentId, currentAdminSession ? currentAdminSession.username : 'Greachimpact');
+      if (res.success) {
+        alert(res.message);
+        renderStudentActivity();
+      } else {
+        alert('Error: ' + res.error);
+      }
+    }
+
+    function clearActivityHistory() {
+      if (!confirm('Clear all student login/logout activity logs? Active online sessions will remain untouched.')) return;
+      window.GreachDB.clearStudentActivityLogs();
+      renderStudentActivity();
+    }
+  
+
     function renderStudentsTable() {
       const students = window.GreachDB.getAllStudents();
       const search = (document.getElementById('filterSearch').value || '').trim().toLowerCase();
