@@ -1,5 +1,11 @@
 {
   "version": 2,
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/classroom", "destination": "/classroom/index.html" },
+    { "source": "/classroom/", "destination": "/classroom/index.html" },
+    { "source": "/classroom/Excel_Master_Course_Hub", "destination": "/classroom/Excel_Master_Course_Hub.html" },
+    { "source": "/classroom/hub", "destination": "/classroom/Excel_Master_Course_Hub.html" }
+  ]
 }
