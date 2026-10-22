@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Hub &amp; Launchpad · Microsoft Excel Masterclass</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --navy-900: #0b1a2d;
+      --navy-800: #112641;
+      --navy-700: #1b365d;
+      --navy-600: #2a4f7e;
+      --accent-blue: #0284c7;
+      --accent-cyan: #38bdf8;
+      --accent-green: #107c41;
+      --accent-gold: #f59e0b;
+      --accent-red: #ef4444;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-600: #475569;
+      --slate-800: #1e293b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #f0f4f8;
+      color: var(--slate-800);
+      line-height: 1.6;
+    }
+
+    /* Top Connected Navigation Bar */
+    .top-nav {
+      background: linear-gradient(135deg, var(--navy-900) 0%, var(--navy-800) 100%);
+      color: white;
+      padding: 0.85rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .brand-icon {
+      background: linear-gradient(135deg, #107c41, #22c55e);
+      color: white;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 10px rgba(16, 124, 65, 0.4);
+    }
+    .brand-text h2 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: white;
+      margin: 0;
+    }
+    .brand-text p {
+      font-size: 0.76rem;
+      color: #94a3b8;
+      margin: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .nav-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 0.45rem 0.95rem;
+      border-radius: 30px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .nav-btn:hover {
+      background: white;
+      color: var(--navy-800);
+      transform: translateY(-2px);
+    }
+    .nav-btn.primary {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      border-color: #38bdf8;
+      color: white;
+    }
+    .nav-btn.primary:hover {
+      background: #0284c7;
+      color: white;
+    }
+    .nav-btn.record {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      border-color: #f87171;
+      color: white;
+    }
+    .nav-btn.record:hover {
+      background: #b91c1c;
+      color: white;
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 2rem auto;
+      padding: 0 1.2rem;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, var(--navy-900) 0%, var(--navy-700) 60%, var(--navy-600) 100%);
+      color: white;
+      border-radius: 1.5rem;
+      padding: 2.8rem 2.2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 20px 40px rgba(11, 26, 45, 0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px);
+      padding: 0.35rem 1rem;
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #7dd3fc;
+    }
+    .hero-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.8rem;
+      line-height: 1.2;
+    }
+    .hero-sub {
+      font-size: 1.15rem;
+      color: #cbd5e1;
+      max-width: 820px;
+      margin-bottom: 2rem;
+    }
+    .hero-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      padding-top: 1.5rem;
+    }
+    .stat-box {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .stat-box i { font-size: 1.8rem; color: #38bdf8; }
+    .stat-text h4 { font-size: 1.25rem; font-weight: 800; }
+    .stat-text p { font-size: 0.8rem; color: #94a3b8; }
+
+    /* Live Class Callout Box */
+    .live-class-banner {
+      background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+      border: 1.5px solid #fca5a5;
+      border-radius: 1.2rem;
+      padding: 1.4rem 1.8rem;
+      margin-bottom: 2.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.08);
+    }
+    .live-class-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .live-class-icon {
+      width: 48px;
+      height: 48px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      animation: pulseRecord 1.5s infinite;
+    }
+    @keyframes pulseRecord {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    }
+    .live-class-desc h3 { font-size: 1.15rem; color: #991b1b; font-weight: 800; margin-bottom: 0.2rem; }
+    .live-class-desc p { font-size: 0.88rem; color: #7f1d1d; }
+
+    /* Section Titles */
+    .section-title {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--navy-700);
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    /* Cards Grid */
+    .grid-downloads {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
+      gap: 1.3rem;
+      margin-bottom: 2.5rem;
+    }
+    .dl-card {
+      background: white;
+      border: 1.5px solid var(--slate-200);
+      border-radius: 1.2rem;
+      padding: 1.6rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+    .dl-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+      border-color: #38bdf8;
+    }
+    .dl-icon { font-size: 2.2rem; margin-bottom: 0.8rem; }
+    .dl-card h3 { font-size: 1.18rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--navy-800); }
+    .dl-card p { font-size: 0.88rem; color: var(--slate-600); margin-bottom: 1.4rem; line-height: 1.5; }
+    
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      background: var(--navy-700);
+      color: white;
+      padding: 0.75rem 1.2rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+      width: 100%;
+    }
+    .btn-action:hover { background: #234e7a; box-shadow: 0 6px 15px rgba(27, 54, 93, 0.3); }
+    .btn-action.excel { background: #107c41; }
+    .btn-action.excel:hover { background: #0b5e31; }
+    .btn-action.web { background: #0284c7; }
+    .btn-action.web:hover { background: #0369a1; }
+    .btn-action.gold { background: var(--accent-gold); }
+    .btn-action.gold:hover { background: #b45309; }
+
+    /* Workflow Steps */
+    .steps-card {
+      background: white;
+      border-radius: 1.2rem;
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      border: 1px solid var(--slate-200);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .step-box { border-left: 3px solid #0284c7; padding-left: 1.2rem; }
+    .step-number { font-size: 1.8rem; font-weight: 900; color: #0284c7; opacity: 0.4; margin-bottom: 0.2rem; }
+    .step-box h4 { font-size: 1.05rem; font-weight: 700; color: var(--navy-700); margin-bottom: 0.4rem; }
+    .step-box p { font-size: 0.88rem; color: var(--slate-600); }
+
+    /* Syllabus Table */
+    .table-container {
+      background: white;
+      border-radius: 1.2rem;
+      overflow: hidden;
+      border: 1px solid var(--slate-200);
+      margin-bottom: 2.5rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { background: var(--navy-700); color: white; padding: 1rem 1.2rem; font-size: 0.92rem; font-weight: 700; }
+    td { padding: 1rem 1.2rem; border-bottom: 1px solid var(--slate-200); font-size: 0.88rem; }
+    tr:nth-child(even) { background: var(--slate-50); }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .badge-beg { background: #e0f2fe; color: #0369a1; }
+    .badge-int { background: #fef3c7; color: #92400e; }
+    .badge-adv { background: #dcfce7; color: #166534; }
+
+    footer {
+      text-align: center;
+      color: #64748b;
+      font-size: 0.85rem;
+      padding: 2rem 0 1rem;
+    }
+  
+    /* Security Gate Styles */
+    .security-gate-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(11, 26, 45, 0.96) 0%, rgba(27, 54, 93, 0.98) 100%);
+      backdrop-filter: blur(12px);
+      z-index: 999999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    .security-gate-overlay.unlocked {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .gate-card {
+      background: white;
+      border-radius: 1.5rem;
+      max-width: 500px;
+      width: 100%;
+      padding: 2.2rem 2.4rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    .gate-icon-badge {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, #1b365d, #0284c7);
+      color: white;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.2rem;
+    }
+    .gate-title { font-size: 1.4rem; font-weight: 800; color: #0f233d; margin-bottom: 0.3rem; }
+    .gate-sub { font-size: 0.88rem; color: #64748b; margin-bottom: 1.5rem; line-height: 1.5; }
+    .gate-form-group { margin-bottom: 1rem; text-align: left; }
+    .gate-label { display: block; font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.3rem; }
+    .gate-input { width: 100%; padding: 0.7rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.92rem; }
+    .gate-submit-btn {
+      width: 100%;
+      background: #107c41;
+      color: white;
+      border: none;
+      padding: 0.8rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1.2rem;
+    }
+    .gate-submit-btn:hover { background: #0b5e31; }
+    .gate-error-msg {
+      display: none;
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      color: #991b1b;
+      padding: 0.65rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      margin-top: 0.8rem;
+    }
+    .student-badge-pill {
+      background: rgba(16, 124, 65, 0.2);
+      border: 1px solid rgba(16, 124, 65, 0.5);
+      color: #4ade80;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    
+</style>
+  <script src="js/greach-sync.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style id="greach-brand-font-rules">
+  body, input, button, select, textarea {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  }
+  h1, h2, h3, h4, .brand-title, .hero-title, .platform-brand-text h1, .stat-val {
+    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  }
+</style>
+
+</head>
+<body>
+
+    <!-- 🔒 REGISTERED STUDENT & INSTRUCTOR ACCESS GATE -->
+  <div class="security-gate-overlay" id="securityGateOverlay">
+    <div class="gate-card" style="max-width: 520px; padding: 2.2rem 2.4rem; border-radius: 1.5rem; background: #ffffff; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem;">
+        <div style="width: 52px; height: 52px; background: linear-gradient(135deg, #1b365d, #0284c7); color: white; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+          <i class="fas fa-lock"></i>
+        </div>
+        <span style="background: #ecfdf5; color: #065f46; font-size: 0.76rem; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 20px; border: 1px solid #a7f3d0;">
+          <i class="fas fa-shield-alt"></i> Automated Security Gate
+        </span>
+      </div>
+
+      <h2 style="font-size: 1.45rem; font-weight: 800; color: #0f233d; margin-bottom: 0.3rem;">Excel Masterclass Portal</h2>
+      <p style="font-size: 0.88rem; color: #64748b; margin-bottom: 1.2rem; line-height: 1.5;">
+        Welcome to the Microsoft Excel Masterclass. Select your role below or use an automated magic access link.
+      </p>
+
+      <!-- Role Selector Tabs -->
+      <div style="display:flex; background:#f1f5f9; border-radius:10px; padding:0.3rem; margin-bottom:1.3rem; gap:0.3rem; border:1px solid #e2e8f0;">
+        <button type="button" id="tabGateStudent" onclick="switchStartRole('student')" style="flex:1; border:none; padding:0.65rem 0.5rem; border-radius:8px; font-weight:700; font-size:0.88rem; background:white; color:#0f172a; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.4rem; box-shadow:0 2px 4px rgba(0,0,0,0.06); transition:all 0.2s ease;">
+          <i class="fas fa-user-graduate" style="color:#0284c7;"></i> Student Sign-In
+        </button>
+        <button type="button" id="tabGateInstructor" onclick="switchStartRole('instructor')" style="flex:1; border:none; padding:0.65rem 0.5rem; border-radius:8px; font-weight:700; font-size:0.88rem; background:transparent; color:#64748b; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.4rem; transition:all 0.2s ease;">
+          <i class="fas fa-chalkboard-teacher" style="color:#107c41;"></i> Instructor Access
+        </button>
+      </div>
+
+      <!-- Student Sign-in Form -->
+      <form id="studentGateForm" onsubmit="handleStartStudentLogin(event)">
+        <div style="margin-bottom: 0.9rem; text-align: left;">
+          <label class="gate-label" style="display:block; font-size:0.85rem; font-weight:700; color:#334155; margin-bottom:0.35rem;">
+            <i class="fas fa-key" style="color:#107c41;"></i> Enter Your Unique Access Code or Student ID:
+          </label>
+          <input type="text" id="gateStudentIdentifier" class="gate-input" placeholder="e.g. GRX-2951-HY, STU-2026-001, or email..." style="width:100%; padding:0.85rem 1rem; border:2px solid #cbd5e1; border-radius:10px; font-size:1rem; outline:none; font-weight:600;" required />
+          <small style="color:#64748b; font-size:0.76rem; margin-top:4px; display:block;">
+            <i class="fas fa-info-circle"></i> Paste the unique access code generated by the website upon registration.
+          </small>
+        </div>
+        <div style="margin-bottom: 0.6rem; text-align: left;">
+          <label class="gate-label" style="display:block; font-size:0.8rem; font-weight:700; color:#64748b; margin-bottom:0.25rem;">
+            <i class="fas fa-lock"></i> Password (only required if separate):
+          </label>
+          <input type="password" id="gateStudentPassword" class="gate-input" placeholder="Leave empty if your access code is above..." style="width:100%; padding:0.7rem 1rem; border:1.5px solid #cbd5e1; border-radius:10px; font-size:0.92rem; outline:none;" />
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; font-size:0.8rem;">
+          <button type="button" onclick="autoRetrieveStudentAccess()" style="background:none; border:none; color:#0284c7; font-weight:600; cursor:pointer; padding:0; text-decoration:underline;">
+            <i class="fas fa-bolt"></i> ⚡ Auto-Sign In / Retrieve Access
+          </button>
+          <span style="color:#107c41; font-weight:700; font-size:0.75rem;"><i class="fas fa-shield-alt"></i> Unlimited Student Roster</span>
+        </div>
+
+        <div class="gate-error-msg" id="gateErrorBox" style="display:none; background:#fef2f2; border-left:4px solid #ef4444; color:#991b1b; padding:0.65rem 0.9rem; border-radius:6px; font-size:0.82rem; margin-bottom:1rem; text-align:left;">
+          <i class="fas fa-exclamation-circle"></i> <span id="gateErrorText">Invalid credentials.</span>
+        </div>
+
+        <button type="submit" class="gate-submit-btn" style="width:100%; background:linear-gradient(135deg, #107c41, #0b5e31); color:white; padding:0.9rem; border-radius:10px; font-weight:800; font-size:1.05rem; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem; box-shadow:0 4px 12px rgba(16,124,65,0.35);">
+          <i class="fas fa-sign-in-alt"></i> 🚀 Connect to Classroom with Code
+        </button>
+
+        <div style="margin-top:1rem; text-align:center;">
+          <a href="javascript:void(0)" onclick="switchStartRole('instructor')" style="color:#0284c7; font-size:0.82rem; font-weight:600; text-decoration:none;">
+            <i class="fas fa-chalkboard-teacher"></i> Are you the Lead Instructor? Switch to Instructor Access &rarr;
+          </a>
+        </div>
+      </form>
+
+      <!-- Instructor / Super Admin Sign-in Form -->
+      <form id="instructorGateForm" onsubmit="handleStartInstructorLogin(event)" style="display:none;">
+        <div style="margin-bottom: 0.9rem; text-align: left;">
+          <label class="gate-label" style="display:block; font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.35rem;"><i class="fas fa-user-tie"></i> Admin / Instructor Username or Email:</label>
+          <input type="text" id="gateInstructorEmail" class="gate-input" value="Greachimpact" style="width:100%; padding:0.75rem 1rem; border:1.5px solid #cbd5e1; border-radius:10px; font-size:0.92rem; outline:none;" required />
+        </div>
+        <div style="margin-bottom: 1.1rem; text-align: left;">
+          <label class="gate-label" style="display:block; font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.35rem;"><i class="fas fa-shield-alt"></i> Master Secret Password:</label>
+          <input type="password" id="gateInstructorPasscode" class="gate-input" placeholder="Enter master password..." style="width:100%; padding:0.75rem 1rem; border:1.5px solid #cbd5e1; border-radius:10px; font-size:0.92rem; outline:none;" required />
+        </div>
+
+        <div class="gate-error-msg" id="gateInstErrorBox" style="display:none; background:#fef2f2; border-left:4px solid #ef4444; color:#991b1b; padding:0.65rem 0.9rem; border-radius:6px; font-size:0.82rem; margin-bottom:1rem; text-align:left;">
+          <i class="fas fa-exclamation-circle"></i> <span id="gateInstErrorText">Invalid master credentials.</span>
+        </div>
+
+        <!-- 1-Click Fast Authenticate Button -->
+        <button type="button" onclick="autoFillInstructorKey()" style="width:100%; background:#0284c7; color:white; padding:0.75rem; border-radius:10px; font-weight:700; font-size:0.92rem; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem; margin-bottom:0.65rem;">
+          <i class="fas fa-crown"></i> ⚡ 1-Click Super Admin Sign-In (Greachimpact)
+        </button>
+
+        <button type="submit" class="gate-submit-btn" style="width:100%; background:#0a192f; color:white; padding:0.85rem; border-radius:10px; font-weight:700; font-size:1rem; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+          <i class="fas fa-user-shield"></i> Authenticate as Super Admin / Instructor
+        </button>
+
+        <div style="margin-top:1rem; text-align:center;">
+          <a href="../admin.html" target="_blank" style="color:#d97706; font-size:0.82rem; font-weight:700; text-decoration:none;">
+            <i class="fas fa-crown"></i> Open Dedicated Super Admin Console &rarr;
+          </a>
+        </div>
+
+        <div style="margin-top:0.6rem; text-align:center;">
+          <a href="javascript:void(0)" onclick="switchStartRole('student')" style="color:#64748b; font-size:0.82rem; font-weight:600; text-decoration:none;">
+            &larr; Return to Student Sign-In
+          </a>
+        </div>
+      </form>
+
+      <div style="margin-top:1.2rem; padding-top:0.9rem; border-top:1px solid #f1f5f9; text-align:center;">
+        <p style="font-size:0.75rem; color:#94a3b8; margin-bottom:0.4rem;">
+          🔒 All enrolled students have unique credentials &bull; Master Key: <code>GREACH-ADMIN-2026</code>
+        </p>
+        <button type="button" onclick="autoFillInstructorKey()" style="background:none; border:none; color:#107c41; font-size:0.74rem; font-weight:700; cursor:pointer; text-decoration:underline;">
+          👑 Lead Instructor Quick Access: Click to Enter Admin Mode
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Top Connected Navigation Bar -->
+  <div class="top-nav">
+    <div class="nav-brand">
+      <div class="brand-icon"><i class="fas fa-file-excel"></i></div>
+      <div class="brand-text">
+        <h2>MICROSOFT EXCEL MASTERCLASS</h2>
+        <p>Greach Impact · Official Online Classroom Hub</p>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="../index.html" class="nav-btn" style="background:#0a0a5e; border-color:#64c7d4;">
+        <i class="fas fa-globe"></i> <strong>Main Website</strong>
+      </a>
+      <a href="verify-certificate.html" class="nav-btn" style="background:#b45309; border-color:#f59e0b;">
+        <i class="fas fa-award"></i> <strong>Verify Certificate</strong>
+      </a>
+      <div class="student-badge-pill" id="studentStatusPill" style="display:none;">
+        <i class="fas fa-check-circle" style="color:#22c55e;"></i>
+        <span id="verifiedStudentName">Verified Student</span>
+        <button onclick="logoutStudent()" title="Logout" style="background:none; border:none; color:#f87171; cursor:pointer; margin-left:0.3rem;"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+
+      <a href="Excel_Master_Course_Hub.html?mode=course" class="nav-btn primary">
+        <i class="fas fa-play-circle"></i> <strong>Course Player (64 Lessons)</strong>
+      </a>
+      <a href="Excel_Master_Course_Hub.html?mode=live" class="nav-btn record">
+        <i class="fas fa-satellite-dish"></i> <strong>Live Broadcast Studio (Unlimited Capacity)</strong>
+      </a>
+      <a href="Student_Login_Credentials_300_Roster.xlsx" download class="nav-btn" style="background:#065f46; border-color:#10b981;">
+        <i class="fas fa-id-card"></i> <strong>Student Credentials Roster (.xlsx)</strong>
+      </a>
+      <a href="Excel_Master_Course_Hub.html#batches" class="nav-btn" style="background:linear-gradient(135deg, #4f46e5, #4338ca); border-color:#818cf8;">
+        <i class="fas fa-link"></i> <strong>Batch Manager</strong>
+      </a>
+      <a href="Master_Excel_Course_Exercises.xlsx" download class="nav-btn">
+        <i class="fas fa-file-excel"></i> Exercise Workbook (.xlsx)
+      </a>
+      <a href="Master_Excel_Student_Handbook.docx" download class="nav-btn">
+        <i class="fas fa-file-word"></i> Student Handbook (.docx)
+      </a>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- Hero Banner -->
+    
+    <!-- Two Primary Portals: Interactive Course Course vs Live Studio -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem; margin-bottom:2.2rem;">
+      <div style="background:linear-gradient(135deg, #0b1a2d, #1b365d); color:white; border-radius:1.2rem; padding:1.8rem; box-shadow:0 10px 25px rgba(11,26,45,0.15); display:flex; flex-direction:column; justify-content:space-between;">
+        <div>
+          <span style="background:rgba(56, 189, 248, 0.2); color:#38bdf8; font-size:0.78rem; font-weight:800; padding:0.25rem 0.75rem; border-radius:20px; text-transform:uppercase;">Self-Paced Learning Portal</span>
+          <h3 style="font-size:1.4rem; margin:0.8rem 0 0.5rem; color:white;"><i class="fas fa-graduation-cap" style="color:#38bdf8;"></i> Interactive Masterclass Player</h3>
+          <p style="color:#cbd5e1; font-size:0.9rem; line-height:1.5; margin-bottom:1.5rem;">
+            64 step-by-step modular lessons with an expandable curriculum sidebar, lesson completion checkmarks, practice lab sheets, formula references, and interactive Q&amp;A.
+          </p>
+        </div>
+        <a href="Excel_Master_Course_Hub.html?mode=course" class="btn-action web" style="font-size:1rem; padding:0.85rem;">
+          <i class="fas fa-play"></i> Open Interactive Course Player
+        </a>
+      </div>
+
+      <div style="background:linear-gradient(135deg, #1e1b4b, #312e81); color:white; border-radius:1.2rem; padding:1.8rem; box-shadow:0 10px 25px rgba(30,27,75,0.15); display:flex; flex-direction:column; justify-content:space-between; border:1.5px solid #6366f1;">
+        <div>
+          <span style="background:rgba(239, 68, 68, 0.2); color:#fca5a5; font-size:0.78rem; font-weight:800; padding:0.25rem 0.75rem; border-radius:20px; text-transform:uppercase;">Live Broadcast Mode</span>
+          <h3 style="font-size:1.4rem; margin:0.8rem 0 0.5rem; color:white;"><i class="fas fa-satellite-dish" style="color:#f87171;"></i> Live Class Broadcast Studio</h3>
+          <p style="color:#e0e7ff; font-size:0.9rem; line-height:1.5; margin-bottom:1.5rem;">
+            Host interactive live classes for all enrolled students with YouTube Live/Google Meet video streaming, in-browser screen &amp; mic recording, 5-minute lab timer, and student live chat.
+          </p>
+        </div>
+        <a href="Excel_Master_Course_Hub.html?mode=live" class="btn-action record" style="font-size:1rem; padding:0.85rem;">
+          <i class="fas fa-broadcast-tower"></i> Launch Live Broadcast Studio (Unlimited Capacity)
+        </a>
+      </div>
+    </div>
+    
+    <div class="hero-banner">
+      <div class="hero-badge"><i class="fas fa-chalkboard-teacher"></i> COMPLETE ZERO-TO-HERO WORKPLACE CURRICULUM</div>
+      <h1 class="hero-title">Master Microsoft Excel</h1>
+      <p class="hero-sub">
+        Access the complete online classroom, download your guided exercise workbooks with automated formula checks, and record your live training sessions directly inside your browser.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-box">
+          <i class="fas fa-layer-group"></i>
+          <div class="stat-text">
+            <h4>6 Modules</h4>
+            <p>From Basics to Executive Dashboards</p>
+          </div>
+        </div>
+        <div class="stat-box">
+          <i class="fas fa-chalkboard"></i>
+          <div class="stat-text">
+            <h4>64 Interactive Lessons</h4>
+            <p>With Live Quizzes &amp; Copyable Formulas</p>
+          </div>
+        </div>
+        <div class="stat-box">
+          <i class="fas fa-table"></i>
+          <div class="stat-text">
+            <h4>16 Guided Exercises</h4>
+            <p>Yellow Entry &amp; Green Auto-Check</p>
+          </div>
+        </div>
+        <div class="stat-box">
+          <i class="fas fa-video"></i>
+          <div class="stat-text">
+            <h4>Live Class Recorder</h4>
+            <p>1-Click Screen &amp; Audio Video Export</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Class Recording Callout -->
+    <div class="live-class-banner">
+      <div class="live-class-info">
+        <div class="live-class-icon"><i class="fas fa-video"></i></div>
+        <div class="live-class-desc">
+          <h3>Built-in Live Class Screen &amp; Audio Recorder</h3>
+          <p>Instructors and students can record lectures, screen shares, and audio directly inside the Online Classroom without any 3rd-party software (no Zoom/OBS required). Instant .webm video download!</p>
+        </div>
+      </div>
+      <a href="Excel_Master_Course_Hub.html" class="nav-btn record" style="padding:0.75rem 1.4rem; font-size:0.95rem;">
+        <i class="fas fa-circle"></i> Open Recorder in Classroom
+      </a>
+    </div>
+
+    <!-- Download Center Grid -->
+    <h2 class="section-title"><i class="fas fa-download"></i> Downloadable Course Materials &amp; Portal</h2>
+    <div class="grid-downloads">
+
+      <!-- Card 1: Interactive Learning Hub -->
+      <div class="dl-card">
+        <div>
+          <div class="dl-icon" style="color:#0284c7;"><i class="fas fa-laptop-code"></i></div>
+          <h3>Online Classroom Portal</h3>
+          <p>The interactive 64-slide master classroom with lesson search, interactive quizzes, live lab timer, drawing pen, and screen recorder.</p>
+        </div>
+        <a href="Excel_Master_Course_Hub.html" class="btn-action web">
+          <i class="fas fa-play"></i> Open Classroom (64 Lessons)
+        </a>
+      </div>
+
+      <!-- Card 2: Complete Exercise Workbook -->
+      <div class="dl-card">
+        <div>
+          <div class="dl-icon" style="color:#107c41;"><i class="fas fa-file-excel"></i></div>
+          <h3>16-Sheet Exercise Workbook</h3>
+          <p>Every module (M1 to M6) covered in dedicated exercise tabs with yellow practice columns and green automated checkmarks (<code>✅ Correct!</code>).</p>
+        </div>
+        <a href="Master_Excel_Course_Exercises.xlsx" download="Master_Excel_Course_Exercises.xlsx" class="btn-action excel">
+          <i class="fas fa-download"></i> Download Workbook (.xlsx)
+        </a>
+      </div>
+
+      <!-- Card 3: Student Handbook -->
+      <div class="dl-card">
+        <div>
+          <div class="dl-icon" style="color:#2563eb;"><i class="fas fa-file-word"></i></div>
+          <h3>Student Handbook &amp; Guide</h3>
+          <p>Exhaustive printable manual: workplace scenarios, step-by-step guides, 30+ shortcuts, quiz answer keys, and error troubleshooting.</p>
+        </div>
+        <a href="Master_Excel_Student_Handbook.docx" download="Master_Excel_Student_Handbook.docx" class="btn-action">
+          <i class="fas fa-download"></i> Download Handbook (.docx)
+        </a>
+      </div>
+
+      <!-- Card 4: Raw Datasets -->
+      <div class="dl-card">
+        <div>
+          <div class="dl-icon" style="color:#d97706;"><i class="fas fa-database"></i></div>
+          <h3>Raw Combined Datasets</h3>
+          <p>100+ raw transactional records, HR messy exports, and budget tables for additional practice.</p>
+        </div>
+        <a href="Dataset/All Combine Dataset.xlsx" download="All_Combine_Dataset.xlsx" class="btn-action gold">
+          <i class="fas fa-download"></i> Download Datasets (.xlsx)
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Guided Workflow -->
+    <div class="steps-card">
+      <h2 class="section-title"><i class="fas fa-compass"></i> Student Learning Workflow (Step-by-Step)</h2>
+      <p style="color:#475569; font-size:0.95rem;">Follow this structured 4-step workflow to master each topic with confidence:</p>
+      <div class="steps-grid">
+        <div class="step-box">
+          <div class="step-number">01</div>
+          <h4>Study in Classroom</h4>
+          <p>Launch <a href="Excel_Master_Course_Hub.html" style="color:#0284c7; font-weight:700;">Excel_Master_Course_Hub.html</a>. Study the concepts, practical walkthroughs, and copy formulas with 1 click.</p>
+        </div>
+        <div class="step-box">
+          <div class="step-number">02</div>
+          <h4>Open Exercise Sheet</h4>
+          <p>Open <strong>Master_Excel_Course_Exercises.xlsx</strong>. Jump directly to the sheet mapped in the slide's companion bar.</p>
+        </div>
+        <div class="step-box">
+          <div class="step-number">03</div>
+          <h4>Type in Yellow Cells</h4>
+          <p>Write your formulas in the yellow 🟡 <strong>[YOUR TURN]</strong> columns. The green 🟢 checkmark confirms your answer instantly!</p>
+        </div>
+        <div class="step-box">
+          <div class="step-number">04</div>
+          <h4>Take Quiz &amp; Record</h4>
+          <p>Take the interactive quiz at the end of each module. Use the built-in screen recorder to save your live practice session!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Complete Curriculum Table -->
+    <div class="table-container">
+      <div style="padding:1.5rem 1.5rem 0.8rem;">
+        <h2 class="section-title"><i class="fas fa-map-marked-alt"></i> Complete Module &amp; Exercise Worksheet Mapping</h2>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Module</th>
+            <th>Workplace Topic &amp; Core Competencies</th>
+            <th>Level</th>
+            <th>Exercise Worksheet in Excel</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Module 1</strong></td>
+            <td>Interface Anatomy, Navigation Shortcuts, Data Types &amp; Freeze Panes</td>
+            <td><span class="badge badge-beg">Beginner</span></td>
+            <td><code>M1_Basics_Navigation</code></td>
+          </tr>
+          <tr>
+            <td><strong>Module 2</strong></td>
+            <td>Professional Formatting, Math Operators, SUM, AVERAGE, MIN, MAX, AutoSum</td>
+            <td><span class="badge badge-beg">Beginner</span></td>
+            <td><code>M2_Formatting_Math</code></td>
+          </tr>
+          <tr>
+            <td><strong>Module 3</strong></td>
+            <td>Decision Logic (IF, AND, OR, IFS, IFERROR) &amp; Text Functions (TRIM, PROPER, LEFT, CONCAT)</td>
+            <td><span class="badge badge-int">Intermediate</span></td>
+            <td><code>M3_Logic_IF_AND_OR</code> &amp; <code>M3_Text_Cleaning</code></td>
+          </tr>
+          <tr>
+            <td><strong>Module 4</strong></td>
+            <td>Deduplication, Dropdown Lists, Whole Number Validation, Excel Tables (Ctrl+T)</td>
+            <td><span class="badge badge-int">Intermediate</span></td>
+            <td><code>M4_Cleaning_Tables</code></td>
+          </tr>
+          <tr>
+            <td><strong>Module 5</strong></td>
+            <td>Dynamic Lookups (VLOOKUP, XLOOKUP, INDEX+MATCH), Date Functions &amp; Conditional Formatting</td>
+            <td><span class="badge badge-adv">Advanced</span></td>
+            <td><code>M5_Lookups_V_X_Index</code> &amp; <code>M5_Dates_Formatting</code></td>
+          </tr>
+          <tr>
+            <td><strong>Module 5</strong></td>
+            <td>Multi-Criteria Aggregation: COUNTIF, COUNTIFS, SUMIF, SUMIFS, AVERAGEIF</td>
+            <td><span class="badge badge-adv">Advanced</span></td>
+            <td><code>M5_COUNTIFS_SUMIFS</code></td>
+          </tr>
+          <tr>
+            <td><strong>Module 6</strong></td>
+            <td>Data Visualizations (Clustered Column, Trend Lines &amp; Sparklines)</td>
+            <td><span class="badge badge-adv">Advanced</span></td>
+            <td><code>M6_Charts_Visuals</code></td>
+          </tr>
+          <tr>
+            <td><strong>Module 6</strong></td>
+            <td>PivotTables, PivotCharts, Interactive Slicers (100+ Transaction Records)</td>
+            <td><span class="badge badge-adv">Advanced</span></td>
+            <td><code>M6_PivotTables_Slicers</code></td>
+          </tr>
+          <tr>
+            <td><strong>Module 6</strong></td>
+            <td>Executive 1-Page Dashboard Canvas (KPI Summary Cards, Chart Zones, Slicer Dock)</td>
+            <td><span class="badge badge-adv">Advanced</span></td>
+            <td><code>M6_Mini_Dashboard</code></td>
+          </tr>
+          <tr>
+            <td><strong>Module 6</strong></td>
+            <td>Macro Recording (.xlsm) &amp; Sheet Protection with Password Security</td>
+            <td><span class="badge badge-adv">Advanced</span></td>
+            <td><code>M6_Macros_Security</code></td>
+          </tr>
+          <tr>
+            <td><strong>Capstone</strong></td>
+            <td>Employee Performance, Bonus Quota &amp; Compensation Management Master System</td>
+            <td><span class="badge badge-adv">Mastery</span></td>
+            <td><code>Capstone_Tracker</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Instructor Delivery & Recording Guide -->
+    <div class="steps-card">
+      <h2 class="section-title"><i class="fas fa-chalkboard-teacher"></i> Instructor Live Delivery &amp; Recording Guide</h2>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.2rem; margin-top:1rem;">
+        <div style="background:#f8fafc; padding:1.2rem; border-radius:10px; border:1px solid #e2e8f0;">
+          <h4 style="color:#1b365d; margin-bottom:0.4rem;"><i class="fas fa-video"></i> 1. Live Screen &amp; Audio Recording</h4>
+          <p style="font-size:0.88rem; color:#475569;">Click <strong>Record Live Class</strong> in the classroom navbar. Select your screen and microphone. When you stop, preview and download the video (.webm) immediately!</p>
+        </div>
+        <div style="background:#f8fafc; padding:1.2rem; border-radius:10px; border:1px solid #e2e8f0;">
+          <h4 style="color:#1b365d; margin-bottom:0.4rem;"><i class="fas fa-stopwatch"></i> 2. In-Class Lab Exercise Timer</h4>
+          <p style="font-size:0.88rem; color:#475569;">Use the built-in <strong>Lab Timer</strong> on the classroom toolbar to run 5-minute hands-on practice intervals for students to solve formulas in the workbook.</p>
+        </div>
+        <div style="background:#f8fafc; padding:1.2rem; border-radius:10px; border:1px solid #e2e8f0;">
+          <h4 style="color:#1b365d; margin-bottom:0.4rem;"><i class="fas fa-pen"></i> 3. Live Annotation Pen / Chalkboard</h4>
+          <p style="font-size:0.88rem; color:#475569;">Click <strong>Pen</strong> on the top bar to circle table cells, draw arrows, and highlight key syntax live on the slides during your lecture.</p>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>Microsoft Excel Masterclass · Online Classroom &amp; Live Recording Suite · Powered by Greach Impact</p>
+    </footer>
+
+  </div>
+
+        <script src="js/greach-db.js"></script>
+  <script>
+    const INSTRUCTOR_LOGIN_KEY = 'excel_instructor_session_active_v1';
+    const ACTIVE_SESSION_KEY = 'greach_active_user_session_v2';
+    const ROSTER_DB_KEY = 'greach_student_roster_v2';
+
+    // Preload student database if not already present
+    const preloadedRoster = [{"id": "STU-2026-001", "name": "Adaeze Balogun", "email": "adaeze.balogun1@greach.academy", "password": "GRX-2951-HY", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-002", "name": "Babatunde Ajayi", "email": "babatunde.ajayi2@greach.academy", "password": "GRX-2681-XX", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-003", "name": "Chinedu Olawale", "email": "chinedu.olawale3@greach.academy", "password": "GRX-7891-UP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-004", "name": "Damilola Mohammed", "email": "damilola.mohammed4@greach.academy", "password": "GRX-9042-UQ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-005", "name": "Emeka Bassey", "email": "emeka.bassey5@greach.academy", "password": "GRX-4931-AB", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-006", "name": "Fatima Soyinka", "email": "fatima.soyinka6@greach.academy", "password": "GRX-5706-VL", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-007", "name": "Gbenga Onuorah", "email": "gbenga.onuorah7@greach.academy", "password": "GRX-9032-SF", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-008", "name": "Halima Haruna", "email": "halima.haruna8@greach.academy", "password": "GRX-5120-JZ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-009", "name": "Ibrahim Lawal", "email": "ibrahim.lawal9@greach.academy", "password": "GRX-6843-VZ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-010", "name": "Jumoke Suleiman", "email": "jumoke.suleiman10@greach.academy", "password": "GRX-9414-RT", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-011", "name": "Kelechi Yusuf", "email": "kelechi.yusuf11@greach.academy", "password": "GRX-2469-PH", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-012", "name": "Lateef Salami", "email": "lateef.salami12@greach.academy", "password": "GRX-8494-DR", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-013", "name": "Maryam Nnamdi", "email": "maryam.nnamdi13@greach.academy", "password": "GRX-6062-AT", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-014", "name": "Ngozi Eze", "email": "ngozi.eze14@greach.academy", "password": "GRX-6956-MC", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-015", "name": "Olumide Bello", "email": "olumide.bello15@greach.academy", "password": "GRX-9166-WL", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-016", "name": "Praise Abubakar", "email": "praise.abubakar16@greach.academy", "password": "GRX-9045-KN", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-017", "name": "Queen Sanusi", "email": "queen.sanusi17@greach.academy", "password": "GRX-7880-PZ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-018", "name": "Rotimi Ogunleye", "email": "rotimi.ogunleye18@greach.academy", "password": "GRX-9404-NA", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-019", "name": "Sade Akinyemi", "email": "sade.akinyemi19@greach.academy", "password": "GRX-4678-UV", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-020", "name": "Tunde Alabi", "email": "tunde.alabi20@greach.academy", "password": "GRX-9572-XC", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-021", "name": "Uche Ojo", "email": "uche.ojo21@greach.academy", "password": "GRX-8035-MM", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-022", "name": "Victor Igwe", "email": "victor.igwe22@greach.academy", "password": "GRX-4750-WC", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-023", "name": "Wale Ogundele", "email": "wale.ogundele23@greach.academy", "password": "GRX-8484-ST", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-024", "name": "Yemi Ugwu", "email": "yemi.ugwu24@greach.academy", "password": "GRX-9939-GK", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-025", "name": "Zainab Dada", "email": "zainab.dada25@greach.academy", "password": "GRX-6040-PR", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-026", "name": "Amara Oladipo", "email": "amara.oladipo26@greach.academy", "password": "GRX-8846-VK", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-027", "name": "Blessing Adeleke", "email": "blessing.adeleke27@greach.academy", "password": "GRX-4318-HG", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-028", "name": "Chidera Okafor", "email": "chidera.okafor28@greach.academy", "password": "GRX-1542-DX", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-029", "name": "David Danladi", "email": "david.danladi29@greach.academy", "password": "GRX-8507-VY", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-030", "name": "Efe Nwosu", "email": "efe.nwosu30@greach.academy", "password": "GRX-6897-YG", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-031", "name": "Funke Obi", "email": "funke.obi31@greach.academy", "password": "GRX-8955-MU", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-032", "name": "Godwin Ezekiel", "email": "godwin.ezekiel32@greach.academy", "password": "GRX-9145-VP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-033", "name": "Hassan Bakare", "email": "hassan.bakare33@greach.academy", "password": "GRX-1550-VH", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-034", "name": "Ifeanyi Fashola", "email": "ifeanyi.fashola34@greach.academy", "password": "GRX-2611-LT", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-035", "name": "Joy Chukwu", "email": "joy.chukwu35@greach.academy", "password": "GRX-9440-GY", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-036", "name": "Kunle Musa", "email": "kunle.musa36@greach.academy", "password": "GRX-3999-ZW", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-037", "name": "Loveth Taiwo", "email": "loveth.taiwo37@greach.academy", "password": "GRX-8850-YR", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-038", "name": "Michael Momoh", "email": "michael.momoh38@greach.academy", "password": "GRX-9166-JE", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-039", "name": "Nneka Adewale", "email": "nneka.adewale39@greach.academy", "password": "GRX-7738-DX", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-040", "name": "Olamide Okonkwo", "email": "olamide.okonkwo40@greach.academy", "password": "GRX-2510-AP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-041", "name": "Peter Balogun", "email": "peter.balogun41@greach.academy", "password": "GRX-2360-QE", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-042", "name": "Ruth Ajayi", "email": "ruth.ajayi42@greach.academy", "password": "GRX-2979-QU", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-043", "name": "Samuel Olawale", "email": "samuel.olawale43@greach.academy", "password": "GRX-5399-SR", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-044", "name": "Tolani Mohammed", "email": "tolani.mohammed44@greach.academy", "password": "GRX-3535-AR", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-045", "name": "Ugochukwu Bassey", "email": "ugochukwu.bassey45@greach.academy", "password": "GRX-9060-SY", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-046", "name": "Vivian Soyinka", "email": "vivian.soyinka46@greach.academy", "password": "GRX-9942-FQ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-047", "name": "Wisdom Onuorah", "email": "wisdom.onuorah47@greach.academy", "password": "GRX-9269-GL", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-048", "name": "Yetunde Haruna", "email": "yetunde.haruna48@greach.academy", "password": "GRX-3623-YU", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-049", "name": "Zubair Lawal", "email": "zubair.lawal49@greach.academy", "password": "GRX-6013-NK", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-050", "name": "Aisha Suleiman", "email": "aisha.suleiman50@greach.academy", "password": "GRX-3433-NE", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-051", "name": "Bolaji Yusuf", "email": "bolaji.yusuf51@greach.academy", "password": "GRX-1231-ZK", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-052", "name": "Chinonso Salami", "email": "chinonso.salami52@greach.academy", "password": "GRX-2203-BJ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-053", "name": "Daniel Nnamdi", "email": "daniel.nnamdi53@greach.academy", "password": "GRX-6790-YY", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-054", "name": "Eniola Eze", "email": "eniola.eze54@greach.academy", "password": "GRX-1419-NH", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-055", "name": "Femi Bello", "email": "femi.bello55@greach.academy", "password": "GRX-5975-LX", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-056", "name": "Grace Abubakar", "email": "grace.abubakar56@greach.academy", "password": "GRX-9152-YP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-057", "name": "Hauwa Mohammed", "email": "hauwa.mohammed57@greach.academy", "password": "GRX-3797-DN", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-058", "name": "Adaeze Bassey", "email": "adaeze.bassey58@greach.academy", "password": "GRX-8104-QM", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-059", "name": "Babatunde Soyinka", "email": "babatunde.soyinka59@greach.academy", "password": "GRX-4822-SB", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-060", "name": "Chinedu Onuorah", "email": "chinedu.onuorah60@greach.academy", "password": "GRX-7539-AR", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-061", "name": "Damilola Haruna", "email": "damilola.haruna61@greach.academy", "password": "GRX-3840-BP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-062", "name": "Emeka Lawal", "email": "emeka.lawal62@greach.academy", "password": "GRX-1789-LU", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-063", "name": "Fatima Suleiman", "email": "fatima.suleiman63@greach.academy", "password": "GRX-4088-MS", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-064", "name": "Gbenga Yusuf", "email": "gbenga.yusuf64@greach.academy", "password": "GRX-1335-DN", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-065", "name": "Halima Salami", "email": "halima.salami65@greach.academy", "password": "GRX-9468-XD", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-066", "name": "Ibrahim Nnamdi", "email": "ibrahim.nnamdi66@greach.academy", "password": "GRX-4047-KL", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-067", "name": "Jumoke Eze", "email": "jumoke.eze67@greach.academy", "password": "GRX-7784-WK", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-068", "name": "Kelechi Bello", "email": "kelechi.bello68@greach.academy", "password": "GRX-4067-JG", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-069", "name": "Lateef Abubakar", "email": "lateef.abubakar69@greach.academy", "password": "GRX-9152-ZV", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-070", "name": "Maryam Sanusi", "email": "maryam.sanusi70@greach.academy", "password": "GRX-5713-MH", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-071", "name": "Ngozi Ogunleye", "email": "ngozi.ogunleye71@greach.academy", "password": "GRX-8897-LN", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-072", "name": "Olumide Akinyemi", "email": "olumide.akinyemi72@greach.academy", "password": "GRX-9596-VV", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-073", "name": "Praise Alabi", "email": "praise.alabi73@greach.academy", "password": "GRX-4511-FY", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-074", "name": "Queen Ojo", "email": "queen.ojo74@greach.academy", "password": "GRX-8440-RK", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-075", "name": "Rotimi Igwe", "email": "rotimi.igwe75@greach.academy", "password": "GRX-3989-ZJ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-076", "name": "Sade Ogundele", "email": "sade.ogundele76@greach.academy", "password": "GRX-3568-JS", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-077", "name": "Tunde Ugwu", "email": "tunde.ugwu77@greach.academy", "password": "GRX-9820-FQ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-078", "name": "Uche Dada", "email": "uche.dada78@greach.academy", "password": "GRX-5595-PP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-079", "name": "Victor Oladipo", "email": "victor.oladipo79@greach.academy", "password": "GRX-4513-PP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-080", "name": "Wale Adeleke", "email": "wale.adeleke80@greach.academy", "password": "GRX-3172-CG", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-081", "name": "Yemi Okafor", "email": "yemi.okafor81@greach.academy", "password": "GRX-8144-ES", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-082", "name": "Zainab Danladi", "email": "zainab.danladi82@greach.academy", "password": "GRX-6836-TE", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-083", "name": "Amara Nwosu", "email": "amara.nwosu83@greach.academy", "password": "GRX-2741-NG", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-084", "name": "Blessing Obi", "email": "blessing.obi84@greach.academy", "password": "GRX-2047-GH", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-085", "name": "Chidera Ezekiel", "email": "chidera.ezekiel85@greach.academy", "password": "GRX-5273-GA", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-086", "name": "David Bakare", "email": "david.bakare86@greach.academy", "password": "GRX-5211-KA", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-087", "name": "Efe Fashola", "email": "efe.fashola87@greach.academy", "password": "GRX-2580-FH", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-088", "name": "Funke Chukwu", "email": "funke.chukwu88@greach.academy", "password": "GRX-2537-SP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-089", "name": "Godwin Musa", "email": "godwin.musa89@greach.academy", "password": "GRX-6739-HL", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-090", "name": "Hassan Taiwo", "email": "hassan.taiwo90@greach.academy", "password": "GRX-1622-YH", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-091", "name": "Ifeanyi Momoh", "email": "ifeanyi.momoh91@greach.academy", "password": "GRX-4532-QL", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-092", "name": "Joy Adewale", "email": "joy.adewale92@greach.academy", "password": "GRX-2956-SW", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-093", "name": "Kunle Okonkwo", "email": "kunle.okonkwo93@greach.academy", "password": "GRX-5121-KY", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-094", "name": "Loveth Balogun", "email": "loveth.balogun94@greach.academy", "password": "GRX-6837-BT", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-095", "name": "Michael Ajayi", "email": "michael.ajayi95@greach.academy", "password": "GRX-1387-GH", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-096", "name": "Nneka Olawale", "email": "nneka.olawale96@greach.academy", "password": "GRX-3004-HK", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-097", "name": "Olamide Mohammed", "email": "olamide.mohammed97@greach.academy", "password": "GRX-1332-PJ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-098", "name": "Peter Bassey", "email": "peter.bassey98@greach.academy", "password": "GRX-1919-TC", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-099", "name": "Ruth Soyinka", "email": "ruth.soyinka99@greach.academy", "password": "GRX-3010-CD", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-100", "name": "Samuel Onuorah", "email": "samuel.onuorah100@greach.academy", "password": "GRX-6800-QZ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-101", "name": "Tolani Haruna", "email": "tolani.haruna101@greach.academy", "password": "GRX-5951-AP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-102", "name": "Ugochukwu Lawal", "email": "ugochukwu.lawal102@greach.academy", "password": "GRX-6832-KK", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-103", "name": "Vivian Suleiman", "email": "vivian.suleiman103@greach.academy", "password": "GRX-7897-RU", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-104", "name": "Wisdom Yusuf", "email": "wisdom.yusuf104@greach.academy", "password": "GRX-4005-PR", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-105", "name": "Yetunde Salami", "email": "yetunde.salami105@greach.academy", "password": "GRX-9869-SK", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-106", "name": "Zubair Nnamdi", "email": "zubair.nnamdi106@greach.academy", "password": "GRX-5177-UF", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-107", "name": "Aisha Eze", "email": "aisha.eze107@greach.academy", "password": "GRX-1271-GM", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-108", "name": "Bolaji Bello", "email": "bolaji.bello108@greach.academy", "password": "GRX-5322-ZD", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-109", "name": "Chinonso Abubakar", "email": "chinonso.abubakar109@greach.academy", "password": "GRX-2465-WP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-110", "name": "Daniel Sanusi", "email": "daniel.sanusi110@greach.academy", "password": "GRX-9422-VJ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-111", "name": "Eniola Ogunleye", "email": "eniola.ogunleye111@greach.academy", "password": "GRX-9527-UH", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-112", "name": "Femi Akinyemi", "email": "femi.akinyemi112@greach.academy", "password": "GRX-1186-RF", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-113", "name": "Grace Alabi", "email": "grace.alabi113@greach.academy", "password": "GRX-1955-ZS", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-114", "name": "Hauwa Haruna", "email": "hauwa.haruna114@greach.academy", "password": "GRX-3471-YX", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-115", "name": "Adaeze Lawal", "email": "adaeze.lawal115@greach.academy", "password": "GRX-7538-SJ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-116", "name": "Babatunde Suleiman", "email": "babatunde.suleiman116@greach.academy", "password": "GRX-4809-PG", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-117", "name": "Chinedu Yusuf", "email": "chinedu.yusuf117@greach.academy", "password": "GRX-4292-JM", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-118", "name": "Damilola Salami", "email": "damilola.salami118@greach.academy", "password": "GRX-8496-PM", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-119", "name": "Emeka Nnamdi", "email": "emeka.nnamdi119@greach.academy", "password": "GRX-6114-ER", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-120", "name": "Fatima Eze", "email": "fatima.eze120@greach.academy", "password": "GRX-3519-MA", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-121", "name": "Gbenga Bello", "email": "gbenga.bello121@greach.academy", "password": "GRX-6807-VW", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-122", "name": "Halima Abubakar", "email": "halima.abubakar122@greach.academy", "password": "GRX-7690-VR", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-123", "name": "Ibrahim Sanusi", "email": "ibrahim.sanusi123@greach.academy", "password": "GRX-2379-HP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-124", "name": "Jumoke Ogunleye", "email": "jumoke.ogunleye124@greach.academy", "password": "GRX-5342-DT", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-125", "name": "Kelechi Akinyemi", "email": "kelechi.akinyemi125@greach.academy", "password": "GRX-1300-NW", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-126", "name": "Lateef Alabi", "email": "lateef.alabi126@greach.academy", "password": "GRX-6025-PY", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-127", "name": "Maryam Ojo", "email": "maryam.ojo127@greach.academy", "password": "GRX-7235-NZ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-128", "name": "Ngozi Igwe", "email": "ngozi.igwe128@greach.academy", "password": "GRX-3589-ZC", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-129", "name": "Olumide Ogundele", "email": "olumide.ogundele129@greach.academy", "password": "GRX-3324-TJ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-130", "name": "Praise Ugwu", "email": "praise.ugwu130@greach.academy", "password": "GRX-5283-HT", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-131", "name": "Queen Dada", "email": "queen.dada131@greach.academy", "password": "GRX-4109-DH", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-132", "name": "Rotimi Oladipo", "email": "rotimi.oladipo132@greach.academy", "password": "GRX-9866-GD", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-133", "name": "Sade Adeleke", "email": "sade.adeleke133@greach.academy", "password": "GRX-7367-ET", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-134", "name": "Tunde Okafor", "email": "tunde.okafor134@greach.academy", "password": "GRX-1154-WR", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-135", "name": "Uche Danladi", "email": "uche.danladi135@greach.academy", "password": "GRX-7924-JU", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-136", "name": "Victor Nwosu", "email": "victor.nwosu136@greach.academy", "password": "GRX-9804-EN", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-137", "name": "Wale Obi", "email": "wale.obi137@greach.academy", "password": "GRX-3942-HD", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-138", "name": "Yemi Ezekiel", "email": "yemi.ezekiel138@greach.academy", "password": "GRX-1465-XN", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-139", "name": "Zainab Bakare", "email": "zainab.bakare139@greach.academy", "password": "GRX-1032-WB", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-140", "name": "Amara Fashola", "email": "amara.fashola140@greach.academy", "password": "GRX-5958-FD", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-141", "name": "Blessing Chukwu", "email": "blessing.chukwu141@greach.academy", "password": "GRX-5065-DZ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-142", "name": "Chidera Musa", "email": "chidera.musa142@greach.academy", "password": "GRX-8939-CW", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-143", "name": "David Taiwo", "email": "david.taiwo143@greach.academy", "password": "GRX-2198-KQ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-144", "name": "Efe Momoh", "email": "efe.momoh144@greach.academy", "password": "GRX-2925-JX", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-145", "name": "Funke Adewale", "email": "funke.adewale145@greach.academy", "password": "GRX-2981-PF", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-146", "name": "Godwin Okonkwo", "email": "godwin.okonkwo146@greach.academy", "password": "GRX-6876-SL", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-147", "name": "Hassan Balogun", "email": "hassan.balogun147@greach.academy", "password": "GRX-6654-BU", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-148", "name": "Ifeanyi Ajayi", "email": "ifeanyi.ajayi148@greach.academy", "password": "GRX-2439-VU", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-149", "name": "Joy Olawale", "email": "joy.olawale149@greach.academy", "password": "GRX-5346-UF", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-150", "name": "Kunle Mohammed", "email": "kunle.mohammed150@greach.academy", "password": "GRX-6324-LP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-151", "name": "Loveth Bassey", "email": "loveth.bassey151@greach.academy", "password": "GRX-6287-XT", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-152", "name": "Michael Soyinka", "email": "michael.soyinka152@greach.academy", "password": "GRX-9080-KE", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-153", "name": "Nneka Onuorah", "email": "nneka.onuorah153@greach.academy", "password": "GRX-8585-FS", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-154", "name": "Olamide Haruna", "email": "olamide.haruna154@greach.academy", "password": "GRX-6710-UJ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-155", "name": "Peter Lawal", "email": "peter.lawal155@greach.academy", "password": "GRX-7252-FL", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-156", "name": "Ruth Suleiman", "email": "ruth.suleiman156@greach.academy", "password": "GRX-3090-LH", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-157", "name": "Samuel Yusuf", "email": "samuel.yusuf157@greach.academy", "password": "GRX-2930-HW", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-158", "name": "Tolani Salami", "email": "tolani.salami158@greach.academy", "password": "GRX-8281-GP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-159", "name": "Ugochukwu Nnamdi", "email": "ugochukwu.nnamdi159@greach.academy", "password": "GRX-5393-FZ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-160", "name": "Vivian Eze", "email": "vivian.eze160@greach.academy", "password": "GRX-3019-GP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-161", "name": "Wisdom Bello", "email": "wisdom.bello161@greach.academy", "password": "GRX-7573-KP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-162", "name": "Yetunde Abubakar", "email": "yetunde.abubakar162@greach.academy", "password": "GRX-6393-SJ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-163", "name": "Zubair Sanusi", "email": "zubair.sanusi163@greach.academy", "password": "GRX-9104-XW", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-164", "name": "Aisha Ogunleye", "email": "aisha.ogunleye164@greach.academy", "password": "GRX-9952-NL", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-165", "name": "Bolaji Akinyemi", "email": "bolaji.akinyemi165@greach.academy", "password": "GRX-6414-BK", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-166", "name": "Chinonso Alabi", "email": "chinonso.alabi166@greach.academy", "password": "GRX-3833-AP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-167", "name": "Daniel Ojo", "email": "daniel.ojo167@greach.academy", "password": "GRX-5131-DP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-168", "name": "Eniola Igwe", "email": "eniola.igwe168@greach.academy", "password": "GRX-7793-VV", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-169", "name": "Femi Ogundele", "email": "femi.ogundele169@greach.academy", "password": "GRX-8912-JA", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-170", "name": "Grace Ugwu", "email": "grace.ugwu170@greach.academy", "password": "GRX-4602-RR", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-171", "name": "Hauwa Salami", "email": "hauwa.salami171@greach.academy", "password": "GRX-5401-HU", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-172", "name": "Adaeze Nnamdi", "email": "adaeze.nnamdi172@greach.academy", "password": "GRX-8489-NQ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-173", "name": "Babatunde Eze", "email": "babatunde.eze173@greach.academy", "password": "GRX-7052-BS", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-174", "name": "Chinedu Bello", "email": "chinedu.bello174@greach.academy", "password": "GRX-9830-UZ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-175", "name": "Damilola Abubakar", "email": "damilola.abubakar175@greach.academy", "password": "GRX-3553-HF", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-176", "name": "Emeka Sanusi", "email": "emeka.sanusi176@greach.academy", "password": "GRX-8593-ES", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-177", "name": "Fatima Ogunleye", "email": "fatima.ogunleye177@greach.academy", "password": "GRX-6069-CL", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-178", "name": "Gbenga Akinyemi", "email": "gbenga.akinyemi178@greach.academy", "password": "GRX-9549-SP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-179", "name": "Halima Alabi", "email": "halima.alabi179@greach.academy", "password": "GRX-2770-AY", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-180", "name": "Ibrahim Ojo", "email": "ibrahim.ojo180@greach.academy", "password": "GRX-1728-ET", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-181", "name": "Jumoke Igwe", "email": "jumoke.igwe181@greach.academy", "password": "GRX-4790-ZX", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-182", "name": "Kelechi Ogundele", "email": "kelechi.ogundele182@greach.academy", "password": "GRX-6591-JH", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-183", "name": "Lateef Ugwu", "email": "lateef.ugwu183@greach.academy", "password": "GRX-8859-GX", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-184", "name": "Maryam Dada", "email": "maryam.dada184@greach.academy", "password": "GRX-5097-AM", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-185", "name": "Ngozi Oladipo", "email": "ngozi.oladipo185@greach.academy", "password": "GRX-1356-MJ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-186", "name": "Olumide Adeleke", "email": "olumide.adeleke186@greach.academy", "password": "GRX-8636-EG", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-187", "name": "Praise Okafor", "email": "praise.okafor187@greach.academy", "password": "GRX-7552-HP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-188", "name": "Queen Danladi", "email": "queen.danladi188@greach.academy", "password": "GRX-7731-WT", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-189", "name": "Rotimi Nwosu", "email": "rotimi.nwosu189@greach.academy", "password": "GRX-9338-SU", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-190", "name": "Sade Obi", "email": "sade.obi190@greach.academy", "password": "GRX-5892-ZQ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-191", "name": "Tunde Ezekiel", "email": "tunde.ezekiel191@greach.academy", "password": "GRX-9349-ZQ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-192", "name": "Uche Bakare", "email": "uche.bakare192@greach.academy", "password": "GRX-9015-HJ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-193", "name": "Victor Fashola", "email": "victor.fashola193@greach.academy", "password": "GRX-3968-BP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-194", "name": "Wale Chukwu", "email": "wale.chukwu194@greach.academy", "password": "GRX-3856-UZ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-195", "name": "Yemi Musa", "email": "yemi.musa195@greach.academy", "password": "GRX-9650-NK", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-196", "name": "Zainab Taiwo", "email": "zainab.taiwo196@greach.academy", "password": "GRX-2742-YZ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-197", "name": "Amara Momoh", "email": "amara.momoh197@greach.academy", "password": "GRX-1473-MF", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-198", "name": "Blessing Adewale", "email": "blessing.adewale198@greach.academy", "password": "GRX-9323-WD", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-199", "name": "Chidera Okonkwo", "email": "chidera.okonkwo199@greach.academy", "password": "GRX-4461-VG", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-200", "name": "David Balogun", "email": "david.balogun200@greach.academy", "password": "GRX-9004-DS", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-201", "name": "Efe Ajayi", "email": "efe.ajayi201@greach.academy", "password": "GRX-6337-JR", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-202", "name": "Funke Olawale", "email": "funke.olawale202@greach.academy", "password": "GRX-9727-QN", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-203", "name": "Godwin Mohammed", "email": "godwin.mohammed203@greach.academy", "password": "GRX-3490-QS", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-204", "name": "Hassan Bassey", "email": "hassan.bassey204@greach.academy", "password": "GRX-3508-TD", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-205", "name": "Ifeanyi Soyinka", "email": "ifeanyi.soyinka205@greach.academy", "password": "GRX-2000-VW", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-206", "name": "Joy Onuorah", "email": "joy.onuorah206@greach.academy", "password": "GRX-5593-UY", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-207", "name": "Kunle Haruna", "email": "kunle.haruna207@greach.academy", "password": "GRX-3932-DZ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-208", "name": "Loveth Lawal", "email": "loveth.lawal208@greach.academy", "password": "GRX-6843-DE", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-209", "name": "Michael Suleiman", "email": "michael.suleiman209@greach.academy", "password": "GRX-1878-US", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-210", "name": "Nneka Yusuf", "email": "nneka.yusuf210@greach.academy", "password": "GRX-7781-RM", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-211", "name": "Olamide Salami", "email": "olamide.salami211@greach.academy", "password": "GRX-9946-YH", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-212", "name": "Peter Nnamdi", "email": "peter.nnamdi212@greach.academy", "password": "GRX-9430-JP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-213", "name": "Ruth Eze", "email": "ruth.eze213@greach.academy", "password": "GRX-8629-SK", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-214", "name": "Samuel Bello", "email": "samuel.bello214@greach.academy", "password": "GRX-6316-DN", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-215", "name": "Tolani Abubakar", "email": "tolani.abubakar215@greach.academy", "password": "GRX-8714-AC", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-216", "name": "Ugochukwu Sanusi", "email": "ugochukwu.sanusi216@greach.academy", "password": "GRX-5214-HA", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-217", "name": "Vivian Ogunleye", "email": "vivian.ogunleye217@greach.academy", "password": "GRX-9245-EV", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-218", "name": "Wisdom Akinyemi", "email": "wisdom.akinyemi218@greach.academy", "password": "GRX-7927-RE", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-219", "name": "Yetunde Alabi", "email": "yetunde.alabi219@greach.academy", "password": "GRX-3796-FR", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-220", "name": "Zubair Ojo", "email": "zubair.ojo220@greach.academy", "password": "GRX-9102-FD", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-221", "name": "Aisha Igwe", "email": "aisha.igwe221@greach.academy", "password": "GRX-7913-TM", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-222", "name": "Bolaji Ogundele", "email": "bolaji.ogundele222@greach.academy", "password": "GRX-6950-SZ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-223", "name": "Chinonso Ugwu", "email": "chinonso.ugwu223@greach.academy", "password": "GRX-8216-YP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-224", "name": "Daniel Dada", "email": "daniel.dada224@greach.academy", "password": "GRX-8893-CX", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-225", "name": "Eniola Oladipo", "email": "eniola.oladipo225@greach.academy", "password": "GRX-4202-CB", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-226", "name": "Femi Adeleke", "email": "femi.adeleke226@greach.academy", "password": "GRX-3589-CE", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-227", "name": "Grace Okafor", "email": "grace.okafor227@greach.academy", "password": "GRX-8103-EY", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-228", "name": "Hauwa Abubakar", "email": "hauwa.abubakar228@greach.academy", "password": "GRX-8010-AZ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-229", "name": "Adaeze Sanusi", "email": "adaeze.sanusi229@greach.academy", "password": "GRX-5402-GJ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-230", "name": "Babatunde Ogunleye", "email": "babatunde.ogunleye230@greach.academy", "password": "GRX-1156-MM", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-231", "name": "Chinedu Akinyemi", "email": "chinedu.akinyemi231@greach.academy", "password": "GRX-5474-WM", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-232", "name": "Damilola Alabi", "email": "damilola.alabi232@greach.academy", "password": "GRX-3260-CD", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-233", "name": "Emeka Ojo", "email": "emeka.ojo233@greach.academy", "password": "GRX-4646-ZL", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-234", "name": "Fatima Igwe", "email": "fatima.igwe234@greach.academy", "password": "GRX-1790-YS", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-235", "name": "Gbenga Ogundele", "email": "gbenga.ogundele235@greach.academy", "password": "GRX-6345-UZ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-236", "name": "Halima Ugwu", "email": "halima.ugwu236@greach.academy", "password": "GRX-2291-MJ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-237", "name": "Ibrahim Dada", "email": "ibrahim.dada237@greach.academy", "password": "GRX-9608-VY", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-238", "name": "Jumoke Oladipo", "email": "jumoke.oladipo238@greach.academy", "password": "GRX-5523-HB", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-239", "name": "Kelechi Adeleke", "email": "kelechi.adeleke239@greach.academy", "password": "GRX-1686-BY", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-240", "name": "Lateef Okafor", "email": "lateef.okafor240@greach.academy", "password": "GRX-2782-KR", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-241", "name": "Maryam Danladi", "email": "maryam.danladi241@greach.academy", "password": "GRX-8486-QN", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-242", "name": "Ngozi Nwosu", "email": "ngozi.nwosu242@greach.academy", "password": "GRX-3508-XD", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-243", "name": "Olumide Obi", "email": "olumide.obi243@greach.academy", "password": "GRX-2722-KE", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-244", "name": "Praise Ezekiel", "email": "praise.ezekiel244@greach.academy", "password": "GRX-5177-AB", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-245", "name": "Queen Bakare", "email": "queen.bakare245@greach.academy", "password": "GRX-2165-UN", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-246", "name": "Rotimi Fashola", "email": "rotimi.fashola246@greach.academy", "password": "GRX-6487-TH", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-247", "name": "Sade Chukwu", "email": "sade.chukwu247@greach.academy", "password": "GRX-8713-FT", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-248", "name": "Tunde Musa", "email": "tunde.musa248@greach.academy", "password": "GRX-8678-SK", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-249", "name": "Uche Taiwo", "email": "uche.taiwo249@greach.academy", "password": "GRX-9422-WH", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-250", "name": "Victor Momoh", "email": "victor.momoh250@greach.academy", "password": "GRX-1676-MQ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-251", "name": "Wale Adewale", "email": "wale.adewale251@greach.academy", "password": "GRX-8184-EC", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-252", "name": "Yemi Okonkwo", "email": "yemi.okonkwo252@greach.academy", "password": "GRX-8803-QM", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-253", "name": "Zainab Balogun", "email": "zainab.balogun253@greach.academy", "password": "GRX-1267-MF", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-254", "name": "Amara Ajayi", "email": "amara.ajayi254@greach.academy", "password": "GRX-1557-NU", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-255", "name": "Blessing Olawale", "email": "blessing.olawale255@greach.academy", "password": "GRX-5827-FN", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-256", "name": "Chidera Mohammed", "email": "chidera.mohammed256@greach.academy", "password": "GRX-5379-UW", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-257", "name": "David Bassey", "email": "david.bassey257@greach.academy", "password": "GRX-1430-JW", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-258", "name": "Efe Soyinka", "email": "efe.soyinka258@greach.academy", "password": "GRX-3725-YC", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-259", "name": "Funke Onuorah", "email": "funke.onuorah259@greach.academy", "password": "GRX-7037-VQ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-260", "name": "Godwin Haruna", "email": "godwin.haruna260@greach.academy", "password": "GRX-3786-LV", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-261", "name": "Hassan Lawal", "email": "hassan.lawal261@greach.academy", "password": "GRX-2731-VK", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-262", "name": "Ifeanyi Suleiman", "email": "ifeanyi.suleiman262@greach.academy", "password": "GRX-1094-FB", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-263", "name": "Joy Yusuf", "email": "joy.yusuf263@greach.academy", "password": "GRX-3768-NX", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-264", "name": "Kunle Salami", "email": "kunle.salami264@greach.academy", "password": "GRX-2385-GY", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-265", "name": "Loveth Nnamdi", "email": "loveth.nnamdi265@greach.academy", "password": "GRX-1595-FW", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-266", "name": "Michael Eze", "email": "michael.eze266@greach.academy", "password": "GRX-2895-XP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-267", "name": "Nneka Bello", "email": "nneka.bello267@greach.academy", "password": "GRX-1582-JX", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-268", "name": "Olamide Abubakar", "email": "olamide.abubakar268@greach.academy", "password": "GRX-8650-WN", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-269", "name": "Peter Sanusi", "email": "peter.sanusi269@greach.academy", "password": "GRX-1567-YX", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-270", "name": "Ruth Ogunleye", "email": "ruth.ogunleye270@greach.academy", "password": "GRX-4113-RZ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-271", "name": "Samuel Akinyemi", "email": "samuel.akinyemi271@greach.academy", "password": "GRX-1770-GE", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-272", "name": "Tolani Alabi", "email": "tolani.alabi272@greach.academy", "password": "GRX-2073-GA", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-273", "name": "Ugochukwu Ojo", "email": "ugochukwu.ojo273@greach.academy", "password": "GRX-1714-MG", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-274", "name": "Vivian Igwe", "email": "vivian.igwe274@greach.academy", "password": "GRX-9954-ER", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-275", "name": "Wisdom Ogundele", "email": "wisdom.ogundele275@greach.academy", "password": "GRX-9850-FV", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-276", "name": "Yetunde Ugwu", "email": "yetunde.ugwu276@greach.academy", "password": "GRX-9874-JN", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-277", "name": "Zubair Dada", "email": "zubair.dada277@greach.academy", "password": "GRX-8602-CA", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-278", "name": "Aisha Oladipo", "email": "aisha.oladipo278@greach.academy", "password": "GRX-7774-KC", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-279", "name": "Bolaji Adeleke", "email": "bolaji.adeleke279@greach.academy", "password": "GRX-3924-ED", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-280", "name": "Chinonso Okafor", "email": "chinonso.okafor280@greach.academy", "password": "GRX-4266-NJ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-281", "name": "Daniel Danladi", "email": "daniel.danladi281@greach.academy", "password": "GRX-5569-ZR", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-282", "name": "Eniola Nwosu", "email": "eniola.nwosu282@greach.academy", "password": "GRX-8669-CJ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-283", "name": "Femi Obi", "email": "femi.obi283@greach.academy", "password": "GRX-3134-ZP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-284", "name": "Grace Ezekiel", "email": "grace.ezekiel284@greach.academy", "password": "GRX-9467-UV", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-285", "name": "Hauwa Alabi", "email": "hauwa.alabi285@greach.academy", "password": "GRX-8771-WD", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-286", "name": "Adaeze Ojo", "email": "adaeze.ojo286@greach.academy", "password": "GRX-6282-EP", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-287", "name": "Babatunde Igwe", "email": "babatunde.igwe287@greach.academy", "password": "GRX-3272-AK", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-288", "name": "Chinedu Ogundele", "email": "chinedu.ogundele288@greach.academy", "password": "GRX-9159-RS", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-289", "name": "Damilola Ugwu", "email": "damilola.ugwu289@greach.academy", "password": "GRX-6547-NJ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-290", "name": "Emeka Dada", "email": "emeka.dada290@greach.academy", "password": "GRX-1344-RF", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-291", "name": "Fatima Oladipo", "email": "fatima.oladipo291@greach.academy", "password": "GRX-7180-XY", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-292", "name": "Gbenga Adeleke", "email": "gbenga.adeleke292@greach.academy", "password": "GRX-3943-HN", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-293", "name": "Halima Okafor", "email": "halima.okafor293@greach.academy", "password": "GRX-1467-JT", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-294", "name": "Ibrahim Danladi", "email": "ibrahim.danladi294@greach.academy", "password": "GRX-8506-QF", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-295", "name": "Jumoke Nwosu", "email": "jumoke.nwosu295@greach.academy", "password": "GRX-8724-UD", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-296", "name": "Kelechi Obi", "email": "kelechi.obi296@greach.academy", "password": "GRX-9234-YM", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-297", "name": "Lateef Ezekiel", "email": "lateef.ezekiel297@greach.academy", "password": "GRX-2106-DQ", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-298", "name": "Maryam Bakare", "email": "maryam.bakare298@greach.academy", "password": "GRX-6096-DY", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-299", "name": "Ngozi Fashola", "email": "ngozi.fashola299@greach.academy", "password": "GRX-1332-LH", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}, {"id": "STU-2026-300", "name": "Olumide Chukwu", "email": "olumide.chukwu300@greach.academy", "password": "GRX-3466-KR", "cohort": "Batch 2: 2026 Masterclass", "status": "Active"}];
+    if (!localStorage.getItem(ROSTER_DB_KEY)) {
+      localStorage.setItem(ROSTER_DB_KEY, JSON.stringify(preloadedRoster));
+    }
+
+    function getStudentDatabase() {
+      try {
+        return JSON.parse(localStorage.getItem(ROSTER_DB_KEY) || '[]');
+      } catch(e) {
+        return preloadedRoster;
+      }
+    }
+
+    // Global Role Switcher Function (Directly on window)
+    window.switchStartRole = function(role) {
+      const tabStu = document.getElementById('tabGateStudent');
+      const tabInst = document.getElementById('tabGateInstructor');
+      const formStu = document.getElementById('studentGateForm');
+      const formInst = document.getElementById('instructorGateForm');
+      const errBox = document.getElementById('gateErrorBox');
+      const errInst = document.getElementById('gateInstErrorBox');
+      if (errBox) errBox.style.display = 'none';
+      if (errInst) errInst.style.display = 'none';
+
+      if (role === 'student') {
+        if (tabStu) {
+          tabStu.style.background = 'white';
+          tabStu.style.color = '#0f172a';
+          tabStu.style.boxShadow = '0 2px 4px rgba(0,0,0,0.06)';
+        }
+        if (tabInst) {
+          tabInst.style.background = 'transparent';
+          tabInst.style.color = '#64748b';
+          tabInst.style.boxShadow = 'none';
+        }
+        if (formStu) formStu.style.display = 'block';
+        if (formInst) formInst.style.display = 'none';
+      } else {
+        if (tabInst) {
+          tabInst.style.background = 'white';
+          tabInst.style.color = '#0f172a';
+          tabInst.style.boxShadow = '0 2px 4px rgba(0,0,0,0.06)';
+        }
+        if (tabStu) {
+          tabStu.style.background = 'transparent';
+          tabStu.style.color = '#64748b';
+          tabStu.style.boxShadow = 'none';
+        }
+        if (formInst) formInst.style.display = 'block';
+        if (formStu) formStu.style.display = 'none';
+      }
+    };
+
+    // Attach Event Listeners on DOM load
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabStu = document.getElementById('tabGateStudent');
+      const tabInst = document.getElementById('tabGateInstructor');
+      if (tabStu) tabStu.addEventListener('click', () => window.switchStartRole('student'));
+      if (tabInst) tabInst.addEventListener('click', () => window.switchStartRole('instructor'));
+    });
+
+    // 1-Click Fast Instructor Authentication
+    window.autoFillInstructorKey = function() {
+      const passInp = document.getElementById('gateInstructorPasscode');
+      if (passInp) passInp.value = 'GREACH-ADMIN-2026';
+      window.switchStartRole('instructor');
+      const form = document.getElementById('instructorGateForm');
+      if (form) {
+        window.handleStartInstructorLogin(new Event('submit'));
+      }
+    };
+
+    // Self-Service Auto-Sign In / Retrieve Access
+    window.autoRetrieveStudentAccess = function() {
+      const identInp = document.getElementById('gateStudentIdentifier');
+      let ident = identInp ? identInp.value.trim().toLowerCase() : '';
+      if (!ident) {
+        ident = prompt('Please enter your Registered Student Email or Student ID (e.g., STU-2026-001):');
+        if (!ident) return;
+        ident = ident.trim().toLowerCase();
+        if (identInp) identInp.value = ident;
+      }
+      const roster = getStudentDatabase();
+      const match = roster.find(s => s.id.toLowerCase() === ident || s.email.toLowerCase() === ident);
+      if (match) {
+        const passInp = document.getElementById('gateStudentPassword');
+        if (passInp) passInp.value = match.password;
+        const session = {
+          role: 'student',
+          id: match.id,
+          name: match.name,
+          email: match.email,
+          cohort: match.cohort,
+          verified: true,
+          loginTime: new Date().toISOString()
+        };
+        localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
+        localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
+        checkAccessSecurity();
+        alert('Welcome back, ' + match.name + ' (' + match.id + ')! Auto-authenticated successfully.');
+      } else {
+        alert('Could not locate "' + ident + '" in the 300 registered students roster. Please verify your Student ID or Registered Email.');
+      }
+    };
+
+    // Security Gate State Checker & Automated Magic Link Evaluator
+    function checkAccessSecurity() {
+      const securityGateOverlay = document.getElementById('securityGateOverlay');
+      const studentStatusPill = document.getElementById('studentStatusPill');
+      const verifiedStudentName = document.getElementById('verifiedStudentName');
+
+      // 1. Check Automated URL Query Parameters (Magic Links)
+      const urlParams = new URLSearchParams(window.location.search);
+      const adminKey = urlParams.get('admin') || urlParams.get('master') || (urlParams.get('instructor') === 'true' ? urlParams.get('key') : null);
+      if (adminKey === 'GREACH-ADMIN-2026') {
+        localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
+        const session = {
+          role: 'instructor',
+          id: 'INST-ADMIN',
+          name: 'Lead Instructor',
+          email: 'instructor@greach.org',
+          verified: true,
+          isAdmin: true,
+          loginTime: new Date().toISOString()
+        };
+        localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      const studentId = urlParams.get('id') || urlParams.get('student');
+      const studentKey = urlParams.get('key');
+      const studentEmail = urlParams.get('email');
+      if ((studentId || studentEmail) && studentKey) {
+        const roster = getStudentDatabase();
+        const match = roster.find(s => 
+          ((studentId && s.id.toLowerCase() === studentId.toLowerCase()) || 
+           (studentEmail && s.email.toLowerCase() === studentEmail.toLowerCase())) && 
+          s.password === studentKey
+        );
+        if (match) {
+          const session = {
+            role: 'student',
+            id: match.id,
+            name: match.name,
+            email: match.email,
+            cohort: match.cohort,
+            verified: true,
+            loginTime: new Date().toISOString()
+          };
+          localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
+          localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      }
+
+      // Batch Token
+      const batchParam = urlParams.get('batch');
+      const tokenParam = urlParams.get('token');
+      if (batchParam && (tokenParam === 'GREACH-2026' || !tokenParam)) {
+        const session = {
+          role: 'student',
+          name: 'Student (' + batchParam + ')',
+          id: 'STU-BATCH-' + Math.floor(Math.random() * 900 + 100),
+          email: 'enrolled@batch.greach',
+          cohort: batchParam,
+          verified: true,
+          loginTime: new Date().toISOString()
+        };
+        localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
+        localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // 2. Check Persistent Lead Instructor login
+      if (localStorage.getItem(INSTRUCTOR_LOGIN_KEY) === 'true') {
+        if (securityGateOverlay) securityGateOverlay.classList.add('unlocked');
+        if (studentStatusPill) {
+          studentStatusPill.style.display = 'inline-flex';
+          studentStatusPill.style.background = '#14532d';
+          studentStatusPill.style.border = '1.5px solid #22c55e';
+        }
+        if (verifiedStudentName) {
+          verifiedStudentName.innerHTML = '👑 <strong>Lead Instructor</strong> (Admin Mode)';
+        }
+        return;
+      }
+
+      // 3. Check active user session
+      try {
+        const session = JSON.parse(localStorage.getItem(ACTIVE_SESSION_KEY));
+        if (session && session.verified) {
+          if (securityGateOverlay) securityGateOverlay.classList.add('unlocked');
+          if (studentStatusPill) studentStatusPill.style.display = 'inline-flex';
+          const stuId = session.id || 'STU';
+          if (verifiedStudentName) {
+            verifiedStudentName.textContent = '🎓 ' + session.name + ' (' + stuId + ')';
+          }
+        } else {
+          if (securityGateOverlay) securityGateOverlay.classList.remove('unlocked');
+          if (studentStatusPill) studentStatusPill.style.display = 'none';
+        }
+      } catch(e) {
+        if (securityGateOverlay) securityGateOverlay.classList.remove('unlocked');
+      }
+    }
+
+    window.autoFillInstructorKey = function() {
+      const emailInp = document.getElementById('gateInstructorEmail');
+      const passInp = document.getElementById('gateInstructorPasscode');
+      if (emailInp) emailInp.value = 'Greachimpact';
+      if (passInp) passInp.value = 'Evana_Oluebube123890';
+    };
+
+    window.handleStartStudentLogin = function(e) {
+      if (e) e.preventDefault();
+      const ident = document.getElementById('gateStudentIdentifier').value.trim();
+      const pwd = document.getElementById('gateStudentPassword').value.trim();
+      const errBox = document.getElementById('gateErrorBox');
+      const errText = document.getElementById('gateErrorText');
+
+      // Use Enterprise GreachDB Layer with Expiry Check and 1-Step Code Connect
+      if (window.GreachDB) {
+        let verifyRes = null;
+        if (!pwd && ident) {
+          // Student entered their unique code (e.g. GRX-2951-HY or ID)
+          verifyRes = window.GreachDB.verifyStudentByCode(ident);
+        } else if (pwd && !ident) {
+          verifyRes = window.GreachDB.verifyStudentByCode(pwd);
+        } else if (ident && pwd) {
+          verifyRes = window.GreachDB.verifyStudent(ident, pwd);
+          if (!verifyRes.success) {
+            const checkCode = window.GreachDB.verifyStudentByCode(ident) || window.GreachDB.verifyStudentByCode(pwd);
+            if (checkCode && checkCode.success) verifyRes = checkCode;
+          }
+        }
+        if (verifyRes.success) {
+          const s = verifyRes.student;
+          const session = {
+            role: 'student',
+            id: s.id,
+            name: s.name,
+            email: s.email,
+            cohort: s.cohort,
+            expiresAt: s.expiresAt,
+            verified: true,
+            loginTime: new Date().toISOString()
+          };
+          localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
+          localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
+          if (errBox) errBox.style.display = 'none';
+          checkAccessSecurity();
+          alert(`Welcome back, ${s.name}! Signed in successfully as ${s.id}.\nAccess Status: ${verifyRes.expiry.message}`);
+          return;
+        } else if (verifyRes.isExpired) {
+          if (errBox && errText) {
+            errText.innerHTML = `
+              <strong><i class="fas fa-hourglass-end"></i> Access Code Expired:</strong> ${verifyRes.error}
+              <br><br>
+              <a href="claim-certificate.html?email=${encodeURIComponent(verifyRes.student ? verifyRes.student.email : ident)}" style="color:#0284c7; font-weight:700; text-decoration:underline;">
+                <i class="fas fa-award"></i> Click here to Claim or Download Your Certificate of Completion &rarr;
+              </a>
+            `;
+            errBox.style.display = 'block';
+          }
+          return;
+        } else {
+          if (errText) errText.textContent = verifyRes.error || 'Invalid credentials.';
+          if (errBox) errBox.style.display = 'block';
+          return;
+        }
+      }
+
+      // Fallback
+      const roster = getStudentDatabase();
+      const match = roster.find(s => 
+        (s.id.toLowerCase() === ident.toLowerCase() || s.email.toLowerCase() === ident.toLowerCase()) && 
+        s.password === pwd
+      );
+
+      if (match) {
+        const session = {
+          role: 'student',
+          id: match.id,
+          name: match.name,
+          email: match.email,
+          cohort: match.cohort,
+          verified: true,
+          loginTime: new Date().toISOString()
+        };
+        localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
+        localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
+        if (errBox) errBox.style.display = 'none';
+        checkAccessSecurity();
+      } else {
+        if (errText) errText.textContent = 'Invalid Student credentials.';
+        if (errBox) errBox.style.display = 'block';
+      }
+    };
+
+    window.handleStartInstructorLogin = function(e) {
+      if (e) e.preventDefault();
+      const userOrEmail = document.getElementById('gateInstructorEmail').value.trim();
+      const pass = document.getElementById('gateInstructorPasscode').value.trim();
+      const errBox = document.getElementById('gateInstErrorBox');
+      const errText = document.getElementById('gateInstErrorText');
+
+      let isSuccess = false;
+      let adminData = { username: userOrEmail, role: 'super_admin', isSuper: true };
+
+      if (window.GreachDB) {
+        const res = window.GreachDB.adminLogin(userOrEmail, pass);
+        if (res.success) {
+          isSuccess = true;
+          adminData = {
+            username: res.admin.username,
+            name: res.admin.name,
+            role: res.admin.role,
+            isSuper: !!res.isSuperAdmin
+          };
+        }
+      } else if (
+        (userOrEmail.toLowerCase() === 'greachimpact' && pass === 'Evana_Oluebube123890') ||
+        pass === 'GREACH-ADMIN-2026'
+      ) {
+        isSuccess = true;
+      }
+
+      if (isSuccess) {
+        localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
+        const session = {
+          role: 'instructor',
+          id: 'INST-ADMIN',
+          name: adminData.username === 'Greachimpact' ? 'Super Admin Greachimpact' : (adminData.name || 'Lead Instructor'),
+          email: userOrEmail.includes('@') ? userOrEmail : 'instructor@greach.org',
+          verified: true,
+          isAdmin: true,
+          isSuperAdmin: adminData.isSuper,
+          loginTime: new Date().toISOString()
+        };
+        localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
+        if (errBox) errBox.style.display = 'none';
+        checkAccessSecurity();
+        alert('Master Super Admin Authentication Successful! Full access enabled.');
+      } else {
+        if (errText) errText.textContent = 'Incorrect Admin Username or Master Password.';
+        if (errBox) errBox.style.display = 'block';
+      }
+    };
+
+    window.logoutStudent = function() {
+      if (confirm('Log out of this session?')) {
+        localStorage.removeItem(ACTIVE_SESSION_KEY);
+        localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
+        checkAccessSecurity();
+      }
+    };
+
+    // Run security check immediately
+    checkAccessSecurity();
+  </script>
+    
+</body>
+</html>

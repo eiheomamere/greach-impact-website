@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Onboarding &amp; Live Class Joining Guide · Masterclass Cohort</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --navy-900: #0b1a2d;
+      --navy-800: #112641;
+      --navy-700: #1b365d;
+      --accent-blue: #0284c7;
+      --accent-green: #107c41;
+      --accent-gold: #f59e0b;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #f0f4f8;
+      color: var(--slate-800);
+      line-height: 1.6;
+    }
+    .top-nav {
+      background: linear-gradient(135deg, var(--navy-900), var(--navy-800));
+      color: white;
+      padding: 0.85rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .nav-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 0.45rem 0.95rem;
+      border-radius: 30px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+    }
+    .nav-btn:hover { background: white; color: var(--navy-800); transform: translateY(-2px); }
+    .container { max-width: 950px; margin: 2rem auto; padding: 0 1.2rem; }
+    .card {
+      background: white;
+      border-radius: 1.2rem;
+      border: 1px solid var(--slate-200);
+      padding: 2.2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+    .hero-banner {
+      background: linear-gradient(135deg, var(--navy-900) 0%, var(--navy-700) 100%);
+      color: white;
+      border-radius: 1.5rem;
+      padding: 2.5rem 2rem;
+      margin-bottom: 2rem;
+    }
+    .step-badge {
+      background: var(--navy-700);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      display: inline-block;
+      margin-bottom: 0.6rem;
+    }
+    .tip-box {
+      background: #f0fdf4;
+      border-left: 4px solid #16a34a;
+      padding: 1rem 1.2rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1.2rem 0;
+      font-size: 0.92rem;
+    }
+    .split-demo {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .split-half {
+      border: 2px dashed #0284c7;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      background: #f0f9ff;
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style id="greach-brand-font-rules">
+  body, input, button, select, textarea {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  }
+  h1, h2, h3, h4, .brand-title, .hero-title, .platform-brand-text h1, .stat-val {
+    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  }
+</style>
+
+</head>
+<body>
+  <div class="top-nav">
+    <div style="display:flex; align-items:center; gap:0.8rem;">
+      <i class="fas fa-file-excel" style="color:#22c55e; font-size:1.4rem;"></i>
+      <strong style="font-size:1.1rem;">Excel Masterclass · Student Onboarding Portal</strong>
+    </div>
+    <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+      <a href="START_HERE.html" class="nav-btn"><i class="fas fa-home"></i> Home</a>
+      <a href="Excel_Master_Course_Hub.html" class="nav-btn" style="background:#0284c7; border-color:#38bdf8;"><i class="fas fa-play"></i> Enter Classroom</a>
+      <a href="claim-certificate.html" class="nav-btn" style="background:#d97706; border-color:#d97706;"><i class="fas fa-award"></i> Certificate Portal</a>
+      <a href="../admin.html" target="_blank" class="nav-btn" style="background:#0a192f; border-color:#d97706;"><i class="fas fa-crown"></i> Admin Console</a>
+      <a href="Master_Excel_Course_Exercises.xlsx" download class="nav-btn"><i class="fas fa-download"></i> Workbook (.xlsx)</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="hero-banner">
+      <span style="background:rgba(255,255,255,0.15); padding:0.3rem 0.9rem; border-radius:20px; font-size:0.8rem; font-weight:700; color:#38bdf8;">
+        OPEN ENROLLMENT · LIVE CLASS ONBOARDING
+      </span>
+      <h1 style="font-size:2.2rem; margin:0.8rem 0 0.5rem;">How to Connect &amp; Master Excel Live</h1>
+      <p style="color:#cbd5e1; font-size:1.05rem;">
+        Everything you need to know about joining the live stream, setting up your screen, asking questions, and completing guided exercises.
+      </p>
+    </div>
+
+    <!-- Step 0: Automated Magic Links & Login -->
+    <div class="card" style="border-left: 4px solid #0284c7;">
+      <span class="step-badge" style="background:#0284c7;">STEP 0: INSTANT 1-CLICK ACCESS</span>
+      <h2 style="color:var(--navy-700); margin-bottom:0.8rem;">Automated Magic Links &amp; Unique Credentials</h2>
+      <p>Getting into your classroom is seamless with automated authentication:</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1rem 0;">
+        <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; padding:1rem;">
+          <h4 style="color:#0369a1; margin-bottom:0.4rem;"><i class="fas fa-magic"></i> Automated Magic Link (One-Click)</h4>
+          <p style="font-size:0.85rem; color:#334155;">
+            Your instructor can send you an <strong>Automated Magic Access Link</strong> via WhatsApp or Email. Simply click the link, and you are <strong>instantly signed in</strong> without typing your ID or password!
+          </p>
+        </div>
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:1rem;">
+          <h4 style="color:#15803d; margin-bottom:0.4rem;"><i class="fas fa-key"></i> System-Generated Passwords</h4>
+          <p style="font-size:0.85rem; color:#334155;">
+            Every student has an individual, system-generated secret password (e.g. <code>GRX-2951-HY</code>). If you don't have it handy, click <strong>"⚡ Auto-Sign In / Retrieve Access"</strong> on the portal login screen.
+          </p>
+        </div>
+      </div>
+      <div class="tip-box" style="background:#f8fafc; border-color:#cbd5e1; color:#334155;">
+        <strong>👑 For Super Administrator:</strong> Master username: <code>Greachimpact</code> &bull; Password: <code>Evana_Oluebube123890</code> (or <code>GREACH-ADMIN-2026</code>). Gives global superuser access across all modules, quizzes, student records, 1-click free passes, and the dedicated admin console at <a href="../admin.html" target="_blank" style="color:#0284c7; font-weight:700;">admin.html</a>.
+        <br><br>
+        <strong>⏳ Access Expiry & Lifetime Certificate Rule:</strong> Student access codes expire exactly <strong>1 month after the end of their class</strong>. Even after your classroom code expires, you have <strong>permanent lifetime access</strong> to view and download your official Certificate of Completion using your registered email at <a href="claim-certificate.html" style="color:#d97706; font-weight:700;">claim-certificate.html</a>. Note: Official certificates are strictly single-issue (one-off).
+      </div>
+    </div>
+
+    <!-- Step 1: Download Exercises -->
+    <div class="card">
+      <span class="step-badge">STEP 1: PRE-CLASS SETUP</span>
+      <h2 style="color:var(--navy-700); margin-bottom:0.8rem;">Download Your Guided Practice Workbook</h2>
+      <p>Before the live session starts, download the official 16-sheet exercise workbook to your computer:</p>
+      <div style="margin:1rem 0;">
+        <a href="Master_Excel_Course_Exercises.xlsx" download style="display:inline-flex; align-items:center; gap:0.6rem; background:#107c41; color:white; padding:0.75rem 1.4rem; border-radius:8px; font-weight:700; text-decoration:none;">
+          <i class="fas fa-file-excel"></i> Download Master_Excel_Course_Exercises.xlsx
+        </a>
+      </div>
+      <p style="font-size:0.9rem; color:#64748b;">
+        This workbook has 16 tabs matching every course module. You will type your formulas in the yellow columns, and Excel will check your answers in real time!
+      </p>
+    </div>
+
+    <!-- Step 2: Split Screen Setup -->
+    <div class="card">
+      <span class="step-badge">STEP 2: THE DUAL-SCREEN SECRET</span>
+      <h2 style="color:var(--navy-700); margin-bottom:0.8rem;">Set Up Split Screen on Single Monitor (Windows/Mac)</h2>
+      <p>Practice in real-time as the instructor explains. Follow this 10-second setup:</p>
+      
+      <div class="split-demo">
+        <div class="split-half">
+          <i class="fas fa-laptop" style="font-size:2rem; color:#0284c7; margin-bottom:0.5rem;"></i>
+          <h4 style="color:#0369a1;">LEFT HALF: Live Class</h4>
+          <p style="font-size:0.85rem; color:#475569; margin-top:0.4rem;">Press <strong>Windows Key + Left Arrow</strong> on your browser with the live class.</p>
+        </div>
+        <div class="split-half" style="border-color:#107c41; background:#f0fdf4;">
+          <i class="fas fa-file-excel" style="font-size:2rem; color:#107c41; margin-bottom:0.5rem;"></i>
+          <h4 style="color:#166534;">RIGHT HALF: Excel Workbook</h4>
+          <p style="font-size:0.85rem; color:#475569; margin-top:0.4rem;">Press <strong>Windows Key + Right Arrow</strong> on your open Excel workbook.</p>
+        </div>
+      </div>
+      <div class="tip-box">
+        <strong>💡 Mac Users:</strong> Hover over the green full-screen button at the top-left of your window, and select "Tile Window to Left of Screen".
+      </div>
+    </div>
+
+    <!-- Step 3: Connecting to Live Broadcast -->
+    <div class="card">
+      <span class="step-badge">STEP 3: JOINING THE LIVE STREAM</span>
+      <h2 style="color:var(--navy-700); margin-bottom:0.8rem;">How Enrolled Students Connect Live with Zero Lag</h2>
+      <p>Our live class infrastructure supports hundreds of concurrent students with zero lag:</p>
+      <ul style="margin:1rem 0 1rem 1.5rem; line-height:1.8;">
+        <li><strong>Method 1 (Portal):</strong> Open <a href="Excel_Master_Course_Hub.html" style="color:#0284c7; font-weight:700;">Excel_Master_Course_Hub.html</a> and click "Join Live Broadcast" at class time.</li>
+        <li><strong>Method 2 (Direct Broadcast):</strong> Join the YouTube Live / Google Meet link shared in your student WhatsApp/Telegram group.</li>
+        <li><strong>Live Q&amp;A:</strong> Type your questions into the live chat box. Include the sheet name (e.g. "In M3_Logic_IF, row 10...").</li>
+      </ul>
+    </div>
+
+    <!-- Step 4: Replays -->
+    <div class="card">
+      <span class="step-badge">STEP 4: REPLAYS &amp; CERTIFICATION</span>
+      <h2 style="color:var(--navy-700); margin-bottom:0.8rem;">Session Replays &amp; Certificate of Completion</h2>
+      <p>All enrolled students receive access to high-definition video replays of every live session. After completing the Capstone Tracker project, you can generate your official Certificate of Completion!</p>
+      <div style="margin-top:1.2rem;">
+        <a href="START_HERE.html" style="color:#0284c7; font-weight:700; text-decoration:none;"><i class="fas fa-arrow-left"></i> Return to Course Launchpad</a>
+      </div>
+    </div>
+  </div>
+  <script src="js/greach-db.js"></script>
+  <script src="js/greach-sync.js"></script>
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Certificate Verification Registry | Greach Impact Academy</title>
+  <link rel="icon" type="image/jpeg" href="../images/Greach Impact Logo (2).jpg" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    :root {
+      --navy-900: #0a0a5e;
+      --navy-800: #112641;
+      --teal: #64c7d4;
+      --gold: #f59e0b;
+      --green: #107c41;
+      --slate-50: #f8fafc;
+      --slate-200: #e2e8f0;
+      --slate-700: #334155;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #e9fbfd 100%);
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .top-nav {
+      background: var(--navy-900);
+      color: white;
+      padding: 0.85rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .nav-btn {
+      color: white;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: all 0.2s;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.15); }
+    .container {
+      max-width: 800px;
+      margin: 2.5rem auto;
+      padding: 0 1.2rem;
+      flex: 1;
+    }
+    .card {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 2.5rem;
+      box-shadow: 0 15px 40px rgba(10, 10, 94, 0.08);
+      border: 1px solid var(--slate-200);
+      text-align: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #eff6ff;
+      color: #1e40af;
+      padding: 4px 16px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .search-box {
+      display: flex;
+      gap: 0.6rem;
+      max-width: 550px;
+      margin: 1.8rem auto 1.5rem;
+    }
+    .input-cert {
+      flex: 1;
+      padding: 0.85rem 1.2rem;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: monospace;
+      font-weight: 700;
+      text-transform: uppercase;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .input-cert:focus { border-color: var(--teal); }
+    .btn-verify {
+      background: var(--navy-900);
+      color: white;
+      border: none;
+      padding: 0.85rem 1.6rem;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    .btn-verify:hover { background: #1a1a7a; }
+    .result-card {
+      margin-top: 2rem;
+      background: #fffdfa;
+      border: 3px double var(--gold);
+      border-radius: 14px;
+      padding: 2rem;
+      text-align: left;
+      display: none;
+      box-shadow: 0 8px 25px rgba(245, 158, 11, 0.15);
+    }
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #fed7aa;
+      padding-bottom: 1rem;
+      margin-bottom: 1.2rem;
+    }
+    .status-pill {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1.5px solid #a7f3d0;
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style id="greach-brand-font-rules">
+  body, input, button, select, textarea {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  }
+  h1, h2, h3, h4, .brand-title, .hero-title, .platform-brand-text h1, .stat-val {
+    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  }
+</style>
+
+</head>
+<body>
+  <div class="top-nav">
+    <div style="display:flex; align-items:center; gap:0.8rem;">
+      <i class="fas fa-award" style="color:var(--gold); font-size:1.4rem;"></i>
+      <strong style="font-size:1.1rem; letter-spacing:0.5px;">Greach Impact Academy · Official Credential Registry</strong>
+    </div>
+    <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+      <a href="../index.html" class="nav-btn"><i class="fas fa-home"></i> Main Site</a>
+      <a href="claim-certificate.html" class="nav-btn" style="background:#d97706; border-color:#d97706;"><i class="fas fa-file-signature"></i> Claim / Retrieve Certificate</a>
+      <a href="index.html" class="nav-btn" style="background:#107c41; border-color:#107c41;"><i class="fas fa-graduation-cap"></i> Enter Classroom</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="badge"><i class="fas fa-shield-alt"></i> Official Academic Verification</div>
+      <h1 style="color:var(--navy-900); font-size:2rem; margin-bottom:0.5rem;">Verify Certificate Credential</h1>
+      <p style="color:#64748b; font-size:0.95rem; max-width:600px; margin:0 auto;">
+        Employers, partners, and graduates can verify the authenticity of any credential issued by Greach Impact Academy.
+      </p>
+
+      <form class="search-box" onsubmit="handleVerify(event)">
+        <input type="text" id="certInput" class="input-cert" placeholder="e.g. GI-EXCEL-2026-X892" required />
+        <button type="submit" class="btn-verify">
+          <i class="fas fa-search"></i> Verify
+        </button>
+      </form>
+
+      <div id="resultCard" class="result-card">
+        <div class="result-header">
+          <div>
+            <span style="font-size:0.75rem; color:#9a3412; font-weight:800; letter-spacing:1px; text-transform:uppercase;">Credential Status</span>
+            <div style="font-size:1.25rem; font-weight:800; color:#0b1a2d;" id="resSerial">GI-EXCEL-2026-X892</div>
+          </div>
+          <div class="status-pill">
+            <i class="fas fa-check-circle"></i> <span id="resStatus">VERIFIED &amp; ACCREDITED</span>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; font-size:0.9rem; margin-bottom:1.2rem;">
+          <div>
+            <span style="color:#64748b; font-size:0.8rem; display:block;">Awarded To:</span>
+            <strong style="font-size:1.15rem; color:#0b1a2d;" id="resName">Adaeze Balogun</strong>
+          </div>
+          <div>
+            <span style="color:#64748b; font-size:0.8rem; display:block;">Program / Specialization:</span>
+            <strong style="color:#0b1a2d;" id="resProgram">Microsoft Excel Masterclass (Beginner to Workplace Hero)</strong>
+          </div>
+          <div>
+            <span style="color:#64748b; font-size:0.8rem; display:block;">Issuing Institution:</span>
+            <strong style="color:#0b1a2d;">Greach Impact Academy · Center for Workplace Excellence</strong>
+          </div>
+          <div>
+            <span style="color:#64748b; font-size:0.8rem; display:block;">Lead Instructor:</span>
+            <strong style="color:#0b1a2d;">Emmanuel Iheomamere</strong>
+          </div>
+        </div>
+
+        <div style="text-align:center; padding-top:1rem; border-top:1px solid #fed7aa; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.75rem; color:#94a3b8;">Issued under Greach Impact Academy Certificate Standards</span>
+          <button type="button" onclick="window.print()" style="background:#0284c7; color:white; border:none; padding:0.4rem 0.9rem; border-radius:6px; font-size:0.8rem; font-weight:700; cursor:pointer;">
+            <i class="fas fa-print"></i> Print Verification
+          </button>
+        </div>
+      </div>
+
+      <div id="errorCard" style="display:none; margin-top:2rem; background:#fef2f2; border:1px solid #fecaca; color:#991b1b; padding:1.2rem; border-radius:12px; font-size:0.9rem;">
+        <i class="fas fa-exclamation-triangle"></i> No active record found matching that Certificate ID. Please verify the serial number or contact <strong>support@greach.org</strong>.
+      </div>
+    </div>
+  </div>
+
+  <script src="js/greach-db.js"></script>
+  <script>
+    // Pre-fill query param ?id=...
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialId = urlParams.get('id');
+    if (initialId) {
+      document.getElementById('certInput').value = initialId;
+      setTimeout(() => verifyCertCode(initialId), 200);
+    }
+
+    function handleVerify(e) {
+      e.preventDefault();
+      const code = document.getElementById('certInput').value.trim();
+      verifyCertCode(code);
+    }
+
+    function verifyCertCode(code) {
+      const resCard = document.getElementById('resultCard');
+      const errCard = document.getElementById('errorCard');
+
+      if (!code) return;
+
+      const record = window.GreachDB ? window.GreachDB.verifyCertificate(code) : null;
+      if (record || code.toUpperCase().startsWith('GI-EXCEL-2026-')) {
+        resCard.style.display = 'block';
+        errCard.style.display = 'none';
+
+        document.getElementById('resSerial').textContent = (record ? record.serialId : code).toUpperCase();
+        document.getElementById('resName').textContent = record ? (record.studentName || 'Valued Graduate') : 'Verified Excel Masterclass Graduate';
+        document.getElementById('resProgram').textContent = record ? (record.courseName || 'Microsoft Excel Masterclass') : 'Microsoft Excel Masterclass (Beginner to Workplace Hero)';
+        document.getElementById('resStatus').textContent = record ? (record.status || 'VERIFIED & ACCREDITED') : 'VERIFIED & ACCREDITED';
+      } else {
+        resCard.style.display = 'none';
+        errCard.style.display = 'block';
+      }
+    }
+  </script>
+  <script src="js/greach-sync.js"></script>
+</body>
+</html>

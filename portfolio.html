@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio | Greach Impact</title>
+    <meta name="description" content="Explore Excel dashboards, Power BI reports, and training videos created by Emmanuel Iheomamere at Greach Impact." />
+    <meta name="theme-color" content="#0A0A5E" />
+    <meta property="og:title" content="Portfolio | Greach Impact" />
+    <meta property="og:description" content="Explore Excel dashboards, Power BI reports, and training videos created by Emmanuel Iheomamere at Greach Impact." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://greachimpact.vercel.app/portfolio.html" />
+    <meta property="og:image" content="https://greachimpact.vercel.app/images/Greach%20Impact%20Logo%20(2).jpg" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Portfolio | Greach Impact" />
+    <meta name="twitter:description" content="Explore Excel dashboards, Power BI reports, and training videos created by Emmanuel Iheomamere at Greach Impact." />
+    <link rel="canonical" href="https://greachimpact.vercel.app/portfolio.html" />
+    
+    <link rel="icon" href="images/Greach Impact Logo (2).jpg" type="image/jpeg" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    
+    <style>
+        :root {
+            --navy: #0A0A5E;
+            --slate: #3A4574;
+            --teal: #64C7D4;
+            --aqua: #6ED2DC;
+            --white: #FFFFFF;
+            --bg: #F8FAFC;
+            --text: #0F172A;
+            --card-bg: #FFFFFF;
+            --border: #E2E8F0;
+            --shadow: rgba(10, 10, 94, 0.08);
+        }
+
+        [data-theme="dark"] {
+            --white: #1A1A2E;
+            --bg: #0F0F1A;
+            --text: #E2E8F0;
+            --card-bg: #1A1A2E;
+            --border: #2A2A4E;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); line-height: 1.8; overflow-x: hidden; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        header { background: var(--navy); padding: 15px 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(10, 10, 94, 0.3); }
+        .header-flex { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+
+        .logo { display: flex; align-items: center; text-decoration: none; color: var(--white); font-size: 1.5rem; font-weight: 800; gap: 10px; }
+        .logo img { height: 40px; border-radius: 4px; }
+        .logo .teal { color: var(--teal); }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+            background: transparent;
+            border: none;
+        }
+        .hamburger span { width: 28px; height: 3px; background: var(--white); border-radius: 3px; transition: all 0.3s ease; }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        nav a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 5px 10px;
+        }
+        nav a:hover { color: var(--teal); }
+        .active-link { color: var(--teal) !important; font-weight: 700 !important; }
+
+        .btn-back {
+            background: rgba(100, 199, 212, 0.15);
+            color: var(--teal);
+            padding: 8px 18px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.88rem;
+            border: 1px solid rgba(100, 199, 212, 0.3);
+        }
+        .btn-back:hover { background: var(--teal); color: var(--navy); }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--teal);
+            color: var(--navy);
+            padding: 14px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: background 0.3s, transform 0.2s;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-primary:hover { background: var(--aqua); transform: scale(1.02); }
+
+        .btn-whatsapp-channel {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #075E54;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .btn-whatsapp-channel:hover { background: #064A42; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(7, 94, 84, 0.4); }
+        .btn-whatsapp-channel i { font-size: 1.2rem; }
+
+        .btn-whatsapp-chat {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #25D366;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .btn-whatsapp-chat:hover { background: #1DA851; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4); }
+        .btn-whatsapp-chat i { font-size: 1.2rem; }
+
+        .page-hero {
+            padding: 80px 0 60px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
+            color: white;
+        }
+        .page-hero h1 {
+            font-size: clamp(2.2rem, 4vw, 3.2rem);
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        .page-hero h1 span { color: var(--teal); }
+        .page-hero p {
+            color: #E2E8F0;
+            font-size: clamp(1rem, 1.3vw, 1.2rem);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: clamp(1.8rem, 3vw, 2.2rem);
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+        .section-title span { color: var(--teal); }
+        .section-sub {
+            text-align: center;
+            color: var(--text);
+            opacity: 0.7;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            font-size: 1.05rem;
+        }
+
+        /* ===== FILTER TABS ===== */
+        .filter-tabs {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0 35px;
+        }
+        .filter-tabs button {
+            padding: 8px 24px;
+            border-radius: 50px;
+            border: 2px solid var(--border);
+            background: transparent;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .filter-tabs button:hover {
+            border-color: var(--teal);
+            color: var(--teal);
+        }
+        .filter-tabs button.active {
+            background: var(--teal);
+            border-color: var(--teal);
+            color: var(--navy);
+        }
+        [data-theme="dark"] .filter-tabs button.active {
+            color: var(--navy);
+        }
+
+        /* ===== PORTFOLIO GRID ===== */
+        .portfolio {
+            padding: 40px 0 80px;
+            background: var(--bg);
+        }
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+        .portfolio-item {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            display: none;
+        }
+        .portfolio-item.visible {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .portfolio-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px var(--shadow);
+        }
+        .portfolio-image {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16/10;
+            background: var(--navy);
+            cursor: pointer;
+        }
+        .portfolio-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+        .portfolio-item:hover .portfolio-image img {
+            transform: scale(1.05);
+        }
+        .portfolio-image .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(100, 199, 212, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--navy);
+            font-size: 1.8rem;
+            transition: transform 0.3s ease, background 0.3s ease;
+            pointer-events: none;
+        }
+        .portfolio-item:hover .portfolio-image .play-icon {
+            transform: translate(-50%, -50%) scale(1.15);
+            background: var(--teal);
+        }
+        .portfolio-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 20px 18px;
+            background: linear-gradient(to top, rgba(10, 10, 94, 0.85), transparent);
+            color: white;
+        }
+        .portfolio-overlay h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .portfolio-overlay p {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin: 0;
+        }
+        .portfolio-tag {
+            display: inline-block;
+            margin-top: 8px;
+            background: var(--teal);
+            color: var(--navy);
+            padding: 2px 14px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .portfolio-tag.powerbi { background: #F2C811; color: #1a1a1a; }
+        .portfolio-tag.excel { background: #217346; color: white; }
+        .portfolio-tag.video { background: #FF0000; color: white; }
+        .portfolio-tag.dashboard { background: #F59E0B; color: #1a1a1a; }
+
+        .portfolio-body {
+            padding: 18px 22px 22px;
+        }
+        .portfolio-body h4 {
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        .portfolio-body p {
+            font-size: 0.92rem;
+            color: var(--text);
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+        .portfolio-body .meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.8rem;
+            color: var(--text);
+            opacity: 0.5;
+        }
+        .portfolio-body .meta i { color: var(--teal); margin-right: 4px; }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 94, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-wrapper {
+            background: var(--card-bg);
+            border-radius: 20px;
+            width: 92%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            transform: translateY(30px);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        .modal-overlay.active .modal-wrapper {
+            transform: translateY(0);
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            z-index: 10;
+        }
+        .modal-close-btn:hover { background: rgba(0,0,0,0.8); }
+        .modal-image {
+            width: 100%;
+            display: block;
+        }
+        .modal-image video {
+            width: 100%;
+            display: block;
+            max-height: 70vh;
+            background: #000;
+        }
+        .modal-content {
+            padding: 25px 30px 30px;
+        }
+        .modal-content h2 {
+            font-size: 1.4rem;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+        .modal-content .modal-tag {
+            display: inline-block;
+            background: var(--teal);
+            color: var(--navy);
+            padding: 2px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .modal-content .modal-tag.powerbi { background: #F2C811; color: #1a1a1a; }
+        .modal-content .modal-tag.excel { background: #217346; color: white; }
+        .modal-content .modal-tag.video { background: #FF0000; color: white; }
+        .modal-content .modal-tag.dashboard { background: #F59E0B; color: #1a1a1a; }
+        .modal-content p {
+            color: var(--text);
+            opacity: 0.8;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .cta-banner {
+            padding: 60px 0;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
+            color: white;
+            text-align: center;
+        }
+        .cta-banner h2 { font-size: clamp(1.8rem, 3vw, 2.4rem); margin-bottom: 10px; }
+        .cta-banner p { color: #E2E8F0; max-width: 600px; margin: 0 auto 25px; font-size: 1.05rem; }
+
+        footer {
+            background: var(--navy);
+            color: #94A3B8;
+            text-align: center;
+            padding: 40px 0;
+        }
+        footer a { color: var(--teal); text-decoration: none; font-weight: 600; }
+        footer .socials { margin-top: 15px; }
+        footer .socials a { color: #94A3B8; margin: 0 10px; font-size: 1.25rem; }
+        footer .socials a:hover { color: var(--teal); }
+
+        @media (max-width: 768px) {
+            .hamburger { display: flex; }
+            nav { display: none; flex-direction: column; width: 100%; padding: 15px 0 5px; gap: 5px; }
+            nav.open { display: flex; }
+            nav a { width: 100%; text-align: center; padding: 12px; }
+            .portfolio-grid { grid-template-columns: 1fr; }
+            .page-hero { padding: 60px 0 40px; }
+            .filter-tabs button { padding: 6px 16px; font-size: 0.8rem; }
+            .modal-wrapper { width: 95%; }
+            .modal-content { padding: 20px; }
+        }
+        @media (max-width: 480px) {
+            .filter-tabs { gap: 8px; }
+            .filter-tabs button { padding: 5px 12px; font-size: 0.75rem; }
+            .modal-image video { max-height: 50vh; }
+        }
+    </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style id="greach-brand-font-rules">
+  body, input, button, select, textarea {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  }
+  h1, h2, h3, h4, .brand-title, .hero-title, .platform-brand-text h1, .stat-val {
+    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  }
+</style>
+
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header>
+        <div class="container header-flex">
+            <a href="index.html" class="logo">
+                <img src="images/Greach Impact Logo (2).jpg" alt="Greach Impact Logo" />
+                <span>Greach<span class="teal">Impact</span></span>
+            </a>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav id="navMenu">
+                <a href="index.html">Home</a>
+                <a href="training.html" style="color: var(--teal); font-weight: 700;">Training</a>
+                <a href="portfolio.html" class="active-link">Portfolio</a>
+                <a href="blog.html">Blog</a>
+                <a href="index.html#contact">Contact</a>
+                <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Back</a>
+              <a href="classroom/index.html" style="background:#107c41; color:white !important; padding:6px 16px; border-radius:50px; font-weight:700; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 8px rgba(16,124,65,0.3); margin-left:6px;"><i class="fas fa-graduation-cap"></i> Classroom</a>
+              <a href="admin.html" style="background:rgba(245,158,11,0.15); color:#F59E0B !important; border:1.5px solid #F59E0B; padding:5px 14px; border-radius:50px; font-weight:700; display:inline-flex; align-items:center; gap:6px; margin-left:6px; text-decoration:none;" title="Super Admin &amp; Instructor Portal"><i class="fas fa-user-shield"></i> Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ===== PAGE HERO ===== -->
+    <section class="page-hero">
+        <div class="container">
+            <h1>My Data <span>Portfolio</span></h1>
+            <p>Explore Excel dashboards, Power BI reports, and training videos created by Emmanuel Iheomamere.</p>
+        </div>
+    </section>
+
+    <!-- ===== PORTFOLIO ===== -->
+    <section class="portfolio" id="portfolio">
+        <div class="container">
+            <h2 class="section-title">Featured <span>Work</span></h2>
+            <p class="section-sub">A collection of dashboards, reports, and training content built with Excel, Power BI, and other tools.</p>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs" id="filterTabs">
+                <button class="active" data-filter="all">All</button>
+                <button data-filter="excel">Excel Dashboards</button>
+                <button data-filter="powerbi">Power BI</button>
+                <button data-filter="video">Training Videos</button>
+                <button data-filter="dashboard">Interactive Dashboards</button>
+            </div>
+
+            <!-- Portfolio Grid -->
+            <div class="portfolio-grid" id="portfolioGrid">
+
+                <!-- ===== ITEM 1: Sales Dashboard (Excel) ===== -->
+                <div class="portfolio-item visible" data-category="excel dashboard" data-tag="excel">
+                    <div class="portfolio-image" onclick="openModal('dashboard-1.jpg', 'Sales Performance Dashboard', 'An interactive Excel dashboard tracking sales by region, product, and salesperson. Includes KPIs, charts, and slicers.', 'excel')">
+                        <img src="images/E-commerce Complete dashboard.png" alt="Sales Performance Dashboard" loading="lazy" />
+                        <div class="portfolio-overlay">
+                            <h4>Sales Performance Dashboard</h4>
+                            <p>Track sales by region, product, and salesperson</p>
+                            <span class="portfolio-tag excel">Excel</span>
+                        </div>
+                    </div>
+                    <div class="portfolio-body">
+                        <h4>Sales Performance Dashboard</h4>
+                        <p>Interactive Excel dashboard with KPIs, charts, and slicers for sales data analysis.</p>
+                        <div class="meta">
+                            <span><i class="fas fa-calendar-alt"></i> 2026</span>
+                            <span><i class="fas fa-tag"></i> Excel</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ITEM 2: Logistic Dashboard (Excel) ===== -->
+                <div class="portfolio-item visible" data-category="excel dashboard" data-tag="excel">
+                    <div class="portfolio-image" onclick="openModal('dashboard-2.jpg', 'Logistic Dashboard', 'Income statement, expense tracking, and profitability analysis with dynamic filters in Excel.', 'excel')">
+                        <img src="images/Logistic Dashboard.png" alt="Logistic Dashboard" loading="lazy" />
+                        <div class="portfolio-overlay">
+                            <h4>Logistic Dashboard</h4>
+                            <p>Track Shipment, Delivery, annd Delays</p>
+                            <span class="portfolio-tag excel">Excel</span>
+                        </div>
+                    </div>
+                    <div class="portfolio-body">
+                        <h4>Logistic Dashboard</h4>
+                        <p>Comprehensive logistic dashboard with Shipment card, Delivery tracking, and Delay analysis.</p>
+                        <div class="meta">
+                            <span><i class="fas fa-calendar-alt"></i> 2026</span>
+                            <span><i class="fas fa-tag"></i> Excel</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ITEM 3: HR Dashboard (Excel) ===== -->
+                <div class="portfolio-item visible" data-category="excel dashboard" data-tag="excel">
+                    <div class="portfolio-image" onclick="openModal('dashboard-3.jpg', 'HR Dashboard', 'Employee performance, attendance, and department analysis with interactive visuals in Excel.', 'excel')">
+                        <img src="images/dashboard-3.jpg" alt="HR Dashboard" loading="lazy" />
+                        <div class="portfolio-overlay">
+                            <h4>HR Dashboard</h4>
+                            <p>Employee performance, attendance, and analysis</p>
+                            <span class="portfolio-tag excel">Excel</span>
+                        </div>
+                    </div>
+                    <div class="portfolio-body">
+                        <h4>HR Dashboard</h4>
+                        <p>HR analytics dashboard tracking employee performance, attendance, and department metrics.</p>
+                        <div class="meta">
+                            <span><i class="fas fa-calendar-alt"></i> 2026</span>
+                            <span><i class="fas fa-tag"></i> Excel</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ITEM 4: Inventory Dashboard (Excel) ===== -->
+                <div class="portfolio-item visible" data-category="excel dashboard" data-tag="excel">
+                    <div class="portfolio-image" onclick="openModal('dashboard-4.jpg', 'Inventory Dashboard', 'Stock levels, reorder alerts, and supplier analysis for efficient inventory management in Excel.', 'excel')">
+                        <img src="images/dashboard-4.jpg" alt="Inventory Dashboard" loading="lazy" />
+                        <div class="portfolio-overlay">
+                            <h4>Inventory Dashboard</h4>
+                            <p>Stock levels, reorder alerts, and supplier analysis</p>
+                            <span class="portfolio-tag excel">Excel</span>
+                        </div>
+                    </div>
+                    <div class="portfolio-body">
+                        <h4>Inventory Dashboard</h4>
+                        <p>Inventory management dashboard with stock levels, reorder alerts, and supplier analysis.</p>
+                        <div class="meta">
+                            <span><i class="fas fa-calendar-alt"></i> 2026</span>
+                            <span><i class="fas fa-tag"></i> Excel</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ITEM 5: Power BI Dashboard ===== -->
+                <div class="portfolio-item visible" data-category="powerbi dashboard" data-tag="powerbi">
+                    <div class="portfolio-image" onclick="openModal('powerbi-dashboard-1.jpg', 'Power BI Sales Dashboard', 'Interactive Power BI dashboard with data modeling, DAX, and real-time visualizations for sales data.', 'powerbi')">
+                        <img src="images/powerbi-dashboard-1.jpg" alt="Power BI Sales Dashboard" loading="lazy" />
+                        <div class="portfolio-overlay">
+                            <h4>Power BI Sales Dashboard</h4>
+                            <p>Interactive sales data visualization</p>
+                            <span class="portfolio-tag powerbi">Power BI</span>
+                        </div>
+                    </div>
+                    <div class="portfolio-body">
+                        <h4>Power BI Sales Dashboard</h4>
+                        <p>Interactive Power BI dashboard with data modeling, DAX, and real-time visualizations.</p>
+                        <div class="meta">
+                            <span><i class="fas fa-calendar-alt"></i> 2026</span>
+                            <span><i class="fas fa-tag"></i> Power BI</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ITEM 6: Training Video 1 ===== -->
+                <div class="portfolio-item visible" data-category="video" data-tag="video">
+                    <div class="portfolio-image" onclick="openVideoModal('videos/excel-basics.mp4', 'Excel Basics Tutorial', 'Learn the fundamentals of Excel in this beginner-friendly tutorial.', 'video')">
+                        <img src="images/video-thumb-1.jpg" alt="Excel Basics Tutorial" loading="lazy" />
+                        <div class="play-icon"><i class="fas fa-play"></i></div>
+                        <div class="portfolio-overlay">
+                            <h4>Excel Basics Tutorial</h4>
+                            <p>Learn the fundamentals of Excel</p>
+                            <span class="portfolio-tag video">Video</span>
+                        </div>
+                    </div>
+                    <div class="portfolio-body">
+                        <h4>Excel Basics Tutorial</h4>
+                        <p>A beginner-friendly tutorial covering Excel fundamentals, navigation, and data entry.</p>
+                        <div class="meta">
+                            <span><i class="fas fa-clock"></i> 12:30 min</span>
+                            <span><i class="fas fa-tag"></i> Video</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ITEM 7: Training Video 2 ===== -->
+                <div class="portfolio-item visible" data-category="video" data-tag="video">
+                    <div class="portfolio-image" onclick="openVideoModal('videos/pivot-tables.mp4', 'Pivot Tables Tutorial', 'Master Pivot Tables in Excel for quick data summarization and analysis.', 'video')">
+                        <img src="images/video-thumb-2.jpg" alt="Pivot Tables Tutorial" loading="lazy" />
+                        <div class="play-icon"><i class="fas fa-play"></i></div>
+                        <div class="portfolio-overlay">
+                            <h4>Pivot Tables Tutorial</h4>
+                            <p>Master Pivot Tables in Excel</p>
+                            <span class="portfolio-tag video">Video</span>
+                        </div>
+                    </div>
+                    <div class="portfolio-body">
+                        <h4>Pivot Tables Tutorial</h4>
+                        <p>Learn how to use Pivot Tables for quick data summarization and analysis in Excel.</p>
+                        <div class="meta">
+                            <span><i class="fas fa-clock"></i> 15:20 min</span>
+                            <span><i class="fas fa-tag"></i> Video</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ITEM 8: Training Video 3 ===== -->
+                <div class="portfolio-item visible" data-category="video" data-tag="video">
+                    <div class="portfolio-image" onclick="openVideoModal('videos/power-bi-intro.mp4', 'Power BI Introduction', 'Get started with Power BI – connecting data, creating visuals, and building dashboards.', 'video')">
+                        <img src="images/video-thumb-3.jpg" alt="Power BI Introduction" loading="lazy" />
+                        <div class="play-icon"><i class="fas fa-play"></i></div>
+                        <div class="portfolio-overlay">
+                            <h4>Power BI Introduction</h4>
+                            <p>Get started with Power BI dashboards</p>
+                            <span class="portfolio-tag video">Video</span>
+                        </div>
+                    </div>
+                    <div class="portfolio-body">
+                        <h4>Power BI Introduction</h4>
+                        <p>An introduction to Power BI – connecting data, creating visuals, and building dashboards.</p>
+                        <div class="meta">
+                            <span><i class="fas fa-clock"></i> 18:45 min</span>
+                            <span><i class="fas fa-tag"></i> Video</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ITEM 9: Interactive Dashboard (Excel) ===== -->
+                <div class="portfolio-item visible" data-category="dashboard excel" data-tag="dashboard">
+                    <div class="portfolio-image" onclick="openModal('interactive-dashboard-1.jpg', 'Interactive Executive Dashboard', 'A fully interactive executive dashboard with slicers, timelines, and dynamic charts for executive reporting.', 'dashboard')">
+                        <img src="images/interactive-dashboard-1.jpg" alt="Interactive Executive Dashboard" loading="lazy" />
+                        <div class="portfolio-overlay">
+                            <h4>Executive Dashboard</h4>
+                            <p>Interactive dashboard for executive reporting</p>
+                            <span class="portfolio-tag dashboard">Dashboard</span>
+                        </div>
+                    </div>
+                    <div class="portfolio-body">
+                        <h4>Executive Dashboard</h4>
+                        <p>Fully interactive executive dashboard with slicers, timelines, and dynamic charts.</p>
+                        <div class="meta">
+                            <span><i class="fas fa-calendar-alt"></i> 2026</span>
+                            <span><i class="fas fa-tag"></i> Excel</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- No Results Message -->
+            <div id="noResults" style="text-align:center; padding:40px 0; display:none;">
+                <p style="font-size:1.1rem; color:var(--text); opacity:0.6;">No portfolio items found in this category.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CTA BANNER ===== -->
+    <section class="cta-banner">
+        <div class="container">
+            <h2>Want to Build Dashboards Like These?</h2>
+            <p>Learn Excel, Power BI, and data analytics with Greach Impact's practical training programs.</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+                <a href="training.html" class="btn-primary" style="background: var(--teal); color: var(--navy); font-size: 1.1rem; padding: 16px 50px; box-shadow: none;">
+                    <i class="fas fa-arrow-right"></i> Explore Courses
+                </a>
+                <a href="https://wa.me/2349072250869?text=Hello%20Greach%20Impact!%20I%20saw%20your%20portfolio%20and%20want%20to%20learn%20how%20to%20build%20dashboards." target="_blank" rel="noopener noreferrer" class="btn-whatsapp-chat">
+                    <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="imageModal" onclick="closeModalOutside(event)">
+        <div class="modal-wrapper" onclick="event.stopPropagation();">
+            <button class="modal-close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            <img class="modal-image" id="modalImage" src="" alt="Portfolio item" />
+            <div class="modal-content">
+                <span class="modal-tag" id="modalTag">Excel</span>
+                <h2 id="modalTitle">Title</h2>
+                <p id="modalDescription">Description</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== VIDEO MODAL ===== -->
+    <div class="modal-overlay" id="videoModal" onclick="closeVideoModalOutside(event)">
+        <div class="modal-wrapper" onclick="event.stopPropagation();">
+            <button class="modal-close-btn" onclick="closeVideoModal()"><i class="fas fa-times"></i></button>
+            <div class="modal-image">
+                <video id="videoPlayer" controls autoplay>
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="modal-content">
+                <span class="modal-tag video">Video</span>
+                <h2 id="videoModalTitle">Title</h2>
+                <p id="videoModalDescription">Description</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 <a href="index.html">Greach Impact</a> — Data. Training. Community.</p>
+            <div style="margin-top: 10px; margin-bottom: 8px;">
+                <a href="admin.html" style="color: #F59E0B; text-decoration: none; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fas fa-lock"></i> Instructor &amp; Admin Console &rarr;
+                </a>
+            </div>
+            <div class="socials">
+                <a href="https://www.linkedin.com/in/emmanuel-iheomamere/" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="https://whatsapp.com/channel/0029Vb7lvfQ4CrflFG0Sce0F" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://wa.me/2349072250869?text=Hello%20Greach%20Impact!%20I'd%20like%20to%20learn%20more." target="_blank" rel="noopener noreferrer"><i class="fas fa-comment-dots" style="color: #25D366;"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        // Hamburger Menu
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+        if (hamburger && navMenu) {
+            hamburger.addEventListener('click', function() {
+                this.classList.toggle('active');
+                navMenu.classList.toggle('open');
+            });
+            navMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburger.classList.remove('active');
+                    navMenu.classList.remove('open');
+                });
+            });
+        }
+
+        // ===== FILTER FUNCTIONALITY =====
+        const filterButtons = document.querySelectorAll('.filter-tabs button');
+        const portfolioItems = document.querySelectorAll('.portfolio-item');
+        const noResults = document.getElementById('noResults');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                const filter = this.dataset.filter;
+
+                let visibleCount = 0;
+
+                portfolioItems.forEach(item => {
+                    const categories = item.dataset.category;
+                    const tag = item.dataset.tag;
+
+                    if (filter === 'all') {
+                        item.classList.add('visible');
+                        visibleCount++;
+                    } else if (categories.includes(filter) || tag === filter) {
+                        item.classList.add('visible');
+                        visibleCount++;
+                    } else {
+                        item.classList.remove('visible');
+                    }
+                });
+
+                // Show/hide no results message
+                if (visibleCount === 0) {
+                    noResults.style.display = 'block';
+                } else {
+                    noResults.style.display = 'none';
+                }
+            });
+        });
+
+        // ===== IMAGE MODAL =====
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDescription = document.getElementById('modalDescription');
+        const modalTag = document.getElementById('modalTag');
+
+        function openModal(imageSrc, title, description, tag) {
+            modalImage.src = 'images/' + imageSrc;
+            modalTitle.textContent = title;
+            modalDescription.textContent = description;
+            modalTag.textContent = tag.toUpperCase();
+            modalTag.className = 'modal-tag';
+            if (tag === 'powerbi') modalTag.classList.add('powerbi');
+            else if (tag === 'excel') modalTag.classList.add('excel');
+            else if (tag === 'video') modalTag.classList.add('video');
+            else if (tag === 'dashboard') modalTag.classList.add('dashboard');
+            imageModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            imageModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function closeModalOutside(event) {
+            if (event.target === imageModal) {
+                closeModal();
+            }
+        }
+
+        // ===== VIDEO MODAL =====
+        const videoModal = document.getElementById('videoModal');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const videoModalTitle = document.getElementById('videoModalTitle');
+        const videoModalDescription = document.getElementById('videoModalDescription');
+
+        function openVideoModal(videoSrc, title, description) {
+            videoPlayer.src = videoSrc;
+            videoPlayer.load();
+            videoModalTitle.textContent = title;
+            videoModalDescription.textContent = description;
+            videoModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVideoModal() {
+            videoPlayer.pause();
+            videoPlayer.src = '';
+            videoModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function closeVideoModalOutside(event) {
+            if (event.target === videoModal) {
+                closeVideoModal();
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeVideoModal();
+            }
+        });
+    </script>
+  <script src="js/greach-db.js"></script>
+  <script src="js/greach-sync.js"></script>
+</body>
+</html>

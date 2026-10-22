@@ -1,0 +1,2927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Greach Impact Academy — Super Admin Control Center</title>
+  <link rel="icon" type="image/jpeg" href="images/Greach Impact Logo (2).jpg" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy-900: #0A0A5E;
+      --navy-800: #071224;
+      --navy-700: #112641;
+      --accent-blue: #0284c7;
+      --accent-teal: #64C7D4;
+      --gold-500: #D97706;
+      --gold-400: #F59E0B;
+      --green-600: #107C41;
+      --green-500: #16A34A;
+      --red-600: #dc2626;
+      --bg-slate: #f8fafc;
+      --card-border: #e2e8f0;
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    h1, h2, h3, h4, .brand-title, .stat-val {
+      font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    /* TOP SUPER ADMIN BAR */
+    .admin-topbar {
+      background: var(--navy-900);
+      color: white;
+      padding: 0.85rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 2px solid var(--gold-400);
+    }
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .super-badge {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .admin-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .btn-nav {
+      background: rgba(255,255,255,0.08);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+    .btn-nav:hover { background: rgba(255,255,255,0.2); }
+    .btn-nav.classroom { background: var(--green-600); border-color: var(--green-600); }
+    .btn-nav.classroom:hover { background: #0b5e31; }
+
+    /* LAYOUT CONTAINER */
+    .admin-container {
+      max-width: 1400px;
+      width: 100%;
+      margin: 1.8rem auto;
+      padding: 0 1.5rem;
+      flex: 1;
+    }
+
+    /* STATS KPI STRIP */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 14px;
+      padding: 1.3rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      border: 1px solid var(--card-border);
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background: var(--accent-blue);
+    }
+    .stat-card.gold::before { background: var(--gold-500); }
+    .stat-card.green::before { background: var(--green-600); }
+    .stat-card.red::before { background: var(--red-600); }
+    .stat-card.teal::before { background: var(--accent-teal); }
+    .stat-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+    }
+    .stat-val {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--navy-900);
+    }
+    .stat-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+
+    /* NAVIGATION TABS */
+    .tab-bar {
+      display: flex;
+      gap: 0.5rem;
+      background: white;
+      padding: 0.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 0.65rem 1.2rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { background: #f1f5f9; color: var(--navy-900); }
+    .tab-btn.active {
+      background: var(--navy-900);
+      color: white;
+      box-shadow: 0 2px 5px rgba(10,25,47,0.25);
+    }
+
+    /* CARD CONTAINERS */
+    .admin-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1.8rem;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      margin-bottom: 2rem;
+    }
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.4rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .card-head h2 {
+      font-size: 1.3rem;
+      color: var(--navy-900);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    /* CONTROLS STRIP */
+    .controls-strip {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 260px;
+      padding: 0.65rem 1rem;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .search-input:focus { border-color: var(--accent-blue); }
+    .filter-select {
+      padding: 0.65rem 1rem;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      outline: none;
+      background: white;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--navy-900);
+      color: white;
+      border: none;
+      padding: 0.65rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+    .btn-primary:hover { background: var(--navy-700); }
+    .btn-gold {
+      background: var(--gold-500);
+      color: white;
+      border: none;
+      padding: 0.65rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-gold:hover { background: #b45309; }
+
+    /* DATA TABLES */
+    .table-responsive {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+    table.data-table th {
+      background: #f8fafc;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--card-border);
+      white-space: nowrap;
+    }
+    table.data-table td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+    table.data-table tr:hover { background: #fafafa; }
+
+    /* STATUS PILLS */
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge-active { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+    .badge-expired { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .badge-free { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; font-weight: 800; }
+    .badge-cert { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+
+    /* ACTION BUTTONS IN TABLE */
+    .action-group {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+    .btn-action {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.15s;
+    }
+    .btn-action:hover { background: #e2e8f0; color: #0f172a; }
+    .btn-action.free { background: #dcfce7; border-color: #86efac; color: #166534; font-weight: 700; }
+    .btn-action.free:hover { background: #bbf7d0; }
+    .btn-action.extend { background: #e0f2fe; border-color: #bae6fd; color: #0369a1; }
+    .btn-action.extend:hover { background: #bae6fd; }
+    .btn-action.mail { background: #fef3c7; border-color: #fde68a; color: #92400e; }
+    .btn-action.mail:hover { background: #fde68a; }
+
+    /* AUTH GATE OVERLAY */
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(10, 25, 47, 0.98) 0%, rgba(17, 38, 65, 0.99) 100%);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      transition: opacity 0.3s ease;
+    }
+    .auth-overlay.unlocked { display: none; }
+    .auth-box {
+      background: white;
+      border-radius: 20px;
+      max-width: 460px;
+      width: 100%;
+      padding: 2.5rem;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-card {
+      background: white;
+      border-radius: 16px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    }
+    .modal-card h3 {
+      font-size: 1.3rem;
+      color: var(--navy-900);
+      margin-bottom: 0.5rem;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 0.35rem;
+    }
+    .form-control {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .form-control:focus { border-color: var(--accent-blue); }
+
+    /* PRICING GRID */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.2rem;
+    }
+    .pricing-card {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 1.4rem;
+    }
+    .pricing-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--navy-900);
+      margin-bottom: 0.4rem;
+    }
+    .pricing-slashed {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      text-decoration: line-through;
+      margin-right: 0.5rem;
+    }
+    .pricing-current {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--green-600);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔒 SUPER ADMIN LOGIN OVERLAY -->
+  <div class="auth-overlay" id="adminAuthOverlay">
+    <div class="auth-box">
+      <div style="width:64px; height:64px; background:linear-gradient(135deg, #0a192f, #0284c7); border-radius:18px; margin:0 auto 1.2rem; display:flex; align-items:center; justify-content:center; color:white; font-size:1.8rem; border:2px solid var(--gold-400);">
+        <i class="fas fa-user-shield"></i>
+      </div>
+      <h2 style="color:var(--navy-900); font-size:1.6rem; font-weight:800; margin-bottom:0.3rem;">Super Admin Gate</h2>
+      <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:1.5rem;">
+        Master Administrative Console for Greach Impact Academy.
+      </p>
+
+      <form id="superAdminLoginForm" onsubmit="handleSuperAdminLogin(event)">
+        <div class="form-group">
+          <label><i class="fas fa-user"></i> Admin Username or Email:</label>
+          <input type="text" id="adminInputUser" class="form-control" placeholder="Enter username (Greachimpact)..." required />
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-key"></i> Master Secret Password:</label>
+          <input type="password" id="adminInputPass" class="form-control" placeholder="Enter confidential password..." required />
+        </div>
+
+        <div id="authErrorMsg" style="display:none; background:#fef2f2; border-left:4px solid #ef4444; color:#991b1b; padding:0.65rem; border-radius:6px; font-size:0.82rem; margin-bottom:1rem; text-align:left;">
+          <i class="fas fa-exclamation-triangle"></i> <span id="authErrorText">Invalid master credentials.</span>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.85rem; font-size:1rem; margin-top:0.5rem; background:linear-gradient(135deg, #0a192f, #1b365d);">
+          <i class="fas fa-shield-alt"></i> Authenticate &amp; Enter Console
+        </button>
+
+        <div style="margin-top:1.5rem; padding-top:1rem; border-top:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; font-size:0.8rem;">
+          <a href="index.html" style="color:#64748b; text-decoration:none;"><i class="fas fa-arrow-left"></i> Return to Site</a>
+          <span style="color:#94a3b8; font-size:0.75rem;">Superuser: Greachimpact</span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 🌐 TOP APPLICATION BAR -->
+  <header class="admin-topbar">
+    <div class="brand-group">
+      <img src="images/Greach Impact Logo (2).jpg" alt="Logo" class="brand-logo" onerror="this.style.display='none'" />
+      <div>
+        <div class="brand-title">
+          <span>Greach Impact Admin</span>
+          <span class="super-badge" id="adminRoleBadge"><i class="fas fa-crown"></i> Super Admin</span>
+        </div>
+        <div style="font-size:0.75rem; color:#94a3b8;" id="adminUserGreeting">Logged in as: Greachimpact &bull; Global Access</div>
+      </div>
+    </div>
+    <div class="admin-actions">
+      <a href="index.html" class="btn-nav" target="_blank"><i class="fas fa-globe"></i> View Website</a>
+      <a href="classroom/index.html" class="btn-nav classroom" target="_blank"><i class="fas fa-chalkboard-teacher"></i> Open Classroom</a>
+      <button onclick="handleAdminLogout()" class="btn-nav" style="background:#ef4444; border-color:#ef4444;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </header>
+
+  <!-- 📊 MAIN WORKSPACE -->
+  <main class="admin-container">
+
+    <!-- KPI Metric Cards -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-title"><span>Total Enrolled</span> <i class="fas fa-users" style="color:var(--accent-blue);"></i></div>
+        <div class="stat-val" id="statTotalStudents">0</div>
+        <div class="stat-sub">Unlimited student capacity</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-title"><span>Active Access</span> <i class="fas fa-check-circle" style="color:var(--green-600);"></i></div>
+        <div class="stat-val" id="statActiveStudents">0</div>
+        <div class="stat-sub">Valid credentials &amp; codes</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-title"><span>Course Orders</span> <i class="fas fa-shopping-cart" style="color:var(--gold-500);"></i></div>
+        <div class="stat-val" id="statTotalOrders">0</div>
+        <div class="stat-sub" id="statRevenueText">₦0 verified revenue</div>
+      </div>
+      <div class="stat-card teal">
+        <div class="stat-title"><span>Brevo Dispatches</span> <i class="fas fa-paper-plane" style="color:var(--accent-teal);"></i></div>
+        <div class="stat-val" id="statTotalDispatches">0</div>
+        <div class="stat-sub" id="statBrevoStatus">Automated Engine Active</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-title"><span>Expired Codes</span> <i class="fas fa-hourglass-end" style="color:var(--red-600);"></i></div>
+        <div class="stat-val" id="statExpiredStudents">0</div>
+        <div class="stat-sub">Past 1-month post-class limit</div>
+      </div>
+      <div class="stat-card teal">
+        <div class="stat-title"><span>Free Access Passes</span> <i class="fas fa-gift" style="color:var(--accent-teal);"></i></div>
+        <div class="stat-val" id="statFreeGrants">0</div>
+        <div class="stat-sub">Admin 1-click grants</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-title"><span>Certificates Issued</span> <i class="fas fa-award" style="color:var(--gold-500);"></i></div>
+        <div class="stat-val" id="statCertsIssued">0</div>
+        <div class="stat-sub">Strict single-issue locked</div>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchAdminTab('students')"><i class="fas fa-user-graduate"></i> Student Roster &amp; Bank</button>
+      <button class="tab-btn" onclick="switchAdminTab('orders')"><i class="fas fa-shopping-cart"></i> Orders &amp; Pipeline</button>
+      <button class="tab-btn" onclick="switchAdminTab('session_passes')"><i class="fas fa-stopwatch"></i> Temporary Session Passes</button>
+      <button class="tab-btn" onclick="switchAdminTab('blog')"><i class="fas fa-newspaper"></i> Blog Articles</button>
+      <button class="tab-btn" onclick="switchAdminTab('prices')"><i class="fas fa-tags"></i> Course Pricing &amp; Discounts</button>
+      <button class="tab-btn" onclick="switchAdminTab('schedules')"><i class="fas fa-calendar-alt"></i> Dates &amp; Self-Paced Modes</button>
+      <button class="tab-btn" onclick="switchAdminTab('brevo')"><i class="fas fa-paper-plane"></i> Brevo &amp; Automation Hub</button>
+      <button class="tab-btn" onclick="switchAdminTab('audit')"><i class="fas fa-history"></i> DB Audit Trail</button>
+      <button class="tab-btn" onclick="switchAdminTab('superuser')"><i class="fas fa-user-cog"></i> Superuser Settings</button>
+      <button class="tab-btn" onclick="switchAdminTab('admins')"><i class="fas fa-user-shield"></i> Sub-Admins Manager</button>
+      <button class="tab-btn" onclick="switchAdminTab('certificates')"><i class="fas fa-certificate"></i> Certificate Vault</button>
+      <button class="tab-btn" onclick="switchAdminTab('broadcast')"><i class="fas fa-bullhorn"></i> Live Stream &amp; Broadcast</button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 1: STUDENT ROSTER & ACCESS CODES -->
+    <!-- ========================================== -->
+    <section id="tabStudents" class="admin-card">
+      <div class="card-head">
+        <div>
+          <h2><i class="fas fa-users-cog" style="color:var(--accent-blue);"></i> Student Access &amp; Expiry Management</h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+            Every student receives a unique password that expires <strong>1 month after the end of their class</strong>. You can grant free access or extend codes with 1 click.
+          </p>
+        </div>
+        <div style="display:flex; gap:0.6rem;">
+          <button class="btn-primary" onclick="openEnrollModal()"><i class="fas fa-user-plus"></i> + Enroll Student Manually</button>
+          <button class="btn-gold" onclick="exportStudentCSV()"><i class="fas fa-file-csv"></i> Export Roster</button>
+        </div>
+      </div>
+
+      <div class="controls-strip">
+        <input type="text" id="filterSearch" class="search-input" placeholder="🔍 Search by student name, ID, or email..." oninput="renderStudentsTable()" />
+        <select id="filterStatus" class="filter-select" onchange="renderStudentsTable()">
+          <option value="all">All Students (Unlimited)</option>
+          <option value="active">Active Access Only</option>
+          <option value="expired">Expired Access (Past 1 Month)</option>
+          <option value="free">Free Access Granted</option>
+          <option value="cert">Certificates Claimed</option>
+        </select>
+        <select id="filterCohort" class="filter-select" onchange="renderStudentsTable()">
+          <option value="all">All Cohorts / Batches</option>
+          <option value="Batch 2: 2026 Masterclass">Batch 2: 2026 Masterclass</option>
+          <option value="Batch 1: 2026 Masterclass">Batch 1: 2026 Masterclass</option>
+        </select>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Student ID &amp; Name</th>
+              <th>Email</th>
+              <th>Access Password</th>
+              <th>Cohort</th>
+              <th>Class End Date</th>
+              <th>Access Expiry (1 Mo.)</th>
+              <th>Status</th>
+              <th>Certificate</th>
+              <th style="text-align:right;">Admin Actions</th>
+            </tr>
+          </thead>
+          <tbody id="studentTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+      <div id="tableEmptyState" style="display:none; text-align:center; padding:3rem; color:var(--text-muted);">
+        <i class="fas fa-search" style="font-size:2rem; margin-bottom:0.5rem; opacity:0.5;"></i>
+        <p>No student accounts match your filter criteria.</p>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB: ORDERS & ENROLLMENT REVENUE PIPELINE -->
+    <!-- ========================================== -->
+    <section id="tabOrders" class="admin-card" style="display:none;">
+      <div class="card-head">
+        <div>
+          <h2><i class="fas fa-shopping-cart" style="color:var(--gold-500);"></i> Orders &amp; Enrollment Revenue Pipeline</h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+            Track incoming student registrations, verify bank transfers, view order amounts, and automatically dispatch classroom credentials to students via Brevo.
+          </p>
+        </div>
+        <div style="display:flex; gap:0.6rem;">
+          <button class="btn-primary" onclick="openNewOrderModal()"><i class="fas fa-plus-circle"></i> + Record Manual Order</button>
+          <button class="btn-gold" onclick="exportOrdersToCSV()"><i class="fas fa-file-csv"></i> Export Orders CSV</button>
+        </div>
+      </div>
+
+      <div class="controls-strip">
+        <input type="text" id="orderSearchInput" class="search-input" placeholder="🔍 Search orders by Student Name, Order ID, Email, or Course..." oninput="renderOrdersTable()" />
+        <select id="orderStatusFilter" class="filter-select" onchange="renderOrdersTable()">
+          <option value="all">All Payment Statuses</option>
+          <option value="Pending Verification">Pending Verification</option>
+          <option value="Verified & Paid">Verified &amp; Paid</option>
+          <option value="Sponsored / Free">Sponsored / Free</option>
+        </select>
+        <button class="btn-action" onclick="renderOrdersTable()"><i class="fas fa-sync-alt"></i> Refresh Orders</button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Order Details</th>
+              <th>Student Info</th>
+              <th>Course Programme</th>
+              <th>Amount (₦)</th>
+              <th>Payment Method</th>
+              <th>Payment Status</th>
+              <th>Access Code</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+      <div id="ordersEmptyState" style="display:none; text-align:center; padding:3rem; color:var(--text-muted);">
+        <i class="fas fa-inbox" style="font-size:2.5rem; margin-bottom:0.8rem; color:#cbd5e1;"></i>
+        <p>No orders recorded yet. When students register on the website, their orders will appear here automatically.</p>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB: BREVO & EMAIL AUTOMATION HUB -->
+    <!-- ========================================== -->
+    <section id="tabBrevo" class="admin-card" style="display:none;">
+      <div class="card-head">
+        <div>
+          <h2><i class="fas fa-paper-plane" style="color:var(--accent-teal);"></i> Brevo (Sendinblue) &amp; Email Automation Hub</h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+            Direct integration with Brevo API v3. Send transactional welcome emails, live class reminders, capstone project notices, and monitor audit dispatch logs.
+          </p>
+        </div>
+        <div>
+          <span id="brevoApiStatusBadge" class="badge-status badge-cert"><i class="fas fa-circle-notch fa-spin"></i> Checking Brevo API...</span>
+        </div>
+      </div>
+
+      <!-- Brevo API Config & Connection Test Grid -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(360px, 1fr)); gap:1.5rem; margin-bottom:2rem;">
+        <!-- Configuration Card -->
+        <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:14px; padding:1.5rem;">
+          <h3 style="color:var(--navy-900); font-size:1.05rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
+            <i class="fas fa-key" style="color:var(--gold-500);"></i> Brevo API Credentials &amp; Sender Info
+          </h3>
+          <form id="brevoConfigForm" onsubmit="handleSaveBrevoConfig(event)">
+            <div class="form-group">
+              <label>Brevo API Key (v3):</label>
+              <div style="display:flex; gap:0.5rem;">
+                <input type="password" id="brevoApiKeyInput" class="form-control" placeholder="xkeysib-..." />
+                <button type="button" onclick="togglePasswordVisibility('brevoApiKeyInput', this)" class="btn-action" style="padding:0.7rem;"><i class="fas fa-eye"></i></button>
+              </div>
+              <small style="color:var(--text-muted); font-size:0.75rem;">Obtain from Brevo Dashboard &rarr; SMTP &amp; API Keys.</small>
+            </div>
+            <div class="form-group">
+              <label>Sender Name:</label>
+              <input type="text" id="brevoSenderName" class="form-control" value="Emmanuel from Greach Impact Academy" required />
+            </div>
+            <div class="form-group">
+              <label>Sender Email:</label>
+              <input type="email" id="brevoSenderEmail" class="form-control" value="greachimpact@gmail.com" required />
+            </div>
+            <div class="form-group">
+              <label>Admin Alert Notification Email:</label>
+              <input type="email" id="brevoAdminEmail" class="form-control" value="greachimpact@gmail.com" required />
+              <small style="color:var(--text-muted); font-size:0.75rem;">Every new registration &amp; order alert is sent here.</small>
+            </div>
+            <div style="margin:1rem 0;">
+              <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer;">
+                <input type="checkbox" id="brevoAutoWelcome" checked style="accent-color:var(--navy-900);">
+                Automatically send Welcome Email &amp; Access Code on student registration
+              </label>
+              <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer; margin-top:0.4rem;">
+                <input type="checkbox" id="brevoAutoAdminAlert" checked style="accent-color:var(--navy-900);">
+                Automatically send New Order / Registration alert to Admin
+              </label>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">
+              <i class="fas fa-save"></i> Save Brevo Configuration
+            </button>
+          </form>
+        </div>
+
+        <!-- Connection Test & Health Card -->
+        <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:14px; padding:1.5rem; display:flex; flex-direction:column; justify-content:space-between;">
+          <div>
+            <h3 style="color:var(--navy-900); font-size:1.05rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
+              <i class="fas fa-satellite-dish" style="color:var(--green-600);"></i> Live Connection Test
+            </h3>
+            <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:1rem;">
+              Verify that your Brevo API credentials can connect and dispatch emails cleanly. Enter an email address below to send a live test message.
+            </p>
+            <div class="form-group">
+              <label>Test Recipient Email:</label>
+              <input type="email" id="brevoTestEmail" class="form-control" placeholder="greachimpact@gmail.com" />
+            </div>
+            <button type="button" class="btn-gold" style="width:100%; justify-content:center;" onclick="runBrevoTest()">
+              <i class="fas fa-paper-plane"></i> Send Live Test Email via Brevo API
+            </button>
+          </div>
+          <div id="brevoTestResultBox" style="margin-top:1rem; display:none; padding:1rem; border-radius:10px; font-size:0.85rem;">
+            <!-- Test output rendered here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 1-Click Reminder & Broadcast Dispatchers -->
+      <div style="background:#ffffff; border:1.5px solid var(--border-slate); border-radius:14px; padding:1.5rem; margin-bottom:2rem;">
+        <h3 style="color:var(--navy-900); font-size:1.15rem; margin-bottom:1.2rem; display:flex; align-items:center; gap:0.6rem;">
+          <i class="fas fa-bullhorn" style="color:var(--red-600);"></i> 1-Click Automated Reminders &amp; Broadcast Dispatcher
+        </h3>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;">
+          
+          <!-- Class Reminder -->
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1.2rem;">
+            <h4 style="color:#b91c1c; font-size:0.95rem; margin-bottom:0.6rem;">
+              <i class="fas fa-video"></i> 1-Click Live Class Reminder
+            </h4>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.8rem;">
+              Sends an instant reminder email to all active registered students with class start time, workbook checklist, and classroom link.
+            </p>
+            <div class="form-group">
+              <label style="font-size:0.8rem;">Session Schedule Time:</label>
+              <input type="text" id="reminderScheduleText" class="form-control" value="Saturday at 10:00 AM West Africa Time (WAT)" />
+            </div>
+            <button type="button" class="btn-primary" style="background:#dc2626; width:100%; justify-content:center;" onclick="dispatchClassReminderToAll()">
+              <i class="fas fa-bell"></i> Dispatch Live Class Reminder to All Students
+            </button>
+          </div>
+
+          <!-- Capstone Project Reminder -->
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1.2rem;">
+            <h4 style="color:var(--green-600); font-size:0.95rem; margin-bottom:0.6rem;">
+              <i class="fas fa-tasks"></i> Capstone Project &amp; Certificate Notice
+            </h4>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.8rem;">
+              Notifies students to complete and submit their Capstone Project in the classroom hub so their Certificate of Excellence can be approved.
+            </p>
+            <div style="height:48px;"></div>
+            <button type="button" class="btn-primary" style="background:var(--green-600); width:100%; justify-content:center;" onclick="dispatchProjectReminderToAll()">
+              <i class="fas fa-award"></i> Dispatch Project &amp; Certificate Reminder
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Email Dispatch Audit Log -->
+      <div class="card-head" style="margin-bottom:1rem; padding-bottom:0.8rem;">
+        <div>
+          <h3 style="font-size:1.1rem; color:var(--navy-900);">
+            <i class="fas fa-history" style="color:var(--accent-blue);"></i> Dispatched Emails Audit Trail
+          </h3>
+          <p style="color:var(--text-muted); font-size:0.8rem;">
+            Real-time record of all student welcome credentials, admin alerts, and reminders sent through Brevo.
+          </p>
+        </div>
+        <button class="btn-action" onclick="clearDispatchLogs()"><i class="fas fa-trash-alt"></i> Clear Audit Log</button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Date &amp; Time</th>
+              <th>Dispatch Type</th>
+              <th>Recipient Email</th>
+              <th>Email Subject</th>
+              <th>Delivery Status</th>
+              <th>Brevo Message ID / Reference</th>
+            </tr>
+          </thead>
+          <tbody id="dispatchLogsTableBody">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+      <div id="dispatchLogsEmptyState" style="display:none; text-align:center; padding:2.5rem; color:var(--text-muted);">
+        <i class="fas fa-envelope-open" style="font-size:2rem; margin-bottom:0.6rem; color:#cbd5e1;"></i>
+        <p>No emails logged yet. When registrations or reminders fire, they will be logged here.</p>
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- TAB 2: SUB-ADMINS MANAGER (Super Admin Exclusive) -->
+    <!-- ========================================== -->
+    <section id="tabAdmins" class="admin-card" style="display:none;">
+      <div class="card-head">
+        <div>
+          <h2><i class="fas fa-crown" style="color:var(--gold-500);"></i> Sub-Admin Delegation &amp; Privileges</h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+            As Lead Super Admin (<code>Greachimpact</code>), you have the master privilege to create assistant admins and instructors to help you run the academy.
+          </p>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1.6fr; gap:2rem;">
+        <!-- Create Admin Form -->
+        <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:14px; padding:1.5rem;">
+          <h3 style="font-size:1.1rem; color:var(--navy-900); margin-bottom:1rem; font-weight:800;">
+            <i class="fas fa-user-plus"></i> Create New Sub-Admin
+          </h3>
+          <form id="createSubAdminForm" onsubmit="handleCreateSubAdmin(event)">
+            <div class="form-group">
+              <label>Full Name:</label>
+              <input type="text" id="newAdminName" class="form-control" placeholder="e.g. Dr. Jane Smith" required />
+            </div>
+            <div class="form-group">
+              <label>Login Username:</label>
+              <input type="text" id="newAdminUser" class="form-control" placeholder="e.g. janesmith_admin" required />
+            </div>
+            <div class="form-group">
+              <label>Temporary Password:</label>
+              <input type="password" id="newAdminPass" class="form-control" placeholder="e.g. Pass@123456" required />
+            </div>
+            <div class="form-group">
+              <label>Official Email:</label>
+              <input type="email" id="newAdminEmail" class="form-control" placeholder="admin@greach.org" required />
+            </div>
+            <div class="form-group">
+              <label>Administrative Role:</label>
+              <select id="newAdminRole" class="form-control">
+                <option value="assistant_admin">Assistant Administrator (Roster &amp; Submissions)</option>
+                <option value="course_instructor">Course Instructor (Classroom &amp; Live Streams)</option>
+              </select>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; justify-content:center; margin-top:0.5rem;">
+              <i class="fas fa-shield-alt"></i> Authorize &amp; Save Sub-Admin
+            </button>
+          </form>
+        </div>
+
+        <!-- Sub-Admins List -->
+        <div>
+          <h3 style="font-size:1.1rem; color:var(--navy-900); margin-bottom:1rem; font-weight:800;">
+            <i class="fas fa-id-badge"></i> Active Administrative Accounts
+          </h3>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Username / Name</th>
+                  <th>Role</th>
+                  <th>Email</th>
+                  <th>Created Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="subAdminsTableBody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: COURSE PRICING & DISCOUNTS -->
+    <!-- ========================================== -->
+    <section id="tabPrices" class="admin-card" style="display:none;">
+      <div class="card-head">
+        <div>
+          <h2><i class="fas fa-tags" style="color:var(--green-600);"></i> Discounted Course Pricing System</h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+            Set live course prices and slashed original prices. Changes reflect instantly on the marketing pages and registration checkout.
+          </p>
+        </div>
+        <button class="btn-primary" onclick="resetDefaultPrices()"><i class="fas fa-undo"></i> Reset to Default</button>
+      </div>
+
+      <div class="pricing-grid" id="pricingCardsContainer">
+        <!-- Dynamically rendered -->
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: CERTIFICATE VAULT & ONE-OFF UNLOCKS -->
+    <!-- ========================================== -->
+    <section id="tabCertificates" class="admin-card" style="display:none;">
+      <div class="card-head">
+        <div>
+          <h2><i class="fas fa-award" style="color:var(--gold-500);"></i> Certificate Registry &amp; One-Off Policy Control</h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+            Official certificates are strictly <strong>single-issue (one-off)</strong>. If a student communicates with you requesting a name change or reissue, unlock it below for their email.
+          </p>
+        </div>
+        <a href="classroom/claim-certificate.html" target="_blank" class="btn-primary"><i class="fas fa-external-link-alt"></i> Open Certificate Portal</a>
+      </div>
+
+      <div class="controls-strip">
+        <input type="text" id="certSearchInput" class="search-input" placeholder="🔍 Search issued certificates by Serial ID, student name, or email..." oninput="renderCertsTable()" />
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Serial Number</th>
+              <th>Student Name</th>
+              <th>Registered Email</th>
+              <th>Course Accredited</th>
+              <th>Issue Date</th>
+              <th>Status</th>
+              <th style="text-align:right;">Admin Actions</th>
+            </tr>
+          </thead>
+          <tbody id="certsTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 5: BROADCAST & LIVE STREAM CONTROLLER -->
+    <!-- ========================================== -->
+    <section id="tabBroadcast" class="admin-card" style="display:none;">
+      <div class="card-head">
+        <div>
+          <h2><i class="fas fa-video" style="color:#ef4444;"></i> Classroom Live Stream &amp; Broadcast Controller</h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+            Manage the live video stream (YouTube Live Unlisted or Zoom) and publish instant announcement banners to all active students in the classroom hub.
+          </p>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem;">
+        <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:14px; padding:1.5rem;">
+          <h3 style="font-size:1.1rem; color:var(--navy-900); margin-bottom:1rem; font-weight:800;">
+            <i class="fab fa-youtube" style="color:#ef4444;"></i> Live Stream Setup
+          </h3>
+          <form onsubmit="handleSaveLiveStream(event)">
+            <div class="form-group">
+              <label>Live Stream Link (YouTube Live / Zoom / Google Meet):</label>
+              <input type="url" id="inputLiveUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=YOUR_VIDEO_ID" value="https://www.youtube.com/watch?v=live_stream" required />
+            </div>
+            <div class="form-group">
+              <label>Next Live Class Date &amp; Time:</label>
+              <input type="text" id="inputLiveSchedule" class="form-control" placeholder="Saturday at 10:00 AM West Africa Time (WAT)" value="Saturday at 10:00 AM (WAT)" required />
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">
+              <i class="fas fa-broadcast-tower"></i> Update Live Stream Link
+            </button>
+          </form>
+        </div>
+
+        <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:14px; padding:1.5rem;">
+          <h3 style="font-size:1.1rem; color:var(--navy-900); margin-bottom:1rem; font-weight:800;">
+            <i class="fas fa-bullhorn" style="color:var(--accent-blue);"></i> Classroom Announcement Banner
+          </h3>
+          <form onsubmit="handleSaveAnnouncement(event)">
+            <div class="form-group">
+              <label>Banner Notification Message:</label>
+              <textarea id="inputAnnouncement" class="form-control" rows="3" placeholder="Welcome Batch 2 students! The Capstone Project review starts this Friday.">Welcome Batch 2 students! Live session starts Saturday at 10:00 AM WAT. Remember to download your practice workbooks before class.</textarea>
+            </div>
+            <button type="submit" class="btn-gold" style="width:100%; justify-content:center;">
+              <i class="fas fa-paper-plane"></i> Publish Banner to Students
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+      <!-- ========================================== -->
+    <!-- TAB: COURSE DATES & CLASS TIMES MANAGER -->
+    <!-- ========================================== -->
+    <section id="tabSchedules" class="admin-card" style="display:none;">
+      <div class="card-head">
+        <div>
+          <h2><i class="fas fa-calendar-alt" style="color:var(--accent-teal);"></i> Course Dates, Schedules &amp; Class Times</h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+            Update course start dates, end dates, and daily class times (e.g. 10:00 AM – 12:30 PM WAT). Changes reflect across all website pages and student portals instantly.
+          </p>
+        </div>
+        <button class="btn-primary" onclick="resetDefaultSchedules()"><i class="fas fa-undo"></i> Reset to Default Schedules</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(340px, 1fr)); gap:1.5rem;" id="schedulesGridContainer">
+        <!-- Dynamically rendered via renderScheduleCards() -->
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB: SUPERUSER CREDENTIALS & SETTINGS -->
+    <!-- ========================================== -->
+    <section id="tabSuperuser" class="admin-card" style="display:none;">
+      <div class="card-head">
+        <div>
+          <h2><i class="fas fa-crown" style="color:var(--gold-500);"></i> Superuser Account &amp; Master Password Settings</h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+            Manage your master administrative credentials. As the Super Administrator, you can change your master username and password anytime.
+          </p>
+        </div>
+      </div>
+
+      <div style="max-width:650px; background:#f8fafc; border:1px solid var(--card-border); border-radius:16px; padding:2rem;">
+        <form id="updateSuperUserForm" onsubmit="handleUpdateSuperUser(event)">
+          <div class="form-group">
+            <label><i class="fas fa-id-badge"></i> Full Administrator Name:</label>
+            <input type="text" id="suFullName" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-envelope"></i> Official Admin Email:</label>
+            <input type="email" id="suEmail" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-user-circle"></i> Master Superuser Username:</label>
+            <input type="text" id="suUsername" class="form-control" placeholder="e.g. Greachimpact" required />
+            <small style="color:var(--text-muted); font-size:0.75rem;">This is the username used to log into the Super Admin console and the classroom.</small>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-key"></i> New Master Secret Password:</label>
+            <div style="display:flex; gap:0.5rem;">
+              <input type="password" id="suPassword" class="form-control" placeholder="Enter new secret password..." required />
+              <button type="button" onclick="togglePasswordVisibility('suPassword', this)" class="btn-action" style="padding:0.7rem;"><i class="fas fa-eye"></i></button>
+            </div>
+            <small style="color:var(--text-muted); font-size:0.75rem;">Choose a strong master password (e.g. Evana_Oluebube123890).</small>
+          </div>
+
+          <div id="suAlertBox" style="display:none; padding:0.85rem; border-radius:8px; margin-bottom:1.2rem; font-size:0.85rem;"></div>
+
+          <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.85rem; font-size:0.95rem; background:linear-gradient(135deg, #0A0A5E, #112641);">
+            <i class="fas fa-save"></i> Save &amp; Update Superuser Credentials
+          </button>
+        </form>
+      </div>
+    </section>
+  
+    <!-- ========================================== -->
+    <!-- TAB: TEMPORARY LIVE SESSION PASSES -->
+    <!-- ========================================== -->
+    <section id="tabSessionPasses" class="admin-card" style="display:none;">
+      <div class="card-head">
+        <div>
+          <h2><i class="fas fa-stopwatch" style="color:var(--gold-500);"></i> Temporary Live Session Passes (Expiring Access Codes)</h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+            Generate one-time or time-limited access codes for live classes, workshops, or guest students. You can set them to expire automatically or revoke/expire them immediately with 1 click.
+          </p>
+        </div>
+        <button class="btn-primary" onclick="openSessionPassModal()"><i class="fas fa-plus-circle"></i> + Generate Temporary Session Code</button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Pass Code</th>
+              <th>Session Label / Purpose</th>
+              <th>Cohort / Batch</th>
+              <th>Created Date</th>
+              <th>Expires At</th>
+              <th>Live Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="sessionPassesTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+      <div id="sessionPassesEmptyState" style="display:none; text-align:center; padding:3rem; color:var(--text-muted);">
+        <i class="fas fa-key" style="font-size:2.5rem; margin-bottom:0.8rem; color:#cbd5e1;"></i>
+        <p>No active temporary session passes. Click "+ Generate Temporary Session Code" to create one.</p>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- ========================================== -->
+    <!-- TAB: BLOG ARTICLES PUBLISHING & MANAGEMENT -->
+    <!-- ========================================== -->
+    <section id="tabBlog" class="admin-card" style="display:none;">
+      <div class="card-head">
+        <div>
+          <h2><i class="fas fa-newspaper" style="color:var(--accent-blue);"></i> Blog Articles Publishing &amp; Management</h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+            Write, edit, and publish articles on the Greach Impact blog. All updates reflect instantly on the live website and sync with the database.
+          </p>
+        </div>
+        <div style="display:flex; gap:0.6rem;">
+          <button class="btn-primary" onclick="openBlogModal()"><i class="fas fa-plus-circle"></i> + Write New Article</button>
+          <button class="btn-gold" onclick="exportBlogPostsJson()"><i class="fas fa-file-download"></i> Export posts.json</button>
+        </div>
+      </div>
+
+      <div class="controls-strip">
+        <input type="text" id="filterBlogSearch" class="search-input" placeholder="🔍 Search articles by title, keyword, or excerpt..." oninput="renderBlogTable()" />
+        <select id="filterBlogCategory" class="filter-select" onchange="renderBlogTable()">
+          <option value="all">All Categories</option>
+          <option value="Excel & Data">Excel & Data</option>
+          <option value="Power BI">Power BI</option>
+          <option value="Data Analytics">Data Analytics</option>
+          <option value="Community Development">Community Development</option>
+          <option value="Data Analyst Career">Data Analyst Career</option>
+        </select>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:50px;">#ID</th>
+              <th>Article Title</th>
+              <th>Category</th>
+              <th>Date</th>
+              <th>Read Time</th>
+              <th>Summary</th>
+              <th style="width:170px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="blogTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+      <div id="blogEmptyState" style="display:none; text-align:center; padding:3rem; color:var(--text-muted);">
+        <i class="fas fa-newspaper" style="font-size:2.5rem; margin-bottom:0.8rem; color:#cbd5e1;"></i>
+        <p>No blog articles found. Click "+ Write New Article" to publish your first post.</p>
+      </div>
+    </section>
+
+    <!-- TAB: DB AUDIT TRAIL & SYSTEM ACTIVITY -->
+    <!-- ========================================== -->
+    <section id="tabAudit" class="admin-card" style="display:none;">
+      <div class="card-head">
+        <div>
+          <h2><i class="fas fa-history" style="color:var(--accent-teal);"></i> Database Audit Trail &amp; Update History</h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+            Real-time record of all database updates, pricing changes, schedule adjustments, delivery modes, and admin actions with author attribution.
+          </p>
+        </div>
+        <button class="btn-action" onclick="clearAuditTrail()" style="color:#ef4444;"><i class="fas fa-trash-alt"></i> Clear Audit Trail</button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Administrator</th>
+              <th>Action Category</th>
+              <th>Exact Modification Details</th>
+            </tr>
+          </thead>
+          <tbody id="auditTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+      <div id="auditEmptyState" style="display:none; text-align:center; padding:3rem; color:var(--text-muted);">
+        <i class="fas fa-clipboard-list" style="font-size:2.5rem; margin-bottom:0.8rem; color:#cbd5e1;"></i>
+        <p>No audit events recorded yet. Every change made will appear here automatically.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODALS -->
+  <!-- ========================================== -->
+
+  <!-- Enroll Student Modal -->
+  <div class="modal-overlay" id="enrollModal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+        <h3><i class="fas fa-user-plus" style="color:var(--accent-blue);"></i> Manual Student Enrollment</h3>
+        <button onclick="closeEnrollModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#64748b;">&times;</button>
+      </div>
+      <form id="enrollStudentForm" onsubmit="handleEnrollStudentSubmit(event)">
+        <div class="form-group">
+          <label>Full Student Name:</label>
+          <input type="text" id="modalStuName" class="form-control" placeholder="e.g. Ngozi Adeleke" required />
+        </div>
+        <div class="form-group">
+          <label>Email Address:</label>
+          <input type="email" id="modalStuEmail" class="form-control" placeholder="e.g. ngozi@gmail.com" required />
+        </div>
+        <div class="form-group">
+          <label>Cohort / Batch:</label>
+          <select id="modalStuCohort" class="form-control">
+            <option value="Batch 2: 2026 Masterclass">Batch 2: 2026 Masterclass</option>
+            <option value="Batch 1: 2026 Masterclass">Batch 1: 2026 Masterclass</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Access Grant Type:</label>
+          <select id="modalStuAccessType" class="form-control">
+            <option value="paid">Standard Paid (Expires 1 Month After Class)</option>
+            <option value="free_grant">🎁 Free Access Pass (Expires 1 Month After Class)</option>
+            <option value="free_lifetime">👑 Admin Free Lifetime Access (Never Expires)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Class End Date (Access code expires 1 month after this date):</label>
+          <input type="date" id="modalStuEndDate" class="form-control" required />
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.5rem;">
+          <button type="button" onclick="closeEnrollModal()" class="btn-action" style="padding:0.6rem 1rem;">Cancel</button>
+          <button type="submit" class="btn-primary"><i class="fas fa-check-circle"></i> Save &amp; Generate Credentials</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Email Credentials Modal -->
+  <div class="modal-overlay" id="emailModal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+        <h3><i class="fas fa-envelope-open-text" style="color:var(--gold-500);"></i> Student Login Credentials</h3>
+        <button onclick="closeEmailModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#64748b;">&times;</button>
+      </div>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">
+        Copy this formatted template or click "Send via Email App" to dispatch to the student.
+      </p>
+      <div class="form-group">
+        <label>Recipient:</label>
+        <input type="text" id="emailModalTo" class="form-control" readonly />
+      </div>
+      <div class="form-group">
+        <label>Subject:</label>
+        <input type="text" id="emailModalSubject" class="form-control" readonly />
+      </div>
+      <div class="form-group">
+        <label>Email Body:</label>
+        <textarea id="emailModalBody" class="form-control" rows="10" readonly style="font-family:monospace; font-size:0.82rem; background:#f8fafc;"></textarea>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.2rem;">
+        <button type="button" onclick="copyEmailContent()" class="btn-action" style="padding:0.6rem 1rem;"><i class="fas fa-copy"></i> Copy Text</button>
+        <a id="emailModalSendBtn" href="#" class="btn-primary" style="text-decoration:none;"><i class="fas fa-paper-plane"></i> Send via Email App</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manual Order Modal -->
+  <div class="modal-overlay" id="newOrderModal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+        <h3><i class="fas fa-cart-plus" style="color:var(--gold-500);"></i> Record Manual Student Order</h3>
+        <button onclick="closeNewOrderModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#64748b;">&times;</button>
+      </div>
+      <form id="manualOrderForm" onsubmit="handleManualOrderSubmit(event)">
+        <div class="form-group">
+          <label>Student Full Name:</label>
+          <input type="text" id="moName" class="form-control" required placeholder="e.g. Samuel Okoye" />
+        </div>
+        <div class="form-group">
+          <label>Email Address:</label>
+          <input type="email" id="moEmail" class="form-control" required placeholder="e.g. samuel@gmail.com" />
+        </div>
+        <div class="form-group">
+          <label>Phone / WhatsApp:</label>
+          <input type="tel" id="moPhone" class="form-control" placeholder="+234 801 234 5678" />
+        </div>
+        <div class="form-group">
+          <label>Course Programme:</label>
+          <select id="moCourse" class="form-control" onchange="updateManualOrderAmount(this.value)">
+            <option value="Microsoft Excel for Beginners|3000">Microsoft Excel for Beginners (₦3,000)</option>
+            <option value="Microsoft Excel Advanced & Analytics|4000">Microsoft Excel Advanced & Analytics (₦4,000)</option>
+            <option value="SQL for Data Analytics & Databases|5000">SQL for Data Analytics & Databases (₦5,000)</option>
+            <option value="Complete Analytics Suite (Excel + SQL + Power BI)|10000">Complete Analytics Suite (₦10,000)</option>
+            <option value="Power BI for Business Intelligence|22500">Power BI for Business Intelligence (₦22,500)</option>
+            <option value="Executive Interactive Dashboard Design|40000">Executive Interactive Dashboard Design (₦40,000)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Payment Status:</label>
+          <select id="moStatus" class="form-control">
+            <option value="Verified & Paid">Verified & Paid</option>
+            <option value="Pending Verification">Pending Verification</option>
+            <option value="Sponsored / Free">Sponsored / Free</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Amount (₦):</label>
+          <input type="number" id="moAmount" class="form-control" value="3000" required />
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.5rem;">
+          <button type="button" onclick="closeNewOrderModal()" class="btn-action" style="padding:0.6rem 1rem;">Cancel</button>
+          <button type="submit" class="btn-primary"><i class="fas fa-check"></i> Save Order & Dispatch Credentials</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  
+  <!-- Add Single Past Student Modal -->
+  <div class="modal-overlay" id="pastStudentModal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+        <h3><i class="fas fa-user-graduate" style="color:var(--accent-blue);"></i> Add Past Student to Alumni Bank</h3>
+        <button onclick="closePastStudentModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#64748b;">&times;</button>
+      </div>
+      <form id="pastStudentForm" onsubmit="handlePastStudentSubmit(event)">
+        <div class="form-group">
+          <label>Full Name:</label>
+          <input type="text" id="pastName" class="form-control" required placeholder="e.g. Chinelo Nnamdi" />
+        </div>
+        <div class="form-group">
+          <label>Email Address:</label>
+          <input type="email" id="pastEmail" class="form-control" required placeholder="e.g. chinelo@gmail.com" />
+        </div>
+        <div class="form-group">
+          <label>Phone / WhatsApp Number:</label>
+          <input type="tel" id="pastPhone" class="form-control" placeholder="+234 801 234 5678" />
+        </div>
+        <div class="form-group">
+          <label>Course Completed:</label>
+          <select id="pastCourse" class="form-control">
+            <option value="Microsoft Excel for Beginners">Microsoft Excel for Beginners</option>
+            <option value="Microsoft Excel Advanced & Analytics">Microsoft Excel Advanced & Analytics</option>
+            <option value="Excel Dashboard for Beginners">Excel Dashboard for Beginners</option>
+            <option value="SQL for Data Analytics & Databases">SQL for Data Analytics & Databases</option>
+            <option value="Power BI for Business Intelligence">Power BI for Business Intelligence</option>
+            <option value="Complete Analytics Suite">Complete Analytics Suite</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Year / Cohort Completed:</label>
+          <input type="text" id="pastCohort" class="form-control" value="Batch 1: 2025/2026 Alumni" />
+        </div>
+        <div class="form-group">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input type="checkbox" id="pastCertClaimed" checked style="accent-color:var(--navy-900);">
+            Has Completed Course & Eligible for Certificate
+          </label>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.5rem;">
+          <button type="button" onclick="closePastStudentModal()" class="btn-action" style="padding:0.6rem 1rem;">Cancel</button>
+          <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Save to Alumni Bank</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bulk Import Alumni Modal -->
+  <div class="modal-overlay" id="bulkAlumniModal">
+    <div class="modal-card" style="max-width:650px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+        <h3><i class="fas fa-file-import" style="color:var(--gold-500);"></i> Bulk Import Past Students (Alumni Bank)</h3>
+        <button onclick="closeBulkAlumniModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#64748b;">&times;</button>
+      </div>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">
+        Paste your student roster data below. One student per line in comma-separated or tab-separated format:<br>
+        <code>Full Name, Email Address, Phone Number, Course Name, Cohort/Year</code>
+      </p>
+      <form id="bulkAlumniForm" onsubmit="handleBulkAlumniSubmit(event)">
+        <div class="form-group">
+          <label>Paste Student Records:</label>
+          <textarea id="bulkAlumniText" class="form-control" rows="9" placeholder="Emeka Eze, emeka@gmail.com, +2348012345678, Excel Beginners, 2025 Alumni&#10;Fatima Bello, fatima@yahoo.com, +2348098765432, Excel Advanced, 2025 Alumni" required style="font-family:monospace; font-size:0.85rem;"></textarea>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.5rem;">
+          <button type="button" onclick="closeBulkAlumniModal()" class="btn-action" style="padding:0.6rem 1rem;">Cancel</button>
+          <button type="submit" class="btn-primary"><i class="fas fa-upload"></i> Import Records to Database</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Generate Temporary Session Pass Modal -->
+  <div class="modal-overlay" id="sessionPassModal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+        <h3><i class="fas fa-stopwatch" style="color:var(--gold-500);"></i> Generate Temporary Live Session Pass</h3>
+        <button onclick="closeSessionPassModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#64748b;">&times;</button>
+      </div>
+      <form id="sessionPassForm" onsubmit="handleCreateSessionPass(event)">
+        <div class="form-group">
+          <label>Session Label / Class Description:</label>
+          <input type="text" id="spLabel" class="form-control" required placeholder="e.g. Live Excel Masterclass - Session 1" />
+        </div>
+        <div class="form-group">
+          <label>Custom Pass Code (optional, leave blank to auto-generate):</label>
+          <input type="text" id="spCustomCode" class="form-control" placeholder="e.g. LIVE-SAT-10" />
+        </div>
+        <div class="form-group">
+          <label>Cohort / Training Track:</label>
+          <input type="text" id="spCohort" class="form-control" value="Batch 2: 2026 Masterclass" />
+        </div>
+        <div class="form-group">
+          <label>Expiration Duration:</label>
+          <select id="spDuration" class="form-control">
+            <option value="2">2 Hours (Single Class Session)</option>
+            <option value="4">4 Hours (Full Workshop Session)</option>
+            <option value="24">24 Hours (Full Day Access)</option>
+            <option value="72">3 Days (Weekend Access)</option>
+            <option value="0">Manual Revoke (Valid until I click "Expire Now")</option>
+          </select>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.5rem;">
+          <button type="button" onclick="closeSessionPassModal()" class="btn-action" style="padding:0.6rem 1rem;">Cancel</button>
+          <button type="submit" class="btn-primary"><i class="fas fa-bolt"></i> Generate &amp; Activate Code</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- Modal: Write / Edit Blog Article -->
+  <div class="modal-overlay" id="blogModal">
+    <div class="modal-card" style="max-width:680px; width:92%; max-height:90vh; overflow-y:auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+        <h3 id="blogModalTitle"><i class="fas fa-pen-nib" style="color:var(--accent-blue);"></i> Write New Blog Article</h3>
+        <button onclick="closeBlogModal()" style="background:none; border:none; font-size:1.4rem; cursor:pointer; color:#64748b;">&times;</button>
+      </div>
+      <form id="blogPostForm" onsubmit="handleSaveBlogPost(event)">
+        <input type="hidden" id="blogPostId" />
+        
+        <div class="form-group">
+          <label>Article Title *</label>
+          <input type="text" id="blogPostTitle" class="form-control" required placeholder="e.g. 5 Excel Formula Mistakes That Cost You Time" />
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;">
+          <div class="form-group">
+            <label>Category *</label>
+            <select id="blogPostCategory" class="form-control" required>
+              <option value="Excel & Data">Excel & Data</option>
+              <option value="Power BI">Power BI</option>
+              <option value="Data Analytics">Data Analytics</option>
+              <option value="Community Development">Community Development</option>
+              <option value="Data Analyst Career">Data Analyst Career</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Read Time</label>
+            <input type="text" id="blogPostReadTime" class="form-control" value="5 min read" placeholder="e.g. 5 min read" />
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;">
+          <div class="form-group">
+            <label>Publication Date</label>
+            <input type="text" id="blogPostDate" class="form-control" placeholder="e.g. October 21, 2026" />
+          </div>
+          <div class="form-group">
+            <label>Author</label>
+            <input type="text" id="blogPostAuthor" class="form-control" value="Greach Impact Team" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Summary / Excerpt (Shown on card previews) *</label>
+          <textarea id="blogPostSummary" class="form-control" rows="2" required placeholder="A clear, compelling 1-2 sentence overview of the article..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Full Article Content (HTML / Paragraphs supported) *</label>
+          <textarea id="blogPostContent" class="form-control" rows="8" required placeholder="Enter the full text of the article. You can use standard paragraphs <p>...</p>, headings <h3>...</h3>, bullet points <ul><li>...</li></ul>, and <strong>bold</strong>."></textarea>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.5rem;">
+          <button type="button" onclick="closeBlogModal()" class="btn-action" style="padding:0.6rem 1.2rem;">Cancel</button>
+          <button type="submit" class="btn-primary" style="padding:0.6rem 1.4rem;"><i class="fas fa-paper-plane"></i> Publish Article</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Greach DB Layer -->
+  <script src="classroom/js/greach-db.js"></script>
+  <script src="classroom/js/greach-brevo.js"></script>
+  <script src="classroom/js/greach-sync.js"></script>
+
+  <script>
+    const SUPER_ADMIN_USER = 'Greachimpact';
+    // Master credentials secured via serverless API and SHA-256 HMAC tokens
+    const MASTER_HASH = 'b036f9964cc4420226fe774325139d0bc4e9c35ab7457dd864456c128d954309';
+    const ADMIN_SESSION_KEY = 'greach_admin_auth_v2';
+
+    let currentAdminSession = null;
+
+    // Universal HTML Sanitizer against XSS (Cross-Site Scripting)
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;')
+        .replace(/\//g, '&#x2F;');
+    }
+  
+
+    // 1. Check Authentication on Load
+    function checkAdminAuth() {
+      const stored = sessionStorage.getItem(ADMIN_SESSION_KEY) || localStorage.getItem(ADMIN_SESSION_KEY);
+      if (stored) {
+        try {
+          currentAdminSession = JSON.parse(stored);
+          unlockAdminConsole();
+          return;
+        } catch(e) {}
+      }
+      // Show auth overlay
+      document.getElementById('adminAuthOverlay').classList.remove('unlocked');
+    }
+
+    function unlockAdminConsole() {
+      document.getElementById('adminAuthOverlay').classList.add('unlocked');
+      const badge = document.getElementById('adminRoleBadge');
+      const greet = document.getElementById('adminUserGreeting');
+      if (currentAdminSession) {
+        badge.innerHTML = currentAdminSession.isSuper ? '<i class="fas fa-crown"></i> Super Admin' : '<i class="fas fa-user-shield"></i> Sub-Admin';
+        greet.textContent = `Logged in as: ${currentAdminSession.username} • ${currentAdminSession.isSuper ? 'Global Superuser Access' : 'Delegated Admin'}`;
+      }
+      refreshAllData();
+    }
+
+    function handleSuperAdminLogin(e) {
+      if (e) e.preventDefault();
+      const user = document.getElementById('adminInputUser').value.trim();
+      const pass = document.getElementById('adminInputPass').value.trim();
+      const errBox = document.getElementById('authErrorMsg');
+      const errText = document.getElementById('authErrorText');
+
+      const res = window.GreachDB.adminLogin(user, pass);
+      if (res && res.success) {
+        currentAdminSession = {
+          username: res.admin.username,
+          name: res.admin.name,
+          role: res.admin.role,
+          isSuper: !!res.isSuperAdmin,
+          token: res.token
+        };
+        sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(currentAdminSession));
+        errBox.style.display = 'none';
+        unlockAdminConsole();
+      } else {
+        errText.textContent = res ? res.error : 'Invalid master credentials.';
+        errBox.style.display = 'block';
+      }
+    }
+
+    function handleAdminLogout() {
+      if (confirm('Log out of Super Admin Console?')) {
+        sessionStorage.removeItem(ADMIN_SESSION_KEY);
+        localStorage.removeItem(ADMIN_SESSION_KEY);
+        window.location.reload();
+      }
+    }
+
+    // Tab Switching
+    function switchAdminTab(tabKey) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      if (event && event.currentTarget) event.currentTarget.classList.add('active');
+
+      const tabs = ['students', 'orders', 'session_passes', 'prices', 'schedules', 'brevo', 'audit', 'superuser', 'admins', 'certificates', 'broadcast'];
+      tabs.forEach(t => {
+        const el = document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        if (el) el.style.display = (t === tabKey) ? 'block' : 'none';
+      });
+
+      if (tabKey === 'superuser') {
+        populateSuperUserForm();
+      } else if (tabKey === 'schedules') {
+        renderScheduleCards();
+      } else if (tabKey === 'orders') {
+        renderOrdersTable();
+      } else if (tabKey === 'brevo') {
+        loadBrevoConfig();
+        renderDispatchLogsTable();
+        checkBrevoApiStatus();
+      }
+
+      if (tabKey === 'admins' && currentAdminSession && !currentAdminSession.isSuper) {
+        alert('Super Admin privilege required to manage sub-administrators.');
+      }
+    }
+
+    // Refresh All Data
+    function refreshAllData() {
+      renderStats();
+      renderStudentsTable();
+      renderSubAdminsTable();
+      renderPricingCards();
+      renderCertsTable();
+      renderOrdersTable();
+      loadBrevoConfig();
+    }
+
+    // 2. Render KPI Stats
+    function renderStats() {
+      const students = window.GreachDB.getAllStudents();
+      const certs = window.GreachDB.getAllCertificates();
+      const orders = window.GreachBrevo ? window.GreachBrevo.getAllOrders() : [];
+      const dispatches = window.GreachBrevo ? window.GreachBrevo.getDispatchLogs() : [];
+
+      let totalRevenue = 0;
+      orders.forEach(o => {
+        if (o.paymentStatus === 'Verified & Paid') {
+          totalRevenue += (Number(o.amount) || 0);
+        }
+      });
+
+      const statOrdersEl = document.getElementById('statTotalOrders');
+      if (statOrdersEl) statOrdersEl.textContent = orders.length.toLocaleString();
+      const statRevEl = document.getElementById('statRevenueText');
+      if (statRevEl) statRevEl.textContent = '₦' + totalRevenue.toLocaleString() + ' verified revenue';
+      const statDispEl = document.getElementById('statTotalDispatches');
+      if (statDispEl) statDispEl.textContent = dispatches.length.toLocaleString();
+      const now = new Date();
+
+      let activeCount = 0;
+      let expiredCount = 0;
+      let freeCount = 0;
+
+      students.forEach(s => {
+        if (s.accessType === 'free_grant' || s.accessType === 'free_lifetime' || s.isLifetime) {
+          freeCount++;
+        }
+        const exp = s.expiresAt ? new Date(s.expiresAt) : null;
+        if (s.isLifetime || s.accessType === 'free_lifetime' || !exp || now <= exp) {
+          activeCount++;
+        } else {
+          expiredCount++;
+        }
+      });
+
+      document.getElementById('statTotalStudents').textContent = students.length.toLocaleString();
+      document.getElementById('statActiveStudents').textContent = activeCount.toLocaleString();
+      document.getElementById('statExpiredStudents').textContent = expiredCount.toLocaleString();
+      document.getElementById('statFreeGrants').textContent = freeCount.toLocaleString();
+      document.getElementById('statCertsIssued').textContent = certs.length.toLocaleString();
+    }
+
+    // 3. Render Student Roster Table
+    function renderStudentsTable() {
+      const students = window.GreachDB.getAllStudents();
+      const search = (document.getElementById('filterSearch').value || '').trim().toLowerCase();
+      const statusFilter = document.getElementById('filterStatus').value;
+      const cohortFilter = document.getElementById('filterCohort').value;
+      const tbody = document.getElementById('studentTableBody');
+      const emptyState = document.getElementById('tableEmptyState');
+
+      const now = new Date();
+
+      const filtered = students.filter(s => {
+        const matchSearch = !search || 
+          (s.name && s.name.toLowerCase().includes(search)) ||
+          (s.email && s.email.toLowerCase().includes(search)) ||
+          (s.id && s.id.toLowerCase().includes(search)) ||
+          (s.password && s.password.toLowerCase().includes(search));
+
+        if (!matchSearch) return false;
+
+        if (cohortFilter !== 'all' && s.cohort !== cohortFilter) return false;
+
+        const isLifetime = s.isLifetime || s.accessType === 'free_lifetime';
+        const exp = s.expiresAt ? new Date(s.expiresAt) : null;
+        const isExpired = !isLifetime && exp && now > exp;
+
+        if (statusFilter === 'active' && isExpired) return false;
+        if (statusFilter === 'expired' && !isExpired) return false;
+        if (statusFilter === 'free' && !(s.accessType === 'free_grant' || isLifetime)) return false;
+        if (statusFilter === 'cert' && !s.certificateClaimed) return false;
+
+        return true;
+      });
+
+      tbody.innerHTML = '';
+
+      if (filtered.length === 0) {
+        emptyState.style.display = 'block';
+        return;
+      }
+      emptyState.style.display = 'none';
+
+      filtered.forEach(s => {
+        const tr = document.createElement('tr');
+        const isLifetime = s.isLifetime || s.accessType === 'free_lifetime';
+        const exp = s.expiresAt ? new Date(s.expiresAt) : null;
+        const isExpired = !isLifetime && exp && now > exp;
+        
+        let statusBadge = '<span class="badge-status badge-active"><i class="fas fa-check-circle"></i> Active</span>';
+        if (isLifetime) {
+          statusBadge = '<span class="badge-status badge-free"><i class="fas fa-crown"></i> Free Lifetime</span>';
+        } else if (s.accessType === 'free_grant') {
+          statusBadge = '<span class="badge-status badge-free"><i class="fas fa-gift"></i> Free Pass</span>';
+        } else if (isExpired) {
+          statusBadge = '<span class="badge-status badge-expired"><i class="fas fa-times-circle"></i> Expired</span>';
+        }
+
+        const certBadge = s.certificateClaimed 
+          ? `<span class="badge-status badge-cert" title="Serial: ${s.certificateId || 'Accredited'}"><i class="fas fa-award"></i> Claimed</span>`
+          : '<span style="color:#94a3b8; font-size:0.75rem;">Unclaimed</span>';
+
+        tr.innerHTML = `
+          <td>
+            <strong style="color:var(--navy-900);">${escapeHtml(s.name)}</strong>
+            <div style="font-family:monospace; font-size:0.78rem; color:#64748b;">${escapeHtml(s.id)}</div>
+          </td>
+          <td>
+            <a href="mailto:${escapeHtml(s.email)}" style="color:var(--accent-blue); text-decoration:none;">${escapeHtml(s.email)}</a>
+          </td>
+          <td>
+            <div style="display:flex; align-items:center; gap:0.4rem;">
+              <code style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700;">${escapeHtml(s.password)}</code>
+              <button onclick="navigator.clipboard.writeText('${escapeHtml(s.password)}'); alert('Password copied: ${escapeHtml(s.password)}');" class="btn-action" title="Copy Password" style="padding:2px 6px;">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </td>
+          <td><span style="font-size:0.8rem; color:#475569;">${escapeHtml(s.cohort || 'Batch 2')}</span></td>
+          <td><span style="font-size:0.8rem; color:#64748b;">${s.classEndDate || '2026-06-30'}</span></td>
+          <td>
+            <strong style="color:${isExpired ? '#dc2626' : '#16a34a'}; font-size:0.82rem;">
+              ${isLifetime ? '∞ Lifetime' : (s.expiresAt || 'Active')}
+            </strong>
+          </td>
+          <td>${statusBadge}</td>
+          <td>${certBadge}</td>
+          <td style="text-align:right;">
+            <div class="action-group" style="justify-content:flex-end;">
+              <button onclick="grantFreeAccessClick('${s.id}')" class="btn-action free" title="Grant 1-Click Free Access">
+                <i class="fas fa-gift"></i> Free
+              </button>
+              <button onclick="extendAccessClick('${s.id}')" class="btn-action extend" title="Add 30 Days Expiry">
+                <i class="fas fa-calendar-plus"></i> +30d
+              </button>
+              <button onclick="resetPasswordClick('${s.id}')" class="btn-action" title="Generate New Password">
+                <i class="fas fa-key"></i>
+              </button>
+              <button onclick="openEmailModal('${s.id}')" class="btn-action mail" title="View / Email Credentials">
+                <i class="fas fa-envelope"></i>
+              </button>
+              ${s.certificateClaimed ? `
+                <button onclick="unlockCertClick('${s.id}')" class="btn-action" style="background:#fed7aa; color:#9a3412;" title="Authorize Certificate Re-Issue">
+                  <i class="fas fa-unlock"></i>
+                </button>
+              ` : ''}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 4. Quick Actions
+    function grantFreeAccessClick(studentId) {
+      const choice = confirm(`Grant Free Access to student (${studentId})?\n\n• Click OK for Free 1-Month Extension\n• Click Cancel to abort`);
+      if (choice) {
+        window.GreachDB.grantFreeAccess(studentId, false);
+        alert('Free 30-Day Access pass successfully granted!');
+        refreshAllData();
+      }
+    }
+
+    function extendAccessClick(studentId) {
+      window.GreachDB.extendAccess(studentId, 1);
+      alert('Access extended by +1 month successfully.');
+      refreshAllData();
+    }
+
+    function resetPasswordClick(studentId) {
+      if (confirm(`Generate and assign a brand new unique access password for ${studentId}?`)) {
+        const res = window.GreachDB.updatePassword(studentId);
+        alert(`New password generated: ${res.password}`);
+        refreshAllData();
+      }
+    }
+
+    function unlockCertClick(studentId) {
+      if (confirm(`Authorize certificate reissue for ${studentId}?\n\nThis clears their one-off lock so the student can claim an updated certificate (e.g. name correction).`)) {
+        window.GreachDB.allowCertificateReissue(studentId);
+        alert('Certificate lock cleared. Student can now claim an updated certificate.');
+        refreshAllData();
+      }
+    }
+
+    // 5. Enroll Student Modal Form
+    function openEnrollModal() {
+      // Set default date to 30 days from now
+      const d = new Date();
+      d.setDate(d.getDate() + 30);
+      document.getElementById('modalStuEndDate').value = d.toISOString().split('T')[0];
+      document.getElementById('enrollModal').classList.add('open');
+    }
+    function closeEnrollModal() {
+      document.getElementById('enrollModal').classList.remove('open');
+    }
+
+    function handleEnrollStudentSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('modalStuName').value.trim();
+      const email = document.getElementById('modalStuEmail').value.trim();
+      const cohort = document.getElementById('modalStuCohort').value;
+      const accessType = document.getElementById('modalStuAccessType').value;
+      const classEndDate = document.getElementById('modalStuEndDate').value;
+
+      const isFree = accessType.startsWith('free');
+      const isLifetime = accessType === 'free_lifetime';
+
+      const student = window.GreachDB.registerStudent({
+        name,
+        email,
+        cohort,
+        classEndDate,
+        isFree,
+        isLifetime
+      });
+
+      alert(`Student Enrolled Successfully!\n\nID: ${student.id}\nPassword: ${student.password}\nExpires: ${student.expiresAt || 'Lifetime'}`);
+      closeEnrollModal();
+      refreshAllData();
+      openEmailModal(student.id);
+    }
+
+    // 6. Email Modal
+    function openEmailModal(studentId) {
+      const student = window.GreachDB.findStudent(studentId);
+      if (!student) return;
+
+      document.getElementById('emailModalTo').value = student.email;
+      const subject = `Welcome to Microsoft Excel Masterclass - Your Access Code: ${student.password}`;
+      document.getElementById('emailModalSubject').value = subject;
+
+      const bodyText = `Dear ${student.name},
+
+Congratulations on enrolling in the Microsoft Excel Masterclass at Greach Impact Academy!
+
+Here are your official login credentials and access details:
+
+YOUR UNIQUE CREDENTIALS:
+------------------------
+• Student ID: ${student.id}
+• Registered Email: ${student.email}
+• Secret Access Password: ${student.password}
+• Cohort: ${student.cohort || 'Batch 2: 2026 Masterclass'}
+• Access Expiry Date: ${student.expiresAt || 'Lifetime Access'} (1 month after class ends)
+
+INSTANT 1-CLICK CLASSROOM ACCESS:
+https://greachimpact.com/classroom/index.html?id=${student.id}&key=${encodeURIComponent(student.password)}
+
+LIFETIME CERTIFICATE RETRIEVAL:
+Even after your 1-month classroom access code expires, you will always have lifetime access to view, download, or verify your official Certificate of Completion using your registered email at:
+https://greachimpact.com/classroom/claim-certificate.html
+
+Warm regards,
+Emmanuel Iheomamere
+Lead Instructor & Founder, Greach Impact Academy
+greachimpact@gmail.com`;
+
+      document.getElementById('emailModalBody').value = bodyText;
+      const mailtoLink = `mailto:${encodeURIComponent(student.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+      document.getElementById('emailModalSendBtn').href = mailtoLink;
+      document.getElementById('emailModal').classList.add('open');
+    }
+
+    function closeEmailModal() {
+      document.getElementById('emailModal').classList.remove('open');
+    }
+
+    function copyEmailContent() {
+      const txt = document.getElementById('emailModalBody').value;
+      navigator.clipboard.writeText(txt);
+      alert('Email content copied to clipboard!');
+    }
+
+    // 7. Sub-Admin Management
+    function renderSubAdminsTable() {
+      const admins = window.GreachDB.getAllAdmins();
+      const tbody = document.getElementById('subAdminsTableBody');
+      tbody.innerHTML = '';
+
+      admins.forEach(a => {
+        const tr = document.createElement('tr');
+        const roleBadge = a.isSuper 
+          ? '<span class="badge-status" style="background:#fef3c7; color:#b45309;"><i class="fas fa-crown"></i> Super Admin</span>'
+          : `<span class="badge-status" style="background:#e0f2fe; color:#0369a1;"><i class="fas fa-shield-alt"></i> ${a.role || 'Assistant'}</span>`;
+
+        tr.innerHTML = `
+          <td>
+            <strong style="color:var(--navy-900);">${escapeHtml(a.name || a.username)}</strong>
+            <div style="font-family:monospace; font-size:0.75rem; color:#64748b;">@${escapeHtml(a.username)}</div>
+          </td>
+          <td>${roleBadge}</td>
+          <td>${escapeHtml(a.email || 'admin@greach.org')}</td>
+          <td><span style="font-size:0.8rem; color:#64748b;">${a.createdAt ? new Date(a.createdAt).toLocaleDateString() : 'Permanent'}</span></td>
+          <td>
+            ${a.isSuper ? '<span style="font-size:0.75rem; color:#94a3b8;">Locked</span>' : `
+              <button onclick="handleDeleteSubAdmin('${escapeHtml(a.username)}')" class="btn-action" style="color:#dc2626;">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            `}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function handleCreateSubAdmin(e) {
+      e.preventDefault();
+      const name = document.getElementById('newAdminName').value.trim();
+      const username = document.getElementById('newAdminUser').value.trim();
+      const password = document.getElementById('newAdminPass').value.trim();
+      const email = document.getElementById('newAdminEmail').value.trim();
+      const role = document.getElementById('newAdminRole').value;
+
+      const res = window.GreachDB.createSubAdmin({ name, username, password, email, role });
+      if (res.success) {
+        alert(`Sub-admin @${username} created successfully!`);
+        document.getElementById('createSubAdminForm').reset();
+        renderSubAdminsTable();
+      } else {
+        alert(res.error || 'Failed to create sub-admin.');
+      }
+    }
+
+    function handleDeleteSubAdmin(username) {
+      if (confirm(`Remove sub-admin @${username}?`)) {
+        window.GreachDB.deleteSubAdmin(username);
+        renderSubAdminsTable();
+      }
+    }
+
+    // 8. Course Pricing Management
+    function renderPricingCards() {
+      const prices = window.GreachDB.getPrices();
+      const container = document.getElementById('pricingCardsContainer');
+      container.innerHTML = '';
+
+      Object.keys(prices).forEach(key => {
+        const item = prices[key];
+        const card = document.createElement('div');
+        card.className = 'pricing-card';
+        card.innerHTML = `
+          <div class="pricing-title">${escapeHtml(item.label)}</div>
+          <div style="display:flex; align-items:baseline; margin:0.6rem 0;">
+            <span class="pricing-slashed">₦${item.regular.toLocaleString()}</span>
+            <span class="pricing-current">₦${item.current.toLocaleString()}</span>
+            <span style="background:#dcfce7; color:#166534; font-size:0.72rem; font-weight:800; padding:2px 8px; border-radius:10px; margin-left:0.5rem;">
+              ${item.discount}
+            </span>
+          </div>
+          <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+            <input type="number" id="inputPrice_${key}" value="${item.current}" class="form-control" style="width:120px;" />
+            <button onclick="saveCoursePrice('${key}')" class="btn-primary" style="padding:0.4rem 0.8rem; font-size:0.82rem;">
+              Save
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function saveCoursePrice(courseKey) {
+      const val = document.getElementById(`inputPrice_${courseKey}`).value;
+      if (!val || Number(val) <= 0) return alert('Enter a valid price.');
+      window.GreachDB.updateCoursePrice(courseKey, val);
+      alert('Course price updated!');
+      renderPricingCards();
+    }
+
+    function resetDefaultPrices() {
+      if (confirm('Reset all course prices to standard discounted pricing?')) {
+        localStorage.removeItem('greach_course_prices_v2');
+        renderPricingCards();
+      }
+    }
+
+    // 9. Certificate Vault
+    function renderCertsTable() {
+      const certs = window.GreachDB.getAllCertificates();
+      const search = (document.getElementById('certSearchInput')?.value || '').trim().toLowerCase();
+      const tbody = document.getElementById('certsTableBody');
+      if (!tbody) return;
+
+      const filtered = certs.filter(c => {
+        if (!search) return true;
+        return (c.serialId && c.serialId.toLowerCase().includes(search)) ||
+               (c.studentName && c.studentName.toLowerCase().includes(search)) ||
+               (c.studentEmail && c.studentEmail.toLowerCase().includes(search));
+      });
+
+      tbody.innerHTML = '';
+      filtered.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong style="color:var(--navy-900); font-family:monospace;">${escapeHtml(c.serialId)}</strong></td>
+          <td><strong>${escapeHtml(c.studentName)}</strong></td>
+          <td>${escapeHtml(c.studentEmail)}</td>
+          <td><span style="font-size:0.8rem;">${escapeHtml(c.courseName)}</span></td>
+          <td><span style="font-size:0.8rem; color:#64748b;">${escapeHtml(c.issueDate)}</span></td>
+          <td><span class="badge-status badge-active"><i class="fas fa-check-circle"></i> Accredited</span></td>
+          <td style="text-align:right;">
+            <div class="action-group" style="justify-content:flex-end;">
+              <a href="classroom/verify-certificate.html?id=${encodeURIComponent(c.serialId)}" target="_blank" class="btn-action" title="View & Verify">
+                <i class="fas fa-eye"></i> View
+              </a>
+              <button onclick="unlockCertClick('${escapeHtml(c.studentEmail)}')" class="btn-action" style="background:#fed7aa; color:#9a3412;" title="Authorize Reissue">
+                <i class="fas fa-unlock"></i> Reissue
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 10. Live Stream & Announcement Handlers
+    function handleSaveLiveStream(e) {
+      e.preventDefault();
+      const url = document.getElementById('inputLiveUrl').value.trim();
+      const schedule = document.getElementById('inputLiveSchedule').value.trim();
+      localStorage.setItem('greach_live_stream_config', JSON.stringify({ url, schedule, updatedAt: new Date().toISOString() }));
+      alert('Live Stream configuration updated for all student portals!');
+    }
+
+    function handleSaveAnnouncement(e) {
+      e.preventDefault();
+      const msg = document.getElementById('inputAnnouncement').value.trim();
+      localStorage.setItem('greach_classroom_announcement', JSON.stringify({ message: msg, active: true, updatedAt: new Date().toISOString() }));
+      alert('Classroom Announcement published successfully!');
+    }
+
+    // CSV Export
+    function exportStudentCSV() {
+      const students = window.GreachDB.getAllStudents();
+      let csv = 'Student ID,Full Name,Email,Password,Cohort,Class End Date,Access Expiration,Access Type,Certificate Claimed\n';
+      students.forEach(s => {
+        csv += `"${s.id}","${escapeHTML(s.name)}","${escapeHTML(s.email)}","${s.password}","${s.cohort}","${s.classEndDate}","${s.expiresAt || 'Lifetime'}","${s.accessType}","${s.certificateClaimed ? 'YES' : 'NO'}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Greach_Impact_Student_Roster_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', checkAdminAuth);
+  
+    // ==========================================
+    // SCHEDULES & CLASS TIMINGS FUNCTIONS
+    // ==========================================
+    function renderScheduleCards() {
+      if (!window.GreachDB) return;
+      const schedules = window.GreachDB.getSchedules();
+      const container = document.getElementById('schedulesGridContainer');
+      if (!container) return;
+
+      container.innerHTML = '';
+      Object.keys(schedules).forEach(key => {
+        const item = schedules[key];
+        const card = document.createElement('div');
+        card.style.background = '#ffffff';
+        card.style.border = '1.5px solid var(--card-border)';
+        card.style.borderRadius = '14px';
+        card.style.padding = '1.4rem';
+        card.style.boxShadow = '0 4px 10px rgba(0,0,0,0.03)';
+
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid #f1f5f9; padding-bottom:0.6rem;">
+            <strong style="color:var(--navy-900); font-size:1.05rem;">${escapeHtml(item.label)}</strong>
+            <span style="font-size:0.75rem; background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:12px; font-weight:700;">${escapeHtml(item.cohort || 'Batch 2')}</span>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0.7rem;">
+            <label style="font-size:0.78rem;">Cohort / Batch Name:</label>
+            <input type="text" id="sch_cohort_${key}" class="form-control" value="${escapeHtml(item.cohort || '')}" />
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-bottom:0.7rem;">
+            <div class="form-group" style="margin:0;">
+              <label style="font-size:0.78rem;">Start Date:</label>
+              <input type="date" id="sch_start_${key}" class="form-control" value="${escapeHtml(item.startDate || '')}" />
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label style="font-size:0.78rem;">End Date:</label>
+              <input type="date" id="sch_end_${key}" class="form-control" value="${escapeHtml(item.endDate || '')}" />
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-bottom:0.7rem;">
+            <div class="form-group" style="margin:0;">
+              <label style="font-size:0.78rem;">Class Start Time:</label>
+              <input type="text" id="sch_time_start_${key}" class="form-control" value="${escapeHtml(item.startTime || '10:00 AM WAT')}" placeholder="e.g. 10:00 AM WAT" />
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label style="font-size:0.78rem;">Class End Time:</label>
+              <input type="text" id="sch_time_end_${key}" class="form-control" value="${escapeHtml(item.endTime || '12:30 PM WAT')}" placeholder="e.g. 12:30 PM WAT" />
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label style="font-size:0.78rem;">Training Days:</label>
+            <input type="text" id="sch_days_${key}" class="form-control" value="${escapeHtml(item.days || 'Saturdays & Sundays')}" placeholder="e.g. Saturdays & Sundays" />
+          </div>
+
+          <button onclick="saveCourseSchedule('${key}')" class="btn-primary" style="width:100%; justify-content:center; padding:0.6rem; font-size:0.85rem;">
+            <i class="fas fa-save"></i> Save Schedule for ${escapeHtml(item.label)}
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function saveCourseSchedule(key) {
+      const cohort = document.getElementById(`sch_cohort_${key}`).value.trim();
+      const startDate = document.getElementById(`sch_start_${key}`).value;
+      const endDate = document.getElementById(`sch_end_${key}`).value;
+      const startTime = document.getElementById(`sch_time_start_${key}`).value.trim();
+      const endTime = document.getElementById(`sch_time_end_${key}`).value.trim();
+      const days = document.getElementById(`sch_days_${key}`).value.trim();
+
+      const res = window.GreachDB.updateSchedule(key, {
+        cohort, startDate, endDate, startTime, endTime, days
+      });
+
+      if (res && res.success) {
+        alert(`Schedule updated for ${key}!\nStart: ${startDate} (${startTime})\nEnd: ${endDate} (${endTime})`);
+        renderScheduleCards();
+        if (window.GreachSync) window.GreachSync.refresh();
+      }
+    }
+
+    function resetDefaultSchedules() {
+      if (confirm('Reset all course schedules to standard upcoming dates?')) {
+        localStorage.removeItem('greach_course_schedules_v2');
+        renderScheduleCards();
+      }
+    }
+
+    // ==========================================
+    // SUPERUSER CREDENTIALS FUNCTIONS
+    // ==========================================
+    function populateSuperUserForm() {
+      if (!window.GreachDB) return;
+      const su = window.GreachDB.getSuperAdmin();
+      document.getElementById('suFullName').value = su.name || 'Lead Super Administrator';
+      document.getElementById('suEmail').value = su.email || 'greachimpact@gmail.com';
+      document.getElementById('suUsername').value = su.username || 'Greachimpact';
+      document.getElementById('suPassword').value = su.password || 'Evana_Oluebube123890';
+    }
+
+    function handleUpdateSuperUser(e) {
+      e.preventDefault();
+      const name = document.getElementById('suFullName').value.trim();
+      const email = document.getElementById('suEmail').value.trim();
+      const username = document.getElementById('suUsername').value.trim();
+      const password = document.getElementById('suPassword').value.trim();
+      const alertBox = document.getElementById('suAlertBox');
+
+      const res = window.GreachDB.updateSuperAdminCredentials(username, password, email, name);
+      if (res && res.success) {
+        currentAdminSession.username = res.admin.username;
+        currentAdminSession.name = res.admin.name;
+        sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(currentAdminSession));
+
+        alertBox.style.display = 'block';
+        alertBox.style.background = '#ecfdf5';
+        alertBox.style.color = '#065f46';
+        alertBox.style.border = '1px solid #a7f3d0';
+        alertBox.innerHTML = `<strong><i class="fas fa-check-circle"></i> Superuser Credentials Updated!</strong><br>Your new master username is <code>${username}</code>. You can now use your updated username and password across the entire academy.`;
+
+        document.getElementById('adminUserGreeting').textContent = `Logged in as: ${username} • Global Access`;
+        alert(`Master Superuser Credentials Updated!\n\nNew Username: ${username}\nPassword: (Updated)\nEmail: ${email}`);
+      } else {
+        alertBox.style.display = 'block';
+        alertBox.style.background = '#fef2f2';
+        alertBox.style.color = '#991b1b';
+        alertBox.style.border = '1px solid #fecaca';
+        alertBox.innerHTML = res.error || 'Failed to update credentials.';
+      }
+    }
+
+    function togglePasswordVisibility(fieldId, btn) {
+      const inp = document.getElementById(fieldId);
+      if (!inp) return;
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+      } else {
+        inp.type = 'password';
+        btn.innerHTML = '<i class="fas fa-eye"></i>';
+      }
+    }
+
+
+    // ==========================================
+    // ORDERS & REVENUE PIPELINE FUNCTIONS
+    // ==========================================
+    function renderOrdersTable() {
+      if (!window.GreachBrevo) return;
+      const orders = window.GreachBrevo.getAllOrders();
+      const search = (document.getElementById('orderSearchInput').value || '').trim().toLowerCase();
+      const statusFilter = document.getElementById('orderStatusFilter').value;
+      const tbody = document.getElementById('ordersTableBody');
+      const emptyState = document.getElementById('ordersEmptyState');
+
+      const filtered = orders.filter(o => {
+        const matchSearch = !search ||
+          (o.orderId && o.orderId.toLowerCase().includes(search)) ||
+          (o.studentName && o.studentName.toLowerCase().includes(search)) ||
+          (o.studentEmail && o.studentEmail.toLowerCase().includes(search)) ||
+          (o.courseName && o.courseName.toLowerCase().includes(search));
+
+        if (!matchSearch) return false;
+        if (statusFilter !== 'all' && o.paymentStatus !== statusFilter) return false;
+        return true;
+      });
+
+      tbody.innerHTML = '';
+      if (filtered.length === 0) {
+        emptyState.style.display = 'block';
+        return;
+      }
+      emptyState.style.display = 'none';
+
+      filtered.forEach(o => {
+        const tr = document.createElement('tr');
+
+        let statusBadge = '<span class="badge-status badge-cert"><i class="fas fa-clock"></i> Pending Verification</span>';
+        if (o.paymentStatus === 'Verified & Paid') {
+          statusBadge = '<span class="badge-status badge-active"><i class="fas fa-check-circle"></i> Verified & Paid</span>';
+        } else if (o.paymentStatus === 'Sponsored / Free') {
+          statusBadge = '<span class="badge-status badge-free"><i class="fas fa-gift"></i> Sponsored / Free</span>';
+        }
+
+        const dateFormatted = o.timestamp ? new Date(o.timestamp).toLocaleString() : 'N/A';
+
+        tr.innerHTML = `
+          <td>
+            <strong style="color:var(--navy-900); font-family:monospace;">${escapeHtml(o.orderId)}</strong>
+            <div style="font-size:0.75rem; color:#64748b;">${escapeHtml(dateFormatted)}</div>
+          </td>
+          <td>
+            <strong>${escapeHtml(o.studentName)}</strong>
+            <div style="font-size:0.78rem; color:#0284c7;">${escapeHtml(o.studentEmail)}</div>
+            <div style="font-size:0.75rem; color:#64748b;">${escapeHtml(o.studentPhone || 'No phone')}</div>
+          </td>
+          <td>
+            <strong style="font-size:0.85rem;">${escapeHtml(o.courseName)}</strong>
+            <div style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(o.cohort || 'Batch 2')}</div>
+          </td>
+          <td>
+            <strong style="color:var(--green-600); font-size:1.05rem;">₦${Number(o.amount || 0).toLocaleString()}</strong>
+          </td>
+          <td>
+            <span style="font-size:0.8rem; background:#f1f5f9; padding:2px 8px; border-radius:4px;">${escapeHtml(o.paymentMethod || 'Bank Transfer')}</span>
+          </td>
+          <td>${statusBadge}</td>
+          <td>
+            <div style="display:flex; align-items:center; gap:4px;">
+              <code style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700;">${escapeHtml(o.accessCode || 'N/A')}</code>
+              <button onclick="navigator.clipboard.writeText('${escapeHtml(o.accessCode)}'); alert('Access code copied: ${escapeHtml(o.accessCode)}');" class="btn-action" title="Copy Code" style="padding:2px 6px;">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </td>
+          <td>
+            <div class="action-group">
+              ${o.paymentStatus !== 'Verified & Paid' ? `
+                <button onclick="verifyOrderPayment('${escapeHtml(o.orderId)}')" class="btn-action" style="background:#ecfdf5; color:#065f46; border-color:#a7f3d0;" title="Verify & Mark Paid">
+                  <i class="fas fa-check"></i> Verify
+                </button>
+              ` : ''}
+              <button onclick="resendOrderCredentials('${escapeHtml(o.orderId)}')" class="btn-action" title="Resend Welcome Email & Code via Brevo">
+                <i class="fas fa-paper-plane"></i> Resend
+              </button>
+              <button onclick="deleteOrder('${escapeHtml(o.orderId)}')" class="btn-action" style="color:#ef4444;" title="Delete Order">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function verifyOrderPayment(orderId) {
+      if (!confirm('Mark Order ' + orderId + ' as Verified & Paid?')) return;
+      window.GreachBrevo.updateOrderStatus(orderId, 'Verified & Paid');
+      alert('Order ' + orderId + ' marked as Verified & Paid!');
+      renderOrdersTable();
+      renderStats();
+    }
+
+    async function resendOrderCredentials(orderId) {
+      const orders = window.GreachBrevo.getAllOrders();
+      const order = orders.find(o => o.orderId === orderId);
+      if (!order) return alert('Order not found.');
+
+      const studentObj = {
+        name: order.studentName,
+        email: order.studentEmail,
+        id: order.studentId || 'STU-' + Math.floor(1000 + Math.random() * 9000),
+        password: order.accessCode,
+        course: order.courseName,
+        cohort: order.cohort,
+        expiresAt: '1 Month After Class'
+      };
+
+      await window.GreachBrevo.sendEmail({
+        type: 'welcome',
+        student: studentObj
+      });
+
+      alert('Credentials and classroom access code resent to ' + order.studentEmail + ' via Brevo!');
+      renderDispatchLogsTable();
+      renderStats();
+    }
+
+    function deleteOrder(orderId) {
+      if (!confirm('Are you sure you want to delete order ' + orderId + '?')) return;
+      const orders = window.GreachBrevo.getAllOrders().filter(o => o.orderId !== orderId);
+      localStorage.setItem('greach_course_orders_v2', JSON.stringify(orders));
+      renderOrdersTable();
+      renderStats();
+    }
+
+    function exportOrdersToCSV() {
+      const orders = window.GreachBrevo.getAllOrders();
+      if (orders.length === 0) return alert('No orders to export.');
+
+      let csv = 'Order ID,Timestamp,Student Name,Email,Phone,Course,Amount (NGN),Payment Method,Payment Status,Access Code\n';
+      orders.forEach(o => {
+        csv += `"${o.orderId}","${o.timestamp}","${o.studentName}","${o.studentEmail}","${o.studentPhone || ''}","${o.courseName}","${o.amount}","${o.paymentMethod}","${o.paymentStatus}","${o.accessCode}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Greach_Impact_Orders_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function openNewOrderModal() {
+      const m = document.getElementById('newOrderModal');
+      if (m) m.classList.add('active');
+    }
+    function closeNewOrderModal() {
+      const m = document.getElementById('newOrderModal');
+      if (m) m.classList.remove('active');
+    }
+
+    function updateManualOrderAmount(val) {
+      const parts = val.split('|');
+      if (parts[1]) {
+        document.getElementById('moAmount').value = parts[1];
+      }
+    }
+
+    async function handleManualOrderSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('moName').value.trim();
+      const email = document.getElementById('moEmail').value.trim();
+      const phone = document.getElementById('moPhone').value.trim();
+      const courseVal = document.getElementById('moCourse').value.split('|');
+      const courseName = courseVal[0];
+      const amount = Number(document.getElementById('moAmount').value) || Number(courseVal[1]);
+      const status = document.getElementById('moStatus').value;
+
+      // Register student in GreachDB
+      const student = window.GreachDB.registerStudent({
+        name: name,
+        email: email,
+        phone: phone,
+        course: courseName,
+        cohort: 'Batch 2: 2026 Masterclass',
+        isFree: (status === 'Sponsored / Free')
+      });
+
+      // Save Order & Dispatch
+      const order = window.GreachBrevo.saveOrder({
+        ...student,
+        amount: amount,
+        courseName: courseName,
+        paymentStatus: status,
+        paymentMethod: 'Manual Admin Record'
+      });
+
+      await window.GreachBrevo.sendEmail({
+        type: 'welcome',
+        student: student
+      });
+
+      closeNewOrderModal();
+      alert(`Order recorded successfully! Access code: ${student.password} dispatched to ${email}.`);
+      renderOrdersTable();
+      renderStudentsTable();
+      renderStats();
+      renderDispatchLogsTable();
+    }
+
+    // ==========================================
+    // BREVO API & AUTOMATION FUNCTIONS
+    // ==========================================
+    function loadBrevoConfig() {
+      if (!window.GreachBrevo) return;
+      const cfg = window.GreachBrevo.getConfig();
+      document.getElementById('brevoApiKeyInput').value = cfg.apiKey || '';
+      document.getElementById('brevoSenderName').value = cfg.senderName || 'Emmanuel from Greach Impact Academy';
+      document.getElementById('brevoSenderEmail').value = cfg.senderEmail || 'greachimpact@gmail.com';
+      document.getElementById('brevoAdminEmail').value = cfg.adminEmail || 'greachimpact@gmail.com';
+      document.getElementById('brevoAutoWelcome').checked = cfg.autoSendWelcome !== false;
+      document.getElementById('brevoAutoAdminAlert').checked = cfg.autoSendAdminAlert !== false;
+      checkBrevoApiStatus();
+    }
+
+    function checkBrevoApiStatus() {
+      const badge = document.getElementById('brevoApiStatusBadge');
+      if (!badge || !window.GreachBrevo) return;
+      const cfg = window.GreachBrevo.getConfig();
+      if (cfg.apiKey && cfg.apiKey.trim().length > 10) {
+        badge.className = 'badge-status badge-active';
+        badge.innerHTML = '<i class="fas fa-check-circle"></i> Brevo API Key Active';
+      } else {
+        badge.className = 'badge-status badge-expired';
+        badge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Brevo API Key Not Configured';
+      }
+    }
+
+    function handleSaveBrevoConfig(e) {
+      e.preventDefault();
+      const apiKey = document.getElementById('brevoApiKeyInput').value.trim();
+      const senderName = document.getElementById('brevoSenderName').value.trim();
+      const senderEmail = document.getElementById('brevoSenderEmail').value.trim();
+      const adminEmail = document.getElementById('brevoAdminEmail').value.trim();
+      const autoSendWelcome = document.getElementById('brevoAutoWelcome').checked;
+      const autoSendAdminAlert = document.getElementById('brevoAutoAdminAlert').checked;
+
+      window.GreachBrevo.saveConfig({
+        apiKey,
+        senderName,
+        senderEmail,
+        adminEmail,
+        autoSendWelcome,
+        autoSendAdminAlert
+      });
+
+      alert('Brevo Automation Configuration Saved!');
+      checkBrevoApiStatus();
+    }
+
+    async function runBrevoTest() {
+      const apiKey = document.getElementById('brevoApiKeyInput').value.trim();
+      const testEmail = document.getElementById('brevoTestEmail').value.trim() || 'greachimpact@gmail.com';
+      const resultBox = document.getElementById('brevoTestResultBox');
+
+      if (!apiKey) {
+        alert('Please enter a Brevo API Key first.');
+        return;
+      }
+
+      resultBox.style.display = 'block';
+      resultBox.style.background = '#f1f5f9';
+      resultBox.style.color = '#334155';
+      resultBox.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Contacting Brevo REST API v3...';
+
+      const res = await window.GreachBrevo.testConnection(apiKey, testEmail);
+
+      if (res && res.success) {
+        resultBox.style.background = '#ecfdf5';
+        resultBox.style.color = '#065f46';
+        resultBox.style.border = '1px solid #a7f3d0';
+        resultBox.innerHTML = `<strong><i class="fas fa-check-circle"></i> Connection Operational!</strong><br>Brevo dispatched a test email to <strong>${testEmail}</strong>.<br><small>Message ID: ${res.messageId || 'OK'}</small>`;
+      } else {
+        resultBox.style.background = '#fef2f2';
+        resultBox.style.color = '#991b1b';
+        resultBox.style.border = '1px solid #fecaca';
+        resultBox.innerHTML = `<strong><i class="fas fa-times-circle"></i> Connection Failed</strong><br>${res ? res.error : 'Unknown error reaching Brevo API'}`;
+      }
+
+      renderDispatchLogsTable();
+      renderStats();
+    }
+
+    async function dispatchClassReminderToAll() {
+      const students = window.GreachDB.getAllStudents();
+      if (students.length === 0) return alert('No students found in the roster.');
+      const schedule = document.getElementById('reminderScheduleText').value.trim();
+
+      if (!confirm(`Dispatch Live Class Reminder to all ${students.length} enrolled students?\n\nSchedule: ${schedule}`)) return;
+
+      let sentCount = 0;
+      for (const s of students) {
+        await window.GreachBrevo.sendClassReminder(s, null, schedule);
+        sentCount++;
+      }
+
+      alert(`Live class reminders dispatched to ${sentCount} students successfully!`);
+      renderDispatchLogsTable();
+      renderStats();
+    }
+
+    async function dispatchProjectReminderToAll() {
+      const students = window.GreachDB.getAllStudents();
+      if (students.length === 0) return alert('No students found in the roster.');
+
+      if (!confirm(`Dispatch Capstone Project Reminder to all ${students.length} students?`)) return;
+
+      let sentCount = 0;
+      for (const s of students) {
+        await window.GreachBrevo.sendProjectReminder(s);
+        sentCount++;
+      }
+
+      alert(`Capstone project reminders dispatched to ${sentCount} students successfully!`);
+      renderDispatchLogsTable();
+      renderStats();
+    }
+
+    function renderDispatchLogsTable() {
+      if (!window.GreachBrevo) return;
+      const logs = window.GreachBrevo.getDispatchLogs();
+      const tbody = document.getElementById('dispatchLogsTableBody');
+      const emptyState = document.getElementById('dispatchLogsEmptyState');
+
+      tbody.innerHTML = '';
+      if (logs.length === 0) {
+        emptyState.style.display = 'block';
+        return;
+      }
+      emptyState.style.display = 'none';
+
+      logs.forEach(log => {
+        const tr = document.createElement('tr');
+        const dateFormatted = log.timestamp ? new Date(log.timestamp).toLocaleString() : 'N/A';
+
+        let typeBadge = '<span class="badge-status badge-cert">Custom</span>';
+        if (log.type === 'welcome') {
+          typeBadge = '<span class="badge-status badge-active"><i class="fas fa-key"></i> Welcome / Credentials</span>';
+        } else if (log.type === 'admin_alert') {
+          typeBadge = '<span class="badge-status badge-gold" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a;"><i class="fas fa-bell"></i> New Order Alert</span>';
+        } else if (log.type === 'direct_brevo') {
+          typeBadge = '<span class="badge-status badge-active"><i class="fas fa-bolt"></i> Brevo Direct</span>';
+        }
+
+        tr.innerHTML = `
+          <td>${escapeHtml(dateFormatted)}</td>
+          <td>${typeBadge}</td>
+          <td><strong style="color:var(--navy-900);">${escapeHtml(log.recipient || 'N/A')}</strong></td>
+          <td>${escapeHtml(log.subject || 'Notification')}</td>
+          <td><span class="badge-status badge-active"><i class="fas fa-check"></i> ${escapeHtml(log.status || 'Sent')}</span></td>
+          <td><code style="font-size:0.75rem; background:#f1f5f9; padding:2px 6px; border-radius:4px;">${escapeHtml(log.messageId || log.id || 'OK')}</code></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function clearDispatchLogs() {
+      if (!confirm('Clear all email dispatch audit logs?')) return;
+      localStorage.removeItem('greach_email_dispatch_log_v2');
+      renderDispatchLogsTable();
+      renderStats();
+    }
+
+
+// ==============================================================
+    // TEMPORARY LIVE SESSION PASSES CONTROLLER
+    // ==============================================================
+    function openSessionPassModal() {
+      document.getElementById('spLabel').value = '';
+      document.getElementById('spCustomCode').value = '';
+      document.getElementById('spCohort').value = 'Batch 2: 2026 Masterclass';
+      document.getElementById('spDuration').value = '2';
+      document.getElementById('sessionPassModal').classList.add('open');
+    }
+
+    function closeSessionPassModal() {
+      document.getElementById('sessionPassModal').classList.remove('open');
+    }
+
+    function handleCreateSessionPass(e) {
+      e.preventDefault();
+      const label = document.getElementById('spLabel').value.trim();
+      const customCode = document.getElementById('spCustomCode').value.trim();
+      const cohort = document.getElementById('spCohort').value.trim();
+      const durationHours = parseFloat(document.getElementById('spDuration').value);
+
+      const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
+      const pass = window.GreachDB.createSessionPass({
+        label: label,
+        customCode: customCode || null,
+        cohort: cohort,
+        durationHours: durationHours
+      }, currentUser);
+
+      closeSessionPassModal();
+      renderSessionPassesTable();
+      alert(`Temporary Session Pass Generated Successfully!\n\nPass Code: ${pass.code}\nSession: ${pass.label}\nExpires: ${pass.expiresAt ? new Date(pass.expiresAt).toLocaleString() : 'Manual Revoke'}\n\nShare this code with students. They can enter it on the classroom login screen to join the live session.`);
+    }
+
+    function renderSessionPassesTable() {
+      const tbody = document.getElementById('sessionPassesTableBody');
+      const emptyState = document.getElementById('sessionPassesEmptyState');
+      if (!tbody) return;
+
+      const passes = window.GreachDB.getAllSessionPasses ? window.GreachDB.getAllSessionPasses() : [];
+      if (passes.length === 0) {
+        tbody.innerHTML = '';
+        if (emptyState) emptyState.style.display = 'block';
+        return;
+      }
+      if (emptyState) emptyState.style.display = 'none';
+
+      tbody.innerHTML = passes.map(p => {
+        const isLive = p.isActive && (!p.expiresAt || new Date(p.expiresAt).getTime() > Date.now());
+        const statusBadge = isLive
+          ? '<span class="status-badge active"><i class="fas fa-broadcast-tower"></i> Live & Active</span>'
+          : '<span class="status-badge expired"><i class="fas fa-times-circle"></i> Expired / Revoked</span>';
+
+        const expiresText = p.expiresAt
+          ? new Date(p.expiresAt).toLocaleString()
+          : 'Valid Until Revoked';
+
+        return `
+          <tr>
+            <td><strong style="color:var(--accent-blue); font-family:monospace; font-size:1.05rem; letter-spacing:1px;">${p.code}</strong></td>
+            <td><strong>${p.label || 'Workshop Session'}</strong></td>
+            <td><span style="font-size:0.85rem; color:#475569;">${p.cohort || 'General Masterclass'}</span></td>
+            <td style="font-size:0.8rem; color:#64748b;">${new Date(p.createdAt).toLocaleDateString()}</td>
+            <td style="font-size:0.82rem; font-weight:600; color:${isLive ? '#107c41' : '#ef4444'};">${expiresText}</td>
+            <td>${statusBadge}</td>
+            <td>
+              <div style="display:flex; gap:0.4rem;">
+                <button class="btn-action" onclick="copySessionCode('${p.code}')" title="Copy Code"><i class="fas fa-copy"></i> Copy</button>
+                ${isLive ? `<button class="btn-action delete" onclick="handleExpireSessionPass('${p.code}')" title="Expire Now" style="color:#ef4444;"><i class="fas fa-stopwatch"></i> Expire Now</button>` : ''}
+                <button class="btn-action delete" onclick="handleDeleteSessionPass('${p.code}')" title="Delete Pass" style="color:#dc2626;"><i class="fas fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function copySessionCode(code) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(code).then(() => {
+          alert(`Code "${code}" copied to clipboard! Share this code with students to access the live session.`);
+        }).catch(() => {
+          prompt('Copy this session code:', code);
+        });
+      } else {
+        prompt('Copy this session code:', code);
+      }
+    }
+
+    function handleExpireSessionPass(code) {
+      if (!confirm(`Are you sure you want to expire and revoke session pass "${code}" immediately? Any students trying to enter with this code will be locked out.`)) return;
+      const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
+      window.GreachDB.expireSessionPass(code, currentUser);
+      renderSessionPassesTable();
+    }
+
+    function handleDeleteSessionPass(code) {
+      if (!confirm(`Permanently delete session pass "${code}"?`)) return;
+      const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
+      window.GreachDB.deleteSessionPass(code, currentUser);
+      renderSessionPassesTable();
+    }
+
+    // ==============================================================
+    // DATABASE AUDIT TRAIL CONTROLLER
+    // ==============================================================
+    function renderAuditTable() {
+      const tbody = document.getElementById('auditTableBody');
+      const emptyState = document.getElementById('auditEmptyState');
+      if (!tbody) return;
+
+      const logs = window.GreachDB.getAuditLogs ? window.GreachDB.getAuditLogs() : [];
+      if (logs.length === 0) {
+        tbody.innerHTML = '';
+        if (emptyState) emptyState.style.display = 'block';
+        return;
+      }
+      if (emptyState) emptyState.style.display = 'none';
+
+      tbody.innerHTML = logs.map(l => {
+        return `
+          <tr>
+            <td style="font-size:0.8rem; color:#64748b; white-space:nowrap;"><i class="fas fa-clock"></i> ${new Date(l.timestamp).toLocaleString()}</td>
+            <td><strong style="color:var(--navy-primary);"><i class="fas fa-user-shield"></i> ${l.user || 'Admin'}</strong></td>
+            <td><span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:700; padding:3px 8px; border-radius:12px;">${l.action}</span></td>
+            <td style="font-size:0.85rem; color:#334155;">${l.details || ''}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function clearAuditTrail() {
+      if (!confirm('Are you sure you want to clear the database audit trail?')) return;
+      const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
+      window.GreachDB.clearAuditLogs(currentUser);
+      renderAuditTable();
+    }
+
+    // ==============================================================
+    // BLOG ARTICLES MANAGEMENT CONTROLLER
+    // ==============================================================
+    function openBlogModal(postId) {
+      const modal = document.getElementById('blogModal');
+      const modalTitle = document.getElementById('blogModalTitle');
+      const idInput = document.getElementById('blogPostId');
+
+      if (postId) {
+        const posts = window.GreachDB.getBlogPosts ? window.GreachDB.getBlogPosts() : [];
+        const post = posts.find(p => String(p.id) === String(postId));
+        if (post) {
+          modalTitle.innerHTML = '<i class="fas fa-edit" style="color:var(--accent-blue);"></i> Edit Blog Article';
+          idInput.value = post.id;
+          document.getElementById('blogPostTitle').value = post.title;
+          document.getElementById('blogPostCategory').value = post.category || 'Excel & Data';
+          document.getElementById('blogPostReadTime').value = post.readTime || '5 min read';
+          document.getElementById('blogPostDate').value = post.date || '';
+          document.getElementById('blogPostAuthor').value = post.author || 'Greach Impact Team';
+          document.getElementById('blogPostSummary').value = post.summary || '';
+          document.getElementById('blogPostContent').value = post.content || '';
+          modal.classList.add('open');
+          return;
+        }
+      }
+
+      // New post mode
+      modalTitle.innerHTML = '<i class="fas fa-pen-nib" style="color:var(--accent-blue);"></i> Write New Blog Article';
+      idInput.value = '';
+      document.getElementById('blogPostTitle').value = '';
+      document.getElementById('blogPostCategory').value = 'Excel & Data';
+      document.getElementById('blogPostReadTime').value = '5 min read';
+      document.getElementById('blogPostDate').value = new Date().toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
+      document.getElementById('blogPostAuthor').value = 'Greach Impact Team';
+      document.getElementById('blogPostSummary').value = '';
+      document.getElementById('blogPostContent').value = '';
+      modal.classList.add('open');
+    }
+
+    function closeBlogModal() {
+      document.getElementById('blogModal').classList.remove('open');
+    }
+
+    async function handleSaveBlogPost(e) {
+      e.preventDefault();
+      const id = document.getElementById('blogPostId').value;
+      const title = document.getElementById('blogPostTitle').value.trim();
+      const category = document.getElementById('blogPostCategory').value;
+      const readTime = document.getElementById('blogPostReadTime').value.trim();
+      const date = document.getElementById('blogPostDate').value.trim();
+      const author = document.getElementById('blogPostAuthor').value.trim();
+      const summary = document.getElementById('blogPostSummary').value.trim();
+      let content = document.getElementById('blogPostContent').value.trim();
+
+      // If content has no HTML tags, wrap newlines into paragraphs
+      if (!content.includes('<p>') && !content.includes('<h3>')) {
+        content = content.split('\n\n').map(para => `<p>${para.replace(/\n/g, '<br/>')}</p>`).join('');
+      }
+
+      const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
+      const postData = { title, category, readTime, date, author, summary, content };
+
+      if (id) {
+        window.GreachDB.updateBlogPost(id, postData, currentUser);
+        alert('Article updated successfully! The live blog has been updated.');
+      } else {
+        window.GreachDB.createBlogPost(postData, currentUser);
+        alert('New article published successfully! It is now live on the blog.');
+      }
+
+      closeBlogModal();
+      renderBlogTable();
+    }
+
+    async function renderBlogTable() {
+      const tbody = document.getElementById('blogTableBody');
+      const emptyState = document.getElementById('blogEmptyState');
+      if (!tbody) return;
+
+      let posts = window.GreachDB.getBlogPosts ? window.GreachDB.getBlogPosts() : [];
+      
+      // If no posts in DB yet, load from posts.json
+      if (!posts || posts.length === 0) {
+        try {
+          const res = await fetch('posts.json');
+          if (res.ok) {
+            posts = await res.json();
+            if (window.GreachDB && window.GreachDB.saveBlogPosts) {
+              window.GreachDB.saveBlogPosts(posts);
+            }
+          }
+        } catch(err) {
+          console.warn('Could not load posts.json', err);
+        }
+      }
+
+      const search = (document.getElementById('filterBlogSearch') ? document.getElementById('filterBlogSearch').value : '').toLowerCase().trim();
+      const cat = document.getElementById('filterBlogCategory') ? document.getElementById('filterBlogCategory').value : 'all';
+
+      let filtered = (posts || []).filter(p => {
+        const matchCat = (cat === 'all') || (p.category === cat);
+        const matchSearch = !search || 
+          (p.title && p.title.toLowerCase().includes(search)) ||
+          (p.summary && p.summary.toLowerCase().includes(search)) ||
+          (p.content && p.content.toLowerCase().includes(search));
+        return matchCat && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        if (emptyState) emptyState.style.display = 'block';
+        return;
+      }
+      if (emptyState) emptyState.style.display = 'none';
+
+      tbody.innerHTML = filtered.map(p => {
+        return `
+          <tr>
+            <td style="font-weight:700; color:#64748b;">#${p.id}</td>
+            <td>
+              <strong style="color:var(--navy-primary); font-size:0.92rem;">${p.title}</strong>
+            </td>
+            <td>
+              <span class="badge" style="background:#f1f5f9; color:#0f172a; font-weight:600; font-size:0.75rem; padding:3px 8px; border-radius:12px;">
+                ${p.category || 'General'}
+              </span>
+            </td>
+            <td style="font-size:0.8rem; color:#64748b; white-space:nowrap;">${p.date || ''}</td>
+            <td style="font-size:0.8rem; color:#64748b; white-space:nowrap;">${p.readTime || '5 min'}</td>
+            <td style="font-size:0.8rem; color:#475569; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.summary || ''}</td>
+            <td>
+              <div style="display:flex; gap:0.35rem;">
+                <button class="btn-action" onclick="openBlogModal(${p.id})" title="Edit Post"><i class="fas fa-edit"></i> Edit</button>
+                <a href="blog.html" target="_blank" class="btn-action" title="View on Blog" style="text-decoration:none;"><i class="fas fa-external-link-alt"></i> View</a>
+                <button class="btn-action delete" onclick="handleDeleteBlogPost(${p.id})" title="Delete Post" style="color:#ef4444;"><i class="fas fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function handleDeleteBlogPost(id) {
+      if (!confirm(`Are you sure you want to permanently delete article #${id}? This will remove it from the live website.`)) return;
+      const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
+      window.GreachDB.deleteBlogPost(id, currentUser);
+      renderBlogTable();
+    }
+
+    function exportBlogPostsJson() {
+      const posts = window.GreachDB.getBlogPosts ? window.GreachDB.getBlogPosts() : [];
+      const blob = new Blob([JSON.stringify(posts, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'posts.json';
+      a.click();
+    }
+
+</script>
+</body>
+</html>

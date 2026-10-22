@@ -1,34 +1,272 @@
 [
   {
     "id": 1,
-    "title": "Mastering XLOOKUP for Cleaner Data Analysis",
-    "category": "Excel & Data",
-    "date": "July 20, 2026",
-    "summary": "Say goodbye to VLOOKUP limitations. Learn how XLOOKUP simplifies data retrieval, handles missing values gracefully, and speeds up financial modeling.",
-    "readTime": "4 min read"
+    "title": "My Journey from 'Scared of Excel' to Confident Data Analyst",
+    "category": "Data Analyst Career",
+    "date": "August 01, 2026",
+    "summary": "I used to freeze up every time I saw a spreadsheet. Here is the exact 3-step process I used to go from terrified beginner to professional analyst.",
+    "readTime": "6 min read",
+    "content": "<h3>We all start somewhere</h3><p>I remember my first internship. My boss handed me a massive Excel sheet with 10,000 rows of sales data and said, 'Clean this up and give me a report by Friday.' I literally stared at my screen for 30 minutes, completely paralyzed.</p><p>That feeling of overwhelm is exactly why I started Greach Impact. I want to show you that data isn't scary—it's just organized logic. Step 1 was learning <strong>Pivot Tables</strong>. Step 2 was learning <strong>Power Query</strong>. Step 3 was applying those skills to a real business problem. Once I did those three things, I never looked back.</p>"
   },
   {
     "id": 2,
-    "title": "Data-Driven Crop Yield Optimization in Smallholder Farming",
-    "category": "Agriculture",
-    "date": "July 18, 2026",
-    "summary": "How simple soil sensor data combined with regional rainfall trends helps smallholder farmers reduce water usage by 25% while boosting seasonal yield.",
-    "readTime": "5 min read"
+    "title": "Why Every Business Owner Needs a 'Data Eye'",
+    "category": "Data Analytics",
+    "date": "July 30, 2026",
+    "summary": "You don't need to be a computer scientist to understand your numbers. Here is why developing a 'data eye' is the single most valuable skill for a business owner today.",
+    "readTime": "4 min read",
+    "content": "<h3>Data is just a story waiting to be read</h3><p>When I sit down with a business owner, they often tell me their sales are 'up and down.' But when I actually look at their data, I see patterns—sales spike every 3rd week of the month, or certain products always sell better on Fridays.</p><p>This is what I call the 'Data Eye.' It's not about knowing complex formulas; it's about being curious enough to ask the right questions. Excel and Power BI are just the magnifying glasses. If you can spot one trend in your own data this week, you've already won.</p>"
   },
   {
     "id": 3,
-    "title": "Building Grassroots Tech Literacy in Rural Communities",
+    "title": "How We Use Data to Keep Our Community Programs Accountable",
     "category": "Community Development",
-    "date": "July 12, 2026",
-    "summary": "A practical framework for introducing basic spreadsheet and data entry tools to local community managers, enabling better resource allocation.",
-    "readTime": "6 min read"
+    "date": "July 29, 2026",
+    "summary": "Good intentions aren't enough—you need numbers to back them up. Here is how we use simple Excel tracking to ensure every donation and grant reaches the right hands.",
+    "readTime": "5 min read",
+    "content": "<h3>Transparency builds trust</h3><p>I've always believed that if you want to serve a community, you must be accountable to that community. When we run free training programs in rural areas, we track every single participant—their attendance, their quiz scores, and their feedback—all inside a simple Excel dashboard.</p><p>Why? Because when a donor asks, 'What happened to our funding?', I don't just tell them a story. I show them the data. It proves that 85% of our students passed the final assessment, and 70% reported feeling more confident applying for jobs afterward. Data doesn't just help businesses; it builds trust in communities.</p>"
   },
   {
     "id": 4,
-    "title": "Clean Data First: 5 Common Spreadsheet Errors to Avoid",
+    "title": "5 Features in Power BI That Make Clients Say 'Wow'",
+    "category": "Power BI",
+    "date": "July 28, 2026",
+    "summary": "I built dashboards for over 20 companies this year. These 5 Power BI features consistently make the biggest impression on clients and stakeholders.",
+    "readTime": "5 min read",
+    "content": "<h3>Make your dashboards unforgettable</h3><p>Let's be honest: a plain table of numbers is boring. If you want your reports to actually get used, they need to be interactive and visually engaging.</p><p>Here is the secret sauce: <strong>1.</strong> Drill-through bookmarks (let the user click a number to see the details behind it). <strong>2.</strong> Custom visuals (using the app marketplace). <strong>3.</strong> Dynamic titles that change based on the filter selected. <strong>4.</strong> Color-blind-friendly palettes. <strong>5.</strong> One-click data refresh so they never have to wait for you to update the numbers manually.</p>"
+  },
+  {
+    "id": 5,
+    "title": "The Excel Shortcut That Saved Me 5 Hours This Week",
     "category": "Excel & Data",
-    "date": "July 05, 2026",
-    "summary": "From mixed date formats to trailing spaces, discover the five most common data quality traps and how Power Query can clean them automatically.",
-    "readTime": "3 min read"
+    "date": "July 26, 2026",
+    "summary": "If you are manually copying and pasting data, you are wasting your life. Here is one keyboard trick that completely revolutionized my daily workflow.",
+    "readTime": "3 min read",
+    "content": "<h3>Ctrl + Space is life-changing</h3><p>I used to scroll all the way to the right to select the last column of my spreadsheet, then hold shift and scroll all the way back to the left. It was exhausting!</p><p>Then a mentor showed me <strong>Ctrl + Space</strong> (to select the entire column) and <strong>Ctrl + Shift + Arrow Key</strong> (to jump to the very end of that column instantly). Combine them, and you can select any range in 2 seconds flat. It sounds small, but over a year, that saves you literal days of manual navigation.</p>"
+  },
+  {
+    "id": 6,
+    "title": "Why Your Boss Doesn't Care About 'DAX Formulas'",
+    "category": "Data Analyst Career",
+    "date": "July 24, 2026",
+    "summary": "Tech tutorials love to show off complex code. But as a data analyst, your real job is not to write code—it's to solve business problems. Here is the difference.",
+    "readTime": "5 min read",
+    "content": "<h3>Stop showing off, start solving</h3><p>When I first started, I was obsessed with writing the most advanced, complicated DAX formulas I could find. I felt smart. But my boss looked at my work and said, 'Great, but what does this mean for our bottom line?'</p><p>That was my wake-up call. A good analyst translates complexity into simplicity. Your boss doesn't need to know how <code>CALCULATE</code> works; they just need a clear chart showing them exactly where their profit margin is dropping. Focus on the 'So What?' of your data, not the 'How.'</p>"
+  },
+  {
+    "id": 7,
+    "title": "Cleaning Messy Data in Excel: A Step-by-Step Guide",
+    "category": "Excel & Data",
+    "date": "July 22, 2026",
+    "summary": "80% of data analysis is actually just cleaning the data. Here is my go-to, no-nonsense workflow for taking a messy spreadsheet and making it report-ready.",
+    "readTime": "6 min read",
+    "content": "<h3>Embrace the mess (and then fix it)</h3><p>Let's face it—almost every dataset you get from a client or a coworker will be a disaster. Merged cells, blank rows, dates formatted as text, and inconsistent spelling.</p><p>My golden rule: <strong>Never touch the raw data file.</strong> Import it into Power Query first. From there, I use 'Remove Top/Bottom Rows' to clear out headers, 'Replace Values' to fix spelling errors, and 'Split Column' to handle merged cells. Once you build that query, you can apply it to new data every single month without doing the work again.</p>"
+  },
+  {
+    "id": 8,
+    "title": "Why I Use Power BI for Inventory Tracking (And You Should Too)",
+    "category": "Power BI",
+    "date": "July 20, 2026",
+    "summary": "Tracking inventory used to require endless Excel files. This is how I helped a logistics company cut their tracking time by 80% using Power BI.",
+    "readTime": "4 min read",
+    "content": "<h3>Real-time inventory is a game-changer</h3><p>I worked with a warehouse manager who tracked his stock using three different spreadsheets. He would spend 3 hours every Monday manually reconciling them. It was tedious, and prone to human error.</p><p>We built a Power BI dashboard that pulled data directly from his inventory database. He could refresh it with one click and immediately see which items were running low. That 3-hour Monday task turned into a 15-minute check-up. He told me it was the first time he actually enjoyed looking at his numbers.</p>"
+  },
+  {
+    "id": 9,
+    "title": "How to Answer 'Tell Me About a Time You Analyzed Data' in Interviews",
+    "category": "Data Analyst Career",
+    "date": "July 18, 2026",
+    "summary": "The STAR method is great, but most data analysts fail because they don't structure their answers correctly. Here is the 'Data STAR' framework I teach.",
+    "readTime": "6 min read",
+    "content": "<h3>Stand out in your data interview</h3><p>If you are interviewing for a data analyst role, the hiring manager doesn't just want to hear that you used Excel. They want to hear <strong>how</strong> you solved a problem. The standard STAR method (Situation, Task, Action, Result) is good, but I prefer the 'Data STAR' version.</p><p><strong>Situation:</strong> State the messy data problem.<br><strong>Task:</strong> Explain what the stakeholders needed.<br><strong>Action:</strong> Specifically mention the tools you used (e.g., 'I used Power Query to merge 5 tables and DAX to calculate YoY growth').<br><strong>Result:</strong> Always, always end with a measurable number—'This dashboard saved the team 10 hours per week.'</p>"
+  },
+  {
+    "id": 10,
+    "title": "Conditional Formatting: The 'Traffic Light' System for Your Data",
+    "category": "Excel & Data",
+    "date": "July 16, 2026",
+    "summary": "Don't make your manager read a table of numbers—show them the highlights. Conditional formatting is the best way to draw attention to what actually matters.",
+    "readTime": "3 min read",
+    "content": "<h3>Let your spreadsheet do the talking</h3><p>I always tell my students: if you hand a report to your boss and they have to search for the problem, you have failed. The problem should be staring them in the face.</p><p><strong>Conditional Formatting</strong> allows you to color-code cells based on rules. For example, if a sales target is below 80%, turn the cell red. If it's over 100%, turn it green. Suddenly, your boss doesn't need to read every line—they just look for the red dots. It makes you look like a professional communicator.</p>"
+  },
+  {
+    "id": 11,
+    "title": "Power BI vs. Excel: Which One Should You Learn First?",
+    "category": "Data Analytics",
+    "date": "July 14, 2026",
+    "summary": "A question I get asked every single day. Here is the honest, unfiltered truth about where to invest your time as a beginner data analyst.",
+    "readTime": "7 min read",
+    "content": "<h3>Start with the foundation</h3><p>My answer is always the same: Learn Excel first, but don't stop there. Excel is the foundation—it teaches you how data behaves, how formulas work, and how to structure a spreadsheet. You can't build a house without a foundation.</p><p>However, once you are comfortable with Pivot Tables and Power Query in Excel, <strong>run to Power BI</strong>. Power BI is the future of business intelligence. It handles millions of rows, connects to almost any database, and creates interactive dashboards that Excel can't match. Learn both, but respect the order. Excel first, Power BI next.</p>"
+  },
+  {
+    "id": 12,
+    "title": "The Art of the 'Interview Dashboard': How to Land a Data Job",
+    "category": "Data Analyst Career",
+    "date": "July 12, 2026",
+    "summary": "When I hire data analysts, I don't look at their CV. I look at the dashboard they built for the interview. Here is how to create one that makes them say 'Yes.'",
+    "readTime": "5 min read",
+    "content": "<h3>Show, don't just tell</h3><p>If you want to crush a data analyst interview, walk in with a dashboard. Not just any dashboard—a <strong>personalized</strong> one. I once had a candidate create a dashboard analyzing the company's public sales data. It showed me they did their homework, they knew how to clean data, and they knew how to visualize it.</p><p>When you build your interview dashboard, keep it simple. Use 3-4 KPIs, 2 clear charts, and add slicers for interactivity. It doesn't have to be complex; it just has to be logical and clean. That instantly puts you in the top 5% of candidates.</p>"
+  },
+  {
+    "id": 13,
+    "title": "Power Query: The Tool That Made Me Stop Hating Data Cleaning",
+    "category": "Excel & Data",
+    "date": "July 10, 2026",
+    "summary": "I used to dread cleaning spreadsheets. Then I discovered Power Query, and it literally cut my processing time by 90%. Here is my favorite feature.",
+    "readTime": "4 min read",
+    "content": "<h3>Automating the boring stuff</h3><p>Data cleaning is to data analysis what washing dishes is to cooking—it's the boring, repetitive part that nobody wants to do. But I found a cheat code: <strong>Power Query</strong>.</p><p>The feature I use constantly is the 'Unpivot' tool. Imagine having a spreadsheet with months across the top (Jan, Feb, Mar) and sales below. To analyze that, you need it in a long format (one date column, one sales column). Manually, it takes hours. In Power Query, it takes 3 clicks. I literally smiled the first time I saw it work. It makes you feel like a wizard.</p>"
+  },
+  {
+    "id": 14,
+    "title": "When Your Data Lies: Common Pitfalls New Analysts Face",
+    "category": "Data Analytics",
+    "date": "July 08, 2026",
+    "summary": "Data doesn't lie, but people do—sometimes by accident. Here are the most common mistakes that lead to bad analysis, and how to avoid them.",
+    "readTime": "5 min read",
+    "content": "<h3>Question your numbers before you trust them</h3><p>I remember presenting a report to a client once. The total sales numbers looked fantastic. But the client asked me to dig deeper, and I realized I had accidentally included 3 months of canceled orders because I didn't filter them out properly.</p><p>Mistakes like this happen all the time. That's why I now have a strict rule: <strong>Always run a sanity check</strong>. Does the total sum match the bank statement? Does the average make logical sense? Trust your instincts. If the numbers look too good to be true, they probably are. Always double-check your source data.</p>"
+  },
+  {
+    "id": 15,
+    "title": "Improving Your Data Storytelling with Power BI Visuals",
+    "category": "Power BI",
+    "date": "July 06, 2026",
+    "summary": "Your data is only as powerful as your ability to tell the story behind it. Here is how I choose the right chart for the right message in Power BI.",
+    "readTime": "6 min read",
+    "content": "<h3>Every chart tells a different story</h3><p>When I look at a Power BI dashboard, I don't see bars and lines—I see a conversation. A <strong>pie chart</strong> says, 'Look at the parts of a whole.' A <strong>line chart</strong> says, 'Look at the trend over time.' A <strong>bar chart</strong> says, 'Look at how categories compare.'</p><p>The biggest mistake I see? People using pie charts when they have 12 categories. It's a mess of tiny slices! Switch that to a bar chart, and suddenly the data is readable. Learn your charts. They are the vocabulary of your data story.</p>"
+  },
+  {
+    "id": 16,
+    "title": "How I Learn New Data Tools as a Freelance Analyst",
+    "category": "Data Analyst Career",
+    "date": "July 04, 2026",
+    "summary": "Tech changes fast. I don't have time to take 6-month courses. Here is my practical, hyper-efficient method for learning a new tool while working on real clients.",
+    "readTime": "5 min read",
+    "content": "<h3>Learn by doing, not by watching</h3><p>I am self-taught, and I've learned that watching 50 hours of YouTube tutorials is a complete waste of time. The only way I actually learn is by opening the software and making mistakes.</p><p>When a client asked me to build a dashboard in Power BI, I said 'Yes' and then spent the weekend struggling through it. I Googled every error I hit, I watched 5-minute specific solutions, and I built it piece by piece. The fastest way to learn is to throw yourself into a real problem. I call it <strong>Project-Based Learning</strong>. You'll remember the solution because you had to fight for it.</p>"
+  },
+  {
+    "id": 17,
+    "title": "The Power of the 'Date Table' in Power BI",
+    "category": "Power BI",
+    "date": "July 02, 2026",
+    "summary": "If you are struggling to calculate 'Year-to-Date' or 'Previous Month' in Power BI, you are missing one crucial step. Here is why you need a Date Table.",
+    "readTime": "4 min read",
+    "content": "<h3>Unlock time intelligence</h3><p>I spent weeks trying to figure out why my Power BI 'TotalYTD' formula wasn't working. I was pulling my hair out. The data was right, the DAX was right—but the result was always wrong.</p><p>The solution? <strong>A dedicated Date Table.</strong> In Power BI, you can't just use a date column from your sales data. You need a separate, continuous table with every single day of the year. Once I linked my sales data to that Date Table, every time-based calculation suddenly clicked into place. It's the secret to making dashboards that actually run on time.</p>"
+  },
+  {
+    "id": 18,
+    "title": "Excel Hacks for the 'Newbies' Trying to Impress Their Boss",
+    "category": "Excel & Data",
+    "date": "June 30, 2026",
+    "summary": "You don't have to know VBA to look like an expert. These 3 simple Excel tricks will make your boss think you've been doing this for years.",
+    "readTime": "3 min read",
+    "content": "<h3>Looking like a pro in 30 seconds</h3><p>I remember being a new hire and trying desperately to look busy and competent. The pressure to know everything is real.</p><p>But here are 3 'Pro' tricks that are actually easy: <strong>1.</strong> Fix numbers as 'Accounting' format (aligned currency symbols) instead of just 'Currency'. <strong>2.</strong> Use 'Freeze Panes' on row 2 so your headers stay visible while you scroll. <strong>3.</strong> Press Ctrl + T to instantly convert your range into an Excel Table. That last one automatically adds filters and structured formatting. It literally takes 2 seconds but makes you look like a pro.</p>"
+  },
+  {
+    "id": 19,
+    "title": "Dashboard Overload: When to Simplify Your Data",
+    "category": "Data Analytics",
+    "date": "June 28, 2026",
+    "summary": "I've learned the hard way: 'More is not better' when it comes to dashboards. Here is why we should treat dashboards like menus—and focus on the appetizers.",
+    "readTime": "4 min read",
+    "content": "<h3>Too much data is dangerous</h3><p>I used to cram absolutely everything into my reports. I wanted to show every metric, every breakdown, every possible slice of data. The result? My clients would look at the dashboard, stare at it for 5 seconds, and say, 'I don't know where to look.'</p><p>That is a dashboard failure. I learned to ask one crucial question: 'What is the ONE decision the user needs to make?' If the dashboard doesn't answer that question within 5 seconds, it's too complicated. Simplify. Strip away the noise. Highlight only the metrics that matter for the current goal.</p>"
+  },
+  {
+    "id": 20,
+    "title": "Why Every Data Analyst Should Learn SQL (And How It Helps Excel)",
+    "category": "Data Analyst Career",
+    "date": "June 26, 2026",
+    "summary": "Excel is powerful, but SQL is its big brother. Even if you use Power BI, learning SQL makes you a better, faster, more hire-able analyst.",
+    "readTime": "5 min read",
+    "content": "<h3>Go beyond the spreadsheet</h3><p>Excel and Power BI are incredible tools, but they hit a limit when you try to connect to massive databases. That's where <strong>SQL</strong> comes in.</p><p>Learning SQL is like learning how to speak directly to the company's database. Instead of waiting for an IT guy to give you a CSV file, you can write a simple query like <code>SELECT * FROM Sales WHERE Date > '2026-01-01'</code> and pull the data yourself. It makes you independent. And honestly? Clients love it when an analyst can connect directly to their database. It saves them time and money.</p>"
+  },
+  {
+    "id": 21,
+    "title": "Using DAX to Calculate Dynamic Profit Margins",
+    "category": "Power BI",
+    "date": "June 24, 2026",
+    "summary": "Profit margin is a standard metric, but calculating it dynamically based on region and time is tricky. Here is the DAX formula I use for my clients.",
+    "readTime": "5 min read",
+    "content": "<h3>DAX makes the hard stuff easy</h3><p>Everyone wants to see their profit margin. But when they filter the dashboard by 'North Region' or 'Q3,' the margin should update automatically. You can't just hard-code the calculation; it needs to be a <strong>measure</strong>.</p><p>I use this DAX pattern: <code>Profit Margin = DIVIDE(SUM(Sales[Profit]), SUM(Sales[Revenue]), 0)</code>. I use the <code>DIVIDE</code> function instead of just using a / sign because it handles 'divide by zero' errors gracefully. It's a best practice that keeps your dashboard clean even when there's missing data.</p>"
+  },
+  {
+    "id": 22,
+    "title": "How to Build a Real Estate Dashboard in Power BI",
+    "category": "Power BI",
+    "date": "June 22, 2026",
+    "summary": "Real estate is a data-heavy industry. I helped a property agency visualize their listings, sales, and agent performance in one single dashboard.",
+    "readTime": "7 min read",
+    "content": "<h3>Real estate lives and dies by data</h3><p>When I met a real estate agent in Enugu, they were tracking their 300+ properties on paper. They couldn't tell me which neighborhoods were selling fastest or which agents were closing the most deals.</p><p>We built a Power BI dashboard that connected to their listing database. It used a map visual to show properties sold by region, a bar chart for agent performance, and a line chart showing average days on market. The agency owners told me that having that dashboard during their weekly meetings completely transformed how they strategized their marketing.</p>"
+  },
+  {
+    "id": 23,
+    "title": "The Data Analyst’s Guide to Explaining Tech to Non-Tech People",
+    "category": "Data Analyst Career",
+    "date": "June 20, 2026",
+    "summary": "Being a great analyst isn't just about code—it's about translating complicated numbers into simple words. Here are my top rules for humanizing your data.",
+    "readTime": "5 min read",
+    "content": "<h3>Speak the language of your audience</h3><p>I learned this early in my career: 'The client doesn't care about Power Query.' They don't care about DAX or SQL. They care about <strong>saving money, making more profit, and saving time.</strong></p><p>When I present a dashboard to a non-technical client, I use analogies. I say, 'Think of this dashboard as the speedometer of your car. It tells you if you're moving too fast or too slow.' I connect the data back to their daily lives. If you can make your client feel like they understand the data, they will trust you forever.</p>"
+  },
+  {
+    "id": 24,
+    "title": "Why Data Literacy is the Key to Community Growth",
+    "category": "Community Development",
+    "date": "June 18, 2026",
+    "summary": "I've seen entire communities transformed simply because a local leader learned how to read a simple Excel chart. Data literacy is not a luxury; it's a necessity.",
+    "readTime": "6 min read",
+    "content": "<h3>Empowerment starts with understanding</h3><p>When I work with community leaders, I don't start with advanced formulas. I start with the absolute basics: 'What are you currently tracking, and why?'</p><p>I remember working with a local cooperative that was struggling to collect membership dues. We built a simple Excel sheet that tracked each member's payments. Within a month, they identified that 40% of their members were falling behind, and they used that information to host a community meeting to discuss the issue. Data gave them the power to fix a real-world problem. That's why I believe data literacy is the key to sustainable community growth.</p>"
+  },
+  {
+    "id": 25,
+    "title": "How to Run a Free Data Workshop for Your Community",
+    "category": "Community Development",
+    "date": "June 16, 2026",
+    "summary": "You don't need a million-dollar budget to teach data skills. Here is exactly how I organize free, high-impact workshops for local communities.",
+    "readTime": "5 min read",
+    "content": "<h3>Share what you know</h3><p>One of my favorite things to do is organize free Saturday workshops for local students and professionals. I don't charge a dime. Why? Because I believe knowledge should be shared freely.</p><p>Here is the structure I use: <strong>1.</strong> I partner with a local venue (a church hall, a library, or a school). <strong>2.</strong> I ask participants to bring their own laptops. <strong>3.</strong> I focus on one single, practical skill—like how to build a personal budget in Excel. </p><p>The turnout is always amazing, and I meet incredible people. It doesn't take much to give back. A few hours of your time can completely change someone's career trajectory.</p>"
+  },
+  {
+    "id": 26,
+    "title": "Sorting and Filtering Like a Boss in Excel",
+    "category": "Excel & Data",
+    "date": "June 14, 2026",
+    "summary": "Sorting and filtering are the most underrated skills in Excel. Here are the advanced tips I use to sift through massive datasets in seconds.",
+    "readTime": "4 min read",
+    "content": "<h3>Make Excel work for you, not against you</h3><p>I sometimes see people scrolling through 2,000 rows looking for a specific entry. It breaks my heart because Excel has built-in tools that do this instantly.</p><p>If you need to see sales only from the 'Lagos' region, simply click the filter dropdown on the Region column and select Lagos. But if you want to take it a step further, use the <strong>Advanced Filter</strong>. You can copy the filtered data to a completely new location automatically, leaving your raw data untouched. It's a great way to create sub-reports without altering the master file.</p>"
+  },
+  {
+    "id": 27,
+    "title": "Mastering Core Formulas: The Real Foundation of Practical Data Analysis",
+    "category": "Data Analyst Career",
+    "date": "June 12, 2026",
+    "summary": "Before jumping into complex tools, mastering Excel logic and practical formulas is what gets you hired and solves real business problems.",
+    "readTime": "6 min read",
+    "content": "<h3>Formulas are the building blocks of analytics</h3><p>Many aspiring analysts ask what advanced tools they should jump into first. In our years of training professionals and working with real business datasets, the most respected analysts are those who truly understand data logic.</p><p>When you master functions like XLOOKUP, INDEX/MATCH, nested IFs, and dynamic array calculations, you learn how numbers connect across departments. That structured computational thinking makes transitioning to Power BI, SQL, and financial modeling straightforward. Build your foundation on solid spreadsheet fundamentals, and every business challenge becomes manageable.</p>"
+  },
+  {
+    "id": 28,
+    "title": "From Excel Beginner to Power BI Analyst: A 6-Month Roadmap",
+    "category": "Data Analyst Career",
+    "date": "June 10, 2026",
+    "summary": "If you want to break into the data field but don't know where to start, here is a realistic, week-by-week roadmap that I use to coach my students.",
+    "readTime": "8 min read",
+    "content": "<h3>Your journey starts today</h3><p>I often get asked: 'How long does it take to become a data analyst?' My answer is always the same: 'It takes about 6 months of dedicated, consistent practice.'</p><p>Here is the roadmap: <strong>Month 1</strong> – Excel basics (formulas and Pivot Tables). <strong>Month 2</strong> – Power Query and data cleaning. <strong>Month 3</strong> – Introduction to Power BI (data modeling). <strong>Month 4</strong> – DAX formulas and time intelligence. <strong>Month 5</strong> – Dashboard design and storytelling. <strong>Month 6</strong> – Build your Capstone Project and start applying for jobs.</p><p>It's not a quick sprint; it's a marathon. But trust me, every hour you spend learning is an investment in your future.</p>"
+  },
+  {
+    "id": 29,
+    "title": "How We Help NGOs Report Their Impact with Data",
+    "category": "Community Development",
+    "date": "June 08, 2026",
+    "summary": "NGOs are often drowning in paperwork. Here is how we built a simple Power BI dashboard for a non-profit to visually prove their impact to international donors.",
+    "readTime": "5 min read",
+    "content": "<h3>Data opens doors for funding</h3><p>I worked with a local NGO that ran education programs in rural Nigeria. They had amazing stories, but they couldn't produce the numbers that international donors wanted to see. They were constantly being rejected for grants because their data was disorganized.</p><p>We spent two days cleaning their past 3 years of enrollment records and built a Power BI dashboard. It showed, in beautiful charts, the exact number of students impacted, the graduation rates, and the cost per child. When they sent that dashboard to a donor agency, they got funding within 2 weeks. Data doesn't just tell a story; it opens doors.</p>"
+  },
+  {
+    "id": 30,
+    "title": "The Simple Excel Budget That Taught Me Financial Discipline",
+    "category": "Community Development",
+    "date": "June 06, 2026",
+    "summary": "Before I could teach data analytics to others, I had to learn it myself. This is the story of how a simple Excel spreadsheet changed my personal finances.",
+    "readTime": "4 min read",
+    "content": "<h3>Start with yourself</h3><p>When I was younger, I had no idea where my money was going. I would look at my bank account at the end of the month and wonder, 'Where did everything go?'</p><p>I decided to build a personal budget in Excel. I tracked every single expense—from my morning tea to my transport fare—for 3 months. The data shocked me. I was spending 30% of my income on things I didn't even remember buying. That simple spreadsheet gave me the clarity I needed to cut unnecessary expenses and start saving. It taught me that data isn't just for big corporations; it's for everyday life. And it's the reason I'm so passionate about teaching it to others.</p>"
   }
 ]

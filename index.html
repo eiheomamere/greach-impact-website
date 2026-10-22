@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Greach Impact – Data Analytics & Training</title>
-    <meta name="description" content="Greach Impact is a Nigerian social enterprise using data, technology, and training to create sustainable opportunities." />
-    <meta name="keywords" content="data analytics, Excel training, Power BI, community development, Nigeria, Enugu" />
+    <title>Greach Impact – Learn Data Skills That Get You Hired</title>
+    <meta name="description" content="Learn practical data skills with Greach Impact. Excel, Power BI, SQL training with live Zoom classes, certificates, and career support." />
+    <meta name="keywords" content="data analytics, Excel training, Power BI, SQL, Nigeria, Enugu" />
     <meta name="author" content="Emmanuel Iheomamere" />
     
-    <link rel="icon" href="https://i.ibb.co/GvPZJc1D/Greach-Impact-Logo.jpg" type="image/jpeg" />
+    <link rel="icon" href="images/Greach Impact Logo (2).jpg" type="image/jpeg" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link rel="stylesheet" href="https://sibforms.com/forms/end-form/build/sib-styles.css">
     
     <style>
         :root {
@@ -44,21 +45,20 @@
         header { background: var(--navy); padding: 15px 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(10, 10, 94, 0.3); }
         .header-flex { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
 
-        .logo { display: flex; align-items: center; text-decoration: none; color: var(--white); font-size: 1.6rem; font-weight: 800; gap: 12px; flex-shrink: 0; position: relative; animation: floatLogo 3s ease-in-out infinite; }
-        @keyframes floatLogo { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
-        .logo:hover { animation: none; transform: scale(1.06); filter: drop-shadow(0 0 25px rgba(100, 199, 212, 0.5)); }
-        .logo img { height: 45px; width: auto; border-radius: 6px; transition: transform 0.3s ease, filter 0.3s ease; }
+        .logo { display: flex; align-items: center; text-decoration: none; color: var(--white); font-size: 1.6rem; font-weight: 800; gap: 12px; flex-shrink: 0; }
+        .logo img { height: 45px; width: auto; border-radius: 6px; }
         .logo .logo-text { transition: color 0.3s ease; }
-        .logo:hover .logo-text { color: var(--teal); }
         .logo .logo-text .teal { color: var(--teal); }
-        .logo:hover .logo-text .teal { color: var(--aqua); }
-        .logo::after { content: ''; position: absolute; top: -30%; left: -20%; width: 140%; height: 160%; background: radial-gradient(circle, rgba(100, 199, 212, 0.08) 0%, transparent 70%); opacity: 0; transition: opacity 0.6s ease; pointer-events: none; border-radius: 50%; z-index: -1; }
-        .logo:hover::after { opacity: 1; }
+
+        .hamburger { display: none; flex-direction: column; cursor: pointer; gap: 5px; background: transparent; border: none; }
+        .hamburger span { width: 28px; height: 3px; background: var(--white); border-radius: 3px; transition: all 0.3s ease; }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
 
         nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .hamburger { display: none !important; }
         nav a { text-decoration: none; color: var(--white); font-weight: 600; transition: color 0.2s; font-size: 0.9rem; padding: 5px 12px; white-space: nowrap; }
-        nav a:hover { color: var(--teal); }
+        nav a:hover, nav a.active { color: var(--teal); }
         .course-link { color: var(--teal) !important; font-weight: 700 !important; }
 
         .theme-toggle { background: transparent; border: 2px solid var(--teal); color: var(--teal); padding: 6px 14px; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; margin-left: 10px; flex-shrink: 0; }
@@ -70,43 +70,129 @@
         .btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: transparent; color: var(--white); padding: 14px 40px; border-radius: 50px; text-decoration: none; font-weight: 700; border: 2px solid var(--white); transition: background 0.3s, color 0.3s, transform 0.2s; cursor: pointer; text-align: center; white-space: nowrap; }
         .btn-secondary:hover { background: var(--white); color: var(--navy); transform: translateY(-2px); }
 
-        .hero { padding: 60px 0 40px; text-align: center; background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%); color: white; }
-        .hero h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: 15px; line-height: 1.25; max-width: 800px; margin-left: auto; margin-right: auto; }
-        .hero h1 .highlight { color: var(--teal); }
-        .hero .mission-statement { font-size: clamp(0.95rem, 1.3vw, 1.1rem); color: #E2E8F0; max-width: 700px; margin: 0 auto 12px; font-weight: 400; }
-        .hero p.location-tag { font-size: clamp(0.8rem, 1vw, 0.95rem); color: var(--teal); max-width: 700px; margin: 0 auto 20px; font-weight: 600; letter-spacing: 0.5px; }
-        .hero-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 5px; }
+        .btn-orange { background: #EA580C; color: white; box-shadow: 0 4px 20px rgba(234, 88, 12, 0.4); }
+        .btn-orange:hover { background: #c2410c; color: white; box-shadow: 0 8px 25px rgba(234, 88, 12, 0.5); }
 
-        /* ===== UPDATED CAROUSEL STYLES ===== */
-        .advert-carousel { max-width: 320px; margin: 15px auto 0; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25); border: 2px solid rgba(255, 255, 255, 0.08); position: relative; background: #0A0A5E; cursor: pointer; }
-        .advert-carousel .slide-track { display: flex; transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94); will-change: transform; }
-        .advert-carousel .slide { min-width: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 8px; color: white; position: relative; }
-        .advert-carousel .slide img { width: 100%; max-width: 304px; height: auto; border-radius: 8px; display: block; box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2); }
-        .carousel-nav-zone { position: absolute; top: 0; height: 100%; width: 35%; z-index: 3; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
-        .carousel-nav-zone:hover { opacity: 1; }
-        .carousel-nav-zone.left { left: 0; background: linear-gradient(to right, rgba(0,0,0,0.2), transparent); border-radius: 12px 0 0 12px; }
-        .carousel-nav-zone.right { right: 0; background: linear-gradient(to left, rgba(0,0,0,0.2), transparent); border-radius: 0 12px 12px 0; }
-        .carousel-nav-zone i { font-size: 1.5rem; color: rgba(255, 255, 255, 0.5); text-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: transform 0.3s; }
-        .carousel-nav-zone:hover i { transform: scale(1.3); color: rgba(255, 255, 255, 0.8); }
-        .carousel-indicators { display: flex; justify-content: center; gap: 5px; padding: 6px 0 4px; }
-        .carousel-indicators .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.3); transition: background 0.3s, transform 0.3s; cursor: pointer; }
-        .carousel-indicators .dot.active { background: var(--teal); transform: scale(1.3); }
-        .carousel-indicators .dot:hover { background: rgba(255, 255, 255, 0.6); }
-        .carousel-pause-badge { position: absolute; top: 8px; right: 8px; background: rgba(0, 0, 0, 0.5); color: white; padding: 2px 8px; border-radius: 50px; font-size: 0.5rem; font-weight: 600; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 5; }
-        .advert-carousel:hover .carousel-pause-badge { opacity: 1; }
-        @media (max-width: 768px) { .advert-carousel { max-width: 280px; } .advert-carousel .slide img { max-width: 264px; } .hero { padding: 40px 0 30px; } .hero h1 { font-size: 1.8rem; } .hero .mission-statement { font-size: 0.9rem; } .hero-buttons .btn-primary, .hero-buttons .btn-secondary { font-size: 0.8rem; padding: 10px 24px; } .carousel-nav-zone i { font-size: 1.2rem; } }
+        .btn-whatsapp-channel {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #075E54;
+            color: white;
+            padding: 14px 32px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .btn-whatsapp-channel:hover { background: #064A42; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(7, 94, 84, 0.4); }
+        .btn-whatsapp-channel i { font-size: 1.2rem; }
+
+        .btn-whatsapp-chat {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #25D366;
+            color: white;
+            padding: 14px 32px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .btn-whatsapp-chat:hover { background: #1DA851; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4); }
+        .btn-whatsapp-chat i { font-size: 1.2rem; }
+
+        .sticky-course-banner { background: linear-gradient(135deg, #EA580C 0%, #c2410c 100%); color: white; text-align: center; padding: 12px 20px; font-weight: 700; font-size: clamp(0.85rem, 1.2vw, 1.1rem); position: sticky; top: 0; z-index: 1001; box-shadow: 0 2px 10px rgba(234, 88, 12, 0.3); border-bottom: 3px solid #FFD700; }
+        .banner-flex { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .sticky-course-banner a { background: white; color: #c2410c; padding: 6px 20px; border-radius: 50px; text-decoration: none; font-weight: 800; font-size: 0.85rem; transition: transform 0.2s, box-shadow 0.2s; display: inline-block; white-space: nowrap; }
+        .sticky-course-banner a:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+
+        .hero { padding: 80px 0 60px; background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%); color: white; position: relative; overflow: hidden; }
+        .hero .container { position: relative; z-index: 2; }
+        .hero h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 900; margin-bottom: 20px; line-height: 1.15; max-width: 800px; }
+        .hero h1 .highlight { color: var(--teal); }
+        .hero .subtitle { font-size: clamp(1rem, 1.3vw, 1.25rem); color: #E2E8F0; max-width: 650px; margin-bottom: 30px; font-weight: 300; line-height: 1.7; }
+        .hero .trust-badge { display: flex; gap: 30px; flex-wrap: wrap; margin-bottom: 30px; }
+        .hero .trust-badge span { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: #CBD5E1; }
+        .hero .trust-badge i { color: var(--teal); }
+        .hero-buttons { display: flex; gap: 15px; flex-wrap: wrap; }
+        .hero-whatsapp { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
 
         .section-title { text-align: center; font-size: clamp(1.8rem, 3.5vw, 2.4rem); font-weight: 800; margin-bottom: 15px; color: var(--text); }
         .section-title span { color: var(--teal); }
         .section-sub { text-align: center; color: var(--text); opacity: 0.7; max-width: 700px; margin: 0 auto 40px; font-size: clamp(0.95rem, 1.2vw, 1.1rem); }
+
+        .featured-courses { padding: 80px 0; background: var(--bg); }
+        .course-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .course-card { background: var(--card-bg); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; }
+        .course-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px var(--shadow); }
+        .course-card .course-header { padding: 25px 25px 15px; background: var(--navy); color: white; position: relative; }
+        .course-card .course-header .badge { position: absolute; top: 15px; right: 20px; padding: 3px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .course-card .course-header .badge.enrolling { background: #EA580C; }
+        .course-card .course-header .badge.early { background: #F59E0B; }
+        .course-card .course-header .badge.soon { background: #6B7280; }
+        .course-card .course-header i { font-size: 2rem; color: var(--teal); margin-bottom: 8px; }
+        .course-card .course-header h3 { font-size: 1.2rem; font-weight: 700; }
+        .course-card .course-header .level { font-size: 0.8rem; opacity: 0.7; margin-top: 4px; }
+        .course-card .course-body { padding: 20px 25px 25px; flex-grow: 1; display: flex; flex-direction: column; }
+        .course-card .course-body p { color: var(--text); opacity: 0.8; font-size: 0.95rem; margin-bottom: 15px; flex-grow: 1; }
+        .course-card .course-meta { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 12px; font-size: 0.85rem; color: var(--text); opacity: 0.6; }
+        .course-card .course-meta i { color: var(--teal); width: 18px; }
+        .course-card .course-price { font-size: 1.4rem; font-weight: 800; color: var(--text); margin: 5px 0 15px; }
+        .course-card .course-price small { font-size: 0.9rem; font-weight: 400; opacity: 0.6; }
+        .course-card .course-price .early-price { display: block; font-size: 1rem; color: #EA580C; font-weight: 700; }
+        .course-card .btn-primary { width: 100%; justify-content: center; }
+        .course-card .btn-primary.disabled { background: #94A3B8; cursor: not-allowed; opacity: 0.6; }
+        .course-card .btn-primary.disabled:hover { transform: none; box-shadow: none; }
+
+        .learning-journey { padding: 80px 0; background: var(--card-bg); }
+        .journey-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto; }
+        .journey-step { text-align: center; padding: 25px 15px; background: var(--bg); border-radius: 12px; border: 1px solid var(--border); position: relative; transition: transform 0.3s; }
+        .journey-step:hover { transform: translateY(-4px); }
+        .journey-step .step-number { background: var(--teal); color: var(--navy); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; margin: 0 auto 12px; }
+        .journey-step h4 { font-size: 1rem; color: var(--text); margin-bottom: 4px; }
+        .journey-step p { font-size: 0.85rem; opacity: 0.7; color: var(--text); }
+
+        .why-us { padding: 80px 0; background: var(--bg); }
+        .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; }
+        .why-item { text-align: center; padding: 30px 20px; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); transition: transform 0.3s, border-color 0.3s; }
+        .why-item:hover { transform: translateY(-4px); border-color: var(--teal); }
+        .why-item i { font-size: 2.2rem; color: var(--teal); margin-bottom: 15px; }
+        .why-item h4 { font-size: 1.1rem; color: var(--text); margin-bottom: 8px; }
+        .why-item p { font-size: 0.92rem; opacity: 0.7; color: var(--text); }
+
+        .stats { padding: 60px 0; background: var(--navy); color: white; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 30px; text-align: center; }
+        .stat-item .number { font-size: clamp(2.5rem, 4vw, 3.5rem); font-weight: 900; color: var(--teal); line-height: 1.1; }
+        .stat-item .label { font-size: 1rem; opacity: 0.8; margin-top: 5px; }
+
+        .testimonials { padding: 80px 0; background: var(--card-bg); }
+        .testimonial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .testimonial-card { background: var(--bg); padding: 30px; border-radius: 16px; border: 1px solid var(--border); }
+        .testimonial-card .quote { font-style: italic; color: var(--text); opacity: 0.85; margin-bottom: 15px; line-height: 1.7; }
+        .testimonial-card .person { font-weight: 700; color: var(--text); }
+        .testimonial-card .role { font-size: 0.85rem; color: var(--teal); }
 
         .about { padding: 90px 0; background: var(--bg); }
         .about-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 50px; align-items: center; }
         .about-text h2 { font-size: clamp(1.8rem, 3vw, 2.2rem); margin-bottom: 20px; color: var(--text); }
         .about-text h2 span { color: var(--teal); }
         .about-text p { color: var(--text); opacity: 0.85; margin-bottom: 20px; font-size: 1.05rem; }
-        .about-image { background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%); border-radius: 20px; padding: 60px 40px; min-height: 320px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; box-shadow: 0 15px 35px var(--shadow); position: relative; overflow: hidden; }
-        .about-image::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(100,199,212,0.1) 0%, transparent 60%); pointer-events: none; }
+        .about-image { position: relative; border-radius: 20px; min-height: 320px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; box-shadow: 0 15px 35px var(--shadow); overflow: hidden; background: var(--navy); }
+        .about-image img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; opacity: 0.25; }
+        .about-image::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(10, 10, 94, 0.8), transparent); z-index: 2; }
+        .about-image .content { position: relative; z-index: 3; padding: 20px; }
         .about-image i { font-size: clamp(3rem, 5vw, 4rem); color: var(--teal); margin-bottom: 20px; }
         .about-image h3 { font-size: clamp(1.3rem, 2vw, 1.6rem); margin-bottom: 12px; font-weight: 700; }
         .about-image p { opacity: 0.9; max-width: 400px; font-size: 0.98rem; line-height: 1.6; }
@@ -128,13 +214,6 @@
         .impact-item:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.05); }
         .impact-item .number { font-size: clamp(2.4rem, 4.5vw, 3.4rem); font-weight: 800; color: var(--teal); line-height: 1.1; }
         .impact-item .label { font-size: clamp(0.95rem, 1.2vw, 1.1rem); opacity: 0.9; margin-top: 8px; font-weight: 500; }
-
-        .stories { padding: 90px 0; background: var(--bg); }
-        .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .story-card { background: var(--card-bg); padding: 40px; border-radius: 16px; border-top: 4px solid var(--teal); box-shadow: 0 4px 20px var(--shadow); display: flex; flex-direction: column; justify-content: space-between; }
-        .story-card .quote { font-style: italic; color: var(--text); margin-bottom: 25px; font-size: 1rem; line-height: 1.7; position: relative; }
-        .story-card .person { font-weight: 700; color: var(--text); font-size: 1.05rem; }
-        .story-card .role { color: var(--teal); font-weight: 600; font-size: 0.88rem; }
 
         .team { padding: 90px 0; background: var(--card-bg); }
         .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
@@ -173,18 +252,21 @@
         .contact-form textarea { height: 130px; resize: vertical; }
         .contact-form .btn-primary { width: 100%; }
 
-        .newsletter { padding: 70px 0; background: var(--navy); color: white; text-align: center; }
-        .newsletter h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 10px; font-weight: 800; }
-        .newsletter p { opacity: 0.85; margin-bottom: 30px; font-size: 1.1rem; }
-        .newsletter-form { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; max-width: 580px; margin: 0 auto; }
-        .newsletter-form input { flex: 1; padding: 16px 25px; border: none; border-radius: 50px; font-size: 1rem; min-width: 260px; }
-        .newsletter-form button { background: var(--teal); color: var(--navy); padding: 16px 40px; border: none; border-radius: 50px; font-weight: 700; cursor: pointer; transition: background 0.3s, transform 0.2s; }
-        .newsletter-form button:hover { background: var(--aqua); transform: scale(1.02); }
-
-        .sticky-course-banner { background: linear-gradient(135deg, #EA580C 0%, #c2410c 100%); color: white; text-align: center; padding: 10px 20px; font-weight: 700; font-size: clamp(0.8rem, 1vw, 1rem); position: sticky; top: 0; z-index: 1001; box-shadow: 0 2px 10px rgba(234, 88, 12, 0.3); border-bottom: 3px solid #FFD700; }
-        .sticky-course-banner .banner-flex { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; max-width: 1200px; margin: 0 auto; }
-        .sticky-course-banner a { background: white; color: #c2410c; padding: 5px 18px; border-radius: 50px; text-decoration: none; font-weight: 800; font-size: 0.8rem; transition: transform 0.2s, box-shadow 0.2s; display: inline-block; white-space: nowrap; }
-        .sticky-course-banner a:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .newsletter { padding: 80px 0; background: var(--navy); color: white; text-align: center; }
+        .newsletter h2 { font-size: clamp(1.8rem, 3vw, 2.4rem); margin-bottom: 10px; font-weight: 800; }
+        .newsletter .section-desc { opacity: 0.85; margin: 0 auto 40px; font-size: 1.1rem; max-width: 600px; }
+        .newsletter-form-container { max-width: 500px; margin: 0 auto; background: rgba(255, 255, 255, 0.05); padding: 30px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .newsletter-form-container label { display: block; text-align: left; font-weight: 700; font-size: 0.95rem; color: white; margin-bottom: 8px; }
+        .newsletter-form-container input[type="email"] { width: 100%; padding: 16px 20px; border-radius: 50px; border: none; font-size: 1rem; font-family: inherit; margin-bottom: 20px; background: white; color: #0F172A; outline: 2px solid transparent; transition: outline 0.3s; }
+        .newsletter-form-container input[type="email"]:focus { outline: 2px solid var(--teal); }
+        .newsletter-form-container button { width: 100%; padding: 16px; border-radius: 50px; border: none; background: var(--teal); color: var(--navy); font-weight: 700; font-size: 1rem; cursor: pointer; transition: background 0.3s, transform 0.2s; font-family: inherit; }
+        .newsletter-form-container button:hover { background: var(--aqua); transform: scale(1.02); }
+        .newsletter-form-container .privacy-note { margin-top: 15px; font-size: 0.8rem; opacity: 0.6; text-align: center; }
+        .newsletter-status { margin-top: 16px; min-height: 24px; font-size: 0.95rem; font-weight: 600; color: #E2E8F0; padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.08); display: none; }
+        .newsletter-status.visible { display: block; }
+        .newsletter-status.success { color: #A7F3D0; background: rgba(10, 94, 94, 0.2); border-color: rgba(167, 243, 208, 0.35); }
+        .newsletter-status.error { color: #FECACA; background: rgba(127, 29, 29, 0.2); border-color: rgba(254, 202, 202, 0.35); }
+        .sib-form-message-panel { display: none !important; }
 
         footer { background: var(--navy); color: #94A3B8; text-align: center; padding: 50px 0; border-top: 1px solid rgba(255, 255, 255, 0.05); }
         footer a { color: var(--teal); text-decoration: none; font-weight: 600; }
@@ -192,15 +274,99 @@
         footer .socials a { color: #94A3B8; margin: 0 14px; font-size: 1.4rem; transition: color 0.2s, transform 0.2s; display: inline-block; }
         footer .socials a:hover { color: var(--teal); transform: translateY(-3px); }
 
-        .whatsapp-float { position: fixed; bottom: 30px; right: 25px; background: #25d366; color: white; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; text-decoration: none; box-shadow: 0 6px 25px rgba(37, 211, 102, 0.4); transition: transform 0.3s; z-index: 999; }
-        .whatsapp-float:hover { transform: scale(1.1); }
+        .whatsapp-float-group {
+            position: fixed;
+            bottom: 30px;
+            right: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 999;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .whatsapp-float-group.hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+        }
+        .whatsapp-float-group a {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            color: white;
+        }
+        .whatsapp-float-group a:hover { transform: scale(1.1); }
+        .whatsapp-float-group .chat {
+            background: #25D366;
+            box-shadow: 0 6px 25px rgba(37, 211, 102, 0.4);
+        }
+        .whatsapp-float-group .chat:hover { box-shadow: 0 8px 35px rgba(37, 211, 102, 0.6); }
+        .whatsapp-float-group .channel {
+            background: #075E54;
+            box-shadow: 0 6px 25px rgba(7, 94, 84, 0.4);
+            font-size: 1.4rem;
+        }
+        .whatsapp-float-group .channel:hover { box-shadow: 0 8px 35px rgba(7, 94, 84, 0.6); }
 
-        .hamburger { display: none !important; }
+        section[id] { scroll-margin-top: 100px; }
 
-        @media (max-width: 992px) { .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 50px; } .about-image { min-height: 250px; padding: 40px; } .sticky-course-banner .banner-flex { flex-direction: column; gap: 8px; } }
-        @media (max-width: 768px) { .header-flex { flex-direction: column; gap: 15px; } nav { flex-wrap: wrap; justify-content: center; } nav a { font-size: 0.8rem; padding: 4px 10px; } .hero-buttons { flex-direction: column; align-items: center; } .hero-buttons .btn-primary, .hero-buttons .btn-secondary { width: 100%; max-width: 350px; } .impact-grid, .team-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; } .newsletter-form { flex-direction: column; } .newsletter-form input, .newsletter-form button { width: 100%; } .team-card .avatar { width: 100px; height: 100px; } }
-        @media (max-width: 480px) { .hero h1 { font-size: 2rem; } .impact-grid, .team-grid { grid-template-columns: 1fr; gap: 15px; } .team-card .avatar { width: 120px; height: 120px; } nav a { font-size: 0.7rem; padding: 3px 6px; } .theme-toggle { font-size: 0.7rem; padding: 4px 10px; } }
+        @media (max-width: 992px) { .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 50px; } }
+        @media (max-width: 768px) {
+            .header-flex { flex-direction: column; gap: 15px; }
+            .hamburger { display: flex; }
+            nav { display: none; width: 100%; flex-direction: column; align-items: flex-start; padding: 10px 0 4px; gap: 6px; }
+            nav.open { display: flex; }
+            nav a, .theme-toggle { width: 100%; justify-content: center; text-align: center; }
+            .theme-toggle { margin-left: 0; }
+            .hero { padding: 50px 0 40px; }
+            .hero h1 { font-size: 2rem; }
+            .hero-buttons { flex-direction: column; align-items: center; }
+            .hero-buttons .btn-primary, .hero-buttons .btn-secondary { width: 100%; max-width: 350px; justify-content: center; }
+            .hero-whatsapp { flex-direction: column; align-items: center; }
+            .hero-whatsapp .btn-whatsapp-channel,
+            .hero-whatsapp .btn-whatsapp-chat { width: 100%; max-width: 350px; justify-content: center; }
+            .sticky-course-banner .banner-flex { justify-content: center; }
+            .sticky-course-banner a { width: 100%; }
+            .course-grid { grid-template-columns: 1fr; }
+            .journey-steps { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .impact-grid, .team-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+            .team-card .avatar { width: 100px; height: 100px; }
+            .whatsapp-float-group { bottom: 20px; right: 15px; }
+            .whatsapp-float-group a { width: 48px; height: 48px; font-size: 1.6rem; }
+            .whatsapp-float-group .channel { font-size: 1.2rem; }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 1.8rem; }
+            .journey-steps { grid-template-columns: 1fr; }
+            .impact-grid, .team-grid { grid-template-columns: 1fr; gap: 15px; }
+            .team-card .avatar { width: 120px; height: 120px; }
+            nav a { font-size: 0.7rem; padding: 3px 6px; }
+            .theme-toggle { font-size: 0.7rem; padding: 4px 10px; }
+            .whatsapp-float-group { bottom: 15px; right: 10px; }
+            .whatsapp-float-group a { width: 44px; height: 44px; font-size: 1.4rem; }
+            .whatsapp-float-group .channel { font-size: 1rem; }
+        }
     </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style id="greach-brand-font-rules">
+  body, input, button, select, textarea {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  }
+  h1, h2, h3, h4, .brand-title, .hero-title, .platform-brand-text h1, .stat-val {
+    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  }
+</style>
+
 </head>
 <body>
 
@@ -226,88 +392,341 @@
     <header>
         <div class="container header-flex">
             <a href="index.html" class="logo">
-                <img src="https://i.ibb.co/GvPZJc1D/Greach-Impact-Logo.jpg" alt="Greach Impact Logo" />
+                <img src="images/Greach Impact Logo (2).jpg" alt="Greach Impact Logo" />
                 <span class="logo-text">Greach<span class="teal">Impact</span></span>
             </a>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
             <nav id="navMenu">
-                <a href="index.html">Home</a>
+                <a href="index.html" class="active">Home</a>
+                <a href="#courses">Courses</a>
+                <a href="#why-us">Why Us</a>
                 <a href="#about">About</a>
-                <a href="#focus">What We Do</a>
-                <a href="#impact">Impact</a>
-                <a href="#stories">Stories</a>
-                <a href="#team">Team</a>
                 <a href="training.html" class="course-link">Training</a>
-                <a href="#blog-section">Blog</a>
+                <a href="portfolio.html">Portfolio</a>  <!-- NEW -->
+                <a href="blog.html">Blog</a>
                 <a href="#contact">Contact</a>
+                <a href="classroom/index.html" style="background:#107c41; color:white !important; padding:6px 16px; border-radius:50px; font-weight:700; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 8px rgba(16,124,65,0.3); margin-left:6px;"><i class="fas fa-graduation-cap"></i> Classroom</a>
+                <a href="admin.html" style="background:rgba(245,158,11,0.15); color:#F59E0B !important; border:1.5px solid #F59E0B; padding:5px 14px; border-radius:50px; font-weight:700; display:inline-flex; align-items:center; gap:6px; margin-left:6px; text-decoration:none;" title="Super Admin &amp; Instructor Portal"><i class="fas fa-user-shield"></i> Admin</a>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </nav>
+             <i class="fas fa-moon"></i>
+        </button>
+</nav>
         </div>
     </header>
 
     <!-- ===== HERO ===== -->
-    <section class="hero">
+    <section class="hero" id="heroSection">
         <div class="container">
-            <h1>Empowering People with <span class="highlight">Data Skills</span> and Technology</h1>
-            <p class="mission-statement">We turn complex data and technology into practical tools — helping individuals, professionals, and organizations across Nigeria grow sustainably.</p>
-            <p class="location-tag"><i class="fas fa-map-marker-alt"></i> Based in Enugu, Nigeria</p>
-            <div class="hero-buttons">
-                <a href="#contact" class="btn-primary"><i class="fas fa-handshake"></i> Partner With Us</a>
-                <a href="#focus" class="btn-secondary">Explore What We Do <i class="fas fa-arrow-right"></i></a>
+            <h1>Learn Data Skills That Help You <span class="highlight">Get Hired</span>, Grow Your Career & Make Better Decisions</h1>
+            <p class="subtitle">Practical, hands-on training in Excel, Power BI, and SQL. Learn from industry professionals with live Zoom classes, certificates, and career support.</p>
+            <div class="trust-badge">
+                <span><i class="fas fa-check-circle"></i> 4 Weeks Live Training</span>
+                <span><i class="fas fa-check-circle"></i> Certificate Included</span>
+                <span><i class="fas fa-check-circle"></i> Lifetime Access</span>
+                <span><i class="fas fa-check-circle"></i> Career Support</span>
             </div>
+            <div class="hero-buttons">
+                <a href="#courses" class="btn-primary"><i class="fas fa-rocket"></i> Start Learning</a>
+                <a href="training.html" class="btn-secondary"><i class="fas fa-arrow-right"></i> Browse Courses</a>
+            </div>
+            <!-- ===== WHATSAPP HERO BUTTONS ===== -->
+            <div class="hero-whatsapp" id="whatsappHero">
+                <a href="https://whatsapp.com/channel/0029Vb7lvfQ4CrflFG0Sce0F" 
+                   target="_blank" rel="noopener noreferrer" 
+                   class="btn-whatsapp-channel">
+                    <i class="fab fa-whatsapp"></i> Join Our WhatsApp Channel
+                </a>
+                <a href="https://wa.me/2349072250869?text=Hello%20Greach%20Impact!%20I'd%20like%20to%20learn%20more." 
+                   target="_blank" rel="noopener noreferrer" 
+                   class="btn-whatsapp-chat">
+                    <i class="fab fa-whatsapp"></i> Chat with Founder
+                </a>
+            </div>
+        </div>
+    </section>
 
-            <!-- ===== UPDATED IMAGE ADVERT CAROUSEL ===== -->
-            <div class="advert-carousel" id="advertCarousel" onclick="window.location.href='training.html'">
-                <div class="carousel-pause-badge">⏸️</div>
-                <div class="carousel-nav-zone left" id="navLeft">
-                    <i class="fas fa-chevron-left"></i>
-                </div>
-                <div class="carousel-nav-zone right" id="navRight">
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-                <div class="slide-track" id="slideTrack">
-                    
-                    <!-- Slide 1: Your First New Picture -->
-                    <div class="slide" data-slide="0">
-                        <!-- ⚠️ RENAME 'your-photo-1.jpg' TO YOUR ACTUAL FILENAME -->
-                        <img src="Excel Advance flyer.jpg" alt="Excel Training Promo 1" />
+    <!-- ===== FEATURED COURSES ===== -->
+    <section class="featured-courses" id="courses">
+        <div class="container">
+            <h2 class="section-title">Featured <span>Courses</span></h2>
+            <p class="section-sub">Choose from our practical, hands-on training programs designed to build real-world skills.</p>
+            <div class="course-grid">
+                
+                <!-- Course 1: Excel Beginners -->
+                <div class="course-card">
+                    <div class="course-header">
+                        <span class="badge enrolling">Enrolling Now</span>
+                        <i class="fas fa-file-excel"></i>
+                        <h3>Excel for Beginners</h3>
+                        <div class="level">Beginner</div>
                     </div>
-
-                    <!-- Slide 2: Your Second New Picture -->
-                    <div class="slide" data-slide="1">
-                        <!-- ⚠️ RENAME 'your-photo-2.jpg' TO YOUR ACTUAL FILENAME -->
-                        <img src="Power BI batch 1 Flyer.png" alt="Excel Training Promo 2" />
+                    <div class="course-body">
+                        <p>Master Excel from the ground up. Learn formulas, Pivot Tables, data cleaning, and dashboard creation.</p>
+                        <div class="course-meta">
+                            <span><i class="fas fa-calendar-alt"></i> 4 Weeks</span>
+                            <span><i class="fas fa-video"></i> Fri & Sat</span>
+                        </div>
+                        <div class="course-price">
+                            <del style="color:#94a3b8; font-size:1rem; text-decoration:line-through;">₦10,000</del> <span style="color:#107c41; font-weight:800; font-size:1.5rem;">₦3,000</span> <span style="background:#ea580c; color:white; font-size:0.7rem; font-weight:800; padding:2px 8px; border-radius:20px; vertical-align:middle;">70% OFF</span>
+                            <span class="early-price" style="color:#107c41; font-weight:700;">Special Price: ₦3,000</span>
+                        </div>
+                        <a href="excel-beginners.html" class="btn-primary"><i class="fas fa-arrow-right"></i> Learn More</a>
                     </div>
-
                 </div>
-                <div class="carousel-indicators" id="indicators">
-                    <span class="dot active" data-index="0"></span>
-                    <span class="dot" data-index="1"></span>
+
+                <!-- Course 2: Excel Dashboard for Beginners -->
+                <div class="course-card">
+                    <div class="course-header" style="background: linear-gradient(135deg, #1a1a5e 0%, #3A4574 100%); border-bottom: 4px solid #F59E0B;">
+                        <span class="badge enrolling" style="background: #F59E0B;">New Course!</span>
+                        <i class="fas fa-chart-pie" style="color: #F59E0B;"></i>
+                        <h3>Excel Dashboard for Beginners</h3>
+                        <div class="level">Beginner</div>
+                    </div>
+                    <div class="course-body">
+                        <p>Turn raw Excel data into clear, interactive, and professional dashboards—even if you've never built one before.</p>
+                        <div class="course-meta">
+                            <span><i class="fas fa-calendar-alt"></i> 4 Weeks</span>
+                            <span><i class="fas fa-video"></i> Mon & Tue</span>
+                        </div>
+                        <div class="course-price">
+                            <del style="color:#94a3b8; font-size:1rem; text-decoration:line-through;">₦80,000</del> <span style="color:#107c41; font-weight:800; font-size:1.5rem;">₦40,000</span> <span style="background:#ea580c; color:white; font-size:0.7rem; font-weight:800; padding:2px 8px; border-radius:20px; vertical-align:middle;">50% OFF</span>
+                            <span class="early-price" style="color:#107c41; font-weight:700;">Executive Dashboard: ₦40,000</span>
+                        </div>
+                        <a href="excel-dashboard-beginners.html" class="btn-primary" style="background: #F59E0B; color: var(--navy);"><i class="fas fa-arrow-right"></i> Learn More</a>
+                    </div>
+                </div>
+
+                <!-- Course 3: Excel Advanced -->
+                <div class="course-card">
+                    <div class="course-header">
+                        <span class="badge enrolling">Enrolling Now</span>
+                        <i class="fas fa-file-excel"></i>
+                        <h3>Excel Advanced</h3>
+                        <div class="level">Intermediate – Advanced</div>
+                    </div>
+                    <div class="course-body">
+                        <p>Master advanced formulas, Power Query, VBA, complex dashboards, and automation.</p>
+                        <div class="course-meta">
+                            <span><i class="fas fa-calendar-alt"></i> 4 Weeks</span>
+                            <span><i class="fas fa-video"></i> Fri & Sat</span>
+                        </div>
+                        <div class="course-price">
+                            <del style="color:#94a3b8; font-size:1rem; text-decoration:line-through;">₦20,000</del> <span style="color:#107c41; font-weight:800; font-size:1.5rem;">₦4,000</span> <span style="background:#ea580c; color:white; font-size:0.7rem; font-weight:800; padding:2px 8px; border-radius:20px; vertical-align:middle;">80% OFF</span>
+                            <span class="early-price" style="color:#107c41; font-weight:700;">Special Price: ₦4,000</span>
+                        </div>
+                        <a href="excel-advanced.html" class="btn-primary"><i class="fas fa-arrow-right"></i> Learn More</a>
+                    </div>
+                </div>
+
+                <!-- Course 4: Power BI for Beginners -->
+                <div class="course-card">
+                    <div class="course-header">
+                        <span class="badge enrolling">Enrolling Now</span>
+                        <i class="fas fa-chart-pie"></i>
+                        <h3>Power BI for Beginners</h3>
+                        <div class="level">Beginner – Intermediate</div>
+                    </div>
+                    <div class="course-body">
+                        <p>Turn raw data into interactive dashboards. Learn data modeling, DAX, and visualization. <strong>Starts November 17</strong></p>
+                        <div class="course-meta">
+                            <span><i class="fas fa-calendar-alt"></i> 4 Weeks</span>
+                            <span><i class="fas fa-video"></i> Wed & Thu</span>
+                        </div>
+                        <div class="course-price">
+                            <del style="color:#94a3b8; font-size:1rem; text-decoration:line-through;">₦25,000</del> <span style="color:#107c41; font-weight:800; font-size:1.5rem;">₦22,500</span> <span style="background:#ea580c; color:white; font-size:0.7rem; font-weight:800; padding:2px 8px; border-radius:20px; vertical-align:middle;">10% OFF</span>
+                            <span class="early-price" style="color:#107c41; font-weight:700;">Early Bird: ₦22,500</span>
+                        </div>
+                        <a href="power-bi-beginners.html" class="btn-primary"><i class="fas fa-arrow-right"></i> Learn More</a>
+                    </div>
+                </div>
+
+                <!-- Course 5: SQL for Beginners -->
+                <div class="course-card">
+                    <div class="course-header">
+                        <span class="badge enrolling">Enrolling Now</span>
+                        <i class="fas fa-database"></i>
+                        <h3>SQL for Beginners</h3>
+                        <div class="level">Beginner – Intermediate</div>
+                    </div>
+                    <div class="course-body">
+                        <p>Learn to extract, clean, and analyze data using SQL. Master queries, joins, and aggregation. <strong>Starts Sept 14</strong></p>
+                        <div class="course-meta">
+                            <span><i class="fas fa-calendar-alt"></i> 4 Weeks</span>
+                            <span><i class="fas fa-video"></i> Mon & Tue</span>
+                        </div>
+                        <div class="course-price">
+                            <del style="color:#94a3b8; font-size:1rem; text-decoration:line-through;">₦25,000</del> <span style="color:#107c41; font-weight:800; font-size:1.5rem;">₦5,000</span> <span style="background:#ea580c; color:white; font-size:0.7rem; font-weight:800; padding:2px 8px; border-radius:20px; vertical-align:middle;">80% OFF</span>
+                            <span class="early-price" style="color:#107c41; font-weight:700;">Special Price: ₦5,000</span>
+                        </div>
+                        <a href="sql-beginners.html" class="btn-primary"><i class="fas fa-arrow-right"></i> Learn More</a>
+                    </div>
+                </div>
+
+            </div>
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="training.html" class="btn-primary" style="background: var(--teal); color: var(--navy);">
+                    <i class="fas fa-arrow-right"></i> View All Programs
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== LEARNING JOURNEY ===== -->
+    <section class="learning-journey">
+        <div class="container">
+            <h2 class="section-title">Your Learning <span>Journey</span></h2>
+            <p class="section-sub">From registration to certification – here's how it works.</p>
+            <div class="journey-steps">
+                <div class="journey-step">
+                    <div class="step-number">1</div>
+                    <h4>Choose Your Course</h4>
+                    <p>Pick the program that fits your goals</p>
+                </div>
+                <div class="journey-step">
+                    <div class="step-number">2</div>
+                    <h4>Register</h4>
+                    <p>Complete your registration form</p>
+                </div>
+                <div class="journey-step">
+                    <div class="step-number">3</div>
+                    <h4>Confirm Email</h4>
+                    <p>Verify your email address</p>
+                </div>
+                <div class="journey-step">
+                    <div class="step-number">4</div>
+                    <h4>Pay Securely</h4>
+                    <p>Complete your payment</p>
+                </div>
+                <div class="journey-step">
+                    <div class="step-number">5</div>
+                    <h4>Join Zoom Classes</h4>
+                    <p>Learn live with your instructor</p>
+                </div>
+                <div class="journey-step">
+                    <div class="step-number">6</div>
+                    <h4>Get Certified</h4>
+                    <p>Earn your certificate</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== REST OF SECTIONS (About, Focus, Impact, Stories, Team, Blog, Newsletter, Contact, Footer) ===== -->
+    <!-- ===== WHY GREACH IMPACT ===== -->
+    <section class="why-us" id="why-us">
+        <div class="container">
+            <h2 class="section-title">Why <span>Greach Impact</span></h2>
+            <p class="section-sub">We're different. Here's why students and professionals choose us.</p>
+            <div class="why-grid">
+                <div class="why-item">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <h4>Practical Learning</h4>
+                    <p>Learn by doing with real-world projects and datasets</p>
+                </div>
+                <div class="why-item">
+                    <i class="fas fa-video"></i>
+                    <h4>Live Zoom Sessions</h4>
+                    <p>Interactive classes with your instructor in real-time</p>
+                </div>
+                <div class="why-item">
+                    <i class="fas fa-infinity"></i>
+                    <h4>Lifetime Access</h4>
+                    <p>Revisit course materials and recordings anytime</p>
+                </div>
+                <div class="why-item">
+                    <i class="fas fa-download"></i>
+                    <h4>Downloadable Recordings</h4>
+                    <p>Never miss a class – download and watch offline</p>
+                </div>
+                <div class="why-item">
+                    <i class="fas fa-certificate"></i>
+                    <h4>Certificates</h4>
+                    <p>Earn a certificate to showcase on your CV and LinkedIn</p>
+                </div>
+                <div class="why-item">
+                    <i class="fas fa-headset"></i>
+                    <h4>Ongoing Support</h4>
+                    <p>Get help even after the course ends</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== STATISTICS ===== -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="number" data-target="150">0</div>
+                    <div class="label">Students Trained</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number" data-target="1200">0</div>
+                    <div class="label">Training Hours</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number" data-target="85">0</div>
+                    <div class="label">Certificates Awarded</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number" data-target="5">0</div>
+                    <div class="label">Courses Offered</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== TESTIMONIALS ===== -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <h2 class="section-title">What Our Students <span>Say</span></h2>
+            <p class="section-sub">Real feedback from real students who took our courses.</p>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <p class="quote">"The custom Power BI dashboards completely changed how we track our business. Greach Impact has a real gift for turning complicated data problems into simple, clear tools."</p>
+                    <div class="person">Chidi Okonkwo</div>
+                    <div class="role">CEO, TechVentures NG</div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="quote">"My association with Greach Impact training school in just 4 weeks really turned many predicaments in Excel into a reality. It is so amazing."</p>
+                    <div class="person">Mrs A</div>
+                    <div class="role">Program Associate, Batch 1 Graduate</div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="quote">"Greach Impact took our messy, disorganized records and turned them into a clean, structured database. Our quarterly reports have never been easier to put together."</p>
+                    <div class="person">Tunde Balogun</div>
+                    <div class="role">COO, HealthTrack NG</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== ABOUT ===== -->
     <section class="about" id="about">
         <div class="container">
             <div class="about-grid">
                 <div class="about-text">
                     <h2>Who We <span>Are</span></h2>
-                    <p><strong>Greach Impact</strong> was founded in 2025 by <strong>Emmanuel Iheomamere</strong> on a simple belief: giving people practical data skills and digital tools can change communities and businesses for the better.</p>
+                    <p><strong>Greach Impact</strong> was founded in 2023 by <strong>Emmanuel Iheomamere</strong> on a simple belief: giving people practical data skills and digital tools can change communities and businesses for the better.</p>
                     <p>We focus on two areas: <strong>Data Analytics & Workforce Training</strong> and grassroots <strong>Community Development</strong>.</p>
                     <p>Based in <strong>Enugu, Nigeria</strong>, we believe in hands-on training, real field data, and honest accountability — so the results we report are results you can actually measure.</p>
                 </div>
                 <div class="about-image">
-                    <i class="fas fa-chart-bar"></i>
-                    <h3>Data. Training. Community.</h3>
-                    <p>Combining technical skill with real, on-the-ground understanding.</p>
+                    <img src="images/classroom-1.jpg" alt="Greach Impact classroom training" />
+                    <div class="content">
+                        <i class="fas fa-chart-bar"></i>
+                        <h3>Data. Training. Community.</h3>
+                        <p>Combining technical skill with real, on-the-ground understanding.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- ===== FOCUS ===== -->
     <section class="focus" id="focus">
         <div class="container">
             <h2 class="section-title">What We <span>Do</span></h2>
@@ -332,6 +751,7 @@
         </div>
     </section>
 
+    <!-- ===== IMPACT ===== -->
     <section class="impact" id="impact">
         <div class="container">
             <h2>Ready to <span>Partner</span></h2>
@@ -349,46 +769,26 @@
         </div>
     </section>
 
-    <section class="stories" id="stories">
-        <div class="container">
-            <h2 class="section-title">Real <span>Stories</span></h2>
-            <p class="section-sub">What people we've worked with have to say.</p>
-            <div class="story-grid">
-                <div class="story-card">
-                    <p class="quote">"The custom Power BI dashboards completely changed how we track our business. Emmanuel has a real gift for turning complicated data problems into simple, clear tools."</p>
-                    <div><div class="person">Chidi Okonkwo</div><div class="role">CEO, TechVentures NG</div></div>
-                </div>
-                <div class="story-card">
-                    <p class="quote">"In just 4 weeks, I went from basic manual spreadsheets to advanced formulas that completely changed how I work with data every day."</p>
-                    <div><div class="person">Ngozi Eze</div><div class="role">Data Associate, Batch 1 Graduate</div></div>
-                </div>
-                <div class="story-card">
-                    <p class="quote">"Greach Impact took our messy, disorganized records and turned them into a clean, structured database. Our quarterly reports have never been easier to put together."</p>
-                    <div><div class="person">Tunde Balogun</div><div class="role">COO, HealthTrack NG</div></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
+    <!-- ===== TEAM ===== -->
     <section class="team" id="team">
         <div class="container">
             <h2 class="section-title">Meet Our <span>Team</span></h2>
             <p class="section-sub">The people behind the work.</p>
             <div class="team-grid">
                 <div class="team-card">
-                    <div class="avatar"><img src="emmanuel.jpg" alt="Emmanuel Iheomamere" /></div>
+                    <div class="avatar"><img src="images/emmanuel.jpg" alt="Emmanuel Iheomamere" /></div>
                     <h4>Emmanuel Iheomamere</h4>
                     <p class="role-title">Founder & Lead Data Analyst</p>
                     <p class="bio">Emmanuel is a Data Analyst and Data Management professional with experience in data analytics, database management, business intelligence, and data quality. He founded Greach Impact to bridge the gap between data, technology, digital skills, and real-world impact across Nigeria.</p>
                 </div>
                 <div class="team-card">
-                    <div class="avatar"><img src="esther.jpg" alt="Esther Nnamani" /></div>
+                    <div class="avatar"><img src="images/Esther.jpg" alt="Esther Nnamani" /></div>
                     <h4>Esther Nnamani</h4>
                     <p class="role-title">HR & Operations Administration</p>
                     <p class="bio">Esther manages the day-to-day operations and people strategy at Greach Impact. She ensures smooth coordination of training programs and community initiatives.</p>
                 </div>
                 <div class="team-card">
-                    <div class="avatar"><img src="blessing.jpg" alt="Blessing" /></div>
+                    <div class="avatar"><img src="images/Blessing.jpg" alt="Blessing" /></div>
                     <h4>Blessing</h4>
                     <p class="role-title">Brand Strategy & Communications</p>
                     <p class="bio">Blessing leads brand development and communication strategy, helping Greach Impact tell its story and connect with partners, trainees, and communities across Nigeria.</p>
@@ -397,6 +797,7 @@
         </div>
     </section>
 
+    <!-- ===== BLOG SECTION ===== -->
     <section class="blog-section" id="blog-section">
         <div class="container">
             <h2 class="section-title">From the <span>Blog</span></h2>
@@ -404,21 +805,79 @@
             <div class="blog-grid" id="mainBlogFeed">
                 <p style="text-align: center; grid-column: 1 / -1;">Loading latest blog posts...</p>
             </div>
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="blog.html" class="btn-primary" style="background: transparent; color: var(--text); border: 2px solid var(--teal);">
+                    <i class="fas fa-arrow-right"></i> View All Articles
+                </a>
+            </div>
         </div>
     </section>
 
+    <!-- ===== NEWSLETTER ===== -->
     <section class="newsletter" id="newsletter">
         <div class="container">
             <h2>Stay Connected 📬</h2>
-            <p>Get updates on upcoming training dates and practical data tips every couple of weeks.</p>
-            <form class="newsletter-form" action="https://formspree.io/f/xgogoynj" method="POST">
-                <input type="email" name="email" placeholder="Enter your business email" required />
-                <button type="submit">Subscribe</button>
-            </form>
-            <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 12px;">No spam, ever. Unsubscribe anytime.</p>
+            <p class="section-desc">Get updates on upcoming training dates and practical data tips every couple of weeks. No spam, ever.</p>
+
+            <div class="newsletter-form-container">
+                <div class="sib-form" style="text-align:center; background-color:transparent;">
+                    <div id="sib-form-container" class="sib-form-container">
+                        <div id="error-message" class="sib-form-message-panel" style="display:none; font-family:Helvetica, sans-serif; font-size:16px; text-align:left; color:#661d1d; background-color:#ffeded; border-color:#ff4949; border-radius:3px; max-width:540px;">
+                            <div class="sib-form-message-panel__text sib-form-message-panel__text--center">
+                                <span class="sib-form-message-panel__inner-text">Your subscription could not be saved. Please try again.</span>
+                            </div>
+                        </div>
+                        <div id="success-message" class="sib-form-message-panel" style="display:none; font-family:Helvetica, sans-serif; font-size:16px; text-align:left; color:#085229; background-color:#e7faf0; border-color:#13ce66; border-radius:3px; max-width:540px;">
+                            <div class="sib-form-message-panel__text sib-form-message-panel__text--center">
+                                <span class="sib-form-message-panel__inner-text">You&#39;re subscribed! Welcome to the Greach Impact community.</span>
+                            </div>
+                        </div>
+                        <div id="sib-container" class="sib-container--large sib-container--vertical" style="max-width:540px; text-align:center; background-color:rgba(255,255,255,1); border-width:1px; border-style:solid; border-color:#C0CCD9; border-radius:3px; direction:ltr">
+                            <form id="sib-form" method="POST" action="https://85bbefaa.sibforms.com/serve/MUIFAEf_IcFfcAQrDoLdtNKOm3VPHp3kriS2MNERNkDLmThXzku7QLLuJt0X2701mHxLk0U3bDqLOhlqakdmuEqQjw8c3idS7HZQOBLd_OxXiyTY9vpjlMKuPlifars4momawD6jz2AUeCjGM_-XxPgZxn6R2ixnZlv3EXEozbkQdxxFyxMLR10VP3TxkUUYTLYEaDEmsY-pcEuXiw==" data-type="subscription" target="sibFormFrame" accept-charset="utf-8">
+                                <div style="padding: 8px 0;">
+                                    <div class="sib-form-block" style="font-family:Helvetica, sans-serif; font-size:28px; font-weight:700; text-align:left; color:#3C4858; background-color:transparent;">
+                                        <p>Newsletter</p>
+                                    </div>
+                                </div>
+                                <div style="padding: 8px 0;">
+                                    <div class="sib-form-block" style="font-family:Helvetica, sans-serif; font-size:16px; text-align:left; color:#3C4858; background-color:transparent;">
+                                        <div class="sib-text-form-block">
+                                            <p>Get updates on upcoming training dates and practical data tips every couple of weeks.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding: 8px 0;">
+                                    <div class="sib-input sib-form-block">
+                                        <div class="form__entry entry_block">
+                                            <div class="form__label-row ">
+                                                <label class="entry__label" style="font-weight:700; text-align:left; font-family:Helvetica, sans-serif; font-size:16px; color:#3c4858;" for="EMAIL" data-required="*">Enter your EMAIL</label>
+                                                <div class="entry__field">
+                                                    <input class="input" type="email" id="EMAIL" name="EMAIL" autocomplete="email" value="" placeholder="EMAIL" data-required="true" required />
+                                                </div>
+                                            </div>
+                                            <label class="entry__error entry__error--primary" style="font-family:Helvetica, sans-serif; font-size:16px; text-align:left; color:#661d1d; background-color:#ffeded; border-color:#ff4949; border-radius:3px;"></label>
+                                            <label class="entry__specification" style="font-family:Helvetica, sans-serif; font-size:12px; text-align:left; color:#8390A4;">Provide your email address to subscribe. For e.g abc@xyz.com</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding: 8px 0;">
+                                    <div class="sib-form-block" style="text-align:left">
+                                        <button class="sib-form-block__button sib-form-block__button-with-loader" style="font-family:Helvetica, sans-serif; font-size:16px; font-weight:700; text-align:left; color:#FFFFFF; background-color:#3E4857; border-width:0px; border-radius:3px;" form="sib-form" type="submit">SUBSCRIBE</button>
+                                    </div>
+                                </div>
+                                <input type="text" name="email_address_check" value="" class="input--hidden">
+                                <input type="hidden" name="locale" value="en">
+                            </form>
+                            <iframe id="sibFormFrame" name="sibFormFrame" style="display:none;"></iframe>
+                            <div id="newsletterStatus" class="newsletter-status" role="status" aria-live="polite"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
+    <!-- ===== CONTACT ===== -->
     <section class="contact" id="contact">
         <div class="container">
             <h2 class="section-title">Let's <span>Connect</span></h2>
@@ -427,8 +886,8 @@
                 <div class="contact-info">
                     <p><i class="fas fa-map-marker-alt"></i> Enugu, Nigeria</p>
                     <p><i class="fas fa-phone"></i> <a href="tel:+2349072250869">+234 907 225 0869</a></p>
-                    <p><i class="fas fa-envelope"></i> <a href="mailto:Greachimpact@gmail.com">Greachimpact@gmail.com</a></p>
-                    <p><i class="fas fa-clock"></i> Mon–Fri: 9am – 6pm WAT</p>
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:Greachimpact@gmail.com" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();">Greachimpact@gmail.com</a></p>
+                    <p><i class="fas fa-clock"></i> Fridays and Saturdays: 7:30pm WAT</p>
                     <div class="info-box">
                         <p><strong><i class="fas fa-flag" style="color: var(--teal);"></i> What We Offer</strong></p>
                         <p>📊 Data Analytics & Training</p>
@@ -438,12 +897,33 @@
                     <div class="info-box" style="margin-top: 15px; border-left-color: #EA580C;">
                         <p><strong><i class="fas fa-graduation-cap" style="color: #EA580C;"></i> Upcoming Training</strong></p>
                         <p><strong>Excel Beginners</strong> – Starts July 24</p>
+                        <p><strong>Excel Dashboard</strong> – Starts Sep 28 ⭐</p>
                         <p><strong>Excel Advanced</strong> – Starts Aug 28</p>
+                        <p><strong>Power BI</strong> – Starts November 17 (Wed & Thu)</p>
+                        <p><strong>SQL</strong> – Starts Sept 14 (Mon & Tue)</p>
                         <p style="font-size: 0.85rem; opacity: 0.7; margin-top: 5px;">Early bird pricing available</p>
+                    </div>
+                    <!-- ===== WHATSAPP CONTACT BOX ===== -->
+                    <div class="info-box" style="margin-top: 15px; border-left-color: #25D366;">
+                        <p><strong><i class="fab fa-whatsapp" style="color: #25D366;"></i> Connect on WhatsApp</strong></p>
+                        <p style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;">
+                            <a href="https://whatsapp.com/channel/0029Vb7lvfQ4CrflFG0Sce0F" 
+                               target="_blank" rel="noopener noreferrer" 
+                               style="background: #075E54; color: white; padding: 5px 16px; border-radius: 50px; text-decoration: none; font-size: 0.8rem; font-weight: 600; transition: background 0.3s;">
+                                <i class="fab fa-whatsapp"></i> Join Channel
+                            </a>
+                            <a href="https://wa.me/2349072250869?text=Hello%20Greach%20Impact!%20I'd%20like%20to%20learn%20more." 
+                               target="_blank" rel="noopener noreferrer" 
+                               style="background: #25D366; color: white; padding: 5px 16px; border-radius: 50px; text-decoration: none; font-size: 0.8rem; font-weight: 600; transition: background 0.3s;">
+                                <i class="fab fa-whatsapp"></i> Chat Now
+                            </a>
+                        </p>
                     </div>
                 </div>
                 <div class="contact-form">
-                    <form action="https://formspree.io/f/xgogoynj" method="POST">
+                    <form action="https://formspree.io/f/xgogoynj" method="POST" target="_blank" onsubmit="event.stopPropagation();">
+                        <input type="hidden" name="_next" value="/thank-you.html" />
+                        <input type="hidden" name="_captcha" value="true" />
                         <input type="text" name="name" placeholder="Your Full Name *" required />
                         <input type="email" name="email" placeholder="Your Email Address *" required />
                         <input type="tel" name="phone" placeholder="Your Phone Number *" required />
@@ -451,7 +931,10 @@
                         <select name="interest" required>
                             <option value="" disabled selected>What are you interested in? *</option>
                             <option value="excel-beginners">Excel Beginners Course – Batch 2</option>
+                            <option value="excel-dashboard">Excel Dashboard for Beginners – Starts Sep 28 ⭐</option>
                             <option value="excel-advanced">Excel Advanced Course</option>
+                            <option value="power-bi">Power BI for Beginners – Starts November 17</option>
+                            <option value="sql">SQL for Beginners – Starts Sept 14</option>
                             <option value="consulting">Consulting & Advisory Services</option>
                             <option value="community">Community Development Partnership</option>
                             <option value="partnership">General Partnership Inquiry</option>
@@ -476,30 +959,55 @@
         </div>
     </section>
 
+    <!-- ===== FOOTER ===== -->
     <footer>
         <div class="container">
             <p>&copy; 2026 <a href="index.html">Greach Impact</a> — Data. Training. Community.</p>
             <p style="font-size: 0.85rem; opacity: 0.6; margin-top: 5px;">Proudly based in Enugu, Nigeria</p>
+            <div style="margin-top: 12px;">
+                <a href="admin.html" style="color: #F59E0B; text-decoration: none; font-size: 0.88rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 6px; background: rgba(245, 158, 11, 0.08); transition: all 0.2s ease;">
+                    <i class="fas fa-lock"></i> Instructor &amp; Admin Console &rarr;
+                </a>
+            </div>
             <div class="socials">
-                <a href="https://www.linkedin.com/in/emmanuel-iheomamere/" target="_blank" rel="noopener"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.linkedin.com/in/emmanuel-iheomamere/" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+                <a href="https://whatsapp.com/channel/0029Vb7lvfQ4CrflFG0Sce0F" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://wa.me/2349072250869?text=Hello%20Greach%20Impact!%20I'd%20like%20to%20learn%20more." target="_blank" rel="noopener noreferrer"><i class="fas fa-comment-dots" style="color: #25D366;"></i></a>
             </div>
         </div>
     </footer>
 
-    <a href="https://wa.me/2349072250869?text=Hello%20Greach%20Impact!%20I'd%20like%20to%20learn%20more." class="whatsapp-float" target="_blank" rel="noopener">
-        <i class="fab fa-whatsapp"></i>
-    </a>
+    <!-- ===== FLOATING WHATSAPP ICONS ===== -->
+    <div class="whatsapp-float-group" id="whatsappFloat">
+        <!-- Chat Button -->
+        <a href="https://wa.me/2349072250869?text=Hello%20Greach%20Impact!%20I'd%20like%20to%20learn%20more." 
+           target="_blank" rel="noopener noreferrer" 
+           class="chat"
+           aria-label="Chat on WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+        <!-- Channel Button -->
+        <a href="https://whatsapp.com/channel/0029Vb7lvfQ4CrflFG0Sce0F" 
+           target="_blank" rel="noopener noreferrer" 
+           class="channel"
+           aria-label="Join WhatsApp Channel">
+            <i class="fas fa-bullhorn"></i>
+        </a>
+    </div>
 
+    <!-- ===== JAVASCRIPT ===== -->
     <script>
+        // Theme Toggle
         function toggleTheme() {
             const html = document.documentElement;
             const currentTheme = html.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-theme', newTheme);
             const icon = document.querySelector('.theme-toggle i');
-            icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            if (icon) icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
             localStorage.setItem('theme', newTheme);
         }
+
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme) {
             document.documentElement.setAttribute('data-theme', savedTheme);
@@ -507,6 +1015,7 @@
             if (icon) icon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
 
+        // Banner Countdown
         function updateBannerCountdown() {
             const targetDate = new Date('July 24, 2026 19:30:00 GMT+0100').getTime();
             const now = new Date().getTime();
@@ -524,69 +1033,119 @@
         updateBannerCountdown();
         setInterval(updateBannerCountdown, 1000);
 
-        // Carousel Logic
-        (function() {
-            const track = document.getElementById('slideTrack');
-            const indicators = document.querySelectorAll('.dot');
-            const carousel = document.getElementById('advertCarousel');
-            const totalSlides = document.querySelectorAll('.slide').length;
-            let currentIndex = 0;
-            let intervalId = null;
-            let isPaused = false;
-
-            function goToSlide(index) {
-                if (index < 0) index = totalSlides - 1;
-                if (index >= totalSlides) index = 0;
-                currentIndex = index;
-                track.style.transform = `translateX(-${currentIndex * 100}%)`;
-                indicators.forEach((dot, i) => dot.classList.toggle('active', i === currentIndex));
-            }
-            function nextSlide() { if (!isPaused) goToSlide(currentIndex + 1); }
-            function startAutoSlide() { if (intervalId) clearInterval(intervalId); intervalId = setInterval(nextSlide, 10000); }
-            function stopAutoSlide() { if (intervalId) { clearInterval(intervalId); intervalId = null; } }
-
-            document.getElementById('navLeft').addEventListener('click', function(e) { e.stopPropagation(); goToSlide(currentIndex - 1); stopAutoSlide(); startAutoSlide(); });
-            document.getElementById('navRight').addEventListener('click', function(e) { e.stopPropagation(); goToSlide(currentIndex + 1); stopAutoSlide(); startAutoSlide(); });
-            carousel.addEventListener('mouseenter', function() { isPaused = true; stopAutoSlide(); document.querySelector('.carousel-pause-badge').style.opacity = '1'; });
-            carousel.addEventListener('mouseleave', function() { isPaused = false; document.querySelector('.carousel-pause-badge').style.opacity = '0'; startAutoSlide(); });
-            indicators.forEach(dot => {
-                dot.addEventListener('click', function() {
-                    goToSlide(parseInt(this.dataset.index));
-                    stopAutoSlide();
-                    startAutoSlide();
+        // Hamburger Menu
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+        if (hamburger && navMenu) {
+            hamburger.addEventListener('click', function() {
+                this.classList.toggle('active');
+                navMenu.classList.toggle('open');
+            });
+            navMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburger.classList.remove('active');
+                    navMenu.classList.remove('open');
                 });
             });
-            goToSlide(0);
-            startAutoSlide();
-        })();
+        }
 
-        const SHEETY_BLOG_API = 'https://api.sheety.co/d2a521b51f2439d009d4aaf3bbdea4f3/greachImpactBlog/sheet1';
+        // ===== SMART FLOATING WHATSAPP =====
+        function handleWhatsAppFloat() {
+            const float = document.getElementById('whatsappFloat');
+            const hero = document.getElementById('heroSection');
+            const whatsappHero = document.getElementById('whatsappHero');
+            
+            if (!float || !hero || !whatsappHero) return;
+
+            // Get the position of the WhatsApp buttons in the hero
+            const heroWhatsAppRect = whatsappHero.getBoundingClientRect();
+            const heroWhatsAppBottom = heroWhatsAppRect.bottom;
+            const heroWhatsAppTop = heroWhatsAppRect.top;
+
+            // Check if user has scrolled past the hero WhatsApp buttons
+            // Hide float when the hero WhatsApp buttons are visible on screen
+            if (heroWhatsAppTop < window.innerHeight && heroWhatsAppBottom > 0) {
+                // WhatsApp buttons in hero are visible - hide float
+                float.classList.add('hidden');
+            } else {
+                // User has scrolled past the hero WhatsApp buttons - show float
+                float.classList.remove('hidden');
+            }
+        }
+
+        // Run on scroll and resize
+        document.addEventListener('scroll', handleWhatsAppFloat);
+        document.addEventListener('resize', handleWhatsAppFloat);
+        // Run on load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait a moment for layout to settle
+            setTimeout(handleWhatsAppFloat, 100);
+        });
+
+        // Statistics Counter Animation
+        function animateStats() {
+            const statNumbers = document.querySelectorAll('.stat-item .number');
+            statNumbers.forEach(stat => {
+                const target = parseInt(stat.getAttribute('data-target'));
+                const duration = 2000;
+                const step = Math.max(1, Math.floor(target / 60));
+                let current = 0;
+                const increment = () => {
+                    current += step;
+                    if (current >= target) {
+                        stat.textContent = target + (target > 100 ? '+' : '');
+                        return;
+                    }
+                    stat.textContent = current + (target > 100 ? '+' : '');
+                    requestAnimationFrame(increment);
+                };
+                increment();
+            });
+        }
+
+        // Intersection Observer for Stats
+        const statsSection = document.querySelector('.stats');
+        if (statsSection) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateStats();
+                        observer.disconnect();
+                    }
+                });
+            }, { threshold: 0.3 });
+            observer.observe(statsSection);
+        }
+
+        // Blog Feed
+        const LOCAL_JSON_URL = 'posts.json?v=1.0';
+
         async function loadMainBlogFeed() {
             const feedContainer = document.getElementById('mainBlogFeed');
             if (!feedContainer) return;
             try {
-                const response = await fetch(SHEETY_BLOG_API);
-                const data = await response.json();
-                const articles = data.sheet1 || [];
+                const response = await fetch(LOCAL_JSON_URL);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch (Status: ${response.status})`);
+                }
+                const articles = await response.json();
                 if (articles.length === 0) {
                     feedContainer.innerHTML = '<p style="text-align:center; grid-column: 1 / -1;">No blog posts available yet.</p>';
                     return;
                 }
                 const latestArticles = articles.slice(0, 3);
+                
                 feedContainer.innerHTML = latestArticles.map(post => {
-                    let rawIcon = (post.icon || '').trim();
                     let iconClass = 'fa-solid fa-file-excel';
-                    if (rawIcon) {
-                        if (rawIcon.startsWith('fa-')) {
-                            iconClass = rawIcon.startsWith('fas ') ? rawIcon.replace('fas ', 'fa-solid ') : (rawIcon.includes('fa-solid') || rawIcon.includes('fa-brands') ? rawIcon : `fa-solid ${rawIcon}`);
-                        } else {
-                            iconClass = `fa-solid fa-${rawIcon}`;
-                        }
+                    if (post.category && post.category.toLowerCase().includes('community')) {
+                        iconClass = 'fa-solid fa-people-group';
+                    } else if (post.category && post.category.toLowerCase().includes('data')) {
+                        iconClass = 'fa-solid fa-chart-line';
                     }
                     return `
                         <div class="blog-card">
                             <div class="blog-image">
-                                <span class="badge">${post.tag || 'Analytics'}</span>
+                                <span class="badge">${post.category || 'Analytics'}</span>
                                 <i class="${iconClass}"></i>
                             </div>
                             <div class="blog-body">
@@ -599,10 +1158,83 @@
                 }).join('');
             } catch (error) {
                 console.error('Error fetching blog posts:', error);
-                feedContainer.innerHTML = `<p style="text-align:center; grid-column: 1 / -1;">Unable to load live posts right now.</p>`;
+                feedContainer.innerHTML = `<p style="text-align:center; grid-column: 1 / -1; color: red;">❌ Error: ${error.message}</p>`;
             }
         }
+
         document.addEventListener('DOMContentLoaded', loadMainBlogFeed);
+
+        // Newsletter Form
+        (function () {
+            const form = document.getElementById('sib-form');
+            const email = document.getElementById('EMAIL');
+            const button = form ? form.querySelector('button[type="submit"]') : null;
+            const frame = document.getElementById('sibFormFrame');
+            const status = document.getElementById('newsletterStatus');
+            if (!form || !email || !button || !frame || !status) return;
+
+            let submitted = false;
+
+            function showStatus(type, text) {
+                status.className = 'newsletter-status visible ' + type;
+                status.textContent = text;
+            }
+
+            email.disabled = false;
+            email.readOnly = false;
+            email.style.pointerEvents = 'auto';
+            email.style.opacity = '1';
+            button.disabled = false;
+
+            form.addEventListener('submit', function (event) {
+                const value = email.value.trim();
+                if (!value || !email.validity.valid) {
+                    event.preventDefault();
+                    showStatus('error', 'Please enter a valid email address.');
+                    email.focus();
+                    return;
+                }
+
+                submitted = true;
+                showStatus('', 'Submitting your subscription…');
+                button.disabled = true;
+                button.textContent = 'SUBMITTING…';
+                button.style.opacity = '0.7';
+                button.style.cursor = 'wait';
+            });
+
+            frame.addEventListener('load', function () {
+                if (!submitted) return;
+                showStatus('success', 'Your subscription was submitted successfully. Please check your email for confirmation.');
+                form.reset();
+                submitted = false;
+                button.disabled = false;
+                button.textContent = 'SUBSCRIBE';
+                button.style.opacity = '1';
+                button.style.cursor = 'pointer';
+            });
+        })();
+
+        // Brevo required variables
+        window.REQUIRED_CODE_ERROR_MESSAGE = 'Please choose a country code';
+        window.LOCALE = 'en';
+        window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE = 'The information provided is invalid. Please review the field format and try again.';
+        window.REQUIRED_ERROR_MESSAGE = 'This field cannot be left blank.';
+        window.GENERIC_INVALID_MESSAGE = 'The information provided is invalid. Please review the field format and try again.';
+        window.INVALID_NUMBER = 'The information provided is invalid. Please review the field format and try again.';
+        window.INVALID_DATE = 'Please enter a valid date';
+        window.REQUIRED_MULTISELECT_MESSAGE = 'Please select at least 1 option';
+        window.translation = {
+            common: {
+                selectedList: '{quantity} list selected',
+                selectedLists: '{quantity} lists selected',
+                selectedOption: '{quantity} selected',
+                selectedOptions: '{quantity} selected',
+            }
+        };
+        var AUTOHIDE = Boolean(0);
     </script>
+  <script src="js/greach-db.js"></script>
+  <script src="js/greach-sync.js"></script>
 </body>
 </html>

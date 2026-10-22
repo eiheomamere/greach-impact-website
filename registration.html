@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Training Registration &amp; Checkout | Greach Impact Academy</title>
+<link rel="icon" type="image/jpeg" href="images/Greach Impact Logo (2).jpg">
+<link rel="apple-touch-icon" href="images/Greach Impact Logo (2).jpg">
+<meta name="theme-color" content="#0A0A5E">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --navy-900: #0A0A5E;
+  --navy-800: #071224;
+  --teal-400: #64C7D4;
+  --gold-500: #D97706;
+  --gold-400: #F59E0B;
+  --green-600: #107C41;
+  --green-500: #16A34A;
+  --red-600: #dc2626;
+  --bg-slate: #f8fafc;
+  --border-slate: #e2e8f0;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  color: var(--text-dark);
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #e9fbfd 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+h1, h2, h3, h4, .brand-title, .hero-title, .price-big {
+  font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif !important;
+}
+
+/* HEADER */
+.header {
+  text-align: center;
+  padding: 34px 20px 18px;
+}
+.header img {
+  width: 165px;
+  max-height: 90px;
+  object-fit: contain;
+  transition: transform 0.2s;
+}
+.header img:hover { transform: scale(1.02); }
+.header h1 {
+  margin: 16px 0 8px;
+  color: var(--navy-900);
+  font-size: clamp(26px, 4.5vw, 38px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.header p {
+  max-width: 680px;
+  margin: auto;
+  color: var(--text-muted);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+/* TOP WHATSAPP CTA */
+.whatsapp-cta {
+  margin-top: 15px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.whatsapp-cta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.88rem;
+  transition: all 0.2s;
+}
+.whatsapp-cta a:hover { transform: translateY(-2px); }
+.whatsapp-cta .channel { background: #075E54; color: #fff; box-shadow: 0 4px 12px rgba(7,94,84,0.25); }
+.whatsapp-cta .channel:hover { background: #064A42; }
+.whatsapp-cta .chat { background: #25D366; color: #fff; box-shadow: 0 4px 12px rgba(37,211,102,0.25); }
+.whatsapp-cta .chat:hover { background: #1DA851; }
+
+/* MAIN CARD CONTAINER */
+.card {
+  width: min(860px, calc(100% - 32px));
+  margin: 16px auto 50px;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 20px 50px rgba(10, 10, 94, 0.09);
+  border: 1px solid rgba(10, 10, 94, 0.08);
+  overflow: hidden;
+}
+
+/* TAB SELECTOR */
+.reg-tabs {
+  display: flex;
+  background: #f1f5f9;
+  border-bottom: 2px solid var(--border-slate);
+}
+.reg-tab-btn {
+  flex: 1;
+  padding: 14px 18px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+.reg-tab-btn.active {
+  background: #ffffff;
+  color: var(--navy-900);
+  border-bottom: 3px solid var(--navy-900);
+}
+.reg-tab-btn:hover:not(.active) {
+  background: rgba(255,255,255,0.5);
+  color: var(--navy-900);
+}
+
+/* FORM WRAPPER */
+.form-content {
+  padding: 32px 36px;
+}
+@media (max-width: 640px) {
+  .form-content { padding: 22px 18px; }
+}
+
+/* SECTION TITLES */
+.form-section-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--navy-900);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.badge-step {
+  background: var(--navy-900);
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+/* INPUT GROUPS */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+}
+.form-group {
+  margin-bottom: 16px;
+}
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+.form-group label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+.form-group .hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.form-control {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  border: 1.5px solid var(--border-slate);
+  border-radius: 10px;
+  background: #fdfdfd;
+  color: var(--text-dark);
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.form-control:focus {
+  outline: none;
+  border-color: var(--navy-900);
+  box-shadow: 0 0 0 3px rgba(10, 10, 94, 0.12);
+  background: #fff;
+}
+
+/* COURSE PICKER CARDS */
+.course-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.course-card-option {
+  border: 2px solid var(--border-slate);
+  border-radius: 12px;
+  padding: 14px;
+  cursor: pointer;
+  background: #fff;
+  transition: all 0.2s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.course-card-option:hover {
+  border-color: var(--teal-400);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+}
+.course-card-option.selected {
+  border-color: var(--navy-900);
+  background: #f8faff;
+  box-shadow: 0 0 0 2px var(--navy-900);
+}
+.course-card-option input[type="radio"] {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  accent-color: var(--navy-900);
+  transform: scale(1.15);
+}
+.course-card-tag {
+  align-self: flex-start;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.tag-popular { background: #fef3c7; color: #b45309; }
+.tag-discount { background: #dcfce7; color: #15803d; }
+.course-card-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--navy-900);
+  margin-bottom: 8px;
+  line-height: 1.35;
+  padding-right: 24px;
+}
+.course-card-pricing {
+  margin-top: 10px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.price-actual {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--green-600);
+}
+.price-slashed {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+/* BANK TRANSFER DETAILS BOX */
+.bank-transfer-box {
+  background: linear-gradient(135deg, #0A0A5E 0%, #172033 100%);
+  border-radius: 14px;
+  padding: 20px 22px;
+  color: white;
+  margin-bottom: 24px;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(10, 10, 94, 0.2);
+}
+.bank-transfer-box h4 {
+  font-size: 1rem;
+  color: #86efac;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bank-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  font-size: 0.88rem;
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.bank-item span {
+  display: block;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.bank-item strong {
+  font-size: 0.98rem;
+  color: #f8fafc;
+}
+.btn-copy-account {
+  background: var(--gold-500);
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+}
+.btn-copy-account:hover { background: #b45309; }
+
+/* ORDER SUMMARY STRIP */
+.order-summary-box {
+  background: #f8fafc;
+  border: 1.5px solid var(--border-slate);
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.summary-course-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--navy-900);
+}
+.summary-sub {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.summary-total {
+  text-align: right;
+}
+.summary-total span {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 700;
+  display: block;
+}
+.summary-total .total-amount {
+  font-size: 1.7rem;
+  font-weight: 900;
+  color: var(--green-600);
+  font-family: 'Outfit', sans-serif;
+}
+
+/* SUBMIT BUTTON */
+.btn-submit-order {
+  width: 100%;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #107C41 0%, #0d6334 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 8px 24px rgba(16, 124, 65, 0.35);
+  transition: all 0.25s;
+}
+.btn-submit-order:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(16, 124, 65, 0.45);
+}
+.btn-submit-order:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* TRUST BADGES */
+.trust-strip {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-slate);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* CLASSIC IFRAME TAB */
+#tabClassicIframe {
+  display: none;
+  padding: 10px;
+}
+#tabClassicIframe iframe {
+  display: block;
+  width: 100%;
+  height: 760px;
+  border: 0;
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 12px;
+  padding: 20px 20px 32px;
+  margin-top: auto;
+}
+footer .socials {
+  margin-top: 10px;
+}
+footer .socials a {
+  color: #94a3b8;
+  margin: 0 10px;
+  font-size: 1.2rem;
+  transition: color 0.3s;
+}
+footer .socials a:hover {
+  color: var(--teal-400);
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="header">
+  <a href="index.html" aria-label="Greach Impact home">
+    <img src="images/Greach Impact Logo (2).jpg" alt="Greach Impact logo">
+  </a>
+  <h1>Greach Impact Training Registration</h1>
+  <p>Enroll today to get your unique classroom access code, live studio links, hands-on practice workbooks, and accredited Certificate of Completion.</p>
+  
+  <!-- WHATSAPP CTA -->
+  <div class="whatsapp-cta">
+    <a href="admin.html" style="background:#0A0A5E; color:#F59E0B; border:1.5px solid #F59E0B; text-decoration:none; padding:8px 16px; border-radius:50px; font-size:0.84rem; font-weight:700; display:inline-flex; align-items:center; gap:6px;" title="Admin Portal">
+      <i class="fas fa-user-shield"></i> Admin Portal
+    </a>
+    <a href="https://whatsapp.com/channel/0029Vb7lvfQ4CrflFG0Sce0F" 
+       target="_blank" rel="noopener noreferrer" 
+       class="channel">
+      <i class="fab fa-whatsapp"></i> Join Channel
+    </a>
+    <a href="https://wa.me/2349072250869?text=Hello%20Greach%20Impact!%20I%20have%20a%20question%20about%20registration." 
+       target="_blank" rel="noopener noreferrer" 
+       class="chat">
+      <i class="fab fa-whatsapp"></i> Chat Support
+    </a>
+  </div>
+</header>
+
+<!-- ===== MAIN REGISTRATION CARD ===== -->
+<main class="card">
+  <!-- Tabs Navigation -->
+  <div class="reg-tabs">
+    <button type="button" class="reg-tab-btn active" id="tabBtnDirect" onclick="switchRegTab('direct')">
+      <i class="fas fa-bolt" style="color:var(--gold-500);"></i> ⚡ Instant Online Registration (Automated Access)
+    </button>
+    <button type="button" class="reg-tab-btn" id="tabBtnClassic" onclick="switchRegTab('classic')">
+      <i class="fas fa-file-alt"></i> 📋 Classic Embedded Form
+    </button>
+  </div>
+
+  <!-- TAB 1: DIRECT AUTOMATED ON-SITE REGISTRATION & ORDER -->
+  <div id="tabDirectForm" class="form-content">
+    <form id="greachOrderForm" onsubmit="handleRegistrationSubmit(event)">
+      
+      <!-- STEP 1: STUDENT DETAILS -->
+      <!-- Bot Protection Honeypot (Invisible to real users, catches automated spam bots) -->
+        <input type="text" name="b_company_ref" id="honeypot_field" style="display:none !important; position:absolute; left:-9999px;" tabindex="-1" autocomplete="off" />
+
+        <div class="form-section-title">
+          <span class="badge-step">1</span> Your Official Student Information
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="studentFullName"><i class="fas fa-user" style="color:var(--navy-900);"></i> Full Name *</label>
+          <input type="text" id="studentFullName" class="form-control" required placeholder="e.g. Chukwuebuka Daniel Obi">
+          <div class="hint">Please type your official name as you want it to appear on your Certificate.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="studentEmail"><i class="fas fa-envelope" style="color:var(--navy-900);"></i> Email Address *</label>
+          <input type="email" id="studentEmail" class="form-control" required placeholder="e.g. name@gmail.com">
+          <div class="hint">Your unique access code, login credentials, and receipt will be delivered here.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="studentPhone"><i class="fab fa-whatsapp" style="color:#25D366;"></i> WhatsApp Phone Number *</label>
+          <input type="tel" id="studentPhone" class="form-control" required placeholder="+234 801 234 5678">
+          <div class="hint">For live class notifications, practice files, and study group access.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="cohortSelect"><i class="fas fa-calendar-check" style="color:var(--navy-900);"></i> Training Cohort *</label>
+          <select id="cohortSelect" class="form-control">
+            <option value="Batch 2: 2026 Masterclass">Batch 2: 2026 Masterclass (Saturdays 10:00 AM WAT)</option>
+            <option value="Accelerated Self-Paced Track">Accelerated Self-Paced Track (Instant 24/7 Access)</option>
+          </select>
+          <div class="hint">Access code expires 1 month after your class schedule ends.</div>
+        </div>
+      </div>
+
+      <!-- STEP 2: SELECT PROGRAMME -->
+      <div class="form-section-title">
+        <span class="badge-step">2</span> Select Your Training Programme &amp; Special Discount
+      </div>
+
+      <div class="course-selection-grid" id="courseCardsContainer">
+        
+        <!-- Excel Beginners -->
+        <label class="course-card-option selected" onclick="selectCourseCard('excel_beginners', 3000, 15000, 'Microsoft Excel for Beginners')">
+          <input type="radio" name="course_pick" value="excel_beginners" checked>
+          <span class="course-card-tag tag-discount">80% OFF SPECIAL</span>
+          <div class="course-card-name">Microsoft Excel for Beginners</div>
+          <div class="course-card-pricing">
+            <span class="price-actual">₦3,000</span>
+            <span class="price-slashed">₦15,000</span>
+          </div>
+        </label>
+
+        <!-- Excel Advanced -->
+        <label class="course-card-option" onclick="selectCourseCard('excel_advanced', 4000, 20000, 'Microsoft Excel Advanced &amp; Analytics')">
+          <input type="radio" name="course_pick" value="excel_advanced">
+          <span class="course-card-tag tag-discount">80% OFF SPECIAL</span>
+          <div class="course-card-name">Microsoft Excel Advanced &amp; Analytics</div>
+          <div class="course-card-pricing">
+            <span class="price-actual">₦4,000</span>
+            <span class="price-slashed">₦20,000</span>
+          </div>
+        </label>
+
+        <!-- SQL Beginners -->
+        <label class="course-card-option" onclick="selectCourseCard('sql_beginners', 5000, 25000, 'SQL for Data Analytics &amp; Databases')">
+          <input type="radio" name="course_pick" value="sql_beginners">
+          <span class="course-card-tag tag-discount">80% OFF SPECIAL</span>
+          <div class="course-card-name">SQL for Data Analytics &amp; Databases</div>
+          <div class="course-card-pricing">
+            <span class="price-actual">₦5,000</span>
+            <span class="price-slashed">₦25,000</span>
+          </div>
+        </label>
+
+        <!-- Complete Package -->
+        <label class="course-card-option" onclick="selectCourseCard('complete_package', 10000, 60000, 'Complete Analytics Suite (Excel + SQL + Power BI)')">
+          <input type="radio" name="course_pick" value="complete_package">
+          <span class="course-card-tag tag-popular">🔥 BEST VALUE (83% OFF)</span>
+          <div class="course-card-name">Complete Analytics Suite (Excel + SQL + Power BI)</div>
+          <div class="course-card-pricing">
+            <span class="price-actual">₦10,000</span>
+            <span class="price-slashed">₦60,000</span>
+          </div>
+        </label>
+
+        <!-- Power BI -->
+        <label class="course-card-option" onclick="selectCourseCard('power_bi', 22500, 45000, 'Power BI for Business Intelligence')">
+          <input type="radio" name="course_pick" value="power_bi">
+          <span class="course-card-tag tag-discount">50% DISCOUNT</span>
+          <div class="course-card-name">Power BI for Business Intelligence</div>
+          <div class="course-card-pricing">
+            <span class="price-actual">₦22,500</span>
+            <span class="price-slashed">₦45,000</span>
+          </div>
+        </label>
+
+        <!-- Dashboard Beginners -->
+        <label class="course-card-option" onclick="selectCourseCard('excel_dashboard', 40000, 80000, 'Executive Interactive Dashboard Design')">
+          <input type="radio" name="course_pick" value="excel_dashboard">
+          <span class="course-card-tag tag-discount">50% DISCOUNT</span>
+          <div class="course-card-name">Executive Interactive Dashboard Design</div>
+          <div class="course-card-pricing">
+            <span class="price-actual">₦40,000</span>
+            <span class="price-slashed">₦80,000</span>
+          </div>
+        </label>
+
+      </div>
+
+      <!-- STEP 3: PAYMENT METHOD -->
+      <div class="form-section-title">
+        <span class="badge-step">3</span> Payment Instructions &amp; Bank Transfer
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-credit-card" style="color:var(--navy-900);"></i> Preferred Payment Method:</label>
+        <select id="paymentMethod" class="form-control" onchange="togglePaymentInstructions(this.value)">
+          <option value="Direct Bank Transfer">Direct Bank Transfer (Instant Verification)</option>
+          <option value="Online Card / Transfer">Online Card / USSD Payment</option>
+          <option value="Already Paid / Admin Code">I have already made payment / Admin Sponsored</option>
+        </select>
+      </div>
+
+      <!-- Official Bank Details Card -->
+      <div class="bank-transfer-box" id="bankDetailsBox">
+        <h4><i class="fas fa-university"></i> Official Academy Bank Account Details:</h4>
+        <div class="bank-grid">
+          <div class="bank-item">
+            <span>Bank Name:</span>
+            <strong>Zenith Bank PLC / OPay</strong>
+          </div>
+          <div class="bank-item">
+            <span>Account Number:</span>
+            <strong id="bankAccountNumber">1023456789</strong>
+            <div>
+              <button type="button" class="btn-copy-account" onclick="copyAccountNo()">
+                <i class="fas fa-copy"></i> Copy Account
+              </button>
+            </div>
+          </div>
+          <div class="bank-item">
+            <span>Account Name:</span>
+            <strong>Greach Impact Academy</strong>
+          </div>
+          <div class="bank-item">
+            <span>Payment Reference:</span>
+            <strong id="bankRefDisplay">Your Full Name</strong>
+          </div>
+        </div>
+        <div style="font-size:0.82rem; color:#cbd5e1; line-height:1.5;">
+          💡 Complete your transfer of <strong id="bankAmountDue" style="color:#86efac;">₦3,000</strong> using your mobile banking app. Once you click "Submit", your unique access code is generated automatically!
+        </div>
+      </div>
+
+      <!-- ORDER SUMMARY STRIP -->
+      <div class="order-summary-box">
+        <div>
+          <div class="summary-course-name" id="summaryCourseName">Microsoft Excel for Beginners</div>
+          <div class="summary-sub" id="summaryDiscountText">Special discounted fee applied • Includes live class &amp; materials</div>
+        </div>
+        <div class="summary-total">
+          <span>Total Payable</span>
+          <div class="total-amount" id="summaryTotalAmount">₦3,000</div>
+        </div>
+      </div>
+
+      <!-- SUBMIT BUTTON -->
+      <button type="submit" class="btn-submit-order" id="btnSubmitOrder">
+        <i class="fas fa-lock"></i> <span id="btnSubmitText">Complete Registration &amp; Get Access Code (₦3,000)</span>
+      </button>
+
+      <!-- TRUST & GUARANTEE -->
+      <div class="trust-strip">
+        <div class="trust-item"><i class="fas fa-shield-alt" style="color:var(--green-600);"></i> 100% Secure Enrollment</div>
+        <div class="trust-item"><i class="fas fa-key" style="color:var(--gold-500);"></i> Instant Access Code Generated</div>
+        <div class="trust-item"><i class="fas fa-award" style="color:var(--navy-900);"></i> Lifetime Certificate Access</div>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- TAB 2: CLASSIC IFRAME (BREVO SIBFORMS EMBED) -->
+  <div id="tabClassicIframe">
+    <div style="padding:14px; text-align:center; background:#f8fafc; border-bottom:1px solid #e2e8f0; font-size:0.85rem; color:#64748b;">
+      Note: Submitting via the classic form will register you with our Brevo newsletter system. For instant classroom access codes, we recommend using the <strong>Instant Online Registration</strong> tab above.
+    </div>
+    <iframe src="https://85bbefaa.sibforms.com/v2/serve/MUIFAKZaubl7haB-Pnhc-03WoU1budn2V3_IPNTFBA1_i50kdNyRP7RUWGHnZVjQWhBnfsLugLEUjUm-FRA-g3r8g22ZBnziYlV5ZzxX2aCH6JPQcNsr4rnVEKcipaup9f9dSnX0e4L70bSIVl7zLtOrJECsVbByJE0wsJTDmA8KnNmJ_rwP17527FxSmg-9dLIu5_rg1geXF8A52A==" frameborder="0" scrolling="auto" allowfullscreen title="Greach Impact Training Registration Form"></iframe>
+  </div>
+
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <p>&copy; 2026 <a href="index.html" style="color:var(--teal-400);text-decoration:none;font-weight:600;">Greach Impact Academy</a> — Learn. Practice. Grow.</p>
+  <div style="margin-top: 10px; margin-bottom: 8px;">
+    <a href="admin.html" style="color: #F59E0B; text-decoration: none; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+      <i class="fas fa-lock"></i> Instructor &amp; Admin Console &rarr;
+    </a>
+  </div>
+  <div class="socials">
+    <a href="https://www.linkedin.com/in/emmanuel-iheomamere/" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-linkedin"></i></a>
+    <a href="https://whatsapp.com/channel/0029Vb7lvfQ4CrflFG0Sce0F" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i></a>
+    <a href="https://wa.me/2349072250869?text=Hello%20Greach%20Impact!%20I'd%20like%20to%20learn%20more." target="_blank" rel="noopener noreferrer"><i class="fas fa-comment-dots" style="color:#25D366;"></i></a>
+  </div>
+</footer>
+
+<!-- SCRIPT LIBRARIES -->
+<script src="js/greach-db.js"></script>
+  <script src="js/greach-sync.js"></script>
+<script src="js/greach-brevo.js"></script>
+
+<script>
+  let currentSelection = {
+    courseKey: 'excel_beginners',
+    courseName: 'Microsoft Excel for Beginners',
+    amount: 3000,
+    originalAmount: 15000
+  };
+
+  // 1. Switch between Direct Form and Classic Form
+  function switchRegTab(mode) {
+    const directTab = document.getElementById('tabDirectForm');
+    const classicTab = document.getElementById('tabClassicIframe');
+    const btnDirect = document.getElementById('tabBtnDirect');
+    const btnClassic = document.getElementById('tabBtnClassic');
+
+    if (mode === 'direct') {
+      directTab.style.display = 'block';
+      classicTab.style.display = 'none';
+      btnDirect.classList.add('active');
+      btnClassic.classList.remove('active');
+    } else {
+      directTab.style.display = 'none';
+      classicTab.style.display = 'block';
+      btnDirect.classList.remove('active');
+      btnClassic.classList.add('active');
+    }
+  }
+
+  // 2. Select Course Card
+  function selectCourseCard(key, amount, original, name) {
+    currentSelection = {
+      courseKey: key,
+      courseName: name,
+      amount: amount,
+      originalAmount: original
+    };
+
+    // Update UI highlights
+    document.querySelectorAll('.course-card-option').forEach(el => el.classList.remove('selected'));
+    const chosenRadio = document.querySelector(`input[name="course_pick"][value="${key}"]`);
+    if (chosenRadio) {
+      chosenRadio.checked = true;
+      const card = chosenRadio.closest('.course-card-option');
+      if (card) card.classList.add('selected');
+    }
+
+    // Update Summary
+    document.getElementById('summaryCourseName').innerHTML = name;
+    document.getElementById('summaryTotalAmount').textContent = '₦' + Number(amount).toLocaleString();
+    document.getElementById('btnSubmitText').textContent = `Complete Registration & Get Access Code (₦${Number(amount).toLocaleString()})`;
+    const bankAmt = document.getElementById('bankAmountDue');
+    if (bankAmt) bankAmt.textContent = '₦' + Number(amount).toLocaleString();
+  }
+
+  // 3. Payment Method Switcher
+  function togglePaymentInstructions(method) {
+    const box = document.getElementById('bankDetailsBox');
+    if (box) {
+      box.style.display = (method === 'Direct Bank Transfer') ? 'block' : 'none';
+    }
+  }
+
+  // 4. Copy Account Number
+  function copyAccountNo() {
+    const acct = document.getElementById('bankAccountNumber').textContent.trim();
+    navigator.clipboard.writeText(acct).then(() => {
+      alert(`Account number (${acct}) copied to clipboard!`);
+    }).catch(() => {
+      prompt('Copy account number:', acct);
+    });
+  }
+
+  // 5. Pre-select course from URL params if present
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const paramCourse = params.get('course');
+    if (paramCourse) {
+      const lower = paramCourse.toLowerCase();
+      if (lower.includes('advanced')) {
+        selectCourseCard('excel_advanced', 4000, 20000, 'Microsoft Excel Advanced & Analytics');
+      } else if (lower.includes('sql')) {
+        selectCourseCard('sql_beginners', 5000, 25000, 'SQL for Data Analytics & Databases');
+      } else if (lower.includes('power') || lower.includes('bi')) {
+        selectCourseCard('power_bi', 22500, 45000, 'Power BI for Business Intelligence');
+      } else if (lower.includes('complete') || lower.includes('suite')) {
+        selectCourseCard('complete_package', 10000, 60000, 'Complete Analytics Suite (Excel + SQL + Power BI)');
+      } else if (lower.includes('dashboard')) {
+        selectCourseCard('excel_dashboard', 40000, 80000, 'Executive Interactive Dashboard Design');
+      } else {
+        selectCourseCard('excel_beginners', 3000, 15000, 'Microsoft Excel for Beginners');
+      }
+    }
+
+    // Update bank ref when name changes
+    const nameInput = document.getElementById('studentFullName');
+    if (nameInput) {
+      nameInput.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        document.getElementById('bankRefDisplay').textContent = val ? val : 'Your Full Name';
+      });
+    }
+  });
+
+  // 6. Handle Registration Submission
+  async function handleRegistrationSubmit(e) {
+    e.preventDefault();
+
+    // Bot Honeypot Check
+    const honeypot = document.getElementById('honeypot_field') ? document.getElementById('honeypot_field').value : '';
+    if (honeypot) {
+      console.warn('Bot trapped by honeypot.');
+      window.location.href = 'thank-you.html';
+      return;
+    }
+
+    const name = document.getElementById('studentFullName').value.trim();
+    const email = document.getElementById('studentEmail').value.trim().toLowerCase();
+    const phone = document.getElementById('studentPhone').value.trim();
+    const cohort = document.getElementById('cohortSelect').value;
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    const submitBtn = document.getElementById('btnSubmitOrder');
+
+    if (!name || !email) {
+      alert('Please provide your Full Name and Email Address.');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Registration...';
+
+    try {
+      const isFree = (paymentMethod === 'Already Paid / Admin Code');
+      const isAdvance = cohort.toLowerCase().includes('advance') || cohort.toLowerCase().includes('accelerated') || cohort.toLowerCase().includes('upcoming');
+
+      // 1. Register student in GreachDB (code is created but only active if isFree is true)
+      let student = null;
+      if (window.GreachDB) {
+        student = window.GreachDB.registerStudent({
+          name: name,
+          email: email,
+          phone: phone,
+          course: currentSelection.courseName,
+          cohort: cohort,
+          isFree: isFree,
+          isAdvance: isAdvance
+        });
+      } else {
+        const codeNum = Math.floor(1000 + Math.random() * 9000);
+        student = {
+          id: 'STU-' + codeNum,
+          name: name,
+          email: email,
+          phone: phone,
+          course: currentSelection.courseName,
+          cohort: cohort,
+          password: 'GRX-' + codeNum + '-X7',
+          isCodeActive: isFree,
+          paymentStatus: isFree ? 'Verified & Paid' : 'Pending Verification'
+        };
+      }
+
+      // 2. Trigger Brevo Automation: sends Payment Pending email to student (or Welcome if free) & alert to admin
+      if (window.GreachBrevo) {
+        await window.GreachBrevo.triggerRegistrationAutomation(student, {
+          amount: currentSelection.amount,
+          courseKey: currentSelection.courseKey,
+          courseName: currentSelection.courseName,
+          paymentMethod: paymentMethod,
+          paymentStatus: isFree ? 'Verified & Paid' : 'Pending Verification'
+        });
+      }
+
+      // 3. Smoothly redirect to confirmation page
+      const statusParam = isFree ? 'verified' : 'pending';
+      let redirectUrl = `registration-confirmation.html?status=${statusParam}&name=${encodeURIComponent(student.name)}&email=${encodeURIComponent(student.email)}&phone=${encodeURIComponent(student.phone || '')}&id=${encodeURIComponent(student.id)}&course=${encodeURIComponent(student.course || currentSelection.courseName)}&amount=${encodeURIComponent(currentSelection.amount)}`;
+      if (isFree) {
+        redirectUrl += `&code=${encodeURIComponent(student.password)}`;
+      }
+      
+      window.location.href = redirectUrl;
+
+    } catch (err) {
+      console.error('[Registration] Error processing enrollment:', err);
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-lock"></i> Try Again';
+      alert('Registration error: ' + (err.message || 'Please check your connection and try again.'));
+    }
+  }
+</script>
+
+</body>
+</html>
