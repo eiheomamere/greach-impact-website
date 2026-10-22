@@ -480,7 +480,12 @@
         </div>
         <div class="form-group">
           <label><i class="fas fa-key"></i> Master Secret Password:</label>
-          <input type="password" id="adminInputPass" class="form-control" placeholder="Enter confidential password..." required />
+          <div style="position:relative;">
+            <input type="password" id="adminInputPass" class="form-control" placeholder="Enter confidential password..." required style="padding-right:40px;" />
+            <button type="button" onclick="togglePasswordVisibility('adminInputPass', this)" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:#64748b; cursor:pointer; font-size:1rem; padding:4px;" title="Show/Hide Password">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
         </div>
 
         <div id="authErrorMsg" style="display:none; background:#fef2f2; border-left:4px solid #ef4444; color:#991b1b; padding:0.65rem; border-radius:6px; font-size:0.82rem; margin-bottom:1rem; text-align:left;">
@@ -512,6 +517,8 @@
       </div>
     </div>
     <div class="admin-actions">
+      <button onclick="openUniversalCodeModal()" class="btn-nav" style="background:#107C41; border-color:#107C41; font-weight:700;"><i class="fas fa-key"></i> + Generate Access Code</button>
+      <button onclick="syncSiteDataToCloud()" class="btn-nav" style="background:var(--accent-teal); color:#0A0A5E; border-color:var(--accent-teal); font-weight:700;"><i class="fas fa-cloud-upload-alt"></i> Publish Live Updates</button>
       <a href="index.html" class="btn-nav" target="_blank"><i class="fas fa-globe"></i> View Website</a>
       <a href="classroom/index.html" class="btn-nav classroom" target="_blank"><i class="fas fa-chalkboard-teacher"></i> Open Classroom</a>
       <button onclick="handleAdminLogout()" class="btn-nav" style="background:#ef4444; border-color:#ef4444;"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -570,7 +577,8 @@
       <button class="tab-btn active" onclick="switchAdminTab('students')"><i class="fas fa-user-graduate"></i> Student Roster &amp; Bank</button>
       <button class="tab-btn" onclick="switchAdminTab('orders')"><i class="fas fa-shopping-cart"></i> Orders &amp; Pipeline</button>
       <button class="tab-btn" onclick="switchAdminTab('session_passes')"><i class="fas fa-stopwatch"></i> Temporary Session Passes</button>
-      <button class="tab-btn" onclick="switchAdminTab('blog')"><i class="fas fa-newspaper"></i> Blog Articles</button>
+      <button class="tab-btn" onclick="switchAdminTab('blog')"><i class="fas fa-newspaper" style="color:#0284c7;"></i> Blog Articles &amp; Content</button>
+      <button class="tab-btn" onclick="switchAdminTab('supabase')"><i class="fas fa-database" style="color:#22c55e;"></i> ⚡ Supabase Cloud DB</button>
       <button class="tab-btn" onclick="switchAdminTab('prices')"><i class="fas fa-tags"></i> Course Pricing &amp; Discounts</button>
       <button class="tab-btn" onclick="switchAdminTab('schedules')"><i class="fas fa-calendar-alt"></i> Dates &amp; Self-Paced Modes</button>
       <button class="tab-btn" onclick="switchAdminTab('brevo')"><i class="fas fa-paper-plane"></i> Brevo &amp; Automation Hub</button>
@@ -669,7 +677,8 @@
             Every student receives a unique password that expires <strong>1 month after the end of their class</strong>. You can grant free access or extend codes with 1 click.
           </p>
         </div>
-        <div style="display:flex; gap:0.6rem;">
+        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+          <button class="btn-primary" style="background:#107C41; border-color:#107C41; font-weight:700;" onclick="openUniversalCodeModal('student_course')"><i class="fas fa-key"></i> + Generate Access Code</button>
           <button class="btn-primary" onclick="openEnrollModal()"><i class="fas fa-user-plus"></i> + Enroll Student Manually</button>
           <button class="btn-gold" onclick="exportStudentCSV()"><i class="fas fa-file-csv"></i> Export Roster</button>
         </div>
@@ -797,7 +806,10 @@
             <div class="form-group">
               <label>Brevo API Key (v3):</label>
               <div style="display:flex; gap:0.5rem;">
-                <input type="password" id="brevoApiKeyInput" class="form-control" placeholder="xkeysib-..." />
+                <div style="display:flex; gap:0.5rem;">
+              <input type="password" id="brevoApiKeyInput" class="form-control" placeholder="xkeysib-..." />
+              <button type="button" onclick="togglePasswordVisibility('brevoApiKeyInput', this)" class="btn-action" style="padding:0.7rem;"><i class="fas fa-eye"></i></button>
+            </div>
                 <button type="button" onclick="togglePasswordVisibility('brevoApiKeyInput', this)" class="btn-action" style="padding:0.7rem;"><i class="fas fa-eye"></i></button>
               </div>
               <small style="color:var(--text-muted); font-size:0.75rem;">Obtain from Brevo Dashboard &rarr; SMTP &amp; API Keys.</small>
@@ -962,7 +974,10 @@
             </div>
             <div class="form-group">
               <label>Temporary Password:</label>
-              <input type="password" id="newAdminPass" class="form-control" placeholder="e.g. Pass@123456" required />
+              <div style="display:flex; gap:0.5rem;">
+                <input type="password" id="newAdminPass" class="form-control" placeholder="e.g. Pass@123456" required />
+                <button type="button" onclick="togglePasswordVisibility('newAdminPass', this)" class="btn-action" style="padding:0.7rem;"><i class="fas fa-eye"></i></button>
+              </div>
             </div>
             <div class="form-group">
               <label>Official Email:</label>
@@ -1189,7 +1204,10 @@
             Generate one-time or time-limited access codes for live classes, workshops, or guest students. You can set them to expire automatically or revoke/expire them immediately with 1 click.
           </p>
         </div>
-        <button class="btn-primary" onclick="openSessionPassModal()"><i class="fas fa-plus-circle"></i> + Generate Temporary Session Code</button>
+        <div style="display:flex; gap:0.6rem;">
+          <button class="btn-primary" style="background:#107C41; border-color:#107C41; font-weight:700;" onclick="openUniversalCodeModal('session_pass')"><i class="fas fa-key"></i> + Generate Access Code</button>
+          <button class="btn-action" onclick="openSessionPassModal()"><i class="fas fa-stopwatch"></i> + Quick Live Pass</button>
+        </div>
       </div>
 
       <div class="table-responsive">
@@ -1223,14 +1241,25 @@
     <section id="tabBlog" class="admin-card" style="display:none;">
       <div class="card-head">
         <div>
-          <h2><i class="fas fa-newspaper" style="color:var(--accent-blue);"></i> Blog Articles Publishing &amp; Management</h2>
+          <h2><i class="fas fa-newspaper" style="color:#0284c7;"></i> Blog Articles Publishing &amp; Management</h2>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
             Write, edit, and publish articles on the Greach Impact blog. All updates reflect instantly on the live website and sync with the database.
           </p>
         </div>
-        <div style="display:flex; gap:0.6rem;">
-          <button class="btn-primary" onclick="openBlogModal()"><i class="fas fa-plus-circle"></i> + Write New Article</button>
+        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+          <button class="btn-primary" style="background:#0284c7; border-color:#0284c7; font-weight:700;" onclick="openBlogModal()"><i class="fas fa-pen-nib"></i> + Write New Article</button>
           <button class="btn-gold" onclick="exportBlogPostsJson()"><i class="fas fa-file-download"></i> Export posts.json</button>
+          <a href="blog.html" target="_blank" class="btn-action"><i class="fas fa-external-link-alt"></i> View Public Blog</a>
+        </div>
+      </div>
+
+      <!-- Blog Guidance Banner -->
+      <div style="background:#f0f9ff; border:1px solid #bae6fd; border-left:4px solid #0284c7; border-radius:8px; padding:0.9rem 1.1rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem;">
+        <div>
+          <div style="font-weight:700; color:#0369a1; font-size:0.92rem;"><i class="fas fa-info-circle"></i> How to Update Your Blog:</div>
+          <div style="color:#475569; font-size:0.84rem; margin-top:3px; line-height:1.5;">
+            Click <strong>"+ Write New Article"</strong> to create a new post, or click <strong>"Edit"</strong> on any article below. When you click Publish, your article saves to the database and syncs instantly to <a href="blog.html" target="_blank" style="color:#0284c7; font-weight:700;">blog.html</a> across all visitors worldwide.
+          </div>
         </div>
       </div>
 
@@ -1267,6 +1296,88 @@
       <div id="blogEmptyState" style="display:none; text-align:center; padding:3rem; color:var(--text-muted);">
         <i class="fas fa-newspaper" style="font-size:2.5rem; margin-bottom:0.8rem; color:#cbd5e1;"></i>
         <p>No blog articles found. Click "+ Write New Article" to publish your first post.</p>
+      </div>
+    </section>
+
+    
+    <!-- ========================================== -->
+    <!-- TAB: SUPABASE CLOUD DATABASE CONFIGURATION -->
+    <!-- ========================================== -->
+    <section id="tabSupabase" class="admin-card" style="display:none;">
+      <div class="card-head">
+        <div>
+          <h2><i class="fas fa-database" style="color:#22c55e;"></i> Supabase PostgreSQL Cloud Database Integration</h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+            Scale Greach Impact to an enterprise PostgreSQL database on Supabase. Universal real-time synchronization across all devices worldwide.
+          </p>
+        </div>
+        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+          <button class="btn-primary" style="background:#22c55e; border-color:#22c55e; font-weight:700;" onclick="testSupabaseConnection()"><i class="fas fa-plug"></i> Test Connection</button>
+          <button class="btn-gold" onclick="syncAllToSupabase()"><i class="fas fa-cloud-upload-alt"></i> 1-Click Sync to Supabase</button>
+        </div>
+      </div>
+
+      <!-- Live Connection Status Banner -->
+      <div id="supabaseStatusBanner" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1.2rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div id="supabaseStatusDot" style="width:14px; height:14px; border-radius:50%; background:#94a3b8;"></div>
+          <div>
+            <div style="font-weight:700; color:var(--navy-900); font-size:1rem;" id="supabaseStatusText">Supabase Status: Not Configured (Using LocalStorage &amp; Serverless Sync)</div>
+            <div style="font-size:0.8rem; color:#64748b;" id="supabaseStatusSub">Enter your Supabase URL &amp; API Key below to scale to live PostgreSQL in the cloud.</div>
+          </div>
+        </div>
+        <a href="SUPABASE_SETUP_GUIDE.md" target="_blank" class="btn-action" style="font-size:0.85rem;"><i class="fas fa-book"></i> View 5-Min Setup Guide</a>
+      </div>
+
+      <!-- Supabase Credentials Form -->
+      <div style="background:white; border:1px solid var(--card-border); border-radius:12px; padding:1.5rem; margin-bottom:2rem;">
+        <h3 style="font-size:1.05rem; color:var(--navy-900); margin-bottom:1rem; display:flex; align-items:center; gap:8px;">
+          <i class="fas fa-key" style="color:var(--accent-blue);"></i> Supabase API Credentials
+        </h3>
+        
+        <form onsubmit="handleSaveSupabaseConfig(event)">
+          <div class="form-group">
+            <label style="font-weight:700; color:#334155;">Supabase Project URL:</label>
+            <input type="url" id="sbProjectUrl" class="form-control" placeholder="https://yourprojectid.supabase.co" required />
+            <small style="color:var(--text-muted); font-size:0.75rem;">Found in Supabase: Project Settings &rarr; API &rarr; Project URL.</small>
+          </div>
+
+          <div class="form-group">
+            <label style="font-weight:700; color:#334155;">Supabase Project API Key (anon / public):</label>
+            <div style="display:flex; gap:0.5rem;">
+              <input type="password" id="sbAnonKey" class="form-control" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." required />
+              <button type="button" onclick="togglePasswordVisibility('sbAnonKey', this)" class="btn-action" style="padding:0.7rem;"><i class="fas fa-eye"></i></button>
+            </div>
+            <small style="color:var(--text-muted); font-size:0.75rem;">Found in Supabase: Project Settings &rarr; API &rarr; Project API Keys &rarr; anon public.</small>
+          </div>
+
+          <div id="sbAlertBox" style="display:none; padding:0.85rem; border-radius:8px; margin-bottom:1.2rem; font-size:0.85rem;"></div>
+
+          <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+            <button type="submit" class="btn-primary" style="background:#0A0A5E;">
+              <i class="fas fa-save"></i> Save Credentials
+            </button>
+            <button type="button" onclick="testSupabaseConnection()" class="btn-action">
+              <i class="fas fa-plug"></i> Test Connection
+            </button>
+            <button type="button" onclick="syncAllToSupabase()" class="btn-primary" style="background:#22c55e; border-color:#22c55e; font-weight:700;">
+              <i class="fas fa-cloud-upload-alt"></i> Upload All Local Data to Supabase
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Quick 4-Step Instructions Inside The Admin Page -->
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1.5rem;">
+        <h3 style="font-size:1.05rem; color:var(--navy-900); margin-bottom:0.8rem; display:flex; align-items:center; gap:8px;">
+          <i class="fas fa-list-ol" style="color:var(--accent-teal);"></i> How to Connect Supabase in 4 Quick Steps:
+        </h3>
+        <ol style="margin-left:1.2rem; color:#334155; font-size:0.9rem; line-height:1.7;">
+          <li>Create a free project at <a href="https://supabase.com" target="_blank" style="color:#0284c7; font-weight:700;">supabase.com</a> (Free forever, includes 500MB PostgreSQL database).</li>
+          <li>In your Supabase project, click <strong>SQL Editor</strong>, open <a href="supabase_schema.sql" target="_blank" style="color:#0284c7; font-weight:700;">supabase_schema.sql</a>, paste the SQL, and click <strong>Run</strong>.</li>
+          <li>Go to <strong>Project Settings &rarr; API</strong>, copy your <strong>Project URL</strong> and <strong>anon key</strong>.</li>
+          <li>Paste them above, click <strong>Save Credentials</strong>, and click <strong>Upload All Local Data to Supabase</strong>. All your students, prices, and blogs will immediately sync to the cloud!</li>
+        </ol>
       </div>
     </section>
 
@@ -1507,6 +1618,124 @@
     </div>
   </div>
 
+  
+  <!-- Universal Access Code Generator Modal -->
+  <div class="modal-overlay" id="universalCodeModal">
+    <div class="modal-card" style="max-width:620px; width:92%; max-height:90vh; overflow-y:auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+        <h3 style="display:flex; align-items:center; gap:8px; margin:0; color:var(--navy-900);">
+          <i class="fas fa-key" style="color:#107C41;"></i>
+          <span>Universal Access Code &amp; Pass Generator</span>
+        </h3>
+        <button onclick="closeUniversalCodeModal()" style="background:none; border:none; font-size:1.4rem; cursor:pointer; color:#64748b;">&times;</button>
+      </div>
+      
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.2rem;">
+        Generate unique access codes for students, temporary live class passes, or VIP access. Codes take effect immediately across all classrooms and sync to the database.
+      </p>
+
+      <form id="universalCodeForm" onsubmit="handleGenerateUniversalCode(event)">
+        <!-- Code Type -->
+        <div class="form-group">
+          <label><i class="fas fa-sliders-h"></i> Access Code Type:</label>
+          <select id="ucType" class="form-control" onchange="handleCodeTypeChange()">
+            <option value="student_course">🎓 Student Course Enrollment Code (Permanent / 30-Day)</option>
+            <option value="session_pass">⏱️ Temporary Live Session Pass (Single Class / Workshop)</option>
+            <option value="vip_suite">👑 Complete Suite VIP Pass (Unlocks All 5 Modules)</option>
+          </select>
+        </div>
+
+        <!-- Course Scope -->
+        <div class="form-group" id="ucCourseGroup">
+          <label><i class="fas fa-book"></i> Enrolled Course Scope:</label>
+          <select id="ucCourse" class="form-control">
+            <option value="Microsoft Excel for Beginners">Microsoft Excel for Beginners (Modules 1 &amp; 2)</option>
+            <option value="Microsoft Excel Advanced">Microsoft Excel Advanced (Modules 3, 4 &amp; 5)</option>
+            <option value="Complete Data Analytics Suite">Complete Data Analytics Suite (All Modules)</option>
+            <option value="Power BI for Beginners">Power BI for Beginners</option>
+            <option value="SQL for Data Analytics">SQL for Data Analytics</option>
+          </select>
+        </div>
+
+        <!-- Validity / Expiration -->
+        <div class="form-group">
+          <label><i class="fas fa-hourglass-half"></i> Access Validity &amp; Expiration:</label>
+          <select id="ucExpiration" class="form-control">
+            <option value="30_days">30 Days (Standard 1-Month Post-Class Access)</option>
+            <option value="2_hours">2 Hours (Single Live Class Session)</option>
+            <option value="4_hours">4 Hours (Half-Day Workshop)</option>
+            <option value="24_hours">24 Hours (1 Day Full Access)</option>
+            <option value="7_days">7 Days (1 Week Access)</option>
+            <option value="lifetime">Lifetime / Valid Until Manually Revoked</option>
+          </select>
+        </div>
+
+        <!-- Student Details (Optional) -->
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:1rem; margin-bottom:1.2rem;">
+          <div style="font-size:0.85rem; font-weight:700; color:var(--navy-900); margin-bottom:0.6rem; display:flex; align-items:center; gap:6px;">
+            <i class="fas fa-user-plus" style="color:var(--accent-blue);"></i>
+            <span>Assign to Student (Optional - Auto-Registers in Student Bank)</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;">
+            <div>
+              <label style="font-size:0.78rem; font-weight:600; color:#64748b;">Student Full Name:</label>
+              <input type="text" id="ucStudentName" class="form-control" placeholder="e.g. Emmanuel Obi" />
+            </div>
+            <div>
+              <label style="font-size:0.78rem; font-weight:600; color:#64748b;">Student Email:</label>
+              <input type="email" id="ucStudentEmail" class="form-control" placeholder="student@example.com" />
+            </div>
+          </div>
+          <div style="margin-top:0.6rem;">
+            <label style="font-size:0.78rem; font-weight:600; color:#64748b;">Phone Number (WhatsApp):</label>
+            <input type="tel" id="ucStudentPhone" class="form-control" placeholder="e.g. +2348012345678" />
+          </div>
+        </div>
+
+        <!-- Custom Code or Auto-Generate -->
+        <div class="form-group">
+          <label><i class="fas fa-font"></i> Custom Code Text (Optional - leave blank to auto-generate):</label>
+          <input type="text" id="ucCustomCode" class="form-control" placeholder="e.g. GRC-EXCEL-MARCH or LIVE-VIP-2026" />
+          <small style="color:var(--text-muted); font-size:0.75rem;">If empty, a secure code like <code>GRC-BEG-8492</code> will be generated automatically.</small>
+        </div>
+
+        <!-- Buttons -->
+        <div style="display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.5rem;">
+          <button type="button" onclick="closeUniversalCodeModal()" class="btn-action" style="padding:0.6rem 1.2rem;">Cancel</button>
+          <button type="submit" class="btn-primary" style="background:#107C41; border-color:#107C41; padding:0.6rem 1.5rem; font-weight:700;">
+            <i class="fas fa-bolt"></i> Generate &amp; Save Code
+          </button>
+        </div>
+      </form>
+
+      <!-- RESULT BOX (Shown immediately after generating) -->
+      <div id="ucResultBox" style="display:none; margin-top:1.5rem; background:#f0fdf4; border:1.5px solid #86efac; border-radius:12px; padding:1.2rem;">
+        <div style="display:flex; align-items:center; gap:8px; color:#166534; font-weight:700; margin-bottom:0.5rem;">
+          <i class="fas fa-check-circle" style="font-size:1.2rem;"></i>
+          <span>Access Code Successfully Created &amp; Active!</span>
+        </div>
+        <div style="text-align:center; padding:1rem; background:white; border-radius:8px; border:1px solid #bbf7d0; margin-bottom:1rem;">
+          <div style="font-size:0.8rem; color:#64748b; text-transform:uppercase; font-weight:700; letter-spacing:1px; margin-bottom:4px;">Unique Access Code</div>
+          <div id="ucGeneratedCodeDisplay" style="font-family:monospace; font-size:1.8rem; font-weight:800; color:#0A0A5E; letter-spacing:2px;">GRC-2026-XXXX</div>
+          <div id="ucGeneratedDetails" style="font-size:0.82rem; color:#475569; margin-top:6px;">Course: Microsoft Excel for Beginners • Valid for: 30 Days</div>
+        </div>
+
+        <!-- 1-Click Action Buttons -->
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">
+          <button type="button" onclick="copyUniversalCode()" class="btn-primary" style="background:#107C41; font-size:0.85rem; padding:0.5rem 1rem;">
+            <i class="fas fa-copy"></i> Copy Code
+          </button>
+          <button type="button" onclick="copyUniversalClassLink()" class="btn-action" style="font-size:0.85rem; padding:0.5rem 1rem;">
+            <i class="fas fa-link"></i> Copy Classroom Link
+          </button>
+          <button type="button" id="ucWhatsAppBtn" onclick="shareCodeWhatsApp()" class="btn-action" style="background:#25D366; color:white; border-color:#25D366; font-size:0.85rem; padding:0.5rem 1rem;">
+            <i class="fab fa-whatsapp"></i> Share on WhatsApp
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Generate Temporary Session Pass Modal -->
   <div class="modal-overlay" id="sessionPassModal">
     <div class="modal-card">
@@ -1633,6 +1862,427 @@
     }
   
 
+    
+    // ==========================================
+    // UNIVERSAL ACCESS CODE & PASS GENERATOR
+    // ==========================================
+    let lastGeneratedCodeData = null;
+
+    function openUniversalCodeModal(mode) {
+      const modal = document.getElementById('universalCodeModal');
+      const resultBox = document.getElementById('ucResultBox');
+      if (resultBox) resultBox.style.display = 'none';
+      if (modal) modal.classList.add('active');
+
+      if (mode === 'session_pass') {
+        document.getElementById('ucType').value = 'session_pass';
+        document.getElementById('ucExpiration').value = '2_hours';
+      } else if (mode === 'vip_suite') {
+        document.getElementById('ucType').value = 'vip_suite';
+        document.getElementById('ucCourse').value = 'Complete Data Analytics Suite';
+        document.getElementById('ucExpiration').value = 'lifetime';
+      } else {
+        document.getElementById('ucType').value = 'student_course';
+        document.getElementById('ucExpiration').value = '30_days';
+      }
+      handleCodeTypeChange();
+    }
+
+    function closeUniversalCodeModal() {
+      const modal = document.getElementById('universalCodeModal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function handleCodeTypeChange() {
+      const type = document.getElementById('ucType').value;
+      const courseGroup = document.getElementById('ucCourseGroup');
+      if (type === 'vip_suite') {
+        document.getElementById('ucCourse').value = 'Complete Data Analytics Suite';
+        if (courseGroup) courseGroup.style.display = 'none';
+      } else {
+        if (courseGroup) courseGroup.style.display = 'block';
+      }
+    }
+
+    function handleGenerateUniversalCode(e) {
+      if (e) e.preventDefault();
+      const type = document.getElementById('ucType').value;
+      const course = document.getElementById('ucCourse').value;
+      const expChoice = document.getElementById('ucExpiration').value;
+      const studentName = (document.getElementById('ucStudentName').value || '').trim();
+      const studentEmail = (document.getElementById('ucStudentEmail').value || '').trim();
+      const studentPhone = (document.getElementById('ucStudentPhone').value || '').trim();
+      const customCode = (document.getElementById('ucCustomCode').value || '').trim().toUpperCase();
+
+      // Calculate expiration date
+      let expiresAt = null;
+      let expDurationHours = 0;
+      let expText = 'Lifetime Access';
+      const now = new Date();
+
+      if (expChoice === '2_hours') {
+        now.setHours(now.getHours() + 2);
+        expiresAt = now.toISOString();
+        expDurationHours = 2;
+        expText = '2 Hours (Single Class)';
+      } else if (expChoice === '4_hours') {
+        now.setHours(now.getHours() + 4);
+        expiresAt = now.toISOString();
+        expDurationHours = 4;
+        expText = '4 Hours (Workshop)';
+      } else if (expChoice === '24_hours') {
+        now.setDate(now.getDate() + 1);
+        expiresAt = now.toISOString();
+        expDurationHours = 24;
+        expText = '24 Hours (1 Day)';
+      } else if (expChoice === '7_days') {
+        now.setDate(now.getDate() + 7);
+        expiresAt = now.toISOString();
+        expDurationHours = 168;
+        expText = '7 Days';
+      } else if (expChoice === '30_days') {
+        now.setDate(now.getDate() + 30);
+        expiresAt = now.toISOString();
+        expDurationHours = 720;
+        expText = '30 Days (1 Month Post-Class)';
+      }
+
+      // Generate code string
+      let code = customCode;
+      if (!code) {
+        const rand = Math.floor(1000 + Math.random() * 9000);
+        if (type === 'session_pass') {
+          code = `LIVE-SESS-${rand}`;
+        } else if (type === 'vip_suite') {
+          code = `GRC-VIP-${rand}`;
+        } else {
+          const prefix = course.includes('Beginner') ? 'BEG' : (course.includes('Advanced') ? 'ADV' : 'EXC');
+          code = `GRC-${prefix}-${rand}`;
+        }
+      }
+
+      // Save to database
+      if (type === 'session_pass') {
+        if (window.GreachDB && window.GreachDB.createSessionPass) {
+          window.GreachDB.createSessionPass({
+            customCode: code,
+            label: studentName ? `Live Pass - ${studentName}` : 'Live Class Session Pass',
+            course: course,
+            cohort: 'Batch 2: 2026 Masterclass',
+            durationHours: expDurationHours
+          }, currentAdminSession ? currentAdminSession.username : 'Super Admin');
+        }
+      } else {
+        // Full Student Course Access Code
+        const studentId = 'STU-2026-' + String(Math.floor(1000 + Math.random() * 9000));
+        const newStu = {
+          id: studentId,
+          name: studentName || 'Registered Student',
+          email: studentEmail || `student-${code.toLowerCase()}@greachimpact.com`,
+          phone: studentPhone || '',
+          password: code,
+          cohort: 'Batch 2: 2026 Masterclass',
+          course: course,
+          classEndDate: new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
+          expiresAt: expiresAt,
+          accessType: type === 'vip_suite' ? 'VIP All Access' : 'Full Course',
+          certificateClaimed: false
+        };
+
+        if (window.GreachDB && window.GreachDB.createStudent) {
+          window.GreachDB.createStudent(newStu, currentAdminSession ? currentAdminSession.username : 'Super Admin');
+        }
+      }
+
+      // Also record in passes table for instant verification
+      if (window.GreachDB && window.GreachDB.getAllSessionPasses) {
+        const passes = window.GreachDB.getAllSessionPasses();
+        if (!passes.some(p => p.code === code)) {
+          passes.unshift({
+            code: code,
+            label: studentName ? `Student Code (${studentName})` : `Course Code (${course})`,
+            course: course,
+            cohort: 'Batch 2: 2026 Masterclass',
+            createdAt: new Date().toISOString(),
+            expiresAt: expiresAt,
+            isActive: true,
+            createdBy: currentAdminSession ? currentAdminSession.username : 'Super Admin'
+          });
+          localStorage.setItem('greach_session_passes', JSON.stringify(passes));
+        }
+      }
+
+      // Store in state and display result
+      lastGeneratedCodeData = {
+        code: code,
+        course: course,
+        expiresText: expText,
+        studentName: studentName,
+        phone: studentPhone
+      };
+
+      document.getElementById('ucGeneratedCodeDisplay').textContent = code;
+      document.getElementById('ucGeneratedDetails').textContent = `Course: ${course} • Valid for: ${expText}` + (studentName ? ` • Student: ${studentName}` : '');
+      document.getElementById('ucResultBox').style.display = 'block';
+
+      // Refresh background tables
+      renderStats();
+      renderStudentsTable();
+      if (typeof renderSessionPassesTable === 'function') renderSessionPassesTable();
+      if (typeof syncSiteDataToCloud === 'function') syncSiteDataToCloud();
+    }
+
+    function copyUniversalCode() {
+      if (!lastGeneratedCodeData) return;
+      navigator.clipboard.writeText(lastGeneratedCodeData.code).then(() => {
+        alert('Access Code copied to clipboard: ' + lastGeneratedCodeData.code);
+      });
+    }
+
+    function copyUniversalClassLink() {
+      if (!lastGeneratedCodeData) return;
+      const origin = window.location.origin;
+      const link = `${origin}/classroom/index.html?code=${encodeURIComponent(lastGeneratedCodeData.code)}`;
+      navigator.clipboard.writeText(link).then(() => {
+        alert('Classroom Link copied to clipboard:\n' + link);
+      });
+    }
+
+    function shareCodeWhatsApp() {
+      if (!lastGeneratedCodeData) return;
+      const origin = window.location.origin;
+      const link = `${origin}/classroom/index.html?code=${encodeURIComponent(lastGeneratedCodeData.code)}`;
+      const msg = encodeURIComponent(
+        `Hello ${lastGeneratedCodeData.studentName || 'Student'}!\n\nHere is your official access code for Greach Impact Academy:\n\n🔑 Code: ${lastGeneratedCodeData.code}\n📚 Course: ${lastGeneratedCodeData.course}\n⏱️ Validity: ${lastGeneratedCodeData.expiresText}\n\n👉 Click to enter your classroom directly: ${link}\n\nWelcome to class!`
+      );
+      const phoneClean = (lastGeneratedCodeData.phone || '').replace(/[^0-9]/g, '');
+      const waUrl = phoneClean ? `https://wa.me/${phoneClean}?text=${msg}` : `https://api.whatsapp.com/send?text=${msg}`;
+      window.open(waUrl, '_blank');
+    }
+
+    // ==========================================
+    // SUPABASE CLOUD DATABASE INTEGRATION
+    // ==========================================
+    const SUPABASE_CONFIG_KEY = 'greach_supabase_config_v1';
+
+    function getSupabaseConfig() {
+      try {
+        const stored = localStorage.getItem(SUPABASE_CONFIG_KEY);
+        return stored ? JSON.parse(stored) : null;
+      } catch(e) {
+        return null;
+      }
+    }
+
+    function loadSupabaseConfigUI() {
+      const cfg = getSupabaseConfig();
+      const banner = document.getElementById('supabaseStatusBanner');
+      const dot = document.getElementById('supabaseStatusDot');
+      const text = document.getElementById('supabaseStatusText');
+      const sub = document.getElementById('supabaseStatusSub');
+
+      if (cfg && cfg.url && cfg.key) {
+        document.getElementById('sbProjectUrl').value = cfg.url;
+        document.getElementById('sbAnonKey').value = cfg.key;
+        if (dot) dot.style.background = '#22c55e';
+        if (text) text.innerHTML = '<span style="color:#166534;">Supabase Status: Connected to Cloud PostgreSQL</span>';
+        if (sub) sub.textContent = `Project Endpoint: ${cfg.url} • Active & Ready for Universal Real-Time Sync`;
+      } else {
+        if (dot) dot.style.background = '#94a3b8';
+        if (text) text.textContent = 'Supabase Status: Not Configured (Using LocalStorage & Serverless Sync)';
+        if (sub) sub.textContent = 'Enter your Supabase URL & API Key below to scale to live PostgreSQL in the cloud.';
+      }
+    }
+
+    function handleSaveSupabaseConfig(e) {
+      if (e) e.preventDefault();
+      const url = document.getElementById('sbProjectUrl').value.trim().replace(/\/$/, '');
+      const key = document.getElementById('sbAnonKey').value.trim();
+      const alertBox = document.getElementById('sbAlertBox');
+
+      if (!url || !key) {
+        alert('Please provide both your Supabase Project URL and Anon API Key.');
+        return;
+      }
+
+      const cfg = { url, key, savedAt: new Date().toISOString() };
+      localStorage.setItem(SUPABASE_CONFIG_KEY, JSON.stringify(cfg));
+
+      if (alertBox) {
+        alertBox.style.display = 'block';
+        alertBox.style.background = '#f0fdf4';
+        alertBox.style.color = '#166534';
+        alertBox.style.border = '1px solid #bbf7d0';
+        alertBox.innerHTML = '<strong><i class="fas fa-check-circle"></i> Supabase Configuration Saved!</strong> Credentials stored securely. Click "Test Connection" to verify.';
+      }
+
+      loadSupabaseConfigUI();
+    }
+
+    async function testSupabaseConnection() {
+      const url = document.getElementById('sbProjectUrl').value.trim().replace(/\/$/, '');
+      const key = document.getElementById('sbAnonKey').value.trim();
+      const alertBox = document.getElementById('sbAlertBox');
+
+      if (!url || !key) {
+        alert('Please enter your Supabase Project URL and Anon Key first.');
+        return;
+      }
+
+      if (alertBox) {
+        alertBox.style.display = 'block';
+        alertBox.style.background = '#eff6ff';
+        alertBox.style.color = '#1e40af';
+        alertBox.style.border = '1px solid #bfdbfe';
+        alertBox.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting to Supabase PostgreSQL at ' + url + '...';
+      }
+
+      try {
+        const res = await fetch(`${url}/rest/v1/course_prices?select=count`, {
+          method: 'GET',
+          headers: {
+            'apikey': key,
+            'Authorization': `Bearer ${key}`
+          }
+        });
+
+        if (res.ok) {
+          if (alertBox) {
+            alertBox.style.background = '#f0fdf4';
+            alertBox.style.color = '#166534';
+            alertBox.style.border = '1px solid #86efac';
+            alertBox.innerHTML = '<strong><i class="fas fa-check-circle"></i> Connection Verified Successfully!</strong><br>Successfully authenticated with your Supabase cloud PostgreSQL database.';
+          }
+          loadSupabaseConfigUI();
+        } else {
+          const errData = await res.json().catch(() => ({}));
+          if (alertBox) {
+            alertBox.style.background = '#fef2f2';
+            alertBox.style.color = '#991b1b';
+            alertBox.style.border = '1px solid #fca5a5';
+            alertBox.innerHTML = `<strong><i class="fas fa-exclamation-triangle"></i> Connection Failed (HTTP ${res.status}):</strong> ${errData.message || 'Check your Project URL and Anon Key, and ensure supabase_schema.sql was run in your Supabase SQL Editor.'}`;
+          }
+        }
+      } catch(err) {
+        if (alertBox) {
+          alertBox.style.background = '#fef2f2';
+          alertBox.style.color = '#991b1b';
+          alertBox.style.border = '1px solid #fca5a5';
+          alertBox.innerHTML = `<strong><i class="fas fa-exclamation-triangle"></i> Network Error:</strong> ${err.message}. Please verify the URL and your internet connection.`;
+        }
+      }
+    }
+
+    async function syncAllToSupabase() {
+      const cfg = getSupabaseConfig();
+      if (!cfg || !cfg.url || !cfg.key) {
+        alert('Please save and test your Supabase Project URL and Anon Key before syncing.');
+        return;
+      }
+
+      if (!confirm('Upload all local students, active access codes, course prices, schedules, and blog articles to your Supabase PostgreSQL database?')) {
+        return;
+      }
+
+      const alertBox = document.getElementById('sbAlertBox');
+      if (alertBox) {
+        alertBox.style.display = 'block';
+        alertBox.style.background = '#eff6ff';
+        alertBox.style.color = '#1e40af';
+        alertBox.style.border = '1px solid #bfdbfe';
+        alertBox.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading local data to Supabase tables...';
+      }
+
+      try {
+        let syncedStats = { prices: 0, blogs: 0, students: 0, codes: 0 };
+        const headers = {
+          'apikey': cfg.key,
+          'Authorization': `Bearer ${cfg.key}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates'
+        };
+
+        // 1. Sync Prices
+        const prices = window.GreachDB.getPrices ? window.GreachDB.getPrices() : [];
+        if (prices.length > 0) {
+          const priceRows = prices.map(p => ({
+            course_id: p.id,
+            course_name: p.name,
+            original_price: Number(p.originalPrice) || 0,
+            promo_price: Number(p.promoPrice) || 0,
+            discount_pct: Number(p.discountPct) || 0,
+            updated_by: 'Greachimpact'
+          }));
+          const pRes = await fetch(`${cfg.url}/rest/v1/course_prices`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(priceRows)
+          });
+          if (pRes.ok) syncedStats.prices = priceRows.length;
+        }
+
+        // 2. Sync Blogs
+        const blogs = window.GreachDB.getBlogPosts ? window.GreachDB.getBlogPosts() : [];
+        if (blogs.length > 0) {
+          const blogRows = blogs.map(b => ({
+            id: String(b.id),
+            title: b.title,
+            category: b.category,
+            excerpt: b.excerpt,
+            content: b.content,
+            author: b.author || 'Greach Impact Team',
+            read_time: b.readTime || '5 min read',
+            publish_date: b.date,
+            status: 'Published'
+          }));
+          const bRes = await fetch(`${cfg.url}/rest/v1/blog_posts`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(blogRows)
+          });
+          if (bRes.ok) syncedStats.blogs = blogRows.length;
+        }
+
+        // 3. Sync Students
+        const students = window.GreachDB.getAllStudents ? window.GreachDB.getAllStudents() : [];
+        if (students.length > 0) {
+          const studentRows = students.map(s => ({
+            id: s.id,
+            full_name: s.name,
+            registered_email: s.email,
+            phone: s.phone || '',
+            secret_password: s.password,
+            enrolled_course: s.course || 'Microsoft Excel for Beginners',
+            cohort: s.cohort || 'Batch 2: 2026 Masterclass',
+            class_end_date: s.classEndDate || '',
+            expires_at: s.expiresAt || null,
+            status: 'Active'
+          }));
+          const sRes = await fetch(`${cfg.url}/rest/v1/students`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(studentRows)
+          });
+          if (sRes.ok) syncedStats.students = studentRows.length;
+        }
+
+        if (alertBox) {
+          alertBox.style.background = '#f0fdf4';
+          alertBox.style.color = '#166534';
+          alertBox.style.border = '1px solid #86efac';
+          alertBox.innerHTML = `<strong><i class="fas fa-check-circle"></i> Cloud Sync Completed!</strong><br>Successfully synced: <strong>${syncedStats.prices}</strong> course prices, <strong>${syncedStats.blogs}</strong> blog posts, and <strong>${syncedStats.students}</strong> student accounts to your Supabase PostgreSQL database.`;
+        }
+      } catch(err) {
+        if (alertBox) {
+          alertBox.style.background = '#fef2f2';
+          alertBox.style.color = '#991b1b';
+          alertBox.style.border = '1px solid #fca5a5';
+          alertBox.innerHTML = `<strong><i class="fas fa-exclamation-triangle"></i> Sync Error:</strong> ${err.message}`;
+        }
+      }
+    }
+
+
     // 1. Check Authentication on Load
     function checkAdminAuth() {
       const stored = sessionStorage.getItem(ADMIN_SESSION_KEY) || localStorage.getItem(ADMIN_SESSION_KEY);
@@ -1691,30 +2341,63 @@
       }
     }
 
-    // Tab Switching
-    function switchAdminTab(tabKey) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      if (event && event.currentTarget) event.currentTarget.classList.add('active');
+    // Comprehensive Tab Switching Map
+    const ADMIN_TAB_MAP = {
+      students: 'tabStudents',
+      orders: 'tabOrders',
+      session_passes: 'tabSessionPasses',
+      blog: 'tabBlog',
+      supabase: 'tabSupabase',
+      prices: 'tabPrices',
+      schedules: 'tabSchedules',
+      brevo: 'tabBrevo',
+      audit: 'tabAudit',
+      superuser: 'tabSuperuser',
+      admins: 'tabAdmins',
+      certificates: 'tabCertificates',
+      activity: 'tabActivity',
+      broadcast: 'tabBroadcast'
+    };
 
-      const tabs = ['students', 'orders', 'session_passes', 'prices', 'schedules', 'brevo', 'audit', 'superuser', 'admins', 'certificates', 'broadcast'];
-      tabs.forEach(t => {
-        const el = document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}`);
-        if (el) el.style.display = (t === tabKey) ? 'block' : 'none';
+    function switchAdminTab(tabKey) {
+      // Highlight button
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => {
+        const oc = b.getAttribute('onclick') || '';
+        return oc.includes(`'${tabKey}'`) || oc.includes(`"${tabKey}"`);
+      });
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+      } else if (typeof event !== 'undefined' && event && event.currentTarget && event.currentTarget.classList) {
+        event.currentTarget.classList.add('active');
+      }
+
+      // Display mapped section
+      Object.entries(ADMIN_TAB_MAP).forEach(([key, sectionId]) => {
+        const el = document.getElementById(sectionId);
+        if (el) el.style.display = (key === tabKey) ? 'block' : 'none';
       });
 
-      if (tabKey === 'activity') {
-        renderStudentActivity();
+      // Tab specific data hydration
+      if (tabKey === 'blog') {
+        if (typeof renderBlogTable === 'function') renderBlogTable();
+      } else if (tabKey === 'session_passes') {
+        if (typeof renderSessionPassesTable === 'function') renderSessionPassesTable();
+      } else if (tabKey === 'supabase') {
+        if (typeof loadSupabaseConfigUI === 'function') loadSupabaseConfigUI();
+      } else if (tabKey === 'activity') {
+        if (typeof renderStudentActivity === 'function') renderStudentActivity();
       } else if (tabKey === 'superuser') {
-        populateSuperUserForm();
+        if (typeof populateSuperUserForm === 'function') populateSuperUserForm();
       } else if (tabKey === 'schedules') {
-        renderScheduleCards();
-        syncSiteDataToCloud();
+        if (typeof renderScheduleCards === 'function') renderScheduleCards();
+        if (typeof syncSiteDataToCloud === 'function') syncSiteDataToCloud();
       } else if (tabKey === 'orders') {
-        renderOrdersTable();
+        if (typeof renderOrdersTable === 'function') renderOrdersTable();
       } else if (tabKey === 'brevo') {
-        loadBrevoConfig();
-        renderDispatchLogsTable();
-        checkBrevoApiStatus();
+        if (typeof loadBrevoConfig === 'function') loadBrevoConfig();
+        if (typeof renderDispatchLogsTable === 'function') renderDispatchLogsTable();
+        if (typeof checkBrevoApiStatus === 'function') checkBrevoApiStatus();
       }
 
       if (tabKey === 'admins' && currentAdminSession && !currentAdminSession.isSuper) {
