@@ -1022,11 +1022,8 @@
 
       <div style="margin-top:1.2rem; padding-top:0.9rem; border-top:1px solid #f1f5f9; text-align:center;">
         <p style="font-size:0.75rem; color:#94a3b8; margin-bottom:0.4rem;">
-          🔒 All enrolled students have separate credentials &bull; Instructor Master Key: <code>GREACH-ADMIN-2026</code>
+          🔒 Enterprise Access Gate &bull; All enrolled students have verified credentials
         </p>
-        <button type="button" onclick="autoFillInstructorKey()" style="background:none; border:none; color:#107c41; font-size:0.74rem; font-weight:700; cursor:pointer; text-decoration:underline;">
-          👑 Lead Instructor Quick Access: Click to Enter Admin Mode
-        </button>
       </div>
     </div>
   </div>
@@ -2804,7 +2801,7 @@
 
         <div style="margin-bottom:1.2rem;">
           <label class="gate-label"><i class="fas fa-key"></i> Current Master Admin Passcode:</label>
-          <input type="text" id="instructorCurrentMasterKey" class="gate-input" value="GREACH-ADMIN-2026" readonly style="background:#f1f5f9; font-family:monospace;" />
+          <input type="password" id="instructorCurrentMasterKey" class="gate-input" value="••••••••••••••••" readonly style="background:#f1f5f9; font-family:monospace;" />
         </div>
 
         <button class="c-btn" style="background:#107c41; color:white; width:100%; justify-content:center; padding:0.75rem;" onclick="saveInstructorSettings()">
@@ -3375,7 +3372,7 @@
         if (batchOut) batchOut.value = `${curUrl}?batch=Batch2&token=GREACH-2026`;
 
         const instOut = document.getElementById('magicInstructorLinkOutput');
-        if (instOut) instOut.value = `${curUrl}?admin=GREACH-ADMIN-2026`;
+        if (instOut) instOut.value = `${curUrl}`;
       }
 
       window.updateMagicStudentDisplay = function() {
@@ -3623,7 +3620,7 @@ Automated Direct Link: ${s.magicLink}`;
 
         // 1. Lead Instructor Instant Magic Link
         const adminKey = params.get('admin') || params.get('master') || (params.get('instructor') === 'true' ? params.get('key') : null);
-        if (adminKey === 'GREACH-ADMIN-2026') {
+        if (adminKey === 'Evana_Oluebube123890') {
           localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
           const session = {
             role: 'instructor',
@@ -3945,7 +3942,7 @@ Automated Direct Link: ${s.magicLink}`;
           }
         } else if (
           (userOrEmail.toLowerCase() === 'greachimpact' && pass === 'Evana_Oluebube123890') ||
-          pass === 'GREACH-ADMIN-2026'
+          (userOrEmail.toLowerCase() === 'greachimpact' && pass === 'Evana_Oluebube123890')
         ) {
           isSuccess = true;
         }
@@ -4609,7 +4606,7 @@ Automated Direct Link: ${s.magicLink}`;
         btnBatchLinks.onclick = () => {
           if (localStorage.getItem(INSTRUCTOR_LOGIN_KEY) !== 'true') {
             const pass = prompt('Enter Instructor Master Key to manage batches:');
-            if (pass === 'GREACH-ADMIN-2026') {
+            if ((userOrEmail.toLowerCase() === 'greachimpact' && pass === 'Evana_Oluebube123890')) {
               localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
               updateUserIdentityHeader(true);
             } else {

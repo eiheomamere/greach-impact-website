@@ -258,11 +258,27 @@
             const feedContainer = document.getElementById('blogFeed');
             try {
                 let data = [];
-                // 1. Load from GreachDB (live updates from admin)
-                if (window.GreachDB && typeof window.GreachDB.getBlogPosts === 'function') {
+                // 1. Proactively load from universal central store (/api/site-data or site-data.json)
+                try {
+                    let res = await fetch('/api/site-data');
+                    if (!res || !res.ok) res = await fetch('site-data.json');
+                    if (res && res.ok) {
+                        const json = await res.json();
+                        const cloudData = json.data || json;
+                        if (cloudData.blogPosts && Array.isArray(cloudData.blogPosts) && cloudData.blogPosts.length > 0) {
+                            data = cloudData.blogPosts;
+                            if (window.GreachDB && window.GreachDB.saveBlogPosts) {
+                                window.GreachDB.saveBlogPosts(data);
+                            }
+                        }
+                    }
+                } catch(e) {}
+
+                // 2. Load from GreachDB (live updates from admin)
+                if ((!data || data.length === 0) && window.GreachDB && typeof window.GreachDB.getBlogPosts === 'function') {
                     data = window.GreachDB.getBlogPosts();
                 }
-                // 2. If no cached posts in DB, load default from posts.json and initialize DB
+                // 3. Fallback to posts.json
                 if (!data || data.length === 0) {
                     try {
                         const response = await fetch(LOCAL_JSON_URL);

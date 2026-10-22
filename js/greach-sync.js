@@ -111,7 +111,43 @@
   }
 
   let syncRetryCount = 0;
-  function syncAll() {
+    async function hydrateFromCloud() {
+    try {
+      let res = null;
+      try {
+        res = await fetch('/api/site-data');
+      } catch (e) {}
+
+      if (!res || !res.ok) {
+        try {
+          res = await fetch('site-data.json');
+        } catch (e) {
+          try {
+            res = await fetch('../site-data.json');
+          } catch (e2) {}
+        }
+      }
+
+      if (res && res.ok) {
+        const json = await res.json();
+        const data = json.data || json;
+        if (data.prices) {
+          localStorage.setItem('greach_course_prices_v2', JSON.stringify(data.prices));
+        }
+        if (data.schedules) {
+          localStorage.setItem('greach_course_schedules_v2', JSON.stringify(data.schedules));
+        }
+        if (data.blogPosts && Array.isArray(data.blogPosts)) {
+          localStorage.setItem('greach_blog_posts_v2', JSON.stringify(data.blogPosts));
+        }
+        syncAll();
+      }
+    } catch (err) {
+      console.warn('[GreachSync] Cloud hydration fallback to local defaults:', err);
+    }
+  }
+
+function syncAll() {
     let prices = null;
     let schedules = null;
 
@@ -305,17 +341,15 @@
   if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
-        injectTypographyAndBrandColors();
-        syncAll();
+        injectTypographyAndBrandColors(); syncAll(); if (typeof hydrateFromCloud === "function") hydrateFromCloud();
       });
     } else {
-      injectTypographyAndBrandColors();
-      syncAll();
+      injectTypographyAndBrandColors(); syncAll(); if (typeof hydrateFromCloud === "function") hydrateFromCloud();
     }
   }
 
   window.GreachSync = {
-    refresh: syncAll,
+    refresh: syncAll, hydrate: hydrateFromCloud,
     inject: injectTypographyAndBrandColors
   };
 })();

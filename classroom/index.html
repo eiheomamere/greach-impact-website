@@ -434,119 +434,116 @@
 
     <!-- 🔒 REGISTERED STUDENT & INSTRUCTOR ACCESS GATE -->
   <div class="security-gate-overlay" id="securityGateOverlay">
-    <div class="gate-card" style="max-width: 520px; padding: 2.2rem 2.4rem; border-radius: 1.5rem; background: #ffffff; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem;">
-        <div style="width: 52px; height: 52px; background: linear-gradient(135deg, #1b365d, #0284c7); color: white; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-          <i class="fas fa-lock"></i>
+    <div class="gate-card" style="max-width: 460px; width: 92%; padding: 2.2rem 2.2rem; border-radius: 1.25rem; background: #ffffff; box-shadow: 0 25px 50px -12px rgba(10, 10, 94, 0.25); border: 1px solid rgba(226, 232, 240, 0.8);">
+      
+      <!-- Minimalist Brand Header -->
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <div style="width: 52px; height: 52px; margin: 0 auto 0.9rem; background: linear-gradient(135deg, #0A0A5E, #1b365d); color: white; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 8px 16px rgba(10, 10, 94, 0.15);">
+          <i class="fas fa-graduation-cap"></i>
         </div>
-        <span style="background: #ecfdf5; color: #065f46; font-size: 0.76rem; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 20px; border: 1px solid #a7f3d0;">
-          <i class="fas fa-shield-alt"></i> Automated Security Gate
-        </span>
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 0.35rem; font-family:'Outfit', sans-serif;">Classroom Portal</h2>
+        <p style="font-size: 0.86rem; color: #64748b; line-height: 1.45; margin: 0;">
+          Enter your unique access code or account credentials to access your course.
+        </p>
       </div>
 
-      <h2 style="font-size: 1.45rem; font-weight: 800; color: #0f233d; margin-bottom: 0.3rem;">Excel Masterclass Portal</h2>
-      <p style="font-size: 0.88rem; color: #64748b; margin-bottom: 1.2rem; line-height: 1.5;">
-        Welcome to the Microsoft Excel Masterclass. Select your role below or use an automated magic access link.
-      </p>
-
-      <!-- Role Selector Tabs -->
-      <div style="display:flex; background:#f1f5f9; border-radius:10px; padding:0.3rem; margin-bottom:1.3rem; gap:0.3rem; border:1px solid #e2e8f0;">
-        <button type="button" id="tabGateStudent" onclick="switchStartRole('student')" style="flex:1; border:none; padding:0.65rem 0.5rem; border-radius:8px; font-weight:700; font-size:0.88rem; background:white; color:#0f172a; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.4rem; box-shadow:0 2px 4px rgba(0,0,0,0.06); transition:all 0.2s ease;">
-          <i class="fas fa-user-graduate" style="color:#0284c7;"></i> Student Sign-In
+      <!-- Segmented Mode Control -->
+      <div id="portalModeTabs" style="display: flex; background: #f1f5f9; border-radius: 10px; padding: 0.25rem; margin-bottom: 1.4rem; gap: 0.25rem; border: 1px solid #e2e8f0;">
+        <button type="button" id="tabModeCode" onclick="switchLoginMode('code')" style="flex: 1; border: none; padding: 0.65rem 0.5rem; border-radius: 8px; font-weight: 700; font-size: 0.86rem; background: white; color: #0f172a; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; box-shadow: 0 2px 4px rgba(0,0,0,0.06); transition: all 0.2s ease;">
+          <i class="fas fa-key" style="color: #107c41;"></i> Access Code
         </button>
-        <button type="button" id="tabGateInstructor" onclick="switchStartRole('instructor')" style="flex:1; border:none; padding:0.65rem 0.5rem; border-radius:8px; font-weight:700; font-size:0.88rem; background:transparent; color:#64748b; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.4rem; transition:all 0.2s ease;">
-          <i class="fas fa-chalkboard-teacher" style="color:#107c41;"></i> Instructor Access
+        <button type="button" id="tabModeEmail" onclick="switchLoginMode('email')" style="flex: 1; border: none; padding: 0.65rem 0.5rem; border-radius: 8px; font-weight: 700; font-size: 0.86rem; background: transparent; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; transition: all 0.2s ease;">
+          <i class="fas fa-envelope" style="color: #0284c7;"></i> Email & Password
         </button>
       </div>
 
-      <!-- Student Sign-in Form -->
-      <form id="studentGateForm" onsubmit="handleStartStudentLogin(event)">
-        <div style="margin-bottom: 0.9rem; text-align: left;">
-          <label class="gate-label" style="display:block; font-size:0.85rem; font-weight:700; color:#334155; margin-bottom:0.35rem;">
-            <i class="fas fa-key" style="color:#107c41;"></i> Enter Your Unique Access Code or Student ID:
+      <!-- Form 1: Unique Access Code (Primary Flow) -->
+      <form id="codeGateForm" onsubmit="handleCodeLogin(event)">
+        <div style="margin-bottom: 1.1rem; text-align: left;">
+          <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+            Course Access Code
           </label>
-          <input type="text" id="gateStudentIdentifier" class="gate-input" placeholder="e.g. GRX-2951-HY, STU-2026-001, or email..." style="width:100%; padding:0.85rem 1rem; border:2px solid #cbd5e1; border-radius:10px; font-size:1rem; outline:none; font-weight:600;" required />
-          <small style="color:#64748b; font-size:0.76rem; margin-top:4px; display:block;">
-            <i class="fas fa-info-circle"></i> Paste the unique access code generated by the website upon registration.
-          </small>
-        </div>
-        <div style="margin-bottom: 0.6rem; text-align: left;">
-          <label class="gate-label" style="display:block; font-size:0.8rem; font-weight:700; color:#64748b; margin-bottom:0.25rem;">
-            <i class="fas fa-lock"></i> Password (only required if separate):
-          </label>
-          <input type="password" id="gateStudentPassword" class="gate-input" placeholder="Leave empty if your access code is above..." style="width:100%; padding:0.7rem 1rem; border:1.5px solid #cbd5e1; border-radius:10px; font-size:0.92rem; outline:none;" />
+          <input type="text" id="gateInputCode" placeholder="e.g. GRX-2951-HY or STU-2026-001" style="width: 100%; padding: 0.85rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 1.05rem; font-weight: 700; outline: none; letter-spacing: 0.03em; text-transform: uppercase;" required autofocus />
+          <p style="font-size: 0.76rem; color: #64748b; margin-top: 0.4rem; line-height: 1.4;">
+            <i class="fas fa-info-circle" style="color:#0284c7;"></i> Enter the unique code generated upon payment confirmation.
+          </p>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; font-size:0.8rem;">
-          <button type="button" onclick="autoRetrieveStudentAccess()" style="background:none; border:none; color:#0284c7; font-weight:600; cursor:pointer; padding:0; text-decoration:underline;">
-            <i class="fas fa-bolt"></i> ⚡ Auto-Sign In / Retrieve Access
-          </button>
-          <span style="color:#107c41; font-weight:700; font-size:0.75rem;"><i class="fas fa-shield-alt"></i> Unlimited Student Roster</span>
+        <div class="gate-error-msg" id="codeErrorBox" style="display:none; background:#fef2f2; border-left:4px solid #ef4444; color:#991b1b; padding:0.65rem 0.85rem; border-radius:6px; font-size:0.82rem; margin-bottom:1rem; text-align:left;">
+          <i class="fas fa-exclamation-circle"></i> <span id="codeErrorText">Invalid access code.</span>
         </div>
 
-        <div class="gate-error-msg" id="gateErrorBox" style="display:none; background:#fef2f2; border-left:4px solid #ef4444; color:#991b1b; padding:0.65rem 0.9rem; border-radius:6px; font-size:0.82rem; margin-bottom:1rem; text-align:left;">
-          <i class="fas fa-exclamation-circle"></i> <span id="gateErrorText">Invalid credentials.</span>
-        </div>
-
-        <button type="submit" class="gate-submit-btn" style="width:100%; background:linear-gradient(135deg, #107c41, #0b5e31); color:white; padding:0.9rem; border-radius:10px; font-weight:800; font-size:1.05rem; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem; box-shadow:0 4px 12px rgba(16,124,65,0.35);">
-          <i class="fas fa-sign-in-alt"></i> 🚀 Connect to Classroom with Code
+        <button type="submit" class="gate-submit-btn" style="width:100%; background:linear-gradient(135deg, #107c41, #0b5e31); color:white; padding:0.85rem; border-radius:10px; font-weight:800; font-size:1rem; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem; box-shadow:0 4px 12px rgba(16,124,65,0.25);">
+          <span>Enter Classroom</span> <i class="fas fa-arrow-right"></i>
         </button>
-
-        <div style="margin-top:1rem; text-align:center;">
-          <a href="javascript:void(0)" onclick="switchStartRole('instructor')" style="color:#0284c7; font-size:0.82rem; font-weight:600; text-decoration:none;">
-            <i class="fas fa-chalkboard-teacher"></i> Are you the Lead Instructor? Switch to Instructor Access &rarr;
-          </a>
-        </div>
       </form>
 
-      <!-- Instructor / Super Admin Sign-in Form -->
-      <form id="instructorGateForm" onsubmit="handleStartInstructorLogin(event)" style="display:none;">
+      <!-- Form 2: Email & Password (Alternative Flow) -->
+      <form id="emailGateForm" onsubmit="handleEmailPasswordLogin(event)" style="display: none;">
         <div style="margin-bottom: 0.9rem; text-align: left;">
-          <label class="gate-label" style="display:block; font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.35rem;"><i class="fas fa-user-tie"></i> Admin / Instructor Username or Email:</label>
-          <input type="text" id="gateInstructorEmail" class="gate-input" value="Greachimpact" style="width:100%; padding:0.75rem 1rem; border:1.5px solid #cbd5e1; border-radius:10px; font-size:0.92rem; outline:none;" required />
+          <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
+            Registered Email Address or Student ID
+          </label>
+          <input type="text" id="gateInputEmail" placeholder="e.g. name@example.com" style="width: 100%; padding: 0.75rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; outline: none;" />
         </div>
         <div style="margin-bottom: 1.1rem; text-align: left;">
-          <label class="gate-label" style="display:block; font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.35rem;"><i class="fas fa-shield-alt"></i> Master Secret Password:</label>
-          <input type="password" id="gateInstructorPasscode" class="gate-input" placeholder="Enter master password..." style="width:100%; padding:0.75rem 1rem; border:1.5px solid #cbd5e1; border-radius:10px; font-size:0.92rem; outline:none;" required />
+          <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
+            Account Password
+          </label>
+          <input type="password" id="gateInputPassword" placeholder="Enter your password" style="width: 100%; padding: 0.75rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; outline: none;" />
         </div>
 
-        <div class="gate-error-msg" id="gateInstErrorBox" style="display:none; background:#fef2f2; border-left:4px solid #ef4444; color:#991b1b; padding:0.65rem 0.9rem; border-radius:6px; font-size:0.82rem; margin-bottom:1rem; text-align:left;">
-          <i class="fas fa-exclamation-circle"></i> <span id="gateInstErrorText">Invalid master credentials.</span>
+        <div class="gate-error-msg" id="emailErrorBox" style="display:none; background:#fef2f2; border-left:4px solid #ef4444; color:#991b1b; padding:0.65rem 0.85rem; border-radius:6px; font-size:0.82rem; margin-bottom:1rem; text-align:left;">
+          <i class="fas fa-exclamation-circle"></i> <span id="emailErrorText">Invalid credentials.</span>
         </div>
 
-        <!-- 1-Click Fast Authenticate Button -->
-        <button type="button" onclick="autoFillInstructorKey()" style="width:100%; background:#0284c7; color:white; padding:0.75rem; border-radius:10px; font-weight:700; font-size:0.92rem; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem; margin-bottom:0.65rem;">
-          <i class="fas fa-crown"></i> ⚡ 1-Click Super Admin Sign-In (Greachimpact)
+        <button type="submit" class="gate-submit-btn" style="width:100%; background:linear-gradient(135deg, #0A0A5E, #1b365d); color:white; padding:0.85rem; border-radius:10px; font-weight:800; font-size:1rem; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem; box-shadow:0 4px 12px rgba(10,10,94,0.2);">
+          <span>Sign In to Classroom</span> <i class="fas fa-arrow-right"></i>
         </button>
+      </form>
+
+      <!-- Form 3: Instructor & Admin Sign-in Form -->
+      <form id="instructorGateForm" onsubmit="handleInstructorLogin(event)" style="display: none;">
+        <div style="margin-bottom: 0.9rem; text-align: left;">
+          <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
+            Instructor Username or Email
+          </label>
+          <input type="text" id="gateInstructorEmail" placeholder="Instructor Username" style="width: 100%; padding: 0.75rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; outline: none;" />
+        </div>
+        <div style="margin-bottom: 1.1rem; text-align: left;">
+          <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
+            Master Password
+          </label>
+          <input type="password" id="gateInstructorPasscode" placeholder="Master Password" style="width: 100%; padding: 0.75rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; outline: none;" />
+        </div>
+
+        <div class="gate-error-msg" id="gateInstErrorBox" style="display:none; background:#fef2f2; border-left:4px solid #ef4444; color:#991b1b; padding:0.65rem 0.85rem; border-radius:6px; font-size:0.82rem; margin-bottom:1rem; text-align:left;">
+          <i class="fas fa-exclamation-circle"></i> <span id="gateInstErrorText">Invalid instructor credentials.</span>
+        </div>
 
         <button type="submit" class="gate-submit-btn" style="width:100%; background:#0a192f; color:white; padding:0.85rem; border-radius:10px; font-weight:700; font-size:1rem; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
-          <i class="fas fa-user-shield"></i> Authenticate as Super Admin / Instructor
+          <i class="fas fa-user-shield"></i> <span>Authenticate Instructor</span>
         </button>
 
-        <div style="margin-top:1rem; text-align:center;">
+        <div style="margin-top:0.85rem; text-align:center;">
           <a href="../admin.html" target="_blank" style="color:#d97706; font-size:0.82rem; font-weight:700; text-decoration:none;">
             <i class="fas fa-crown"></i> Open Dedicated Super Admin Console &rarr;
           </a>
         </div>
-
-        <div style="margin-top:0.6rem; text-align:center;">
-          <a href="javascript:void(0)" onclick="switchStartRole('student')" style="color:#64748b; font-size:0.82rem; font-weight:600; text-decoration:none;">
-            &larr; Return to Student Sign-In
-          </a>
-        </div>
       </form>
 
-      <div style="margin-top:1.2rem; padding-top:0.9rem; border-top:1px solid #f1f5f9; text-align:center;">
-        <p style="font-size:0.75rem; color:#94a3b8; margin-bottom:0.4rem;">
-          🔒 All enrolled students have unique credentials &bull; Master Key: <code>GREACH-ADMIN-2026</code>
-        </p>
-        <button type="button" onclick="autoFillInstructorKey()" style="background:none; border:none; color:#107c41; font-size:0.74rem; font-weight:700; cursor:pointer; text-decoration:underline;">
-          👑 Lead Instructor Quick Access: Click to Enter Admin Mode
-        </button>
+      <!-- Clean Minimal Footer -->
+      <div style="margin-top: 1.4rem; padding-top: 0.9rem; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem;">
+        <a href="mailto:greachimpact@gmail.com" style="color: #64748b; text-decoration: none;">
+          Need help? Contact support
+        </a>
+        <a href="javascript:void(0)" id="linkInstructorToggle" onclick="switchLoginMode('instructor')" style="color: #0284c7; font-weight: 700; text-decoration: none;">
+          Instructor Access &rarr;
+        </a>
       </div>
     </div>
   </div>
-  
+
   <!-- Top Connected Navigation Bar -->
   <div class="top-nav">
     <div class="nav-brand">
@@ -890,249 +887,165 @@
       }
     }
 
-    // Global Role Switcher Function (Directly on window)
-    window.switchStartRole = function(role) {
-      const tabStu = document.getElementById('tabGateStudent');
-      const tabInst = document.getElementById('tabGateInstructor');
-      const formStu = document.getElementById('studentGateForm');
+    // Global Mode Switcher Function (Access Code vs Email & Password vs Instructor)
+    window.switchLoginMode = function(mode) {
+      const tabCode = document.getElementById('tabModeCode');
+      const tabEmail = document.getElementById('tabModeEmail');
+      const formCode = document.getElementById('codeGateForm');
+      const formEmail = document.getElementById('emailGateForm');
       const formInst = document.getElementById('instructorGateForm');
-      const errBox = document.getElementById('gateErrorBox');
-      const errInst = document.getElementById('gateInstErrorBox');
-      if (errBox) errBox.style.display = 'none';
-      if (errInst) errInst.style.display = 'none';
+      const tabs = document.getElementById('portalModeTabs');
+      const instLink = document.getElementById('linkInstructorToggle');
 
-      if (role === 'student') {
-        if (tabStu) {
-          tabStu.style.background = 'white';
-          tabStu.style.color = '#0f172a';
-          tabStu.style.boxShadow = '0 2px 4px rgba(0,0,0,0.06)';
-        }
-        if (tabInst) {
-          tabInst.style.background = 'transparent';
-          tabInst.style.color = '#64748b';
-          tabInst.style.boxShadow = 'none';
-        }
-        if (formStu) formStu.style.display = 'block';
+      // Clear all error boxes
+      const errs = document.querySelectorAll('.gate-error-msg');
+      errs.forEach(e => e.style.display = 'none');
+
+      if (mode === 'code') {
+        if (tabs) tabs.style.display = 'flex';
+        if (formCode) formCode.style.display = 'block';
+        if (formEmail) formEmail.style.display = 'none';
         if (formInst) formInst.style.display = 'none';
-      } else {
-        if (tabInst) {
-          tabInst.style.background = 'white';
-          tabInst.style.color = '#0f172a';
-          tabInst.style.boxShadow = '0 2px 4px rgba(0,0,0,0.06)';
+        if (tabCode) {
+          tabCode.style.background = 'white';
+          tabCode.style.color = '#0f172a';
+          tabCode.style.boxShadow = '0 2px 4px rgba(0,0,0,0.06)';
         }
-        if (tabStu) {
-          tabStu.style.background = 'transparent';
-          tabStu.style.color = '#64748b';
-          tabStu.style.boxShadow = 'none';
+        if (tabEmail) {
+          tabEmail.style.background = 'transparent';
+          tabEmail.style.color = '#64748b';
+          tabEmail.style.boxShadow = 'none';
         }
+        if (instLink) {
+          instLink.innerHTML = 'Instructor Access &rarr;';
+          instLink.setAttribute('onclick', "switchLoginMode('instructor')");
+        }
+        const inp = document.getElementById('gateInputCode');
+        if (inp) inp.focus();
+      } else if (mode === 'email') {
+        if (tabs) tabs.style.display = 'flex';
+        if (formCode) formCode.style.display = 'none';
+        if (formEmail) formEmail.style.display = 'block';
+        if (formInst) formInst.style.display = 'none';
+        if (tabEmail) {
+          tabEmail.style.background = 'white';
+          tabEmail.style.color = '#0f172a';
+          tabEmail.style.boxShadow = '0 2px 4px rgba(0,0,0,0.06)';
+        }
+        if (tabCode) {
+          tabCode.style.background = 'transparent';
+          tabCode.style.color = '#64748b';
+          tabCode.style.boxShadow = 'none';
+        }
+        if (instLink) {
+          instLink.innerHTML = 'Instructor Access &rarr;';
+          instLink.setAttribute('onclick', "switchLoginMode('instructor')");
+        }
+        const inp = document.getElementById('gateInputEmail');
+        if (inp) inp.focus();
+      } else if (mode === 'instructor') {
+        if (tabs) tabs.style.display = 'none';
+        if (formCode) formCode.style.display = 'none';
+        if (formEmail) formEmail.style.display = 'none';
         if (formInst) formInst.style.display = 'block';
-        if (formStu) formStu.style.display = 'none';
+        if (instLink) {
+          instLink.innerHTML = '&larr; Return to Student Sign-In';
+          instLink.setAttribute('onclick', "switchLoginMode('code')");
+        }
+        const inp = document.getElementById('gateInstructorEmail');
+        if (inp) inp.focus();
       }
     };
+    window.switchStartRole = window.switchLoginMode;
 
-    // Attach Event Listeners on DOM load
-    document.addEventListener('DOMContentLoaded', () => {
-      const tabStu = document.getElementById('tabGateStudent');
-      const tabInst = document.getElementById('tabGateInstructor');
-      if (tabStu) tabStu.addEventListener('click', () => window.switchStartRole('student'));
-      if (tabInst) tabInst.addEventListener('click', () => window.switchStartRole('instructor'));
-    });
+    // Student Access Code Sign-In Handler
+    window.handleCodeLogin = function(e) {
+      if (e) e.preventDefault();
+      const codeInp = document.getElementById('gateInputCode');
+      const code = codeInp ? codeInp.value.trim() : '';
+      const errBox = document.getElementById('codeErrorBox');
+      const errText = document.getElementById('codeErrorText');
 
-    // 1-Click Fast Instructor Authentication
-    window.autoFillInstructorKey = function() {
-      const passInp = document.getElementById('gateInstructorPasscode');
-      if (passInp) passInp.value = 'GREACH-ADMIN-2026';
-      window.switchStartRole('instructor');
-      const form = document.getElementById('instructorGateForm');
-      if (form) {
-        window.handleStartInstructorLogin(new Event('submit'));
-      }
-    };
-
-    // Self-Service Auto-Sign In / Retrieve Access
-    window.autoRetrieveStudentAccess = function() {
-      const identInp = document.getElementById('gateStudentIdentifier');
-      let ident = identInp ? identInp.value.trim().toLowerCase() : '';
-      if (!ident) {
-        ident = prompt('Please enter your Registered Student Email or Student ID (e.g., STU-2026-001):');
-        if (!ident) return;
-        ident = ident.trim().toLowerCase();
-        if (identInp) identInp.value = ident;
-      }
-      const roster = getStudentDatabase();
-      const match = roster.find(s => s.id.toLowerCase() === ident || s.email.toLowerCase() === ident);
-      if (match) {
-        const passInp = document.getElementById('gateStudentPassword');
-        if (passInp) passInp.value = match.password;
-        const session = {
-          role: 'student',
-          id: match.id,
-          name: match.name,
-          email: match.email,
-          cohort: match.cohort,
-          verified: true,
-          loginTime: new Date().toISOString()
-        };
-        localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
-        localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
-        checkAccessSecurity();
-        alert('Welcome back, ' + match.name + ' (' + match.id + ')! Auto-authenticated successfully.');
-      } else {
-        alert('Could not locate "' + ident + '" in the 300 registered students roster. Please verify your Student ID or Registered Email.');
-      }
-    };
-
-    // Security Gate State Checker & Automated Magic Link Evaluator
-    function checkAccessSecurity() {
-      const securityGateOverlay = document.getElementById('securityGateOverlay');
-      const studentStatusPill = document.getElementById('studentStatusPill');
-      const verifiedStudentName = document.getElementById('verifiedStudentName');
-
-      // 1. Check Automated URL Query Parameters (Magic Links)
-      const urlParams = new URLSearchParams(window.location.search);
-      const adminKey = urlParams.get('admin') || urlParams.get('master') || (urlParams.get('instructor') === 'true' ? urlParams.get('key') : null);
-      if (adminKey === 'GREACH-ADMIN-2026') {
-        localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
-        const session = {
-          role: 'instructor',
-          id: 'INST-ADMIN',
-          name: 'Lead Instructor',
-          email: 'instructor@greach.org',
-          verified: true,
-          isAdmin: true,
-          loginTime: new Date().toISOString()
-        };
-        localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
-        window.history.replaceState({}, document.title, window.location.pathname);
+      if (!code) {
+        if (errText) errText.textContent = 'Please enter your unique course access code.';
+        if (errBox) errBox.style.display = 'block';
+        return;
       }
 
-      const studentId = urlParams.get('id') || urlParams.get('student');
-      const studentKey = urlParams.get('key');
-      const studentEmail = urlParams.get('email');
-      if ((studentId || studentEmail) && studentKey) {
-        const roster = getStudentDatabase();
-        const match = roster.find(s => 
-          ((studentId && s.id.toLowerCase() === studentId.toLowerCase()) || 
-           (studentEmail && s.email.toLowerCase() === studentEmail.toLowerCase())) && 
-          s.password === studentKey
-        );
-        if (match) {
+      if (code.includes('@')) {
+        if (errText) errText.innerHTML = 'This looks like an email address.<br>Please click the <strong>Email & Password</strong> tab above to sign in with your password.';
+        if (errBox) errBox.style.display = 'block';
+        return;
+      }
+
+      if (window.GreachDB) {
+        const verifyRes = window.GreachDB.verifyStudentByCode(code);
+        if (verifyRes.success) {
+          const s = verifyRes.student;
+          const courseName = s.course || 'Microsoft Excel for Beginners';
+          const courseKey = window.GreachDB ? window.GreachDB.normalizeCourseKey(s.courseKey || s.course) : 'excel_beginners';
           const session = {
-            role: 'student',
-            id: match.id,
-            name: match.name,
-            email: match.email,
-            cohort: match.cohort,
+            role: verifyRes.isInstructor ? 'instructor' : 'student',
+            id: s.id,
+            name: s.name,
+            email: s.email,
+            course: courseName,
+            courseKey: courseKey,
+            cohort: s.cohort || 'Batch 2: 2026 Masterclass',
+            expiresAt: s.expiresAt,
             verified: true,
             loginTime: new Date().toISOString()
           };
           localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
-          localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
-          window.history.replaceState({}, document.title, window.location.pathname);
+          if (verifyRes.isInstructor) {
+            localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
+          } else {
+            localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
+          }
+
+          if (window.GreachDB && window.GreachDB.recordStudentLogin) {
+            window.GreachDB.recordStudentLogin(s);
+          }
+
+          if (errBox) errBox.style.display = 'none';
+          checkAccessSecurity();
+          alert(`Welcome, ${s.name}!\n\nAccess Granted for: ${courseName}\nStatus: ${verifyRes.expiry.message}`);
+          return;
+        } else if (verifyRes.isPendingPayment) {
+          if (errText) errText.innerHTML = `<strong>Payment Pending:</strong> ${verifyRes.error}`;
+          if (errBox) errBox.style.display = 'block';
+          return;
+        } else if (verifyRes.isExpired) {
+          if (errText) {
+            errText.innerHTML = `<strong><i class="fas fa-hourglass-end"></i> Code Expired:</strong> ${verifyRes.error}<br><br><a href="claim-certificate.html?email=${encodeURIComponent(verifyRes.student ? verifyRes.student.email : '')}" style="color:#0284c7; font-weight:700; text-decoration:underline;">Click to Claim Certificate &rarr;</a>`;
+          }
+          if (errBox) errBox.style.display = 'block';
+          return;
+        } else {
+          if (errText) errText.textContent = verifyRes.error || 'Invalid access code. Please verify and try again.';
+          if (errBox) errBox.style.display = 'block';
+          return;
         }
       }
+    };
+    window.handleStartStudentLogin = window.handleCodeLogin;
 
-      // Batch Token
-      const batchParam = urlParams.get('batch');
-      const tokenParam = urlParams.get('token');
-      if (batchParam && (tokenParam === 'GREACH-2026' || !tokenParam)) {
-        const session = {
-          role: 'student',
-          name: 'Student (' + batchParam + ')',
-          id: 'STU-BATCH-' + Math.floor(Math.random() * 900 + 100),
-          email: 'enrolled@batch.greach',
-          cohort: batchParam,
-          verified: true,
-          loginTime: new Date().toISOString()
-        };
-        localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
-        localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
+    // Student Email & Password Sign-In Handler
+    window.handleEmailPasswordLogin = function(e) {
+      if (e) e.preventDefault();
+      const email = (document.getElementById('gateInputEmail').value || '').trim();
+      const pwd = (document.getElementById('gateInputPassword').value || '').trim();
+      const errBox = document.getElementById('emailErrorBox');
+      const errText = document.getElementById('emailErrorText');
 
-      // 2. Check Persistent Lead Instructor login
-      if (localStorage.getItem(INSTRUCTOR_LOGIN_KEY) === 'true') {
-        if (securityGateOverlay) securityGateOverlay.classList.add('unlocked');
-        if (studentStatusPill) {
-          studentStatusPill.style.display = 'inline-flex';
-          studentStatusPill.style.background = '#14532d';
-          studentStatusPill.style.border = '1.5px solid #22c55e';
-        }
-        if (verifiedStudentName) {
-          verifiedStudentName.innerHTML = '👑 <strong>Lead Instructor</strong> (Admin Mode)';
-        }
+      if (!email || !pwd) {
+        if (errText) errText.textContent = 'Please enter both your registered email/student ID and password.';
+        if (errBox) errBox.style.display = 'block';
         return;
       }
 
-      // 3. Check active user session
-      try {
-        const session = JSON.parse(localStorage.getItem(ACTIVE_SESSION_KEY));
-        if (session && session.verified) {
-          // Check if session has been forcefully terminated by admin
-          if (session.id && window.GreachDB && window.GreachDB.isSessionTerminated(session.id)) {
-            alert('Your active session has been terminated by the administrator.');
-            localStorage.removeItem(ACTIVE_SESSION_KEY);
-            location.reload();
-            return;
-          }
-
-          if (securityGateOverlay) securityGateOverlay.classList.add('unlocked');
-          if (studentStatusPill) studentStatusPill.style.display = 'inline-flex';
-          const stuId = session.id || 'STU';
-          const courseName = session.course || 'Microsoft Excel for Beginners';
-          if (verifiedStudentName) {
-            verifiedStudentName.innerHTML = '🎓 <strong>' + session.name + '</strong> (' + stuId + ') &bull; <span style="background:rgba(2,132,199,0.25); color:#38bdf8; padding:2px 8px; border-radius:12px; font-size:0.75rem; font-weight:700;">' + courseName + '</span>';
-          }
-
-          // Real-time heartbeat
-          if (window.GreachDB && window.GreachDB.updateStudentHeartbeat && session.id) {
-            window.GreachDB.updateStudentHeartbeat(session.id);
-            if (!window.__heartbeatInterval) {
-              window.__heartbeatInterval = setInterval(() => {
-                if (window.GreachDB && window.GreachDB.updateStudentHeartbeat && session.id) {
-                  window.GreachDB.updateStudentHeartbeat(session.id);
-                }
-              }, 45000);
-            }
-          }
-        } else {
-          if (securityGateOverlay) securityGateOverlay.classList.remove('unlocked');
-          if (studentStatusPill) studentStatusPill.style.display = 'none';
-        }
-      } catch(e) {
-        if (securityGateOverlay) securityGateOverlay.classList.remove('unlocked');
-      }
-    }
-
-    window.autoFillInstructorKey = function() {
-      const emailInp = document.getElementById('gateInstructorEmail');
-      const passInp = document.getElementById('gateInstructorPasscode');
-      if (emailInp) emailInp.value = 'Greachimpact';
-      if (passInp) passInp.value = 'Evana_Oluebube123890';
-    };
-
-    window.handleStartStudentLogin = function(e) {
-      if (e) e.preventDefault();
-      const ident = document.getElementById('gateStudentIdentifier').value.trim();
-      const pwd = document.getElementById('gateStudentPassword').value.trim();
-      const errBox = document.getElementById('gateErrorBox');
-      const errText = document.getElementById('gateErrorText');
-
-      // Use Enterprise GreachDB Layer with Expiry Check and 1-Step Code Connect
       if (window.GreachDB) {
-        let verifyRes = null;
-        if (!pwd && ident) {
-          // Student entered their unique code (e.g. GRX-2951-HY or ID)
-          verifyRes = window.GreachDB.verifyStudentByCode(ident);
-        } else if (pwd && !ident) {
-          verifyRes = window.GreachDB.verifyStudentByCode(pwd);
-        } else if (ident && pwd) {
-          verifyRes = window.GreachDB.verifyStudent(ident, pwd);
-          if (!verifyRes.success) {
-            const checkCode = window.GreachDB.verifyStudentByCode(ident) || window.GreachDB.verifyStudentByCode(pwd);
-            if (checkCode && checkCode.success) verifyRes = checkCode;
-          }
-        }
+        const verifyRes = window.GreachDB.verifyStudent(email, pwd);
         if (verifyRes.success) {
           const s = verifyRes.student;
           const courseName = s.course || 'Microsoft Excel for Beginners';
@@ -1152,26 +1065,23 @@
           localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
           localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
 
-          // Record live presence in database
           if (window.GreachDB && window.GreachDB.recordStudentLogin) {
             window.GreachDB.recordStudentLogin(s);
           }
 
           if (errBox) errBox.style.display = 'none';
           checkAccessSecurity();
-          alert(`Welcome back, ${s.name}!\n\nSigned in successfully as ${s.id}.\nEnrolled Course: ${courseName}\nAccess Status: ${verifyRes.expiry.message}`);
+          alert(`Welcome back, ${s.name}!\n\nSigned in successfully.\nEnrolled Course: ${courseName}`);
+          return;
+        } else if (verifyRes.isPendingPayment) {
+          if (errText) errText.innerHTML = `<strong>Payment Pending:</strong> ${verifyRes.error}`;
+          if (errBox) errBox.style.display = 'block';
           return;
         } else if (verifyRes.isExpired) {
-          if (errBox && errText) {
-            errText.innerHTML = `
-              <strong><i class="fas fa-hourglass-end"></i> Access Code Expired:</strong> ${verifyRes.error}
-              <br><br>
-              <a href="claim-certificate.html?email=${encodeURIComponent(verifyRes.student ? verifyRes.student.email : ident)}" style="color:#0284c7; font-weight:700; text-decoration:underline;">
-                <i class="fas fa-award"></i> Click here to Claim or Download Your Certificate of Completion &rarr;
-              </a>
-            `;
-            errBox.style.display = 'block';
+          if (errText) {
+            errText.innerHTML = `<strong><i class="fas fa-hourglass-end"></i> Code Expired:</strong> ${verifyRes.error}`;
           }
+          if (errBox) errBox.style.display = 'block';
           return;
         } else {
           if (errText) errText.textContent = verifyRes.error || 'Invalid credentials.';
@@ -1179,40 +1089,21 @@
           return;
         }
       }
-
-      // Fallback
-      const roster = getStudentDatabase();
-      const match = roster.find(s => 
-        (s.id.toLowerCase() === ident.toLowerCase() || s.email.toLowerCase() === ident.toLowerCase()) && 
-        s.password === pwd
-      );
-
-      if (match) {
-        const session = {
-          role: 'student',
-          id: match.id,
-          name: match.name,
-          email: match.email,
-          cohort: match.cohort,
-          verified: true,
-          loginTime: new Date().toISOString()
-        };
-        localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
-        localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
-        if (errBox) errBox.style.display = 'none';
-        checkAccessSecurity();
-      } else {
-        if (errText) errText.textContent = 'Invalid Student credentials.';
-        if (errBox) errBox.style.display = 'block';
-      }
     };
 
-    window.handleStartInstructorLogin = function(e) {
+    // Instructor & Admin Sign-In Handler
+    window.handleInstructorLogin = function(e) {
       if (e) e.preventDefault();
-      const userOrEmail = document.getElementById('gateInstructorEmail').value.trim();
-      const pass = document.getElementById('gateInstructorPasscode').value.trim();
+      const userOrEmail = (document.getElementById('gateInstructorEmail').value || '').trim();
+      const pass = (document.getElementById('gateInstructorPasscode').value || '').trim();
       const errBox = document.getElementById('gateInstErrorBox');
       const errText = document.getElementById('gateInstErrorText');
+
+      if (!userOrEmail || !pass) {
+        if (errText) errText.textContent = 'Please enter both your instructor username and password.';
+        if (errBox) errBox.style.display = 'block';
+        return;
+      }
 
       let isSuccess = false;
       let adminData = { username: userOrEmail, role: 'super_admin', isSuper: true };
@@ -1228,10 +1119,7 @@
             isSuper: !!res.isSuperAdmin
           };
         }
-      } else if (
-        (userOrEmail.toLowerCase() === 'greachimpact' && pass === 'Evana_Oluebube123890') ||
-        pass === 'GREACH-ADMIN-2026'
-      ) {
+      } else if (userOrEmail.toLowerCase() === 'greachimpact' && pass === 'Evana_Oluebube123890') {
         isSuccess = true;
       }
 
@@ -1241,7 +1129,9 @@
           role: 'instructor',
           id: 'INST-ADMIN',
           name: adminData.username === 'Greachimpact' ? 'Super Admin Greachimpact' : (adminData.name || 'Lead Instructor'),
-          email: userOrEmail.includes('@') ? userOrEmail : 'instructor@greach.org',
+          email: userOrEmail.includes('@') ? userOrEmail : 'greachimpact@gmail.com',
+          course: 'Complete Analytics Suite (Excel + SQL + Power BI)',
+          courseKey: 'complete_package',
           verified: true,
           isAdmin: true,
           isSuperAdmin: adminData.isSuper,
@@ -1250,12 +1140,13 @@
         localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
         if (errBox) errBox.style.display = 'none';
         checkAccessSecurity();
-        alert('Master Super Admin Authentication Successful! Full access enabled.');
+        alert(`Authenticated successfully as Lead Instructor (${adminData.username}).`);
       } else {
-        if (errText) errText.textContent = 'Incorrect Admin Username or Master Password.';
+        if (errText) errText.textContent = 'Incorrect Instructor Username or Password.';
         if (errBox) errBox.style.display = 'block';
       }
     };
+    window.handleStartInstructorLogin = window.handleInstructorLogin;
 
     window.logoutStudent = function() {
       if (confirm('Log out of this session?')) {

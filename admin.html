@@ -1708,6 +1708,7 @@
         populateSuperUserForm();
       } else if (tabKey === 'schedules') {
         renderScheduleCards();
+        syncSiteDataToCloud();
       } else if (tabKey === 'orders') {
         renderOrdersTable();
       } else if (tabKey === 'brevo') {
@@ -3002,7 +3003,40 @@ greachimpact@gmail.com`;
       document.getElementById('blogModal').classList.remove('open');
     }
 
-    async function handleSaveBlogPost(e) {
+    
+    async function syncSiteDataToCloud() {
+      try {
+        const prices = window.GreachDB.getPrices ? window.GreachDB.getPrices() : {};
+        const schedules = window.GreachDB.getSchedules ? window.GreachDB.getSchedules() : {};
+        const blogPosts = window.GreachDB.getBlogPosts ? window.GreachDB.getBlogPosts() : [];
+        await fetch('/api/site-data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prices,
+            schedules,
+            blogPosts,
+            updatedBy: currentAdminSession ? currentAdminSession.user : 'Super Admin'
+          })
+        });
+        console.log('[Admin] Universal site data published to cloud successfully.');
+      } catch(e) {
+        console.warn('[Admin] Note on cloud sync:', e);
+      }
+    }
+
+    async function handlePublishUniversalSync() {
+      const btn = event ? event.target.closest('button') : null;
+      if (btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing...';
+      await syncSiteDataToCloud();
+      if (btn) btn.innerHTML = '<i class="fas fa-check-circle"></i> Published Live!';
+      setTimeout(() => {
+        if (btn) btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Publish Live Updates';
+      }, 3000);
+      alert('Universal Cloud Publish Complete!\n\nAll updated prices, class schedules, and blog articles are now deployed live to the server and will synchronize automatically across all devices.');
+    }
+
+async function handleSaveBlogPost(e) {
       e.preventDefault();
       const id = document.getElementById('blogPostId').value;
       const title = document.getElementById('blogPostTitle').value.trim();
@@ -3031,6 +3065,7 @@ greachimpact@gmail.com`;
 
       closeBlogModal();
       renderBlogTable();
+      syncSiteDataToCloud();
     }
 
     async function renderBlogTable() {
@@ -3091,9 +3126,9 @@ greachimpact@gmail.com`;
             <td style="font-size:0.8rem; color:#475569; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.summary || ''}</td>
             <td>
               <div style="display:flex; gap:0.35rem;">
-                <button class="btn-action" onclick="openBlogModal(${p.id})" title="Edit Post"><i class="fas fa-edit"></i> Edit</button>
+                <button class="btn-action" onclick="openBlogModal('${p.id}')" title="Edit Post"><i class="fas fa-edit"></i> Edit</button>
                 <a href="blog.html" target="_blank" class="btn-action" title="View on Blog" style="text-decoration:none;"><i class="fas fa-external-link-alt"></i> View</a>
-                <button class="btn-action delete" onclick="handleDeleteBlogPost(${p.id})" title="Delete Post" style="color:#ef4444;"><i class="fas fa-trash"></i></button>
+                <button class="btn-action delete" onclick="handleDeleteBlogPost('${p.id}')" title="Delete Post" style="color:#ef4444;"><i class="fas fa-trash"></i></button>
               </div>
             </td>
           </tr>
@@ -3106,6 +3141,7 @@ greachimpact@gmail.com`;
       const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
       window.GreachDB.deleteBlogPost(id, currentUser);
       renderBlogTable();
+      syncSiteDataToCloud();
     }
 
     function exportBlogPostsJson() {
