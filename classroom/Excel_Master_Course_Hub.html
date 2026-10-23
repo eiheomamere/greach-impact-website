@@ -3978,32 +3978,7 @@ Automated Direct Link: ${s.magicLink}`;
         }
       };
 
-        // Fallback check
-        const db = getStudentDatabase();
-        const match = db.find(s => 
-          (s.id.toLowerCase() === ident.toLowerCase() || s.email.toLowerCase() === ident.toLowerCase()) && 
-          s.password === pwd
-        );
-        if (match) {
-          const session = {
-            role: 'student',
-            id: match.id,
-            name: match.name,
-            email: match.email,
-            cohort: match.cohort,
-            verified: true,
-            loginTime: new Date().toISOString()
-          };
-          localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
-          localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
-          errBox.style.display = 'none';
-          document.getElementById('securityGateOverlay').classList.add('unlocked');
-          updateUserIdentityHeader(false);
-        } else {
-          errText.textContent = 'Invalid Student credentials.';
-          errBox.style.display = 'block';
-        }
-      };
+
 
       // Instructor / Super Admin Login Handler
       window.handleInstructorLogin = function(e) {
@@ -4089,15 +4064,27 @@ Automated Direct Link: ${s.magicLink}`;
         if (!container) return;
         container.innerHTML = '';
 
+        const session = JSON.parse(localStorage.getItem(ACTIVE_SESSION_KEY) || '{}');
+        const isLead = (localStorage.getItem(INSTRUCTOR_LOGIN_KEY) === 'true') || session.role === 'instructor' || session.isSuperAdmin;
+
         curriculumSections.forEach((sec, sIdx) => {
           const secItem = document.createElement('div');
           secItem.className = 'sidebar-section-item';
+
+          // RBAC Course Isolation Check
+          const sectionAccess = (!isLead && window.GreachDB && window.GreachDB.canAccessSection)
+            ? window.GreachDB.canAccessSection(session.courseKey || session.course, sIdx)
+            : { allowed: true };
+          const isLocked = !sectionAccess.allowed;
 
           const btn = document.createElement('button');
           btn.className = 'section-title-btn';
           btn.innerHTML = `
             <span><strong>${sec.name}</strong></span>
-            <span style="font-size:0.75rem; color:#6b7280;"><i class="fas fa-chevron-down"></i></span>
+            <div style="display:flex; align-items:center; gap:6px;">
+              ${isLocked ? '<span style="background:#fef2f2; color:#b91c1c; font-size:0.7rem; font-weight:700; padding:2px 6px; border-radius:4px; border:1px solid #fecaca;"><i class="fas fa-lock"></i> Locked</span>' : ''}
+              <span style="font-size:0.75rem; color:#6b7280;"><i class="fas fa-chevron-down"></i></span>
+            </div>
           `;
 
           const list = document.createElement('ul');
@@ -4112,21 +4099,36 @@ Automated Direct Link: ${s.magicLink}`;
 
             const li = document.createElement('li');
             li.className = `lesson-item ${isCurrent ? 'active' : ''}`;
-            li.innerHTML = `
-              <input type="checkbox" class="lesson-chk" ${isCompleted ? 'checked' : ''} />
-              <div class="lesson-title-text">${i+1}. ${title}</div>
-              <span class="lesson-duration">4m</span>
-            `;
-
-            const chk = li.querySelector('.lesson-chk');
-            chk.addEventListener('click', (e) => {
-              e.stopPropagation();
-              if (chk.checked) completedSet.add(i);
-              else completedSet.delete(i);
-              updateProgress();
-            });
-
-            li.addEventListener('click', () => updateSlide(i));
+            if (isLocked) {
+              li.className = 'lesson-item locked';
+              li.style.opacity = '0.55';
+              li.style.cursor = 'not-allowed';
+              li.innerHTML = `
+                <i class="fas fa-lock" style="color:#ef4444; font-size:0.85rem; margin-right:8px;"></i>
+                <div class="lesson-title-text" style="color:#64748b;">${i+1}. ${title}</div>
+                <span class="lesson-duration" style="background:#f1f5f9; color:#94a3b8; font-size:0.72rem; padding:2px 6px; border-radius:4px;">Locked</span>
+              `;
+              li.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showLockedModuleAlert(`Lesson ${i+1} (${title})`, session.course || 'Microsoft Excel for Beginners', sectionAccess.requiredCourse || 'Excel Advanced / Complete Suite');
+              });
+            } else {
+              li.innerHTML = `
+                <input type="checkbox" class="lesson-chk" ${isCompleted ? 'checked' : ''} />
+                <div class="lesson-title-text">${i+1}. ${title}</div>
+                <span class="lesson-duration">4m</span>
+              `;
+              const chk = li.querySelector('.lesson-chk');
+              if (chk) {
+                chk.addEventListener('click', (e) => {
+                  e.stopPropagation();
+                  if (chk.checked) completedSet.add(i);
+                  else completedSet.delete(i);
+                  updateProgress();
+                });
+              }
+              li.addEventListener('click', () => updateSlide(i));
+            }
             list.appendChild(li);
           }
 

@@ -19,7 +19,7 @@
       cardId: 'excel-advanced'
     },
     {
-      key: 'dashboard',
+      key: 'excel_dashboard',
       aliases: ['excel dashboard for beginners', 'excel dashboard', 'executive dashboard', 'dashboard beginners', 'dashboard', 'excel_dashboard'],
       pageUrl: 'excel-dashboard-beginners.html',
       cardId: 'excel-dashboard'
@@ -113,6 +113,37 @@
   let syncRetryCount = 0;
     async function hydrateFromCloud() {
     try {
+      const SUPABASE_URL = 'https://fkltvxhqizqrbvogodxv.supabase.co';
+      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
+
+      // 0. Proactively hydrate live prices from Supabase Cloud PostgreSQL
+      try {
+        const prRes = await fetch(`${SUPABASE_URL}/rest/v1/course_prices?select=*`, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        });
+        if (prRes.ok) {
+          const rows = await prRes.json();
+          if (Array.isArray(rows) && rows.length > 0) {
+            const currentPrices = (window.GreachDB && window.GreachDB.getPrices) ? window.GreachDB.getPrices() : {};
+            rows.forEach(r => {
+              const cKey = r.course_id || r.course_key;
+              if (cKey) {
+                const normKey = cKey === 'dashboard' ? 'excel_dashboard' : (cKey === 'sql_beginners' ? 'sql' : (cKey === 'complete_package' ? 'complete_course' : cKey));
+                const item = {
+                  label: r.course_name || r.course_label || (currentPrices[normKey] ? currentPrices[normKey].label : normKey),
+                  regular: Number(r.original_price) || 10000,
+                  current: Number(r.promo_price) || 3000,
+                  discount: r.discount_label || (r.discount_pct ? `${r.discount_pct}% OFF` : 'Special Offer')
+                };
+                currentPrices[normKey] = item;
+              }
+            });
+            localStorage.setItem('greach_course_prices_v2', JSON.stringify(currentPrices));
+            syncAll();
+          }
+        }
+      } catch(e) {}
+
       let res = null;
       try {
         res = await fetch('/api/site-data');

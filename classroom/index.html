@@ -1097,7 +1097,11 @@
 
       let verifyRes = null;
       if (window.GreachDB) {
+        if (window.GreachDB.verifyStudentByCodeCloud) {
+        verifyRes = await window.GreachDB.verifyStudentByCodeCloud(code);
+      } else {
         verifyRes = window.GreachDB.verifyStudentByCode(code);
+      }
       }
 
       // If not in local browser cache, verify in real-time with Supabase Cloud DB

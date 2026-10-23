@@ -458,6 +458,49 @@
       font-weight: 800;
       color: var(--green-600);
     }
+  
+    /* TOAST NOTIFICATION ENGINE */
+    .toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 99999999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: none;
+      max-width: 420px;
+      width: calc(100% - 48px);
+    }
+    .greach-toast {
+      pointer-events: auto;
+      background: white;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      border-left: 5px solid #0284c7;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transition: all 0.3s ease;
+    }
+    .greach-toast.toast-success { border-left-color: #107C41; background: #ffffff; }
+    .greach-toast.toast-error { border-left-color: #dc2626; background: #ffffff; }
+    .greach-toast.toast-warning { border-left-color: #f59e0b; background: #ffffff; }
+    .greach-toast.toast-info { border-left-color: #0284c7; background: #ffffff; }
+    .greach-toast-icon { font-size: 1.25rem; flex-shrink: 0; margin-top: 2px; }
+    .toast-success .greach-toast-icon { color: #107C41; }
+    .toast-error .greach-toast-icon { color: #dc2626; }
+    .toast-warning .greach-toast-icon { color: #f59e0b; }
+    .toast-info .greach-toast-icon { color: #0284c7; }
+    .greach-toast-body { flex: 1; }
+    .greach-toast-title { font-weight: 800; font-size: 0.92rem; color: #0f172a; margin-bottom: 2px; }
+    .greach-toast-msg { font-size: 0.82rem; color: #475569; line-height: 1.4; }
+    .greach-toast-close { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1.1rem; padding: 0 4px; line-height: 1; }
+    .greach-toast-close:hover { color: #0f172a; }
+    @keyframes slideInRight { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  
   </style>
 </head>
 <body>
@@ -1839,6 +1882,61 @@
   <script src="classroom/js/greach-sync.js"></script>
 
   <script>
+
+    // GLOBAL TOAST NOTIFICATION ENGINE
+    function showToast(title, message, type = 'success', duration = 4000) {
+      let container = document.getElementById('greachToastContainer');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'greachToastContainer';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+      }
+      const toast = document.createElement('div');
+      toast.className = 'greach-toast toast-' + type;
+      
+      let iconHtml = '<i class="fas fa-check-circle"></i>';
+      if (type === 'error') iconHtml = '<i class="fas fa-times-circle"></i>';
+      else if (type === 'warning') iconHtml = '<i class="fas fa-exclamation-triangle"></i>';
+      else if (type === 'info') iconHtml = '<i class="fas fa-info-circle"></i>';
+      else if (type === 'loading') iconHtml = '<i class="fas fa-spinner fa-spin"></i>';
+
+      toast.innerHTML = `
+        <div class="greach-toast-icon">${iconHtml}</div>
+        <div class="greach-toast-body">
+          <div class="greach-toast-title">${escapeHtml(title)}</div>
+          ${message ? `<div class="greach-toast-msg">${escapeHtml(message)}</div>` : ''}
+        </div>
+        <button class="greach-toast-close" onclick="this.parentElement.remove()">&times;</button>
+      `;
+      container.appendChild(toast);
+
+      if (duration > 0) {
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateX(100%)';
+          setTimeout(() => toast.remove(), 350);
+        }, duration);
+      }
+      return toast;
+    }
+
+    function setButtonLoading(btn, isLoading, loadingText = 'Processing...') {
+      if (!btn) return;
+      if (isLoading) {
+        btn.dataset.prevHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.style.opacity = '0.75';
+        btn.style.cursor = 'not-allowed';
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loadingText}`;
+      } else {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        if (btn.dataset.prevHtml) btn.innerHTML = btn.dataset.prevHtml;
+      }
+    }
+  
     const SUPER_ADMIN_USER = 'Greachimpact';
     // Master credentials secured via serverless API and SHA-256 HMAC tokens
     const MASTER_HASH = 'b036f9964cc4420226fe774325139d0bc4e9c35ab7457dd864456c128d954309';
@@ -1901,8 +1999,11 @@
       }
     }
 
-    function handleGenerateUniversalCode(e) {
+    async function handleGenerateUniversalCode(e) {
       if (e) e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      setButtonLoading(submitBtn, true, 'Generating in Cloud...');
+
       const type = document.getElementById('ucType').value;
       const course = document.getElementById('ucCourse').value;
       const expChoice = document.getElementById('ucExpiration').value;
@@ -1944,18 +2045,18 @@
         expText = '30 Days (1 Month Post-Class)';
       }
 
-      // Generate code string
+      // Universal Deterministic ID & Code string
+      const rand4 = Math.floor(1000 + Math.random() * 9000);
+      let entityId = '';
       let code = customCode;
-      if (!code) {
-        const rand = Math.floor(1000 + Math.random() * 9000);
-        if (type === 'session_pass') {
-          code = `LIVE-SESS-${rand}`;
-        } else if (type === 'vip_suite') {
-          code = `GRC-VIP-${rand}`;
-        } else {
-          const prefix = course.includes('Beginner') ? 'BEG' : (course.includes('Advanced') ? 'ADV' : 'EXC');
-          code = `GRC-${prefix}-${rand}`;
-        }
+
+      if (type === 'session_pass') {
+        entityId = `PAS-SESS-${rand4}`;
+        if (!code) code = `LIVE-SESS-${rand4}`;
+      } else {
+        const prefix = course.includes('Beginner') ? 'BEG' : (course.includes('Advanced') ? 'ADV' : (course.includes('Dashboard') ? 'DASH' : (course.includes('SQL') ? 'SQL' : (course.includes('Power') ? 'PBI' : 'SUI'))));
+        entityId = `COD-${prefix}-${rand4}`;
+        if (!code) code = `GRC-${prefix}-${rand4}`;
       }
 
       // Save to database
@@ -1971,7 +2072,7 @@
         }
       } else {
         // Full Student Course Access Code
-        const studentId = 'STU-2026-' + String(Math.floor(1000 + Math.random() * 9000));
+        const studentId = 'STU-2026-' + rand4;
         const newStu = {
           id: studentId,
           name: studentName || 'Registered Student',
@@ -2033,24 +2134,6 @@
           .catch(err => console.warn('[Cloud DB] Code sync error:', err));
       }
 
-      // Also record in passes table for instant verification
-      if (window.GreachDB && window.GreachDB.getAllSessionPasses) {
-        const passes = window.GreachDB.getAllSessionPasses();
-        if (!passes.some(p => p.code === code)) {
-          passes.unshift({
-            code: code,
-            label: studentName ? `Student Code (${studentName})` : `Course Code (${course})`,
-            course: course,
-            cohort: 'Batch 2: 2026 Masterclass',
-            createdAt: new Date().toISOString(),
-            expiresAt: expiresAt,
-            isActive: true,
-            createdBy: currentAdminSession ? currentAdminSession.username : 'Super Admin'
-          });
-          localStorage.setItem('greach_session_passes', JSON.stringify(passes));
-        }
-      }
-
       // Store in state and display result
       lastGeneratedCodeData = {
         code: code,
@@ -2064,11 +2147,13 @@
       document.getElementById('ucGeneratedDetails').textContent = `Course: ${course} • Valid for: ${expText}` + (studentName ? ` • Student: ${studentName}` : '');
       document.getElementById('ucResultBox').style.display = 'block';
 
+      setButtonLoading(submitBtn, false);
+      showToast('Code Created in Cloud DB!', `Generated ${code} (${entityId})`, 'success');
+
       // Refresh background tables
       renderStats();
       renderStudentsTable();
       if (typeof renderSessionPassesTable === 'function') renderSessionPassesTable();
-      if (typeof syncSiteDataToCloud === 'function') syncSiteDataToCloud();
     }
 
     function copyUniversalCode() {
@@ -2905,42 +2990,96 @@ greachimpact@gmail.com`;
       }
     }
 
-    // 8. Course Pricing Management
-    function renderPricingCards() {
-      const prices = window.GreachDB.getPrices();
-      const container = document.getElementById('pricingCardsContainer');
-      container.innerHTML = '';
+    // 8. Course Pricing Management (Deduplicated Canonical 6 Courses & Supabase Direct Sync)
+    const CANONICAL_COURSES = [
+      { key: 'excel_beginners', id: 'CRS-EXC-BEG', label: 'Microsoft Excel for Beginners', icon: 'fa-file-excel', color: '#107C41' },
+      { key: 'excel_advanced', id: 'CRS-EXC-ADV', label: 'Microsoft Excel Advanced & Analytics', icon: 'fa-chart-line', color: '#0284c7' },
+      { key: 'excel_dashboard', id: 'CRS-EXC-DASH', label: 'Excel Dashboard for Beginners', icon: 'fa-tachometer-alt', color: '#8b5cf6' },
+      { key: 'sql', id: 'CRS-SQL-BEG', label: 'SQL for Beginners', icon: 'fa-database', color: '#ea580c' },
+      { key: 'power_bi', id: 'CRS-PBI-BEG', label: 'Power BI for Beginners', icon: 'fa-chart-pie', color: '#f59e0b' },
+      { key: 'complete_course', id: 'CRS-DAT-SUITE', label: 'Complete Analytics Suite (Excel + SQL + Power BI)', icon: 'fa-layer-group', color: '#0A0A5E' }
+    ];
 
-      Object.keys(prices).forEach(key => {
-        const item = prices[key];
-        const card = document.createElement('div');
-        card.className = 'pricing-card';
-        card.innerHTML = `
-          <div class="pricing-title">${escapeHtml(item.label)}</div>
-          <div style="display:flex; align-items:baseline; margin:0.6rem 0;">
-            <span class="pricing-slashed">₦${item.regular.toLocaleString()}</span>
-            <span class="pricing-current">₦${item.current.toLocaleString()}</span>
-            <span style="background:#dcfce7; color:#166534; font-size:0.72rem; font-weight:800; padding:2px 8px; border-radius:10px; margin-left:0.5rem;">
-              ${item.discount}
-            </span>
-          </div>
-          <div style="display:flex; gap:0.5rem; margin-top:1rem;">
-            <input type="number" id="inputPrice_${key}" value="${item.current}" class="form-control" style="width:120px;" />
-            <button onclick="saveCoursePrice('${key}')" class="btn-primary" style="padding:0.4rem 0.8rem; font-size:0.82rem;">
-              Save
-            </button>
-          </div>
-        `;
-        container.appendChild(card);
-      });
+    async function renderPricingCards() {
+      const container = document.getElementById('pricingCardsContainer');
+      if (!container) return;
+      
+      let prices = window.GreachDB ? window.GreachDB.getPrices() : {};
+      
+      // Proactively fetch latest pricing directly from Supabase Cloud PostgreSQL
+      if (window.GreachDB && window.GreachDB.fetchPricesFromCloud) {
+        window.GreachDB.fetchPricesFromCloud().then(updated => {
+          if (updated) {
+            prices = updated;
+            buildPricingDOM(prices);
+          }
+        }).catch(() => {});
+      }
+      buildPricingDOM(prices);
+
+      function buildPricingDOM(pData) {
+        container.innerHTML = '';
+        CANONICAL_COURSES.forEach(crs => {
+          const item = pData[crs.key] || { regular: 15000, current: 3000, discount: '80% OFF' };
+          const card = document.createElement('div');
+          card.className = 'pricing-card';
+          card.id = `pricing-card-${crs.key}`;
+          card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+              <span style="font-family:monospace; font-size:0.75rem; font-weight:800; background:#f1f5f9; color:#475569; padding:2px 8px; border-radius:6px; border:1px solid #e2e8f0;">${crs.id}</span>
+              <span style="background:#dcfce7; color:#166534; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:10px;">
+                ${item.discount || 'Special Offer'}
+              </span>
+            </div>
+            <div class="pricing-title" style="display:flex; align-items:center; gap:8px;">
+              <i class="fas ${crs.icon}" style="color:${crs.color};"></i>
+              <span>${escapeHtml(crs.label)}</span>
+            </div>
+            <div style="display:flex; align-items:baseline; margin:0.8rem 0; gap:8px;">
+              <span class="pricing-slashed" style="color:#94a3b8; text-decoration:line-through; font-size:0.95rem;">₦${Number(item.regular).toLocaleString()}</span>
+              <span class="pricing-current" style="color:#0A0A5E; font-size:1.6rem; font-weight:800;">₦${Number(item.current).toLocaleString()}</span>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top:1rem; align-items:center;">
+              <div style="position:relative; flex:1;">
+                <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#64748b; font-weight:700;">₦</span>
+                <input type="number" id="inputPrice_${crs.key}" value="${item.current}" class="form-control" style="padding-left:26px; font-weight:700;" placeholder="New Price" />
+              </div>
+              <button id="btnSavePrice_${crs.key}" onclick="saveCoursePrice('${crs.key}', this)" class="btn-primary" style="padding:0.6rem 1.1rem; font-size:0.85rem; font-weight:700; white-space:nowrap;">
+                <i class="fas fa-save"></i> Save to Cloud
+              </button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      }
     }
 
-    function saveCoursePrice(courseKey) {
-      const val = document.getElementById(`inputPrice_${courseKey}`).value;
-      if (!val || Number(val) <= 0) return alert('Enter a valid price.');
-      window.GreachDB.updateCoursePrice(courseKey, val);
-      alert('Course price updated!');
-      renderPricingCards();
+    async function saveCoursePrice(courseKey, btn) {
+      const inp = document.getElementById(`inputPrice_${courseKey}`);
+      const val = inp ? inp.value.trim() : '';
+      if (!val || Number(val) <= 0) {
+        showToast('Invalid Price', 'Please enter a valid price greater than ₦0.', 'error');
+        return;
+      }
+      const courseDef = CANONICAL_COURSES.find(c => c.key === courseKey) || { label: courseKey };
+      const buttonEl = btn || document.getElementById(`btnSavePrice_${courseKey}`);
+      setButtonLoading(buttonEl, true, 'Saving...');
+
+      try {
+        if (window.GreachDB && window.GreachDB.updateCoursePriceAsync) {
+          await window.GreachDB.updateCoursePriceAsync(courseKey, val, null, 'Super Admin');
+          setButtonLoading(buttonEl, false);
+          showToast('Price Updated Live!', `Fee for ${courseDef.label} set to ₦${Number(val).toLocaleString()} in Supabase Cloud!`, 'success');
+        } else if (window.GreachDB) {
+          window.GreachDB.updateCoursePrice(courseKey, val);
+          setButtonLoading(buttonEl, false);
+          showToast('Price Updated', `Fee for ${courseDef.label} updated to ₦${Number(val).toLocaleString()}`, 'success');
+        }
+        renderPricingCards();
+      } catch(err) {
+        setButtonLoading(buttonEl, false);
+        showToast('Save Error', err.message || 'Could not update course price.', 'error');
+      }
     }
 
     function resetDefaultPrices() {
@@ -3562,8 +3701,11 @@ greachimpact@gmail.com`;
       document.getElementById('sessionPassModal').classList.remove('open');
     }
 
-    function handleCreateSessionPass(e) {
-      e.preventDefault();
+    async function handleCreateSessionPass(e) {
+      if (e) e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      setButtonLoading(submitBtn, true, 'Generating in Cloud...');
+
       const label = document.getElementById('spLabel').value.trim();
       const customCode = document.getElementById('spCustomCode').value.trim();
       const cohort = document.getElementById('spCohort').value.trim();
@@ -3577,37 +3719,25 @@ greachimpact@gmail.com`;
         durationHours: durationHours
       }, currentUser);
 
-      // Immediately sync to Supabase Cloud Database
-      const sbCfg = getSupabaseConfig();
-      if (sbCfg && sbCfg.url && sbCfg.key) {
-        fetch(`${sbCfg.url}/rest/v1/access_codes`, {
-          method: 'POST',
-          headers: { 'apikey': sbCfg.key, 'Authorization': `Bearer ${sbCfg.key}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
-          body: JSON.stringify([{
-            code: pass.code,
-            label: pass.label,
-            course_name: 'Microsoft Excel for Beginners',
-            cohort: pass.cohort,
-            is_session_pass: true,
-            is_active: true,
-            expires_at: pass.expiresAt,
-            created_by: currentUser
-          }])
-        }).catch(console.warn);
-      }
-
+      setButtonLoading(submitBtn, false);
       closeSessionPassModal();
-      renderSessionPassesTable();
-      alert(`Temporary Session Pass Generated Successfully!\n\nPass Code: ${pass.code}\nSession: ${pass.label}\nExpires: ${pass.expiresAt ? new Date(pass.expiresAt).toLocaleString() : 'Manual Revoke'}\n\nShare this code with students. They can enter it on the classroom login screen to join the live session.`);
+      showToast('Live Pass Generated!', `Pass code ${pass.code} active in Supabase Cloud!`, 'success');
+      await renderSessionPassesTable();
     }
 
-    function renderSessionPassesTable() {
+    async function renderSessionPassesTable() {
       const tbody = document.getElementById('sessionPassesTableBody');
       const emptyState = document.getElementById('sessionPassesEmptyState');
       if (!tbody) return;
 
-      const passes = window.GreachDB.getAllSessionPasses ? window.GreachDB.getAllSessionPasses() : [];
-      if (passes.length === 0) {
+      let passes = [];
+      if (window.GreachDB && window.GreachDB.fetchSessionPassesFromCloud) {
+        passes = await window.GreachDB.fetchSessionPassesFromCloud();
+      } else if (window.GreachDB) {
+        passes = window.GreachDB.getAllSessionPasses();
+      }
+
+      if (!passes || passes.length === 0) {
         tbody.innerHTML = '';
         if (emptyState) emptyState.style.display = 'block';
         return;
@@ -3618,25 +3748,35 @@ greachimpact@gmail.com`;
         const isLive = p.isActive && (!p.expiresAt || new Date(p.expiresAt).getTime() > Date.now());
         const statusBadge = isLive
           ? '<span class="status-badge active"><i class="fas fa-broadcast-tower"></i> Live & Active</span>'
-          : '<span class="status-badge expired"><i class="fas fa-times-circle"></i> Expired / Revoked</span>';
-
-        const expiresText = p.expiresAt
-          ? new Date(p.expiresAt).toLocaleString()
-          : 'Valid Until Revoked';
+          : '<span class="status-badge expired"><i class="fas fa-ban"></i> Revoked / Expired</span>';
+        const expStr = p.expiresAt ? new Date(p.expiresAt).toLocaleString() : 'Manual Revoke Only';
 
         return `
           <tr>
-            <td><strong style="color:var(--accent-blue); font-family:monospace; font-size:1.05rem; letter-spacing:1px;">${p.code}</strong></td>
-            <td><strong>${p.label || 'Workshop Session'}</strong></td>
-            <td><span style="font-size:0.85rem; color:#475569;">${p.cohort || 'General Masterclass'}</span></td>
-            <td style="font-size:0.8rem; color:#64748b;">${new Date(p.createdAt).toLocaleDateString()}</td>
-            <td style="font-size:0.82rem; font-weight:600; color:${isLive ? '#107c41' : '#ef4444'};">${expiresText}</td>
-            <td>${statusBadge}</td>
             <td>
-              <div style="display:flex; gap:0.4rem;">
-                <button class="btn-action" onclick="copySessionCode('${p.code}')" title="Copy Code"><i class="fas fa-copy"></i> Copy</button>
-                ${isLive ? `<button class="btn-action delete" onclick="handleExpireSessionPass('${p.code}')" title="Expire Now" style="color:#ef4444;"><i class="fas fa-stopwatch"></i> Expire Now</button>` : ''}
-                <button class="btn-action delete" onclick="handleDeleteSessionPass('${p.code}')" title="Delete Pass" style="color:#dc2626;"><i class="fas fa-trash"></i></button>
+              <strong style="color:var(--navy-900); font-family:monospace; font-size:1rem; letter-spacing:1px;">${escapeHtml(p.code)}</strong>
+              ${p.id ? `<div style="font-family:monospace; font-size:0.75rem; color:#94a3b8;">${escapeHtml(p.id)}</div>` : ''}
+            </td>
+            <td>
+              <div style="font-weight:700; color:#0f172a;">${escapeHtml(p.label || 'Live Class Session Pass')}</div>
+              <div style="font-size:0.78rem; color:#64748b;">${escapeHtml(p.course || 'Microsoft Excel for Beginners')}</div>
+            </td>
+            <td><span style="font-size:0.82rem; font-weight:600; color:#334155;">${escapeHtml(p.cohort || 'Batch 2: 2026')}</span></td>
+            <td><span style="font-size:0.8rem; color:#475569;">${expStr}</span></td>
+            <td>${statusBadge}</td>
+            <td style="text-align:right;">
+              <div style="display:flex; justify-content:flex-end; gap:6px;">
+                <button onclick="copySessionCode('${escapeHtml(p.code)}', this)" class="btn-action" title="Copy Pass Code">
+                  <i class="fas fa-copy"></i>
+                </button>
+                ${isLive ? `
+                  <button onclick="handleExpireSessionPass('${escapeHtml(p.code)}', this)" class="btn-action" title="Revoke Pass" style="color:#d97706;">
+                    <i class="fas fa-pause-circle"></i>
+                  </button>
+                ` : ''}
+                <button onclick="handleDeleteSessionPass('${escapeHtml(p.code)}', this)" class="btn-action" title="Delete from Cloud DB" style="color:#ef4444;">
+                  <i class="fas fa-trash"></i>
+                </button>
               </div>
             </td>
           </tr>
@@ -3644,35 +3784,30 @@ greachimpact@gmail.com`;
       }).join('');
     }
 
-    function copySessionCode(code) {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(code).then(() => {
-          alert(`Code "${code}" copied to clipboard! Share this code with students to access the live session.`);
-        }).catch(() => {
-          prompt('Copy this session code:', code);
-        });
-      } else {
-        prompt('Copy this session code:', code);
-      }
+    function copySessionCode(code, btn) {
+      navigator.clipboard.writeText(code).then(() => {
+        showToast('Code Copied!', `Session code ${code} copied to clipboard.`, 'info', 2500);
+      });
     }
 
-    function handleExpireSessionPass(code) {
-      if (!confirm(`Are you sure you want to expire and revoke session pass "${code}" immediately? Any students trying to enter with this code will be locked out.`)) return;
+    async function handleExpireSessionPass(code, btn) {
+      if (!confirm(`Revoke access for session pass ${code}?`)) return;
+      if (btn) setButtonLoading(btn, true, '');
       const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
       window.GreachDB.expireSessionPass(code, currentUser);
-      renderSessionPassesTable();
+      showToast('Pass Revoked', `Pass ${code} is now revoked.`, 'warning');
+      await renderSessionPassesTable();
     }
 
-    function handleDeleteSessionPass(code) {
-      if (!confirm(`Permanently delete session pass "${code}"?`)) return;
+    async function handleDeleteSessionPass(code, btn) {
+      if (!confirm(`Permanently delete session pass ${code} from Supabase Cloud Database?`)) return;
+      if (btn) setButtonLoading(btn, true, '');
       const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
       window.GreachDB.deleteSessionPass(code, currentUser);
-      renderSessionPassesTable();
+      showToast('Pass Deleted', `Pass ${code} removed from database.`, 'info');
+      await renderSessionPassesTable();
     }
 
-    // ==============================================================
-    // DATABASE AUDIT TRAIL CONTROLLER
-    // ==============================================================
     function renderAuditTable() {
       const tbody = document.getElementById('auditTableBody');
       const emptyState = document.getElementById('auditEmptyState');
@@ -3708,23 +3843,25 @@ greachimpact@gmail.com`;
     // ==============================================================
     // BLOG ARTICLES MANAGEMENT CONTROLLER
     // ==============================================================
+    let cachedBlogPosts = [];
+
     function openBlogModal(postId) {
       const modal = document.getElementById('blogModal');
       const modalTitle = document.getElementById('blogModalTitle');
       const idInput = document.getElementById('blogPostId');
 
       if (postId) {
-        const posts = window.GreachDB.getBlogPosts ? window.GreachDB.getBlogPosts() : [];
+        const posts = cachedBlogPosts.length > 0 ? cachedBlogPosts : (window.GreachDB.getBlogPosts ? window.GreachDB.getBlogPosts() : []);
         const post = posts.find(p => String(p.id) === String(postId));
         if (post) {
-          modalTitle.innerHTML = '<i class="fas fa-edit" style="color:var(--accent-blue);"></i> Edit Blog Article';
+          modalTitle.innerHTML = '<i class="fas fa-edit" style="color:var(--accent-blue);"></i> Edit Blog Article (Cloud DB)';
           idInput.value = post.id;
-          document.getElementById('blogPostTitle').value = post.title;
+          document.getElementById('blogPostTitle').value = post.title || '';
           document.getElementById('blogPostCategory').value = post.category || 'Excel & Data';
           document.getElementById('blogPostReadTime').value = post.readTime || '5 min read';
-          document.getElementById('blogPostDate').value = post.date || '';
+          document.getElementById('blogPostDate').value = post.date || new Date().toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
           document.getElementById('blogPostAuthor').value = post.author || 'Greach Impact Team';
-          document.getElementById('blogPostSummary').value = post.summary || '';
+          document.getElementById('blogPostSummary').value = post.summary || post.excerpt || '';
           document.getElementById('blogPostContent').value = post.content || '';
           modal.classList.add('open');
           return;
@@ -3732,7 +3869,7 @@ greachimpact@gmail.com`;
       }
 
       // New post mode
-      modalTitle.innerHTML = '<i class="fas fa-pen-nib" style="color:var(--accent-blue);"></i> Write New Blog Article';
+      modalTitle.innerHTML = '<i class="fas fa-pen-nib" style="color:var(--accent-blue);"></i> Write New Blog Article (Cloud DB)';
       idInput.value = '';
       document.getElementById('blogPostTitle').value = '';
       document.getElementById('blogPostCategory').value = 'Excel & Data';
@@ -3745,44 +3882,15 @@ greachimpact@gmail.com`;
     }
 
     function closeBlogModal() {
-      document.getElementById('blogModal').classList.remove('open');
+      const modal = document.getElementById('blogModal');
+      if (modal) modal.classList.remove('open');
     }
 
-    
-    async function syncSiteDataToCloud() {
-      try {
-        const prices = window.GreachDB.getPrices ? window.GreachDB.getPrices() : {};
-        const schedules = window.GreachDB.getSchedules ? window.GreachDB.getSchedules() : {};
-        const blogPosts = window.GreachDB.getBlogPosts ? window.GreachDB.getBlogPosts() : [];
-        await fetch('/api/site-data', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            prices,
-            schedules,
-            blogPosts,
-            updatedBy: currentAdminSession ? currentAdminSession.user : 'Super Admin'
-          })
-        });
-        console.log('[Admin] Universal site data published to cloud successfully.');
-      } catch(e) {
-        console.warn('[Admin] Note on cloud sync:', e);
-      }
-    }
+    async function handleSaveBlogPost(e) {
+      if (e) e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      setButtonLoading(submitBtn, true, 'Saving to Cloud...');
 
-    async function handlePublishUniversalSync() {
-      const btn = event ? event.target.closest('button') : null;
-      if (btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing...';
-      await syncSiteDataToCloud();
-      if (btn) btn.innerHTML = '<i class="fas fa-check-circle"></i> Published Live!';
-      setTimeout(() => {
-        if (btn) btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Publish Live Updates';
-      }, 3000);
-      alert('Universal Cloud Publish Complete!\n\nAll updated prices, class schedules, and blog articles are now deployed live to the server and will synchronize automatically across all devices.');
-    }
-
-async function handleSaveBlogPost(e) {
-      e.preventDefault();
       const id = document.getElementById('blogPostId').value;
       const title = document.getElementById('blogPostTitle').value.trim();
       const category = document.getElementById('blogPostCategory').value;
@@ -3792,7 +3900,12 @@ async function handleSaveBlogPost(e) {
       const summary = document.getElementById('blogPostSummary').value.trim();
       let content = document.getElementById('blogPostContent').value.trim();
 
-      // If content has no HTML tags, wrap newlines into paragraphs
+      if (!title) {
+        setButtonLoading(submitBtn, false);
+        showToast('Missing Title', 'Please enter an article title.', 'warning');
+        return;
+      }
+
       if (!content.includes('<p>') && !content.includes('<h3>')) {
         content = content.split('\n\n').map(para => `<p>${para.replace(/\n/g, '<br/>')}</p>`).join('');
       }
@@ -3800,17 +3913,21 @@ async function handleSaveBlogPost(e) {
       const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
       const postData = { title, category, readTime, date, author, summary, content };
 
-      if (id) {
-        window.GreachDB.updateBlogPost(id, postData, currentUser);
-        alert('Article updated successfully! The live blog has been updated.');
-      } else {
-        window.GreachDB.createBlogPost(postData, currentUser);
-        alert('New article published successfully! It is now live on the blog.');
+      try {
+        if (id) {
+          window.GreachDB.updateBlogPost(id, postData, currentUser);
+          showToast('Article Updated Live!', `"${title}" updated in Supabase cloud!`, 'success');
+        } else {
+          window.GreachDB.createBlogPost(postData, currentUser);
+          showToast('Article Published Live!', `"${title}" is now active in Supabase!`, 'success');
+        }
+        setButtonLoading(submitBtn, false);
+        closeBlogModal();
+        await renderBlogTable();
+      } catch(err) {
+        setButtonLoading(submitBtn, false);
+        showToast('Blog Save Error', err.message, 'error');
       }
-
-      closeBlogModal();
-      renderBlogTable();
-      syncSiteDataToCloud();
     }
 
     async function renderBlogTable() {
@@ -3818,27 +3935,23 @@ async function handleSaveBlogPost(e) {
       const emptyState = document.getElementById('blogEmptyState');
       if (!tbody) return;
 
-      let posts = window.GreachDB.getBlogPosts ? window.GreachDB.getBlogPosts() : [];
-      
-      // If no posts in DB yet, load from posts.json
-      if (!posts || posts.length === 0) {
-        try {
-          const res = await fetch('posts.json');
-          if (res.ok) {
-            posts = await res.json();
-            if (window.GreachDB && window.GreachDB.saveBlogPosts) {
-              window.GreachDB.saveBlogPosts(posts);
-            }
-          }
-        } catch(err) {
-          console.warn('Could not load posts.json', err);
+      let posts = [];
+      try {
+        if (window.GreachDB && window.GreachDB.fetchBlogPostsFromCloud) {
+          posts = await window.GreachDB.fetchBlogPostsFromCloud();
+        } else if (window.GreachDB) {
+          posts = window.GreachDB.getBlogPosts();
         }
+      } catch(err) {
+        posts = window.GreachDB ? window.GreachDB.getBlogPosts() : [];
       }
+
+      cachedBlogPosts = posts || [];
 
       const search = (document.getElementById('filterBlogSearch') ? document.getElementById('filterBlogSearch').value : '').toLowerCase().trim();
       const cat = document.getElementById('filterBlogCategory') ? document.getElementById('filterBlogCategory').value : 'all';
 
-      let filtered = (posts || []).filter(p => {
+      let filtered = cachedBlogPosts.filter(p => {
         const matchCat = (cat === 'all') || (p.category === cat);
         const matchSearch = !search || 
           (p.title && p.title.toLowerCase().includes(search)) ||
@@ -3857,23 +3970,23 @@ async function handleSaveBlogPost(e) {
       tbody.innerHTML = filtered.map(p => {
         return `
           <tr>
-            <td style="font-weight:700; color:#64748b;">#${p.id}</td>
+            <td style="font-weight:700; color:#64748b; font-family:monospace;">#${p.id}</td>
             <td>
-              <strong style="color:var(--navy-primary); font-size:0.92rem;">${p.title}</strong>
+              <strong style="color:var(--navy-primary); font-size:0.92rem;">${escapeHtml(p.title)}</strong>
             </td>
             <td>
               <span class="badge" style="background:#f1f5f9; color:#0f172a; font-weight:600; font-size:0.75rem; padding:3px 8px; border-radius:12px;">
-                ${p.category || 'General'}
+                ${escapeHtml(p.category || 'General')}
               </span>
             </td>
-            <td style="font-size:0.8rem; color:#64748b; white-space:nowrap;">${p.date || ''}</td>
-            <td style="font-size:0.8rem; color:#64748b; white-space:nowrap;">${p.readTime || '5 min'}</td>
-            <td style="font-size:0.8rem; color:#475569; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.summary || ''}</td>
+            <td style="font-size:0.8rem; color:#64748b; white-space:nowrap;">${escapeHtml(p.date || '')}</td>
+            <td style="font-size:0.8rem; color:#64748b; white-space:nowrap;">${escapeHtml(p.readTime || '5 min')}</td>
+            <td style="font-size:0.8rem; color:#475569; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(p.summary || '')}</td>
             <td>
               <div style="display:flex; gap:0.35rem;">
                 <button class="btn-action" onclick="openBlogModal('${p.id}')" title="Edit Post"><i class="fas fa-edit"></i> Edit</button>
                 <a href="blog.html" target="_blank" class="btn-action" title="View on Blog" style="text-decoration:none;"><i class="fas fa-external-link-alt"></i> View</a>
-                <button class="btn-action delete" onclick="handleDeleteBlogPost('${p.id}')" title="Delete Post" style="color:#ef4444;"><i class="fas fa-trash"></i></button>
+                <button class="btn-action delete" onclick="handleDeleteBlogPost('${p.id}', this)" title="Delete Post" style="color:#ef4444;"><i class="fas fa-trash"></i></button>
               </div>
             </td>
           </tr>
@@ -3881,12 +3994,17 @@ async function handleSaveBlogPost(e) {
       }).join('');
     }
 
-    function handleDeleteBlogPost(id) {
-      if (!confirm(`Are you sure you want to permanently delete article #${id}? This will remove it from the live website.`)) return;
+    async function handleDeleteBlogPost(id, btn) {
+      if (!confirm(`Are you sure you want to permanently delete article #${id}? This will remove it from Supabase cloud database.`)) return;
+      if (btn) setButtonLoading(btn, true, '');
       const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
-      window.GreachDB.deleteBlogPost(id, currentUser);
-      renderBlogTable();
-      syncSiteDataToCloud();
+      try {
+        window.GreachDB.deleteBlogPost(id, currentUser);
+        showToast('Article Deleted', `Article #${id} removed from Supabase cloud.`, 'info');
+        await renderBlogTable();
+      } catch(err) {
+        showToast('Delete Error', err.message, 'error');
+      }
     }
 
     function exportBlogPostsJson() {
@@ -3899,5 +4017,6 @@ async function handleSaveBlogPost(e) {
     }
 
 </script>
+  <div id="greachToastContainer" class="toast-container"></div>
 </body>
 </html>

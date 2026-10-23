@@ -19,7 +19,7 @@
       cardId: 'excel-advanced'
     },
     {
-      key: 'dashboard',
+      key: 'excel_dashboard',
       aliases: ['excel dashboard for beginners', 'excel dashboard', 'executive dashboard', 'dashboard beginners', 'dashboard', 'excel_dashboard'],
       pageUrl: 'excel-dashboard-beginners.html',
       cardId: 'excel-dashboard'
@@ -126,13 +126,16 @@
           if (Array.isArray(rows) && rows.length > 0) {
             const currentPrices = (window.GreachDB && window.GreachDB.getPrices) ? window.GreachDB.getPrices() : {};
             rows.forEach(r => {
-              if (r.course_key) {
-                currentPrices[r.course_key] = {
-                  label: r.course_label || (currentPrices[r.course_key] ? currentPrices[r.course_key].label : r.course_key),
+              const cKey = r.course_id || r.course_key;
+              if (cKey) {
+                const normKey = cKey === 'dashboard' ? 'excel_dashboard' : (cKey === 'sql_beginners' ? 'sql' : (cKey === 'complete_package' ? 'complete_course' : cKey));
+                const item = {
+                  label: r.course_name || r.course_label || (currentPrices[normKey] ? currentPrices[normKey].label : normKey),
                   regular: Number(r.original_price) || 10000,
                   current: Number(r.promo_price) || 3000,
-                  discount: r.discount_label || 'Special Offer'
+                  discount: r.discount_label || (r.discount_pct ? `${r.discount_pct}% OFF` : 'Special Offer')
                 };
+                currentPrices[normKey] = item;
               }
             });
             localStorage.setItem('greach_course_prices_v2', JSON.stringify(currentPrices));

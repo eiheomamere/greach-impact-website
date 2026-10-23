@@ -143,8 +143,8 @@
       endTime: '04:30 PM WAT',
       mode: 'Live Interactive Studio + Capstone Project'
     },
-    dashboard: {
-      courseKey: 'dashboard',
+    excel_dashboard: {
+      courseKey: 'excel_dashboard',
       label: 'Excel Dashboard for Beginners',
       cohort: 'Executive Cohort 2026',
       startDate: '2026-11-21',
@@ -193,7 +193,7 @@
   const DEFAULT_PRICES = {
     excel_beginners: { current: 3000, regular: 15000, discount: '80% OFF', label: 'Microsoft Excel for Beginners' },
     excel_advanced: { current: 4000, regular: 20000, discount: '80% OFF', label: 'Microsoft Excel Advanced & Analytics' },
-    dashboard: { current: 40000, regular: 80000, discount: '50% OFF', label: 'Excel Dashboard for Beginners' },
+    excel_dashboard: { current: 40000, regular: 80000, discount: '50% OFF', label: 'Excel Dashboard for Beginners' },
     sql: { current: 5000, regular: 25000, discount: '80% OFF', label: 'SQL for Beginners' },
     power_bi: { current: 22500, regular: 45000, discount: '50% OFF', label: 'Power BI for Beginners' },
     complete_course: { current: 10000, regular: 60000, discount: '83% OFF', label: 'Complete Analytics Suite (Excel + SQL + Power BI)' }
@@ -202,8 +202,33 @@
   // 3. Pre-seeded Student Roster (Open Enrollment) (Upgraded with Expiry & Certificate Tracking)
   const SEED_ROSTER = [];
 
+  // ==============================================================
+  // SUPABASE CLOUD POSTGRESQL DIRECT API CLIENT
+  // ==============================================================
+  const SUPABASE_URL = 'https://fkltvxhqizqrbvogodxv.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
+
+  async function callSupabase(path, options = {}) {
+    try {
+      const url = `${SUPABASE_URL}/rest/v1/${path}`;
+      const headers = {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        ...(options.headers || {})
+      };
+      return await fetch(url, { ...options, headers });
+    } catch (err) {
+      console.warn('[GreachDB] Supabase Cloud Fetch Warning:', err);
+      return null;
+    }
+  }
+
   const GreachDB = {
     superAdmin: SUPER_ADMIN,
+    supabaseUrl: SUPABASE_URL,
+    supabaseKey: SUPABASE_KEY,
+    callSupabase: callSupabase,
 
     // Initialize all tables in persistent storage
     init: function() {
@@ -794,6 +819,7 @@ Greach Impact Automated Registration Engine`);
       const passes = this.getAllSessionPasses();
       const codeNum = Math.floor(100 + Math.random() * 900);
       const code = (data.customCode ? data.customCode.trim().toUpperCase() : `LIVE-SESS-${codeNum}`);
+      const passId = `PAS-SESS-${codeNum}`;
 
       let expiresAt = null;
       if (data.durationHours && Number(data.durationHours) > 0) {
@@ -803,9 +829,12 @@ Greach Impact Automated Registration Engine`);
       }
 
       const pass = {
+        id: passId,
         code: code,
         label: data.label || 'Live Class Session Pass',
+        course: data.course || 'Microsoft Excel for Beginners',
         cohort: data.cohort || 'Batch 2: 2026 Masterclass',
+        durationHours: Number(data.durationHours) || 2,
         createdAt: new Date().toISOString(),
         expiresAt: expiresAt,
         isActive: true,
@@ -815,28 +844,126 @@ Greach Impact Automated Registration Engine`);
       passes.unshift(pass);
       localStorage.setItem(SESSION_PASSES_KEY, JSON.stringify(passes));
       this.logAudit(adminUser || 'Super Admin', 'Session Pass Created', `Created temporary code ${code} (Expires: ${expiresAt || 'Manual Revoke'})`);
+
+      // Persist directly to Supabase live_session_passes & access_codes (dual-write)
+      callSupabase('live_session_passes', {
+        method: 'POST',
+        headers: { 'Prefer': 'resolution=merge-duplicates' },
+        body: JSON.stringify([{
+          id: passId,
+          pass_code: code,
+          session_label: pass.label,
+          course_id: data.courseId || 'CRS-EXC-BEG',
+          course_name: pass.course,
+          cohort: pass.cohort,
+          duration_hours: pass.durationHours,
+          expires_at: expiresAt,
+          is_active: true,
+          created_by: adminUser || 'Super Admin'
+        }])
+      }).catch(() => {});
+
+      callSupabase('access_codes', {
+        method: 'POST',
+        headers: { 'Prefer': 'resolution=merge-duplicates' },
+        body: JSON.stringify([{
+          code: code,
+          label: pass.label,
+          course_name: pass.course,
+          cohort: pass.cohort,
+          is_session_pass: true,
+          is_active: true,
+          expires_at: expiresAt,
+          created_by: adminUser || 'Super Admin'
+        }])
+      }).catch(() => {});
+
       return pass;
     },
 
     expireSessionPass: function(code, adminUser) {
+      const clean = code.trim().toUpperCase();
       const passes = this.getAllSessionPasses();
-      const match = passes.find(p => p.code.toUpperCase() === code.trim().toUpperCase());
+      const match = passes.find(p => p.code.toUpperCase() === clean);
       if (match) {
         match.isActive = false;
         match.expiredAt = new Date().toISOString();
         localStorage.setItem(SESSION_PASSES_KEY, JSON.stringify(passes));
-        this.logAudit(adminUser || 'Super Admin', 'Session Pass Expired', `Revoked session pass ${code}`);
+        this.logAudit(adminUser || 'Super Admin', 'Session Pass Expired', `Revoked session pass ${clean}`);
+
+        // Update in Supabase
+        callSupabase(`live_session_passes?pass_code=eq.${encodeURIComponent(clean)}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ is_active: false })
+        }).catch(() => {});
+        callSupabase(`access_codes?code=eq.${encodeURIComponent(clean)}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ is_active: false })
+        }).catch(() => {});
+
         return { success: true, pass: match };
       }
       return { success: false, error: 'Pass code not found.' };
     },
 
     deleteSessionPass: function(code, adminUser) {
+      const clean = code.trim().toUpperCase();
       let passes = this.getAllSessionPasses();
-      passes = passes.filter(p => p.code.toUpperCase() !== code.trim().toUpperCase());
+      passes = passes.filter(p => p.code.toUpperCase() !== clean);
       localStorage.setItem(SESSION_PASSES_KEY, JSON.stringify(passes));
-      this.logAudit(adminUser || 'Super Admin', 'Session Pass Deleted', `Deleted session pass ${code}`);
+      this.logAudit(adminUser || 'Super Admin', 'Session Pass Deleted', `Deleted session pass ${clean}`);
+
+      // Delete from Supabase
+      callSupabase(`live_session_passes?pass_code=eq.${encodeURIComponent(clean)}`, { method: 'DELETE' }).catch(() => {});
+      callSupabase(`access_codes?code=eq.${encodeURIComponent(clean)}`, { method: 'DELETE' }).catch(() => {});
+
       return { success: true };
+    },
+
+    fetchSessionPassesFromCloud: async function() {
+      try {
+        const res = await callSupabase('live_session_passes?order=created_at.desc&select=*');
+        if (res && res.ok) {
+          const rows = await res.json();
+          if (Array.isArray(rows) && rows.length > 0) {
+            const passes = rows.map(r => ({
+              id: r.id,
+              code: r.pass_code,
+              label: r.session_label,
+              course: r.course_name,
+              cohort: r.cohort,
+              durationHours: r.duration_hours,
+              createdAt: r.created_at,
+              expiresAt: r.expires_at,
+              isActive: r.is_active,
+              createdBy: r.created_by
+            }));
+            localStorage.setItem(SESSION_PASSES_KEY, JSON.stringify(passes));
+            return passes;
+          }
+        }
+        // Fallback to access_codes with is_session_pass = true
+        const acRes = await callSupabase('access_codes?is_session_pass=eq.true&order=created_at.desc&select=*');
+        if (acRes && acRes.ok) {
+          const acRows = await acRes.json();
+          if (Array.isArray(acRows) && acRows.length > 0) {
+            const passes = acRows.map(r => ({
+              id: 'PAS-' + r.code,
+              code: r.code,
+              label: r.label,
+              course: r.course_name,
+              cohort: r.cohort,
+              createdAt: r.created_at,
+              expiresAt: r.expires_at,
+              isActive: r.is_active,
+              createdBy: r.created_by
+            }));
+            localStorage.setItem(SESSION_PASSES_KEY, JSON.stringify(passes));
+            return passes;
+          }
+        }
+      } catch(e) {}
+      return this.getAllSessionPasses();
     },
 
     // ==============================================================
@@ -996,6 +1123,24 @@ Greach Impact Automated Registration Engine`);
       posts.unshift(newPost);
       this.saveBlogPosts(posts);
       this.logAudit(adminUser || 'Super Admin', 'Blog Post Created', `Published new article: "${newPost.title}" in [${newPost.category}]`);
+
+      // Persist directly to Supabase blog_posts
+      callSupabase('blog_posts', {
+        method: 'POST',
+        headers: { 'Prefer': 'resolution=merge-duplicates' },
+        body: JSON.stringify([{
+          id: String(newId),
+          title: newPost.title,
+          category: newPost.category,
+          excerpt: newPost.summary,
+          content: newPost.content,
+          author: newPost.author,
+          read_time: newPost.readTime,
+          publish_date: newPost.date,
+          status: 'Published'
+        }])
+      }).catch(err => console.warn('[Cloud DB] Blog create warning:', err));
+
       return { success: true, post: newPost };
     },
 
@@ -1017,6 +1162,22 @@ Greach Impact Automated Registration Engine`);
       };
       this.saveBlogPosts(posts);
       this.logAudit(adminUser || 'Super Admin', 'Blog Post Updated', `Updated article #${id}: "${posts[idx].title}"`);
+
+      // Persist update directly to Supabase blog_posts
+      callSupabase(`blog_posts?id=eq.${encodeURIComponent(String(id))}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          title: posts[idx].title,
+          category: posts[idx].category,
+          excerpt: posts[idx].summary,
+          content: posts[idx].content,
+          author: posts[idx].author,
+          read_time: posts[idx].readTime,
+          publish_date: posts[idx].date,
+          updated_at: new Date().toISOString()
+        })
+      }).catch(err => console.warn('[Cloud DB] Blog update warning:', err));
+
       return { success: true, post: posts[idx] };
     },
 
@@ -1028,21 +1189,83 @@ Greach Impact Automated Registration Engine`);
       posts = posts.filter(p => String(p.id) !== String(id));
       this.saveBlogPosts(posts);
       this.logAudit(adminUser || 'Super Admin', 'Blog Post Deleted', `Deleted article #${id}: "${match.title}"`);
+
+      // Delete directly from Supabase blog_posts
+      callSupabase(`blog_posts?id=eq.${encodeURIComponent(String(id))}`, {
+        method: 'DELETE'
+      }).catch(err => console.warn('[Cloud DB] Blog delete warning:', err));
+
       return { success: true };
     },
 
+    fetchBlogPostsFromCloud: async function() {
+      try {
+        const res = await callSupabase('blog_posts?order=created_at.desc&select=*');
+        if (res && res.ok) {
+          const rows = await res.json();
+          if (Array.isArray(rows) && rows.length > 0) {
+            const posts = rows.map(r => ({
+              id: r.id,
+              title: r.title,
+              category: r.category,
+              date: r.publish_date,
+              summary: r.excerpt,
+              readTime: r.read_time,
+              author: r.author || 'Greach Impact Team',
+              content: r.content,
+              status: r.status || 'Published',
+              updatedAt: r.updated_at
+            }));
+            this.saveBlogPosts(posts);
+            return posts;
+          }
+        }
+      } catch(e) {}
+      return this.getBlogPosts();
+    },
 
     getPrices: function() {
       try {
         const stored = localStorage.getItem(PRICES_KEY);
         const res = stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(DEFAULT_PRICES));
-        if (res.dashboard && !res.excel_dashboard) res.excel_dashboard = res.dashboard;
-        if (res.sql && !res.sql_beginners) res.sql_beginners = res.sql;
-        if (res.complete_course && !res.complete_package) res.complete_package = res.complete_course;
+        // Clean canonical courses without duplicate aliases
+        delete res.dashboard;
+        delete res.sql_beginners;
+        delete res.complete_package;
         return res;
       } catch(e) {
         return DEFAULT_PRICES;
       }
+    },
+
+    fetchPricesFromCloud: async function() {
+      try {
+        const res = await callSupabase('course_prices?select=*');
+        if (res && res.ok) {
+          const rows = await res.json();
+          if (Array.isArray(rows) && rows.length > 0) {
+            const currentPrices = this.getPrices();
+            rows.forEach(r => {
+              const cId = r.course_id || r.course_key;
+              if (cId) {
+                const norm = cId === 'dashboard' ? 'excel_dashboard' : (cId === 'sql_beginners' ? 'sql' : (cId === 'complete_package' ? 'complete_course' : cId));
+                currentPrices[norm] = {
+                  label: r.course_name || (currentPrices[norm] ? currentPrices[norm].label : norm),
+                  regular: Number(r.original_price) || 10000,
+                  current: Number(r.promo_price) || 3000,
+                  discount: r.discount_pct ? `${r.discount_pct}% OFF` : (currentPrices[norm] ? currentPrices[norm].discount : 'Special Offer')
+                };
+              }
+            });
+            delete currentPrices.dashboard;
+            delete currentPrices.sql_beginners;
+            delete currentPrices.complete_package;
+            localStorage.setItem(PRICES_KEY, JSON.stringify(currentPrices));
+            return currentPrices;
+          }
+        }
+      } catch(e) {}
+      return this.getPrices();
     },
 
     updateCoursePrice: function(rawKey, newCurrent, newRegular, updatedBy) {
@@ -1064,6 +1287,21 @@ Greach Impact Automated Registration Engine`);
         if (targetKey === 'complete_package') prices.complete_course = prices.complete_package;
         localStorage.setItem(PRICES_KEY, JSON.stringify(prices));
 
+        // Immediately persist to Supabase Cloud PostgreSQL
+        const normKey = this.normalizeCourseKey ? this.normalizeCourseKey(targetKey) : targetKey;
+        callSupabase(`course_prices?course_id=eq.${encodeURIComponent(normKey)}`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            promo_price: Number(newCurrent),
+            original_price: Number(prices[targetKey].regular),
+            discount_pct: discountPct,
+            updated_at: new Date().toISOString(),
+            updated_by: updatedBy || 'Super Admin'
+          })
+        }).then(res => {
+          if (res && res.ok) console.log(`[Cloud DB] Price for ${normKey} synced to Supabase.`);
+        }).catch(err => console.warn('[Cloud DB] Price update network warning:', err));
+
         if (this.logAudit) {
           this.logAudit(
             updatedBy || 'Super Admin',
@@ -1080,6 +1318,29 @@ Greach Impact Automated Registration Engine`);
       return false;
     },
 
+    updateCoursePriceAsync: async function(rawKey, newCurrent, newRegular, updatedBy) {
+      const ok = this.updateCoursePrice(rawKey, newCurrent, newRegular, updatedBy);
+      const normKey = this.normalizeCourseKey ? this.normalizeCourseKey(rawKey) : rawKey;
+      const prices = this.getPrices();
+      const item = prices[normKey] || prices[rawKey] || {};
+      const discountPct = Math.round((1 - (Number(newCurrent) / (Number(newRegular || item.regular || 10000)))) * 100);
+      try {
+        const res = await callSupabase(`course_prices?course_id=eq.${encodeURIComponent(normKey)}`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            promo_price: Number(newCurrent),
+            original_price: Number(newRegular || item.regular || 10000),
+            discount_pct: discountPct,
+            updated_at: new Date().toISOString(),
+            updated_by: updatedBy || 'Super Admin'
+          })
+        });
+        return { success: true, cloudSynced: res && res.ok };
+      } catch(e) {
+        return { success: true, cloudSynced: false, error: e.message };
+      }
+    },
+
     // ==============================================================
     // COURSE SCHEDULES & CLASS TIMINGS (Start/End Date, Start/End Time)
     // ==============================================================
@@ -1087,12 +1348,10 @@ Greach Impact Automated Registration Engine`);
       try {
         const stored = localStorage.getItem(SCHEDULES_KEY);
         const res = stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(DEFAULT_SCHEDULES));
-        if (res.dashboard && !res.excel_dashboard) res.excel_dashboard = Object.assign({}, res.dashboard, { courseKey: 'excel_dashboard' });
-        if (res.excel_dashboard && !res.dashboard) res.dashboard = Object.assign({}, res.excel_dashboard, { courseKey: 'dashboard' });
-        if (res.sql && !res.sql_beginners) res.sql_beginners = Object.assign({}, res.sql, { courseKey: 'sql_beginners' });
-        if (res.sql_beginners && !res.sql) res.sql = Object.assign({}, res.sql_beginners, { courseKey: 'sql' });
-        if (res.complete_course && !res.complete_package) res.complete_package = Object.assign({}, res.complete_course, { courseKey: 'complete_package' });
-        if (res.complete_package && !res.complete_course) res.complete_course = Object.assign({}, res.complete_package, { courseKey: 'complete_course' });
+        // Clean canonical schedules without duplicate aliases
+        delete res.dashboard;
+        delete res.sql_beginners;
+        delete res.complete_package;
         return res;
       } catch(e) {
         return DEFAULT_SCHEDULES;
@@ -1272,8 +1531,136 @@ Greach Impact Automated Registration Engine`);
         student: match,
         expiry: expiry
       };
-    }
-  ,
+    },
+
+    verifyStudentByCodeCloud: async function(code) {
+      if (!code) return { success: false, error: 'Please enter your unique access code.' };
+      const clean = code.trim().toUpperCase();
+
+      // Master admin passcode check
+      if (clean === 'EVANA_OLUEBUBE123890') {
+        const superAdmin = this.getSuperAdmin();
+        return {
+          success: true,
+          isInstructor: true,
+          role: 'instructor',
+          name: superAdmin.name,
+          student: {
+            id: 'SUPER-ADMIN',
+            name: superAdmin.name,
+            email: superAdmin.email,
+            cohort: 'Executive Leadership',
+            accessType: 'super_admin',
+            expiresAt: null
+          },
+          expiry: { isExpired: false, message: 'Global Superuser Access' }
+        };
+      }
+
+      try {
+        // 1. Check live_session_passes table in Supabase
+        const lpRes = await callSupabase(`live_session_passes?pass_code=ilike.${encodeURIComponent(clean)}&select=*`);
+        if (lpRes && lpRes.ok) {
+          const lps = await lpRes.json();
+          if (Array.isArray(lps) && lps.length > 0) {
+            const pass = lps[0];
+            const isExpired = !pass.is_active || (pass.expires_at && new Date(pass.expires_at).getTime() < Date.now());
+            if (isExpired) {
+              return { success: false, isExpired: true, error: `Live session pass "${clean}" has expired or been revoked.` };
+            }
+            return {
+              success: true,
+              isSessionPass: true,
+              passType: 'Live Session Pass',
+              student: {
+                id: pass.id || ('PAS-' + pass.pass_code),
+                name: pass.session_label || 'Live Participant',
+                email: 'guest@greachimpact.com',
+                course: pass.course_name || 'Microsoft Excel for Beginners',
+                courseKey: this.normalizeCourseKey(pass.course_name),
+                cohort: pass.cohort || 'Batch 2: 2026 Masterclass',
+                durationHours: pass.duration_hours,
+                expiresAt: pass.expires_at
+              },
+              expiry: {
+                isExpired: false,
+                message: pass.expires_at ? `Valid until ${new Date(pass.expires_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Active Live Pass'
+              }
+            };
+          }
+        }
+
+        // 2. Check access_codes table in Supabase
+        const acRes = await callSupabase(`access_codes?code=ilike.${encodeURIComponent(clean)}&select=*`);
+        if (acRes && acRes.ok) {
+          const acs = await acRes.json();
+          if (Array.isArray(acs) && acs.length > 0) {
+            const pass = acs[0];
+            const isExpired = !pass.is_active || (pass.expires_at && new Date(pass.expires_at).getTime() < Date.now());
+            if (isExpired) {
+              return { success: false, isExpired: true, error: `Access code "${clean}" has expired (1-month validity).` };
+            }
+            return {
+              success: true,
+              isSessionPass: !!pass.is_session_pass,
+              passType: pass.is_session_pass ? 'Live Session Pass' : 'Course Enrollment Code',
+              student: {
+                id: pass.student_id || ('PASS-' + pass.code),
+                name: pass.label || 'Enrolled Student',
+                email: pass.student_email || 'student@greachimpact.com',
+                course: pass.course_name || 'Microsoft Excel for Beginners',
+                courseKey: this.normalizeCourseKey(pass.course_name),
+                cohort: pass.cohort || 'Batch 2: 2026 Masterclass',
+                expiresAt: pass.expires_at
+              },
+              expiry: {
+                isExpired: false,
+                message: pass.expires_at ? `Valid until ${new Date(pass.expires_at).toLocaleDateString()}` : 'Active Cloud Access'
+              }
+            };
+          }
+        }
+
+        // 3. Check students table in Supabase
+        const stRes = await callSupabase(`students?secret_password=ilike.${encodeURIComponent(clean)}&select=*`);
+        if (stRes && stRes.ok) {
+          const sts = await stRes.json();
+          if (Array.isArray(sts) && sts.length > 0) {
+            const s = sts[0];
+            if (s.status === 'Pending Payment') {
+              return { success: false, isPendingPayment: true, error: 'Registration payment is pending verification.' };
+            }
+            const isExpired = s.expires_at && new Date(s.expires_at).getTime() < Date.now();
+            if (isExpired) {
+              return { success: false, isExpired: true, error: `Student enrollment expired on ${new Date(s.expires_at).toLocaleDateString()}.` };
+            }
+            return {
+              success: true,
+              passType: 'Student Account',
+              student: {
+                id: s.id,
+                name: s.full_name,
+                email: s.registered_email,
+                phone: s.phone,
+                course: s.enrolled_course || 'Microsoft Excel for Beginners',
+                courseKey: this.normalizeCourseKey(s.enrolled_course),
+                cohort: s.cohort || 'Batch 2: 2026 Masterclass',
+                expiresAt: s.expires_at
+              },
+              expiry: {
+                isExpired: false,
+                message: s.expires_at ? `Valid until ${new Date(s.expires_at).toLocaleDateString()}` : 'Active Student Pass'
+              }
+            };
+          }
+        }
+      } catch(err) {
+        console.warn('[GreachDB] Cloud verification network issue, checking local cache:', err);
+      }
+
+      // 4. Fallback to local synchronous check
+      return this.verifyStudentByCode(code);
+    },
 
 // ==============================================================
     // COURSE ACCESS RESTRICTION & ROLE-BASED ACCESS CONTROL (RBAC)
