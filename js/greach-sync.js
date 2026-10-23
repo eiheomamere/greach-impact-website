@@ -113,6 +113,34 @@
   let syncRetryCount = 0;
     async function hydrateFromCloud() {
     try {
+      const SUPABASE_URL = 'https://fkltvxhqizqrbvogodxv.supabase.co';
+      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
+
+      // 0. Proactively hydrate live prices from Supabase Cloud PostgreSQL
+      try {
+        const prRes = await fetch(`${SUPABASE_URL}/rest/v1/course_prices?select=*`, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        });
+        if (prRes.ok) {
+          const rows = await prRes.json();
+          if (Array.isArray(rows) && rows.length > 0) {
+            const currentPrices = (window.GreachDB && window.GreachDB.getPrices) ? window.GreachDB.getPrices() : {};
+            rows.forEach(r => {
+              if (r.course_key) {
+                currentPrices[r.course_key] = {
+                  label: r.course_label || (currentPrices[r.course_key] ? currentPrices[r.course_key].label : r.course_key),
+                  regular: Number(r.original_price) || 10000,
+                  current: Number(r.promo_price) || 3000,
+                  discount: r.discount_label || 'Special Offer'
+                };
+              }
+            });
+            localStorage.setItem('greach_course_prices_v2', JSON.stringify(currentPrices));
+            syncAll();
+          }
+        }
+      } catch(e) {}
+
       let res = null;
       try {
         res = await fetch('/api/site-data');

@@ -968,8 +968,96 @@
     };
     window.switchStartRole = window.switchLoginMode;
 
-    // Student Access Code Sign-In Handler
-    window.handleCodeLogin = function(e) {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Security Gate State Checker & Automated Magic Link Evaluator
+    async function checkAccessSecurity() {
+      const securityGateOverlay = document.getElementById('securityGateOverlay');
+      const studentStatusPill = document.getElementById('studentStatusPill');
+      const verifiedStudentName = document.getElementById('verifiedStudentName');
+
+      // 1. Check Automated URL Query Parameters (Magic Links)
+      const urlParams = new URLSearchParams(window.location.search);
+      const adminKey = urlParams.get('admin') || urlParams.get('master') || (urlParams.get('instructor') === 'true' ? urlParams.get('key') : null);
+      if (adminKey === 'GREACH-ADMIN-2026') {
+        localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
+        const session = {
+          role: 'instructor',
+          id: 'INST-ADMIN',
+          name: 'Lead Instructor',
+          email: 'instructor@greach.org',
+          verified: true,
+          isAdmin: true,
+          loginTime: new Date().toISOString()
+        };
+        localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // Check URL for ?code=... or ?pass=...
+      const urlCode = urlParams.get('code') || urlParams.get('pass') || urlParams.get('key');
+      if (urlCode && !localStorage.getItem(ACTIVE_SESSION_KEY)) {
+        const inp = document.getElementById('gateInputCode');
+        if (inp) inp.value = urlCode.trim();
+        window.history.replaceState({}, document.title, window.location.pathname);
+        if (typeof window.handleCodeLogin === 'function') {
+          await window.handleCodeLogin();
+          return;
+        }
+      }
+
+      // 2. Check Instructor Login
+      if (localStorage.getItem(INSTRUCTOR_LOGIN_KEY) === 'true') {
+        if (securityGateOverlay) securityGateOverlay.classList.add('unlocked');
+        if (studentStatusPill) {
+          studentStatusPill.style.display = 'inline-flex';
+          studentStatusPill.style.background = '#14532d';
+          studentStatusPill.style.border = '1.5px solid #22c55e';
+        }
+        if (verifiedStudentName) {
+          verifiedStudentName.innerHTML = '👑 <strong>Lead Instructor</strong> (Admin Mode)';
+        }
+        return;
+      }
+
+      // 3. Check Active Student Session
+      try {
+        const session = JSON.parse(localStorage.getItem(ACTIVE_SESSION_KEY) || 'null');
+        if (session && session.verified) {
+          // Check expiration
+          if (session.expiresAt && new Date(session.expiresAt).getTime() < Date.now()) {
+            localStorage.removeItem(ACTIVE_SESSION_KEY);
+            if (securityGateOverlay) securityGateOverlay.classList.remove('unlocked');
+            if (studentStatusPill) studentStatusPill.style.display = 'none';
+            return;
+          }
+
+          if (securityGateOverlay) securityGateOverlay.classList.add('unlocked');
+          if (studentStatusPill) {
+            studentStatusPill.style.display = 'inline-flex';
+            studentStatusPill.style.background = 'rgba(16, 124, 65, 0.15)';
+            studentStatusPill.style.border = '1.5px solid #107C41';
+          }
+          if (verifiedStudentName) {
+            const courseLabel = session.course || 'Beginner';
+            verifiedStudentName.innerHTML = `🎓 <strong>${escapeHtml(session.name)}</strong> <span style="font-size:0.75rem; background:#107c41; color:white; padding:2px 8px; border-radius:12px; margin-left:4px;">${escapeHtml(courseLabel)}</span>`;
+          }
+        } else {
+          if (securityGateOverlay) securityGateOverlay.classList.remove('unlocked');
+          if (studentStatusPill) studentStatusPill.style.display = 'none';
+        }
+      } catch(e) {
+        if (securityGateOverlay) securityGateOverlay.classList.remove('unlocked');
+        if (studentStatusPill) studentStatusPill.style.display = 'none';
+      }
+    }
+    window.checkAccessSecurity = checkAccessSecurity;
+
+    // Student Access Code Sign-In Handler (Cloud Synchronized)
+    window.handleCodeLogin = async function(e) {
       if (e) e.preventDefault();
       const codeInp = document.getElementById('gateInputCode');
       const code = codeInp ? codeInp.value.trim() : '';
@@ -978,64 +1066,208 @@
 
       if (!code) {
         if (errText) errText.textContent = 'Please enter your unique course access code.';
-        if (errBox) errBox.style.display = 'block';
+        if (errBox) {
+          errBox.style.background = '#fef2f2';
+          errBox.style.color = '#991b1b';
+          errBox.style.borderLeftColor = '#ef4444';
+          errBox.style.display = 'block';
+        }
         return;
       }
 
       if (code.includes('@')) {
         if (errText) errText.innerHTML = 'This looks like an email address.<br>Please click the <strong>Email & Password</strong> tab above to sign in with your password.';
-        if (errBox) errBox.style.display = 'block';
+        if (errBox) {
+          errBox.style.background = '#fef2f2';
+          errBox.style.color = '#991b1b';
+          errBox.style.borderLeftColor = '#ef4444';
+          errBox.style.display = 'block';
+        }
         return;
       }
 
+      // Show verifying spinner
+      if (errBox && errText) {
+        errBox.style.display = 'block';
+        errBox.style.background = '#eff6ff';
+        errBox.style.color = '#1e40af';
+        errBox.style.borderLeftColor = '#3b82f6';
+        errText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying access credentials with cloud database...';
+      }
+
+      let verifyRes = null;
       if (window.GreachDB) {
-        const verifyRes = window.GreachDB.verifyStudentByCode(code);
-        if (verifyRes.success) {
-          const s = verifyRes.student;
-          const courseName = s.course || 'Microsoft Excel for Beginners';
-          const courseKey = window.GreachDB ? window.GreachDB.normalizeCourseKey(s.courseKey || s.course) : 'excel_beginners';
-          const session = {
-            role: verifyRes.isInstructor ? 'instructor' : 'student',
-            id: s.id,
-            name: s.name,
-            email: s.email,
-            course: courseName,
-            courseKey: courseKey,
-            cohort: s.cohort || 'Batch 2: 2026 Masterclass',
-            expiresAt: s.expiresAt,
-            verified: true,
-            loginTime: new Date().toISOString()
-          };
-          localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
-          if (verifyRes.isInstructor) {
-            localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
+        verifyRes = window.GreachDB.verifyStudentByCode(code);
+      }
+
+      // If not in local browser cache, verify in real-time with Supabase Cloud DB
+      if (!verifyRes || !verifyRes.success) {
+        const SUPABASE_URL = 'https://fkltvxhqizqrbvogodxv.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
+
+        try {
+          const cleanCode = code.trim().toUpperCase();
+
+          // 1. Check access_codes table
+          const acRes = await fetch(`${SUPABASE_URL}/rest/v1/access_codes?code=ilike.${encodeURIComponent(cleanCode)}&select=*`, {
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+          });
+          const codes = await acRes.json();
+
+          if (Array.isArray(codes) && codes.length > 0) {
+            const pass = codes[0];
+            if (!pass.is_active || (pass.expires_at && new Date(pass.expires_at).getTime() < Date.now())) {
+              if (errBox && errText) {
+                errBox.style.background = '#fef2f2';
+                errBox.style.color = '#991b1b';
+                errBox.style.borderLeftColor = '#ef4444';
+                errText.textContent = `Access code "${cleanCode}" has expired or been revoked.`;
+              }
+              return;
+            }
+
+            // Cache locally so subsequent visits are instant
+            const localPasses = JSON.parse(localStorage.getItem('greach_session_passes') || '[]');
+            if (!localPasses.some(p => p.code && p.code.toUpperCase() === cleanCode)) {
+              localPasses.unshift({
+                code: pass.code,
+                label: pass.label,
+                course: pass.course_name,
+                cohort: pass.cohort,
+                expiresAt: pass.expires_at,
+                isActive: true
+              });
+              localStorage.setItem('greach_session_passes', JSON.stringify(localPasses));
+            }
+
+            verifyRes = {
+              success: true,
+              isSessionPass: pass.is_session_pass,
+              student: {
+                id: pass.student_id || ('PASS-' + pass.code),
+                name: pass.label || 'Enrolled Student',
+                email: pass.student_email || 'student@greachimpact.com',
+                course: pass.course_name || 'Microsoft Excel for Beginners',
+                cohort: pass.cohort || 'Batch 2: 2026 Masterclass',
+                expiresAt: pass.expires_at
+              },
+              expiry: { isExpired: false, message: pass.expires_at ? `Valid until ${new Date(pass.expires_at).toLocaleDateString()}` : 'Active Cloud Access' }
+            };
           } else {
-            localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
-          }
+            // 2. Check students table in Supabase
+            const stuRes = await fetch(`${SUPABASE_URL}/rest/v1/students?secret_password=ilike.${encodeURIComponent(cleanCode)}&select=*`, {
+              headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+            });
+            const stus = await stuRes.json();
+            if (Array.isArray(stus) && stus.length > 0) {
+              const s = stus[0];
+              const localStudents = JSON.parse(localStorage.getItem('greach_students_roster') || '[]');
+              if (!localStudents.some(stu => stu.id === s.id)) {
+                localStudents.unshift({
+                  id: s.id,
+                  name: s.full_name,
+                  email: s.registered_email,
+                  password: s.secret_password,
+                  course: s.enrolled_course,
+                  cohort: s.cohort,
+                  expiresAt: s.expires_at
+                });
+                localStorage.setItem('greach_students_roster', JSON.stringify(localStudents));
+              }
 
-          if (window.GreachDB && window.GreachDB.recordStudentLogin) {
-            window.GreachDB.recordStudentLogin(s);
+              verifyRes = {
+                success: true,
+                student: {
+                  id: s.id,
+                  name: s.full_name,
+                  email: s.registered_email,
+                  course: s.enrolled_course || 'Microsoft Excel for Beginners',
+                  cohort: s.cohort || 'Batch 2: 2026 Masterclass',
+                  expiresAt: s.expires_at
+                },
+                expiry: { isExpired: false, message: s.expires_at ? `Valid until ${new Date(s.expires_at).toLocaleDateString()}` : 'Active Cloud Access' }
+              };
+            }
           }
-
-          if (errBox) errBox.style.display = 'none';
-          checkAccessSecurity();
-          alert(`Welcome, ${s.name}!\n\nAccess Granted for: ${courseName}\nStatus: ${verifyRes.expiry.message}`);
-          return;
-        } else if (verifyRes.isPendingPayment) {
-          if (errText) errText.innerHTML = `<strong>Payment Pending:</strong> ${verifyRes.error}`;
-          if (errBox) errBox.style.display = 'block';
-          return;
-        } else if (verifyRes.isExpired) {
-          if (errText) {
-            errText.innerHTML = `<strong><i class="fas fa-hourglass-end"></i> Code Expired:</strong> ${verifyRes.error}<br><br><a href="claim-certificate.html?email=${encodeURIComponent(verifyRes.student ? verifyRes.student.email : '')}" style="color:#0284c7; font-weight:700; text-decoration:underline;">Click to Claim Certificate &rarr;</a>`;
-          }
-          if (errBox) errBox.style.display = 'block';
-          return;
-        } else {
-          if (errText) errText.textContent = verifyRes.error || 'Invalid access code. Please verify and try again.';
-          if (errBox) errBox.style.display = 'block';
-          return;
+        } catch(cloudErr) {
+          console.warn('[Classroom Cloud DB Lookup Warning]:', cloudErr);
         }
+      }
+
+      if (verifyRes && verifyRes.success) {
+        const s = verifyRes.student;
+        const courseName = s.course || 'Microsoft Excel for Beginners';
+        const courseKey = window.GreachDB ? window.GreachDB.normalizeCourseKey(s.courseKey || s.course) : 'excel_beginners';
+        const session = {
+          role: verifyRes.isInstructor ? 'instructor' : 'student',
+          id: s.id,
+          name: s.name,
+          email: s.email,
+          course: courseName,
+          courseKey: courseKey,
+          cohort: s.cohort || 'Batch 2: 2026 Masterclass',
+          expiresAt: s.expiresAt,
+          verified: true,
+          loginTime: new Date().toISOString()
+        };
+        localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
+        if (verifyRes.isInstructor) {
+          localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
+        } else {
+          localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
+        }
+
+        if (window.GreachDB && window.GreachDB.recordStudentLogin) {
+          window.GreachDB.recordStudentLogin(s);
+        }
+
+        // Record presence in Supabase Cloud
+        try {
+          const SUPABASE_URL = 'https://fkltvxhqizqrbvogodxv.supabase.co';
+          const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
+          fetch(`${SUPABASE_URL}/rest/v1/student_presence`, {
+            method: 'POST',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify([{
+              session_id: 'SESS-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+              student_id: session.id,
+              student_name: session.name,
+              student_email: session.email,
+              course_name: session.course,
+              status: 'online',
+              device_info: navigator.userAgent
+            }])
+          }).catch(() => {});
+        } catch(e) {}
+
+        if (errBox) errBox.style.display = 'none';
+        checkAccessSecurity();
+        alert(`Welcome, ${s.name}!\n\nAccess Granted for: ${courseName}\nCode Verified: ${code}`);
+        return;
+      } else if (verifyRes && verifyRes.isPendingPayment) {
+        if (errBox && errText) {
+          errBox.style.background = '#fef2f2';
+          errBox.style.color = '#991b1b';
+          errBox.style.borderLeftColor = '#ef4444';
+          errText.innerHTML = `<strong>Payment Pending:</strong> ${verifyRes.error}`;
+        }
+        return;
+      } else if (verifyRes && verifyRes.isExpired) {
+        if (errBox && errText) {
+          errBox.style.background = '#fef2f2';
+          errBox.style.color = '#991b1b';
+          errBox.style.borderLeftColor = '#ef4444';
+          errText.innerHTML = `<strong><i class="fas fa-hourglass-end"></i> Code Expired:</strong> ${verifyRes.error}<br><br><a href="claim-certificate.html?email=${encodeURIComponent(verifyRes.student ? verifyRes.student.email : '')}" style="color:#0284c7; font-weight:700; text-decoration:underline;">Click to Claim Certificate &rarr;</a>`;
+        }
+        return;
+      } else {
+        if (errBox && errText) {
+          errBox.style.background = '#fef2f2';
+          errBox.style.color = '#991b1b';
+          errBox.style.borderLeftColor = '#ef4444';
+          errText.textContent = (verifyRes && verifyRes.error) ? verifyRes.error : `No enrollment record found for code "${code}". Please verify your unique access code or check your registration confirmation email.`;
+        }
+        return;
       }
     };
     window.handleStartStudentLogin = window.handleCodeLogin;

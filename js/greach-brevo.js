@@ -209,14 +209,14 @@
                     <p>You can connect to the interactive classroom, download your guided exercises, and join the live studio stream immediately:</p>
                     
                     <div style="text-align:center; margin:26px 0;">
-                      <a href="https://greachimpact.com/classroom/index.html?code=${encodeURIComponent(s.password)}&id=${encodeURIComponent(s.id)}" 
+                      <a href="https://greach-impact-website.vercel.app/classroom/index.html?code=${encodeURIComponent(s.password)}&id=${encodeURIComponent(s.id)}" 
                          style="background:#107C41; color:#ffffff; padding:14px 32px; border-radius:30px; text-decoration:none; font-weight:bold; font-size:16px; display:inline-block; box-shadow:0 4px 15px rgba(16,124,65,0.35);">
                         🚀 Connect to Classroom with 1-Click &rarr;
                       </a>
                     </div>
 
                     <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:14px; margin-top:20px; font-size:13px; color:#1e40af;">
-                      <strong>🎓 Lifetime Certificate Access:</strong> Even after your 1-month classroom access code expires, you have permanent lifetime access to retrieve, view, and download your official Certificate of Completion using your registered email at <strong>greachimpact.com/classroom/claim-certificate.html</strong>.
+                      <strong>🎓 Lifetime Certificate Access:</strong> Even after your 1-month classroom access code expires, you have permanent lifetime access to retrieve, view, and download your official Certificate of Completion using your registered email at <strong>greach-impact-website.vercel.app/classroom/claim-certificate.html</strong>.
                     </div>
 
                     <div style="font-size:12px; color:#94a3b8; text-align:center; margin-top:28px; border-top:1px solid #f1f5f9; padding-top:16px;">
@@ -269,7 +269,10 @@
       try {
         const resp = await fetch('/api/brevo', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'api-key': apiKey
+          },
           body: JSON.stringify(payload)
         });
         const result = await resp.json();
@@ -336,7 +339,7 @@
 
     sendClassReminder: async function(student, liveStreamUrl, liveSchedule) {
       const cfg = this.getConfig();
-      const url = liveStreamUrl || 'https://greachimpact.com/classroom/index.html?code=' + encodeURIComponent(student.password);
+      const url = liveStreamUrl || 'https://greach-impact-website.vercel.app/classroom/index.html?code=' + encodeURIComponent(student.password);
       const schedule = liveSchedule || 'Saturday at 10:00 AM West Africa Time (WAT)';
 
       return await this.sendEmail({
@@ -383,7 +386,7 @@
               <p>You have made fantastic progress through the 64 masterclass lessons! Remember to submit your final Capstone Project from inside the classroom hub to be certified.</p>
               <p>Once approved, your accredited <strong>Certificate of Excellence</strong> will be issued to you.</p>
               <div style="text-align:center; margin:20px 0;">
-                <a href="https://greachimpact.com/classroom/Excel_Master_Course_Hub.html?code=${encodeURIComponent(student.password)}" style="background:#107C41; color:white; padding:12px 24px; border-radius:24px; text-decoration:none; font-weight:bold;">
+                <a href="https://greach-impact-website.vercel.app/classroom/Excel_Master_Course_Hub.html?code=${encodeURIComponent(student.password)}" style="background:#107C41; color:white; padding:12px 24px; border-radius:24px; text-decoration:none; font-weight:bold;">
                   Open Project Submission Hub &rarr;
                 </a>
               </div>
@@ -426,7 +429,32 @@
           return { success: false, error: data.message || 'Brevo API authentication error.' };
         }
       } catch(e) {
-        return { success: false, error: e.message || 'Network error reaching Brevo API.' };
+        // Fallback to Serverless API gateway (bypasses browser CORS restrictions)
+        try {
+          const fbResp = await fetch('/api/brevo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'api-key': apiKey.trim() },
+            body: JSON.stringify({
+              apiKey: apiKey.trim(),
+              to: [{ email: testEmail || 'greachimpact@gmail.com', name: 'Lead Administrator' }],
+              subject: '✅ Brevo Email Automation Connected Successfully!',
+              htmlContent: `
+                <div style="font-family:sans-serif; padding:20px; background:#ecfdf5; border-radius:10px; border:1.5px solid #a7f3d0;">
+                  <h3 style="color:#065f46; margin-top:0;">🎉 Brevo API Connection Operational</h3>
+                  <p>Your Brevo API key has been authenticated successfully via serverless gateway.</p>
+                </div>
+              `
+            })
+          });
+          const fbData = await fbResp.json();
+          if (fbResp.ok && fbData.success && (fbData.dispatched || fbData.messageId)) {
+            return { success: true, messageId: fbData.messageId || (fbData.data && fbData.data.messageId) || 'OK' };
+          } else {
+            return { success: false, error: fbData.error || (fbData.data && fbData.data.message) || e.message };
+          }
+        } catch(err2) {
+          return { success: false, error: e.message || 'Network error reaching Brevo API.' };
+        }
       }
     }
   };

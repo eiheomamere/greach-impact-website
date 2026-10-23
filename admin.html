@@ -392,7 +392,7 @@
       justify-content: center;
       padding: 1rem;
     }
-    .modal-overlay.open { display: flex; }
+    .modal-overlay.open, .modal-overlay.active { display: flex; }
     .modal-card {
       background: white;
       border-radius: 16px;
@@ -806,10 +806,7 @@
             <div class="form-group">
               <label>Brevo API Key (v3):</label>
               <div style="display:flex; gap:0.5rem;">
-                <div style="display:flex; gap:0.5rem;">
-              <input type="password" id="brevoApiKeyInput" class="form-control" placeholder="xkeysib-..." />
-              <button type="button" onclick="togglePasswordVisibility('brevoApiKeyInput', this)" class="btn-action" style="padding:0.7rem;"><i class="fas fa-eye"></i></button>
-            </div>
+                <input type="password" id="brevoApiKeyInput" class="form-control" placeholder="xkeysib-..." />
                 <button type="button" onclick="togglePasswordVisibility('brevoApiKeyInput', this)" class="btn-action" style="padding:0.7rem;"><i class="fas fa-eye"></i></button>
               </div>
               <small style="color:var(--text-muted); font-size:0.75rem;">Obtain from Brevo Dashboard &rarr; SMTP &amp; API Keys.</small>
@@ -1872,7 +1869,7 @@
       const modal = document.getElementById('universalCodeModal');
       const resultBox = document.getElementById('ucResultBox');
       if (resultBox) resultBox.style.display = 'none';
-      if (modal) modal.classList.add('active');
+      if (modal) { modal.classList.add('open'); modal.classList.add('active'); }
 
       if (mode === 'session_pass') {
         document.getElementById('ucType').value = 'session_pass';
@@ -1890,7 +1887,7 @@
 
     function closeUniversalCodeModal() {
       const modal = document.getElementById('universalCodeModal');
-      if (modal) modal.classList.remove('active');
+      if (modal) { modal.classList.remove('open'); modal.classList.remove('active'); }
     }
 
     function handleCodeTypeChange() {
@@ -1992,6 +1989,48 @@
         if (window.GreachDB && window.GreachDB.createStudent) {
           window.GreachDB.createStudent(newStu, currentAdminSession ? currentAdminSession.username : 'Super Admin');
         }
+
+        // Push student to Supabase cloud
+        const sbCfg = getSupabaseConfig();
+        if (sbCfg && sbCfg.url && sbCfg.key) {
+          fetch(`${sbCfg.url}/rest/v1/students`, {
+            method: 'POST',
+            headers: { 'apikey': sbCfg.key, 'Authorization': `Bearer ${sbCfg.key}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
+            body: JSON.stringify([{
+              id: studentId,
+              full_name: newStu.name,
+              registered_email: newStu.email,
+              phone: newStu.phone,
+              secret_password: newStu.password,
+              enrolled_course: newStu.course,
+              cohort: newStu.cohort,
+              class_end_date: newStu.classEndDate,
+              expires_at: newStu.expiresAt,
+              status: 'Active'
+            }])
+          }).catch(console.warn);
+        }
+      }
+
+      // Immediately sync Access Code to Supabase Cloud Database
+      const sbCfg = getSupabaseConfig();
+      if (sbCfg && sbCfg.url && sbCfg.key) {
+        fetch(`${sbCfg.url}/rest/v1/access_codes`, {
+          method: 'POST',
+          headers: { 'apikey': sbCfg.key, 'Authorization': `Bearer ${sbCfg.key}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
+          body: JSON.stringify([{
+            code: code,
+            label: studentName ? `Pass - ${studentName}` : (type === 'session_pass' ? 'Live Class Session Pass' : `Course Code (${course})`),
+            course_name: course,
+            cohort: 'Batch 2: 2026 Masterclass',
+            student_email: studentEmail || null,
+            is_session_pass: type === 'session_pass',
+            is_active: true,
+            expires_at: expiresAt,
+            created_by: currentAdminSession ? currentAdminSession.username : 'Super Admin'
+          }])
+        }).then(() => console.log('[Cloud DB] Access code synced to Supabase:', code))
+          .catch(err => console.warn('[Cloud DB] Code sync error:', err));
       }
 
       // Also record in passes table for instant verification
@@ -3288,11 +3327,11 @@ greachimpact@gmail.com`;
 
     function openNewOrderModal() {
       const m = document.getElementById('newOrderModal');
-      if (m) m.classList.add('active');
+      if (m) { m.classList.add('open'); m.classList.add('active'); }
     }
     function closeNewOrderModal() {
       const m = document.getElementById('newOrderModal');
-      if (m) m.classList.remove('active');
+      if (m) { m.classList.remove('open'); m.classList.remove('active'); }
     }
 
     function updateManualOrderAmount(val) {
@@ -3537,6 +3576,25 @@ greachimpact@gmail.com`;
         cohort: cohort,
         durationHours: durationHours
       }, currentUser);
+
+      // Immediately sync to Supabase Cloud Database
+      const sbCfg = getSupabaseConfig();
+      if (sbCfg && sbCfg.url && sbCfg.key) {
+        fetch(`${sbCfg.url}/rest/v1/access_codes`, {
+          method: 'POST',
+          headers: { 'apikey': sbCfg.key, 'Authorization': `Bearer ${sbCfg.key}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
+          body: JSON.stringify([{
+            code: pass.code,
+            label: pass.label,
+            course_name: 'Microsoft Excel for Beginners',
+            cohort: pass.cohort,
+            is_session_pass: true,
+            is_active: true,
+            expires_at: pass.expiresAt,
+            created_by: currentUser
+          }])
+        }).catch(console.warn);
+      }
 
       closeSessionPassModal();
       renderSessionPassesTable();

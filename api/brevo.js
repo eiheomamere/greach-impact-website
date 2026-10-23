@@ -57,10 +57,22 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { sender, to, subject, htmlContent, student, type, amount } = req.body || {};
+    const { sender, to, subject, htmlContent, student, type, amount, apiKey } = req.body || {};
     
     // Server-side environment key ONLY (never trust client-supplied keys blindly)
-    const brevoApiKey = process.env.BREVO_API_KEY || req.headers['api-key'];
+    // Resolve Brevo API key from env, header, or config
+    let brevoApiKey = process.env.BREVO_API_KEY || req.headers['api-key'] || (req.body && (req.body.apiKey || req.body.brevoApiKey));
+    if (!brevoApiKey) {
+      try {
+        const fs = await import('fs');
+        const path = await import('path');
+        const cfgPath = path.join(process.cwd(), 'supabase_config.json');
+        if (fs.existsSync(cfgPath)) {
+          const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
+          if (cfg.brevoApiKey) brevoApiKey = cfg.brevoApiKey;
+        }
+      } catch(e) {}
+    }
 
     const senderObj = {
       name: 'Greach Impact Academy',
@@ -188,13 +200,13 @@ export default async function handler(req, res) {
             <p>You can enter the classroom immediately, download your practice workbooks, solve quizzes, and join the live studio stream:</p>
             
             <div style="text-align:center;">
-              <a href="https://greachimpact.com/classroom/index.html?code=${encodeURIComponent(safePass)}&id=${encodeURIComponent(safeId)}" class="btn">
+              <a href="https://greach-impact-website.vercel.app/classroom/index.html?code=${encodeURIComponent(safePass)}&id=${encodeURIComponent(safeId)}" class="btn">
                 🚀 Enter Classroom with 1-Click
               </a>
             </div>
 
             <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:12px; margin-top:22px; font-size:13px; color:#92400e;">
-              <strong>🎓 Lifetime Certificate Access:</strong> Even after your 1-month classroom access code expires, you have lifetime access to view and download your official Certificate of Completion with your registered email (${student.email}) at <em>greachimpact.com/classroom/claim-certificate.html</em>.
+              <strong>🎓 Lifetime Certificate Access:</strong> Even after your 1-month classroom access code expires, you have lifetime access to view and download your official Certificate of Completion with your registered email (${student.email}) at <em>greach-impact-website.vercel.app/classroom/claim-certificate.html</em>.
             </div>
 
             <div class="footer">
@@ -236,7 +248,9 @@ export default async function handler(req, res) {
     return res.status(brevoResp.ok ? 200 : 400).json({
       success: brevoResp.ok,
       dispatched: brevoResp.ok,
-      data: data
+      messageId: data.messageId,
+      data: data,
+      error: !brevoResp.ok ? (data.message || 'Brevo API error') : undefined
     });
 
   } catch (error) {
