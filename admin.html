@@ -2064,14 +2064,18 @@
     // SUPABASE CLOUD DATABASE INTEGRATION
     // ==========================================
     const SUPABASE_CONFIG_KEY = 'greach_supabase_config_v1';
+    const DEFAULT_SUPABASE_CONFIG = {
+      url: 'https://fkltvxhqizqrbvogodxv.supabase.co',
+      key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM',
+      projectId: 'fkltvxhqizqrbvogodxv'
+    };
 
     function getSupabaseConfig() {
       try {
         const stored = localStorage.getItem(SUPABASE_CONFIG_KEY);
-        return stored ? JSON.parse(stored) : null;
-      } catch(e) {
-        return null;
-      }
+        if (stored) return JSON.parse(stored);
+      } catch(e) {}
+      return DEFAULT_SUPABASE_CONFIG;
     }
 
     function loadSupabaseConfigUI() {
