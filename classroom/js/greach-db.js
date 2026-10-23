@@ -47,6 +47,7 @@
     excel_beginners: {
       key: 'excel_beginners',
       label: 'Microsoft Excel for Beginners',
+      hubUrl: 'Excel_Master_Course_Hub.html?track=beginners',
       allowedSections: [0, 1, 2], // Sections 1, 2, 3: Basics, Math, Logic & Text (Lessons 0 to 30)
       allowedModulesText: 'Modules 1–3 (Excel Basics, Formatting, Formulas, Logic & Text Functions)',
       maxSlide: 30,
@@ -55,6 +56,7 @@
     excel_advanced: {
       key: 'excel_advanced',
       label: 'Microsoft Excel Advanced & Analytics',
+      hubUrl: 'Excel_Master_Course_Hub.html?track=advanced',
       allowedSections: [3, 4, 5], // Sections 4, 5, 6: Data Cleaning, Tables, Lookups, PivotTables, Dashboards
       allowedModulesText: 'Modules 4–6 (Advanced Data Cleaning, Dynamic Arrays, XLOOKUP, PivotTables & Dashboards)',
       minSlide: 31,
@@ -64,6 +66,7 @@
     dashboard: {
       key: 'excel_dashboard',
       label: 'Executive Interactive Dashboard Design',
+      hubUrl: 'Excel_Dashboard_Hub.html',
       allowedSections: [5], // Section 6: Dashboards, Slicers & Capstone Tracker
       allowedModulesText: 'Module 6 (Executive Dashboards, Slicers, KPI Cards & Capstone)',
       minSlide: 48,
@@ -73,6 +76,7 @@
     excel_dashboard: {
       key: 'excel_dashboard',
       label: 'Executive Interactive Dashboard Design',
+      hubUrl: 'Excel_Dashboard_Hub.html',
       allowedSections: [5], // Section 6: Dashboards, Slicers & Capstone Tracker
       allowedModulesText: 'Module 6 (Executive Dashboards, Slicers, KPI Cards & Capstone)',
       minSlide: 48,
@@ -81,30 +85,34 @@
     },
     sql_beginners: {
       key: 'sql_beginners',
-      label: 'SQL for Beginners',
-      allowedSections: [], // Standalone SQL portal
-      allowedModulesText: 'SQL Analytics & Database Queries Portal',
+      label: 'SQL for Beginners & Analytics',
+      hubUrl: 'SQL_Master_Course_Hub.html',
+      allowedSections: [0, 1, 2, 3, 4, 5], // All SQL modules in SQL Hub
+      allowedModulesText: 'SQL Analytics & Database Queries Portal (All 6 Modules)',
       badge: 'SQL Specialist'
     },
     sql: {
       key: 'sql_beginners',
-      label: 'SQL for Beginners',
-      allowedSections: [],
-      allowedModulesText: 'SQL Analytics & Database Queries Portal',
+      label: 'SQL for Beginners & Analytics',
+      hubUrl: 'SQL_Master_Course_Hub.html',
+      allowedSections: [0, 1, 2, 3, 4, 5],
+      allowedModulesText: 'SQL Analytics & Database Queries Portal (All 6 Modules)',
       badge: 'SQL Specialist'
     },
     power_bi: {
       key: 'power_bi',
       label: 'Power BI for Beginners',
-      allowedSections: [], // Standalone Power BI portal
-      allowedModulesText: 'Power BI Business Intelligence & Reporting Portal',
+      hubUrl: 'PowerBI_Master_Course_Hub.html',
+      allowedSections: [0, 1, 2, 3, 4, 5], // All Power BI modules in Power BI Hub
+      allowedModulesText: 'Power BI Business Intelligence & Reporting Portal (All 6 Modules)',
       badge: 'Power BI Specialist'
     },
     complete_package: {
       key: 'complete_package',
       label: 'Complete Analytics Suite (Excel + SQL + Power BI)',
+      hubUrl: 'Excel_Master_Course_Hub.html?track=all',
       allowedSections: [0, 1, 2, 3, 4, 5], // Full All-Inclusive Access
-      allowedModulesText: 'Full Suite Access: All 6 Modules (64 Lessons) + SQL + Power BI',
+      allowedModulesText: 'Full Suite VIP: Excel (64 Lessons) + SQL Hub + Power BI Hub + Dashboard Studio',
       minSlide: 0,
       maxSlide: 63,
       badge: 'Full Suite VIP'
@@ -112,8 +120,9 @@
     complete_course: {
       key: 'complete_package',
       label: 'Complete Analytics Suite (Excel + SQL + Power BI)',
+      hubUrl: 'Excel_Master_Course_Hub.html?track=all',
       allowedSections: [0, 1, 2, 3, 4, 5],
-      allowedModulesText: 'Full Suite Access: All 6 Modules (64 Lessons) + SQL + Power BI',
+      allowedModulesText: 'Full Suite VIP: Excel (64 Lessons) + SQL Hub + Power BI Hub + Dashboard Studio',
       minSlide: 0,
       maxSlide: 63,
       badge: 'Full Suite VIP'
@@ -1727,6 +1736,60 @@ Greach Impact Automated Registration Engine`);
       else sIdx = 5;
 
       return this.canAccessSection(studentOrCourseKey, sIdx);
+    },
+
+    getCourseClassroomUrl: function(rawKey) {
+      const k = this.normalizeCourseKey(rawKey);
+      switch(k) {
+        case 'sql_beginners':
+          return 'SQL_Master_Course_Hub.html';
+        case 'power_bi':
+          return 'PowerBI_Master_Course_Hub.html';
+        case 'excel_dashboard':
+          return 'Excel_Dashboard_Hub.html';
+        case 'excel_advanced':
+          return 'Excel_Master_Course_Hub.html?track=advanced';
+        case 'complete_package':
+          return 'Excel_Master_Course_Hub.html?track=all';
+        case 'excel_beginners':
+        default:
+          return 'Excel_Master_Course_Hub.html?track=beginners';
+      }
+    },
+
+    canAccessCourse: function(studentOrCourseKey, targetCourseKey) {
+      if (!studentOrCourseKey) return { allowed: false, reason: 'No student credentials provided.' };
+      const role = typeof studentOrCourseKey === 'object' ? studentOrCourseKey.role : null;
+      if (role === 'instructor' || role === 'super_admin' || (studentOrCourseKey && studentOrCourseKey.isSuperAdmin)) {
+        return { allowed: true, reason: 'Instructor / Super Admin Unrestricted Access', isInstructor: true };
+      }
+      const myKey = this.normalizeCourseKey(typeof studentOrCourseKey === 'string' ? studentOrCourseKey : (studentOrCourseKey.courseKey || studentOrCourseKey.course));
+      const target = this.normalizeCourseKey(targetCourseKey);
+      
+      // Complete package has access to all courses
+      if (myKey === 'complete_package') {
+        return { allowed: true, reason: 'Complete Analytics Suite grants all-inclusive access to all courses.' };
+      }
+      
+      if (myKey === target) {
+        return { allowed: true, reason: 'Enrolled in this course.' };
+      }
+      
+      // Advanced excel grants beginner excel & dashboard
+      if (myKey === 'excel_advanced' && (target === 'excel_beginners' || target === 'excel_dashboard')) {
+        return { allowed: true, reason: 'Excel Advanced includes Excel Beginners & Dashboard modules.' };
+      }
+
+      const myPerm = this.getCoursePermissions(myKey);
+      const targetPerm = this.getCoursePermissions(target);
+      return {
+        allowed: false,
+        studentCourse: myPerm.label,
+        studentCourseKey: myKey,
+        targetCourse: targetPerm.label,
+        targetCourseKey: target,
+        reason: `Your access pass is currently enrolled for "${myPerm.label}". Accessing "${targetPerm.label}" requires an upgraded pass or the Complete Analytics Suite.`
+      };
     },
 
     // ==============================================================

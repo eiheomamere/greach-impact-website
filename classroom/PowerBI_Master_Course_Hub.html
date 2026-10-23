@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Power BI for Beginners Classroom | Greach Impact Academy</title>
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script src="js/greach-sync.js"></script>
+  <script src="js/greach-db.js"></script>
+
+  <style>
+    :root {
+      --primary: #0a0a5e;
+      --accent-pbi: #f59e0b;
+      --accent-pbi-dark: #d97706;
+      --accent-pbi-light: #fef3c7;
+      --dark: #0f172a;
+      --gray-bg: #f8fafc;
+      --border: #e2e8f0;
+      --text: #334155;
+      --text-muted: #64748b;
+      --success: #10b981;
+      --sidebar-width: 340px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--gray-bg);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    header.top-nav {
+      background: #07073b;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--accent-pbi);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .brand-logo {
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .brand-logo i { color: var(--accent-pbi); }
+    .course-badge {
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid var(--accent-pbi);
+      color: #fef08a;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.65rem;
+      border-radius: 20px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    /* Hub Switcher Dropdown */
+    .classroom-switcher { position: relative; }
+    .switcher-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .switcher-btn:hover { background: rgba(255,255,255,0.15); }
+    .switcher-menu {
+      position: absolute;
+      top: 110%;
+      left: 0;
+      background: white;
+      color: var(--dark);
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+      width: 250px;
+      padding: 0.5rem;
+      display: none;
+      z-index: 1000;
+    }
+    .switcher-menu.active { display: block; }
+    .switcher-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem 0.8rem;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-radius: 6px;
+      transition: background 0.15s ease;
+    }
+    .switcher-item:hover { background: #f1f5f9; color: var(--primary); }
+    .switcher-item.current {
+      background: var(--accent-pbi-light);
+      color: var(--accent-pbi-dark);
+      font-weight: 700;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .user-pill {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 0.35rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-live-studio {
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      color: white;
+      border: none;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: transform 0.15s ease;
+    }
+    .btn-live-studio:hover { transform: translateY(-1px); }
+
+    /* Main Layout */
+    .classroom-body {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 54px);
+      overflow: hidden;
+    }
+
+    /* Sidebar Curriculum */
+    aside.curriculum-sidebar {
+      width: var(--sidebar-width);
+      background: white;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .sidebar-header {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      background: #fafaf9;
+    }
+    .progress-bar-container {
+      margin-top: 0.5rem;
+      background: #e2e8f0;
+      height: 7px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #f59e0b, #d97706);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .module-group {
+      border-bottom: 1px solid var(--border);
+    }
+    .module-title {
+      padding: 0.85rem 1.2rem;
+      background: #f8fafc;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .module-title:hover { background: #f1f5f9; }
+    .lesson-list { list-style: none; }
+    .lesson-item {
+      padding: 0.75rem 1.2rem;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #334155;
+      transition: all 0.15s ease;
+    }
+    .lesson-item:hover {
+      background: #fefce8;
+      color: #b45309;
+    }
+    .lesson-item.active {
+      background: var(--accent-pbi-light);
+      color: #92400e;
+      font-weight: 700;
+      border-left: 4px solid var(--accent-pbi);
+    }
+    .lesson-item .check-icon {
+      color: #cbd5e1;
+      font-size: 0.8rem;
+    }
+    .lesson-item.completed .check-icon { color: var(--success); }
+
+    /* Main Workspace */
+    main.workspace-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      background: #f8fafc;
+    }
+
+    /* Lesson Viewer Header */
+    .lesson-header {
+      background: white;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .lesson-tag {
+      font-size: 0.75rem;
+      color: var(--accent-pbi-dark);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .lesson-headline {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--dark);
+      margin-top: 0.2rem;
+    }
+    .lesson-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn-nav-step {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.15s ease;
+    }
+    .btn-nav-step:hover { background: #f1f5f9; }
+    .btn-nav-step.primary {
+      background: var(--accent-pbi);
+      color: #0f172a;
+      border-color: var(--accent-pbi);
+    }
+    .btn-nav-step.primary:hover { background: var(--accent-pbi-dark); color: white; }
+
+    .content-container {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Interactive Power BI Report Simulator */
+    .pbi-report-card {
+      background: #ffffff;
+      border-radius: 1.2rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    .pbi-report-header {
+      background: #18181b;
+      color: white;
+      padding: 0.85rem 1.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--accent-pbi);
+    }
+    .pbi-report-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .pbi-report-title i { color: var(--accent-pbi); }
+
+    /* Slicers Filter Bar */
+    .pbi-slicer-bar {
+      background: #f1f5f9;
+      padding: 0.85rem 1.4rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .slicer-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .slicer-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+    }
+    .slicer-chips {
+      display: flex;
+      gap: 0.3rem;
+    }
+    .slicer-chip {
+      background: white;
+      border: 1px solid #cbd5e1;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .slicer-chip:hover { border-color: var(--accent-pbi); }
+    .slicer-chip.active {
+      background: var(--accent-pbi);
+      color: #0f172a;
+      font-weight: 800;
+      border-color: var(--accent-pbi-dark);
+    }
+
+    /* KPI Cards Grid */
+    .pbi-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      padding: 1.4rem;
+      background: #ffffff;
+    }
+    .kpi-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.2rem;
+      border-left: 4px solid var(--accent-pbi);
+      transition: transform 0.2s ease;
+    }
+    .kpi-card:hover { transform: translateY(-2px); }
+    .kpi-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .kpi-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--dark);
+      margin: 0.4rem 0 0.2rem;
+    }
+    .kpi-trend {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* Interactive Visuals Canvas */
+    .pbi-visuals-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.2rem;
+      padding: 0 1.4rem 1.4rem;
+    }
+    @media (max-width: 850px) {
+      .pbi-visuals-grid { grid-template-columns: 1fr; }
+    }
+    .visual-panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.2rem;
+    }
+    .visual-header {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .visual-bars-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .chart-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 0.78rem;
+    }
+    .chart-bar-label {
+      width: 130px;
+      font-weight: 600;
+      color: #334155;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .chart-bar-track {
+      flex: 1;
+      height: 18px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .chart-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f59e0b, #d97706);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+    .chart-bar-val {
+      width: 80px;
+      text-align: right;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: #0f172a;
+    }
+
+    /* DAX Studio Studio Card */
+    .dax-studio-card {
+      background: #0f172a;
+      border-radius: 1rem;
+      overflow: hidden;
+      margin-bottom: 2rem;
+      border: 1px solid #334155;
+    }
+    .dax-toolbar {
+      background: #1e293b;
+      padding: 0.75rem 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+    }
+    .dax-title {
+      color: #f8fafc;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .dax-title i { color: var(--accent-pbi); }
+    .dax-editor-box {
+      padding: 1.2rem;
+      background: #0b1120;
+    }
+    .dax-code-display {
+      font-family: 'JetBrains Mono', monospace;
+      color: #fde047;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    /* Star Schema Visualizer */
+    .schema-diagram-card {
+      background: white;
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .diagram-flex {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-top: 1.2rem;
+    }
+    .dim-table-box {
+      background: #f1f5f9;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      width: 170px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+    .dim-table-box.fact {
+      background: #fef3c7;
+      border-color: #f59e0b;
+      width: 220px;
+      box-shadow: 0 4px 12px rgba(245,158,11,0.15);
+    }
+    .table-box-header {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #0f172a;
+      border-bottom: 1px solid #cbd5e1;
+      padding-bottom: 0.4rem;
+      margin-bottom: 0.4rem;
+    }
+    .table-box-cols {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: #475569;
+      text-align: left;
+      line-height: 1.5;
+    }
+
+    /* Lesson Card Narrative */
+    .lesson-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+    .lesson-card h3 {
+      color: var(--primary);
+      font-size: 1.25rem;
+      margin-bottom: 0.8rem;
+    }
+    .lesson-card p {
+      margin-bottom: 1rem;
+      color: #475569;
+    }
+
+    /* Quiz Box */
+    .quiz-box {
+      background: #fefce8;
+      border: 1.5px solid #fde047;
+      border-radius: 12px;
+      padding: 1.4rem;
+      margin-top: 1.5rem;
+    }
+    .quiz-title {
+      font-weight: 800;
+      color: #854d0e;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.8rem;
+    }
+    .quiz-option {
+      background: white;
+      border: 1px solid #fde047;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .quiz-option:hover { background: #fef9c3; }
+    .quiz-option.correct {
+      background: #dcfce7;
+      border-color: #22c55e;
+      color: #15803d;
+      font-weight: 700;
+    }
+    .quiz-option.wrong {
+      background: #fee2e2;
+      border-color: #ef4444;
+      color: #991b1b;
+    }
+    .quiz-feedback {
+      margin-top: 0.6rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: none;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+      background: white;
+      border-radius: 1.2rem;
+      width: 100%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2rem;
+      position: relative;
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.2rem;
+      background: #f1f5f9;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gate-modal-card {
+      background: white;
+      border-radius: 1.5rem;
+      max-width: 500px;
+      width: 100%;
+      padding: 2.2rem;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+    }
+
+    @media (max-width: 900px) {
+      .curriculum-sidebar { display: none; }
+      .classroom-body { height: auto; }
+      .content-container { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="top-nav">
+    <div class="brand-group">
+      <a href="index.html" class="brand-logo">
+        <i class="fas fa-chart-pie"></i> Greach Impact Academy
+      </a>
+      <span class="course-badge"><i class="fas fa-award"></i> CRS-PBI-BEG • Power BI Intelligence</span>
+
+      <!-- Classroom Switcher -->
+      <div class="classroom-switcher">
+        <button class="switcher-btn" onclick="toggleSwitcher(event)">
+          <i class="fas fa-th-large"></i> Switch Classroom <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i>
+        </button>
+        <div class="switcher-menu" id="switcherMenu">
+          <div style="font-size:0.72rem; font-weight:800; color:#94a3b8; text-transform:uppercase; padding:0.4rem 0.8rem;">Greach Classrooms</div>
+          <a href="Excel_Master_Course_Hub.html" class="switcher-item">
+            <i class="fas fa-file-excel" style="color:#107c41;"></i> Excel Masterclass (64 Lessons)
+          </a>
+          <a href="Excel_Dashboard_Hub.html" class="switcher-item">
+            <i class="fas fa-chart-line" style="color:#4f46e5;"></i> Executive Dashboard Studio
+          </a>
+          <a href="SQL_Master_Course_Hub.html" class="switcher-item">
+            <i class="fas fa-database" style="color:#ea580c;"></i> SQL Analytics Studio
+          </a>
+          <a href="PowerBI_Master_Course_Hub.html" class="switcher-item current">
+            <i class="fas fa-chart-pie" style="color:#f59e0b;"></i> Power BI Business Intelligence (Active)
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <div class="user-pill" id="studentHeaderPill">
+        <i class="fas fa-user-graduate" style="color:var(--accent-pbi);"></i>
+        <span id="studentDisplayName">Loading...</span>
+      </div>
+      <button class="btn-live-studio" onclick="openLiveStudio()">
+        <i class="fas fa-satellite-dish"></i> Live Studio &amp; Recorder
+      </button>
+      <button class="switcher-btn" onclick="openDownloadsModal()">
+        <i class="fas fa-download"></i> Resources (.pbix)
+      </button>
+      <button onclick="logoutClassroom()" title="Logout" style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:0.4rem 0.7rem; border-radius:8px; cursor:pointer;">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Body Layout -->
+  <div class="classroom-body">
+
+    <!-- Sidebar: 6 Modules & 24 Lessons -->
+    <aside class="curriculum-sidebar">
+      <div class="sidebar-header">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.8rem; font-weight:800; color:#0f172a; text-transform:uppercase;">Power BI Curriculum</span>
+          <span id="progressPercent" style="font-size:0.8rem; font-weight:800; color:var(--accent-pbi-dark);">0%</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
+      </div>
+
+      <div id="curriculumModuleList">
+        <!-- Rendered via JavaScript -->
+      </div>
+    </aside>
+
+    <!-- Main Workspace Area -->
+    <main class="workspace-area">
+
+      <!-- Lesson Header -->
+      <div class="lesson-header">
+        <div>
+          <div class="lesson-tag" id="lessonModuleTag">MODULE 1 • FOUNDATIONS</div>
+          <h1 class="lesson-headline" id="lessonTitle">Loading Power BI Curriculum...</h1>
+        </div>
+        <div class="lesson-actions">
+          <button class="btn-nav-step" id="btnPrevLesson" onclick="prevLesson()">
+            <i class="fas fa-arrow-left"></i> Previous
+          </button>
+          <button class="btn-nav-step primary" id="btnCompleteLesson" onclick="toggleCompleteCurrentLesson()">
+            <i class="fas fa-check"></i> Mark Complete
+          </button>
+          <button class="btn-nav-step" id="btnNextLesson" onclick="nextLesson()">
+            Next <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="content-container">
+
+        <!-- Interactive Power BI Report Simulator -->
+        <div class="pbi-report-card">
+          <div class="pbi-report-header">
+            <div class="pbi-report-title">
+              <i class="fas fa-chart-pie"></i>
+              <span>Interactive Executive Power BI Report Canvas (Live Slicer Simulator)</span>
+            </div>
+            <span style="font-size:0.75rem; background:#27272a; color:#a1a1aa; padding:0.25rem 0.6rem; border-radius:4px;">
+              DirectQuery Simulated Model
+            </span>
+          </div>
+
+          <!-- Dynamic Slicer Bar -->
+          <div class="pbi-slicer-bar">
+            <div class="slicer-group">
+              <span class="slicer-label"><i class="fas fa-calendar-alt"></i> Year:</span>
+              <div class="slicer-chips">
+                <button class="slicer-chip active" onclick="setYearFilter('All', this)">All</button>
+                <button class="slicer-chip" onclick="setYearFilter('2026', this)">2026</button>
+                <button class="slicer-chip" onclick="setYearFilter('2025', this)">2025</button>
+              </div>
+            </div>
+
+            <div class="slicer-group">
+              <span class="slicer-label"><i class="fas fa-globe"></i> Region:</span>
+              <div class="slicer-chips">
+                <button class="slicer-chip active" onclick="setRegionFilter('All', this)">All Regions</button>
+                <button class="slicer-chip" onclick="setRegionFilter('Lagos', this)">Lagos</button>
+                <button class="slicer-chip" onclick="setRegionFilter('Abuja', this)">Abuja</button>
+                <button class="slicer-chip" onclick="setRegionFilter('Enugu', this)">Enugu</button>
+              </div>
+            </div>
+
+            <div class="slicer-group">
+              <span class="slicer-label"><i class="fas fa-tag"></i> Segment:</span>
+              <div class="slicer-chips">
+                <button class="slicer-chip active" onclick="setSegmentFilter('All', this)">All Tracks</button>
+                <button class="slicer-chip" onclick="setSegmentFilter('Analytics', this)">Analytics</button>
+                <button class="slicer-chip" onclick="setSegmentFilter('Executive', this)">Executive</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- KPI Cards Grid -->
+          <div class="pbi-kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-title">Total Gross Revenue</div>
+              <div class="kpi-value" id="kpiRevenue">₦14,850,000</div>
+              <div class="kpi-trend"><i class="fas fa-arrow-up"></i> +18.4% YoY vs 2025</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Total Active Enrollments</div>
+              <div class="kpi-value" id="kpiStudents">482</div>
+              <div class="kpi-trend"><i class="fas fa-users"></i> 94% Paid Conversion</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Average Order Value (AOV)</div>
+              <div class="kpi-value" id="kpiAov">₦30,809</div>
+              <div class="kpi-trend"><i class="fas fa-calculator"></i> DAX: [Total Rev] / [Orders]</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Course Completion Rate</div>
+              <div class="kpi-value" id="kpiCompletion">88.5%</div>
+              <div class="kpi-trend"><i class="fas fa-graduation-cap"></i> +4.2% Benchmark</div>
+            </div>
+          </div>
+
+          <!-- Dynamic Visuals Canvas -->
+          <div class="pbi-visuals-grid">
+            <div class="visual-panel">
+              <div class="visual-header">
+                <span>Revenue by Course Track (Bar Chart)</span>
+                <span style="font-size:0.75rem; color:#64748b;">Values in ₦ Millions</span>
+              </div>
+              <div class="visual-bars-container" id="courseBarsContainer">
+                <!-- Dynamically rendered via JS -->
+              </div>
+            </div>
+
+            <div class="visual-panel">
+              <div class="visual-header">
+                <span>Regional Enrollment Distribution</span>
+                <span style="font-size:0.75rem; color:#64748b;">Share %</span>
+              </div>
+              <div id="regionalDonutContainer" style="display:flex; flex-direction:column; gap:0.6rem; padding-top:0.4rem;">
+                <!-- Dynamically rendered -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DAX Formula Companion Studio -->
+        <div class="dax-studio-card">
+          <div class="dax-toolbar">
+            <div class="dax-title">
+              <i class="fas fa-calculator"></i>
+              <span>DAX Formula Studio &amp; Measure Builder</span>
+            </div>
+            <div style="display:flex; gap:0.5rem;">
+              <select id="daxSelectorDropdown" onchange="loadDaxFormula(this.value)" style="background:#334155; color:white; border:none; padding:0.4rem 0.6rem; border-radius:6px; font-size:0.78rem;">
+                <option value="m1">Measure 1: Total Revenue (SUMX)</option>
+                <option value="m2">Measure 2: Filter Context (CALCULATE)</option>
+                <option value="m3">Measure 3: Year-to-Date (DATESYTD)</option>
+                <option value="m4">Measure 4: Safe Division (DIVIDE)</option>
+                <option value="m5">Measure 5: Prior Year Sales (SAMEPERIODLASTYEAR)</option>
+              </select>
+              <button onclick="copyCurrentDax()" style="background:var(--accent-pbi); color:#0f172a; border:none; padding:0.4rem 0.8rem; border-radius:6px; font-weight:700; font-size:0.78rem; cursor:pointer;">
+                <i class="fas fa-copy"></i> Copy DAX
+              </button>
+            </div>
+          </div>
+          <div class="dax-editor-box">
+            <div class="dax-code-display" id="daxCodeBox">Total Revenue = 
+SUMX (
+    Fact_Orders,
+    Fact_Orders[Quantity] * RELATED ( Dim_Course[Fee] )
+)</div>
+          </div>
+        </div>
+
+        <!-- Star Schema Data Model Visualizer -->
+        <div class="schema-diagram-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <h3 style="font-size:1.1rem; color:var(--dark);"><i class="fas fa-project-diagram" style="color:var(--accent-pbi);"></i> Star Schema Architecture Visualizer</h3>
+              <p style="color:#64748b; font-size:0.82rem;">1-to-Many Relationships connecting Fact Table to Dimension Tables</p>
+            </div>
+            <span style="font-size:0.75rem; background:#f1f5f9; padding:0.3rem 0.6rem; border-radius:4px; font-weight:700;">
+              Cardinality: 1 : * (Single Direction)
+            </span>
+          </div>
+
+          <div class="diagram-flex">
+            <div class="dim-table-box">
+              <div class="table-box-header">Dim_Date (1)</div>
+              <div class="table-box-cols">
+                DateKey (PK)<br>FullDate<br>Year, Quarter<br>MonthName
+              </div>
+            </div>
+
+            <div class="dim-table-box fact">
+              <div class="table-box-header" style="color:#b45309;">Fact_Orders (*)</div>
+              <div class="table-box-cols" style="color:#78350f;">
+                OrderKey (PK)<br>DateKey (FK)<br>StudentKey (FK)<br>CourseKey (FK)<br>Amount, Units
+              </div>
+            </div>
+
+            <div class="dim-table-box">
+              <div class="table-box-header">Dim_Student (1)</div>
+              <div class="table-box-cols">
+                StudentKey (PK)<br>StudentName<br>Email, Phone<br>Cohort
+              </div>
+            </div>
+
+            <div class="dim-table-box">
+              <div class="table-box-header">Dim_Course (1)</div>
+              <div class="table-box-cols">
+                CourseKey (PK)<br>CourseName<br>Track, Fee<br>Instructor
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lesson Detailed Narrative Card -->
+        <article class="lesson-card" id="lessonContentCard">
+          <!-- Dynamic Content -->
+        </article>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Live Studio Modal -->
+  <div class="modal-overlay" id="liveStudioModal">
+    <div class="modal-content">
+      <button class="modal-close-btn" onclick="closeLiveStudio()">&times;</button>
+      <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:1rem;">
+        <i class="fas fa-satellite-dish" style="color:#ef4444; font-size:1.4rem;"></i>
+        <h2 style="font-size:1.4rem; color:var(--dark);">Power BI Live Broadcast Studio &amp; Screen Recorder</h2>
+      </div>
+      <p style="color:#64748b; font-size:0.9rem; margin-bottom:1.5rem;">
+        Record live instructor walkthroughs, DAX explanations, and Power BI desktop screens directly in your browser.
+      </p>
+
+      <div style="background:#0f172a; border-radius:12px; padding:1.5rem; color:white; margin-bottom:1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <div>
+            <h4 style="font-size:1.1rem; color:#f8fafc;"><i class="fas fa-video"></i> In-Browser Screen &amp; Audio Recorder</h4>
+            <p style="font-size:0.8rem; color:#94a3b8;">Captures your Power BI Desktop window, dashboard canvas, and microphone.</p>
+          </div>
+          <span id="recorderStatusPill" style="background:#334155; color:#cbd5e1; padding:0.3rem 0.7rem; border-radius:20px; font-size:0.75rem; font-weight:700;">Ready</span>
+        </div>
+        <div style="display:flex; gap:0.8rem;">
+          <button id="btnStartRecord" onclick="startRecording()" style="background:#ef4444; color:white; border:none; padding:0.6rem 1.2rem; border-radius:8px; font-weight:700; cursor:pointer;">
+            <i class="fas fa-circle"></i> Start Recording
+          </button>
+          <button id="btnStopRecord" onclick="stopRecording()" disabled style="background:#475569; color:#94a3b8; border:none; padding:0.6rem 1.2rem; border-radius:8px; font-weight:700; cursor:not-allowed;">
+            <i class="fas fa-stop"></i> Stop &amp; Download Video (.webm)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Downloads Modal -->
+  <div class="modal-overlay" id="downloadsModal">
+    <div class="modal-content" style="max-width:600px;">
+      <button class="modal-close-btn" onclick="closeDownloadsModal()">&times;</button>
+      <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:1rem;">
+        <i class="fas fa-download" style="color:var(--accent-pbi); font-size:1.3rem;"></i>
+        <h2 style="font-size:1.3rem; color:var(--dark);">Power BI Student Resource Pack</h2>
+      </div>
+      <p style="color:#64748b; font-size:0.85rem; margin-bottom:1.5rem;">Download official template workbooks, starter datasets, and DAX formula reference cards.</p>
+
+      <div style="display:flex; flex-direction:column; gap:0.8rem;">
+        <div style="border:1px solid var(--border); padding:1rem; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong style="color:var(--dark); font-size:0.9rem;">Greach_Executive_Report_Starter.pbix</strong>
+            <p style="color:#64748b; font-size:0.75rem;">Complete pre-built Power BI template file with theme palette &amp; canvas layout</p>
+          </div>
+          <button onclick="downloadPbiSampleFile()" style="background:var(--accent-pbi); color:#0f172a; border:none; padding:0.4rem 0.8rem; border-radius:6px; font-weight:700; font-size:0.78rem; cursor:pointer;">
+            Download
+          </button>
+        </div>
+
+        <div style="border:1px solid var(--border); padding:1rem; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong style="color:var(--dark); font-size:0.9rem;">Master_DAX_Formulas_Cheat_Sheet_2026.pdf</strong>
+            <p style="color:#64748b; font-size:0.75rem;">Comprehensive printable PDF guide to 50+ DAX measures and functions</p>
+          </div>
+          <button onclick="alert('Downloading DAX Cheat Sheet...')" style="background:var(--accent-pbi); color:#0f172a; border:none; padding:0.4rem 0.8rem; border-radius:6px; font-weight:700; font-size:0.78rem; cursor:pointer;">
+            Download
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Security Gate Overlay Modal (If Not Enrolled in Power BI) -->
+  <div class="modal-overlay" id="securityGateModal">
+    <div class="gate-modal-card">
+      <div style="width:60px; height:60px; background:#fef3c7; color:#d97706; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.2rem; font-size:1.6rem;">
+        <i class="fas fa-lock"></i>
+      </div>
+      <h2 style="font-size:1.35rem; color:#0f172a; margin-bottom:0.6rem;">Power BI Access Authentication</h2>
+      <p id="gateMessageText" style="color:#64748b; font-size:0.88rem; line-height:1.5; margin-bottom:1.5rem;">
+        This classroom is reserved for students enrolled in <strong>Power BI for Beginners</strong> or the <strong>Complete Analytics Suite</strong>.
+      </p>
+
+      <div style="margin-bottom:1.2rem; text-align:left;">
+        <label style="display:block; font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.4rem;">
+          Enter Your Unique Power BI Access Code:
+        </label>
+        <input type="text" id="gatePbiAccessCode" placeholder="e.g. GRX-PBI-4821 or STU-2026-001" style="width:100%; padding:0.8rem; border:1.5px solid #cbd5e1; border-radius:8px; font-size:1rem; font-weight:700; text-transform:uppercase;">
+      </div>
+
+      <button onclick="verifyPbiCode()" style="width:100%; background:var(--accent-pbi); color:#0f172a; padding:0.8rem; border:none; border-radius:8px; font-weight:800; font-size:0.95rem; cursor:pointer; margin-bottom:0.8rem;">
+        Verify Code &amp; Unlock Power BI Classroom
+      </button>
+
+      <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+        <a href="Excel_Master_Course_Hub.html" style="color:#0284c7; font-weight:600; text-decoration:none;">
+          &larr; Go to Excel Classroom
+        </a>
+        <a href="index.html" style="color:#64748b; text-decoration:none;">
+          Classroom Portal Home
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Engine -->
+  <script>
+    // 1. Dynamic Power BI Report Simulator State
+    let filterYear = 'All';
+    let filterRegion = 'All';
+    let filterSegment = 'All';
+
+    const RAW_DATA = [
+      { course: 'Excel Beginners', year: '2026', region: 'Lagos', segment: 'Analytics', revenue: 4200000, students: 280 },
+      { course: 'Excel Advanced', year: '2026', region: 'Abuja', segment: 'Analytics', revenue: 3500000, students: 140 },
+      { course: 'Executive Dashboard', year: '2026', region: 'Lagos', segment: 'Executive', revenue: 2600000, students: 130 },
+      { course: 'SQL Analytics', year: '2026', region: 'Enugu', segment: 'Analytics', revenue: 2400000, students: 120 },
+      { course: 'Power BI Masterclass', year: '2026', region: 'Abuja', segment: 'Executive', revenue: 2150000, students: 86 },
+      { course: 'Excel Beginners', year: '2025', region: 'Lagos', segment: 'Analytics', revenue: 3100000, students: 200 },
+      { course: 'Excel Advanced', year: '2025', region: 'Enugu', segment: 'Analytics', revenue: 2400000, students: 96 }
+    ];
+
+    function updateSimulatedReport() {
+      let filtered = RAW_DATA.filter(row => {
+        if (filterYear !== 'All' && row.year !== filterYear) return false;
+        if (filterRegion !== 'All' && row.region !== filterRegion) return false;
+        if (filterSegment !== 'All' && row.segment !== filterSegment) return false;
+        return true;
+      });
+
+      const totalRev = filtered.reduce((acc, r) => acc + r.revenue, 0);
+      const totalStu = filtered.reduce((acc, r) => acc + r.students, 0);
+      const aov = totalStu > 0 ? Math.round(totalRev / totalStu) : 0;
+
+      document.getElementById('kpiRevenue').textContent = '₦' + totalRev.toLocaleString();
+      document.getElementById('kpiStudents').textContent = totalStu.toLocaleString();
+      document.getElementById('kpiAov').textContent = '₦' + aov.toLocaleString();
+
+      // Render Bar Chart
+      const barsContainer = document.getElementById('courseBarsContainer');
+      barsContainer.innerHTML = '';
+      const courseTotals = {};
+      filtered.forEach(r => {
+        courseTotals[r.course] = (courseTotals[r.course] || 0) + r.revenue;
+      });
+
+      const maxVal = Math.max(...Object.values(courseTotals), 1);
+      Object.entries(courseTotals).forEach(([crs, val]) => {
+        const pct = Math.round((val / maxVal) * 100);
+        const row = document.createElement('div');
+        row.className = 'chart-bar-row';
+        row.innerHTML = `
+          <div class="chart-bar-label">${crs}</div>
+          <div class="chart-bar-track">
+            <div class="chart-bar-fill" style="width:${pct}%;"></div>
+          </div>
+          <div class="chart-bar-val">₦${(val / 1000000).toFixed(1)}M</div>
+        `;
+        barsContainer.appendChild(row);
+      });
+
+      // Render Regional Distribution
+      const donutContainer = document.getElementById('regionalDonutContainer');
+      donutContainer.innerHTML = '';
+      const regionTotals = {};
+      filtered.forEach(r => {
+        regionTotals[r.region] = (regionTotals[r.region] || 0) + r.students;
+      });
+
+      Object.entries(regionTotals).forEach(([reg, count]) => {
+        const pct = totalStu > 0 ? Math.round((count / totalStu) * 100) : 0;
+        const div = document.createElement('div');
+        div.style.cssText = 'display:flex; justify-content:space-between; font-size:0.8rem; font-weight:600;';
+        div.innerHTML = `
+          <span><i class="fas fa-map-marker-alt" style="color:var(--accent-pbi); margin-right:4px;"></i> ${reg}</span>
+          <span style="font-family:monospace; font-weight:700;">${count} students (${pct}%)</span>
+        `;
+        donutContainer.appendChild(div);
+      });
+    }
+
+    function setYearFilter(yr, btn) {
+      filterYear = yr;
+      btn.parentElement.querySelectorAll('.slicer-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateSimulatedReport();
+    }
+    function setRegionFilter(reg, btn) {
+      filterRegion = reg;
+      btn.parentElement.querySelectorAll('.slicer-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateSimulatedReport();
+    }
+    function setSegmentFilter(seg, btn) {
+      filterSegment = seg;
+      btn.parentElement.querySelectorAll('.slicer-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateSimulatedReport();
+    }
+
+    // 2. Power BI Curriculum: 6 Modules & 24 Lessons
+    const CURRICULUM = [
+      {
+        module: 'Module 1: BI Fundamentals & Power BI Architecture',
+        tag: 'MODULE 1 • FOUNDATIONS',
+        lessons: [
+          {
+            id: 'PBI_L1',
+            title: '1. What is Power BI & Modern BI Architecture?',
+            concept: 'Power BI is Microsoft’s premier business intelligence platform combining self-service data prep (Power Query), analytical modeling (VertiPaq engine), and interactive dashboard storytelling.',
+            formula: '// Core BI Lifecycle:\n// 1. Ingest (Extract) -> 2. Model (Star Schema) -> 3. Calculate (DAX) -> 4. Visualize',
+            quiz: {
+              q: 'What is the internal in-memory columnar database engine that powers Power BI?',
+              options: ['VertiPaq Engine', 'V8 Engine', 'B-Tree Indexer', 'Hadoop HDFS'],
+              correctIndex: 0,
+              explanation: 'The VertiPaq engine compresses and stores analytical data in-memory using columnar storage for lightning-fast calculations.'
+            }
+          },
+          {
+            id: 'PBI_L2',
+            title: '2. Power BI Desktop vs Power BI Service vs Mobile',
+            concept: 'Power BI Desktop is the free authoring application where reports are built. Power BI Service (cloud) hosts published dashboards and scheduled data refreshes.',
+            formula: '// Development Workflow:\n// Build in Desktop -> Publish to Service Workspace -> Share via App',
+            quiz: {
+              q: 'Where do you design report layouts and write DAX measures?',
+              options: ['Power BI Desktop', 'Power BI Mobile App', 'Microsoft Word', 'PowerPoint Viewer'],
+              correctIndex: 0,
+              explanation: 'Power BI Desktop is the dedicated authoring tool for modeling and report creation.'
+            }
+          },
+          {
+            id: 'PBI_L3',
+            title: '3. Connecting to Data Sources (Excel, CSV, SQL, Web)',
+            concept: 'Power BI connects to hundreds of data sources via connectors. Use Import Mode for maximum speed and DirectQuery for massive live databases.',
+            formula: '// Source Types:\n// File (Excel/CSV), Database (SQL/PostgreSQL), Web API, Cloud Services',
+            quiz: {
+              q: 'Which connection mode imports data into Power BI memory for highest calculation performance?',
+              options: ['Import Mode', 'DirectQuery', 'Live Connection', 'Manual Paste'],
+              correctIndex: 0,
+              explanation: 'Import Mode loads data directly into the VertiPaq columnar memory engine.'
+            }
+          },
+          {
+            id: 'PBI_L4',
+            title: '4. Tour of the Power BI Desktop User Interface',
+            concept: 'Explore the 3 core views: Report View (canvas & visuals), Data View (table inspector), and Model View (entity relationships).',
+            formula: '// Interface Views:\n// 1. Report View (Canvas)\n// 2. Table/Data View\n// 3. Model View (Relationships)',
+            quiz: {
+              q: 'Which view in Power BI Desktop displays the Star Schema and table relationship lines?',
+              options: ['Model View', 'Report View', 'Print Preview', 'Help Tab'],
+              correctIndex: 0,
+              explanation: 'Model View allows you to visually inspect and manage table relationships, cardinalities, and directions.'
+            }
+          }
+        ]
+      },
+      {
+        module: 'Module 2: Power Query ETL — Ingestion & Transformation',
+        tag: 'MODULE 2 • POWER QUERY ETL',
+        lessons: [
+          {
+            id: 'PBI_L5',
+            title: '5. Introduction to Power Query & The M Language',
+            concept: 'Power Query is the graphical ETL tool that transforms messy raw files into clean analytical tables. Every step generates code in the M language.',
+            formula: '// M Language Formula Sample:\n= Table.SelectRows(Source, each ([Status] = "Active"))',
+            quiz: {
+              q: 'What underlying formula language executes Power Query ETL transformations?',
+              options: ['M Language', 'DAX', 'SQL', 'Python Scripting'],
+              correctIndex: 0,
+              explanation: 'Power Query transformations are executed via the functional M language.'
+            }
+          },
+          {
+            id: 'PBI_L6',
+            title: '6. Data Cleaning: Headers, Data Types & Missing Values',
+            concept: 'Promote first rows as headers, verify correct data types (Dates, Decimals, Text), and replace NULLs or empty strings.',
+            formula: '// Transformation Checklist:\n// 1. Promote Headers -> 2. Set Column Types -> 3. Replace Errors',
+            quiz: {
+              q: 'Why is setting the correct data type in Power Query essential before building reports?',
+              options: ['To ensure numerical sorting and aggregation behave accurately', 'To change font styles', 'To reduce internet bandwidth', 'To create print margins'],
+              correctIndex: 0,
+              explanation: 'Correct data types allow Power BI to aggregate numbers, sort chronologically, and establish relationships.'
+            }
+          },
+          {
+            id: 'PBI_L7',
+            title: '7. Unpivoting Columns for Normalized Reporting',
+            concept: 'Wide human-readable tables (months across columns) must be unpivoted into tall machine-readable tabular rows for proper BI filtering.',
+            formula: '// Unpivot Transformation:\n// Wide columns (Jan, Feb, Mar) -> [Attribute: Month] [Value: Amount]',
+            quiz: {
+              q: 'What is the goal of unpivoting monthly columns in Power Query?',
+              options: ['Normalize data into tall rows suitable for dynamic aggregation', 'Delete old data', 'Convert text to images', 'Lock columns'],
+              correctIndex: 0,
+              explanation: 'Unpivoting converts wide columns into tall row records, which is required for DAX measures and interactive slicers.'
+            }
+          },
+          {
+            id: 'PBI_L8',
+            title: '8. Merging Queries (JOIN) vs Appending Queries (UNION)',
+            concept: 'Merge Queries adds columns horizontally based on a key (like SQL JOIN). Append Queries stacks rows vertically from multiple files (like SQL UNION).',
+            formula: '// Merge: Add Columns (Horizontal)\n// Append: Stack Rows (Vertical)',
+            quiz: {
+              q: 'If you have 12 monthly sales CSV files with identical headers, which Power Query operation combines them?',
+              options: ['Append Queries', 'Merge Queries', 'Transpose', 'Split Column'],
+              correctIndex: 0,
+              explanation: 'Append Queries stacks multiple tables with matching column schemas vertically into a single consolidated table.'
+            }
+          }
+        ]
+      },
+      {
+        module: 'Module 3: Data Modeling & Star Schema Architecture',
+        tag: 'MODULE 3 • DATA MODELING',
+        lessons: [
+          {
+            id: 'PBI_L9',
+            title: '9. Star Schema Principles: Fact vs Dimension Tables',
+            concept: 'A Star Schema separates quantitative measurements (Fact tables: orders, revenue) from qualitative context (Dimension tables: customers, dates, products).',
+            formula: '// Star Schema Structure:\n// Fact_Sales (Center) surrounded by Dim_Date, Dim_Customer, Dim_Product',
+            quiz: {
+              q: 'Which table contains quantitative numeric measurements like Order Amount and Quantity?',
+              options: ['Fact Table', 'Dimension Table', 'Hierarchy Table', 'Parameter Table'],
+              correctIndex: 0,
+              explanation: 'Fact tables store numerical business metrics and foreign keys referencing dimension tables.'
+            }
+          },
+          {
+            id: 'PBI_L10',
+            title: '10. Managing Relationships & Cardinality (1-to-Many)',
+            concept: 'Best practice models strictly maintain 1-to-Many (1:*) single-direction relationships from Dimension Primary Keys to Fact Foreign Keys.',
+            formula: '// Golden Rule: 1 (Dimension) -> * (Fact Table)',
+            quiz: {
+              q: 'What is the recommended relationship cardinality between Dim_Customer and Fact_Orders?',
+              options: ['One-to-Many (1:*)', 'Many-to-Many (*:*)', 'One-to-One (1:1)', 'None'],
+              correctIndex: 0,
+              explanation: 'One customer can make many orders, making 1-to-Many the optimal model relationship.'
+            }
+          },
+          {
+            id: 'PBI_L11',
+            title: '11. Creating a Dedicated Dedicated Calendar / Date Table',
+            concept: 'Every robust Power BI model requires a continuous, contiguous Date Table to unlock DAX Time Intelligence functions.',
+            formula: 'Dim_Date = \nCALENDAR ( DATE(2024, 1, 1), DATE(2026, 12, 31) )',
+            quiz: {
+              q: 'Why is a custom continuous Date Table required in Power BI?',
+              options: ['To enable DAX Time Intelligence calculations like YTD and Prior Year', 'To show the current clock time', 'To increase disk space', 'To format phone numbers'],
+              correctIndex: 0,
+              explanation: 'DAX time intelligence functions require a contiguous range of dates without missing days.'
+            }
+          },
+          {
+            id: 'PBI_L12',
+            title: '12. Cross-Filter Direction: Single vs Both Direction Best Practices',
+            concept: 'Keep filter direction set to "Single" to prevent unexpected circular filter paths and performance degradation.',
+            formula: '// Filter Propagation:\n// Single direction propagates filters from Dimension down to Fact table.',
+            quiz: {
+              q: 'Why should Bi-directional cross-filtering ("Both") be avoided unless strictly necessary?',
+              options: ['It causes performance bottlenecks and ambiguous filter contexts', 'It deletes data', 'It disables printing', 'It changes column names'],
+              correctIndex: 0,
+              explanation: 'Bi-directional filtering introduces ambiguous relationship paths and degrades query performance.'
+            }
+          }
+        ]
+      },
+      {
+        module: 'Module 4: DAX Essentials & Calculations',
+        tag: 'MODULE 4 • DAX CALCULATIONS',
+        lessons: [
+          {
+            id: 'PBI_L13',
+            title: '13. Calculated Columns vs DAX Measures',
+            concept: 'Calculated Columns evaluate row-by-row and consume RAM storage. DAX Measures evaluate on-the-fly based on visual filter context without consuming RAM.',
+            formula: '// Measure Best Practice:\nTotal Revenue = SUM ( Fact_Orders[Amount] )',
+            quiz: {
+              q: 'Which calculation type recalculates dynamically based on the filters selected in the visual?',
+              options: ['DAX Measure', 'Calculated Column', 'Static Constant', 'Custom Property'],
+              correctIndex: 0,
+              explanation: 'Measures are computed on-the-fly and respond instantly to slicer and visual filter contexts.'
+            }
+          },
+          {
+            id: 'PBI_L14',
+            title: '14. Master the CALCULATE() Function & Filter Overrides',
+            concept: 'CALCULATE() is the most powerful function in DAX. It evaluates an expression while modifying or replacing the active filter context.',
+            formula: 'Lagos Revenue = \nCALCULATE (\n    [Total Revenue],\n    Dim_Region[City] = "Lagos"\n)',
+            quiz: {
+              q: 'What is the unique capability of the CALCULATE() function in DAX?',
+              options: ['It can modify the visual filter context during calculation', 'It exports data to CSV', 'It draws chart lines', 'It compresses images'],
+              correctIndex: 0,
+              explanation: 'CALCULATE is the only function that can alter or override the active filter context.'
+            }
+          },
+          {
+            id: 'PBI_L15',
+            title: '15. Iterator Functions (SUMX, AVERAGEX, COUNTROWS)',
+            concept: 'X-functions iterate through a table row-by-row, evaluate an expression on each row, and then aggregate the results.',
+            formula: 'Total Margin = \nSUMX (\n    Fact_Orders,\n    Fact_Orders[Revenue] - Fact_Orders[Cost]\n)',
+            quiz: {
+              q: 'What does the "X" in SUMX, AVERAGEX, and MINX indicate?',
+              options: ['Iterator function that computes an expression row-by-row before summarizing', 'Experimental function', 'Multiplication operator', 'XML export'],
+              correctIndex: 0,
+              explanation: 'The X suffix indicates an iterator function that evaluates an expression across individual rows.'
+            }
+          },
+          {
+            id: 'PBI_L16',
+            title: '16. Time Intelligence (DATESYTD, SAMEPERIODLASTYEAR)',
+            concept: 'Analyze performance over time comparing Year-to-Date totals and Prior Year growth trajectories with built-in time functions.',
+            formula: 'Revenue YTD = \nTOTALYTD ( [Total Revenue], Dim_Date[FullDate] )',
+            quiz: {
+              q: 'Which DAX function calculates year-to-date cumulative totals?',
+              options: ['TOTALYTD', 'YEARSUM', 'CUMULATIVE_DATE', 'SUM_YEAR'],
+              correctIndex: 0,
+              explanation: 'TOTALYTD computes the year-to-date accumulation of a measure using a date column.'
+            }
+          }
+        ]
+      },
+      {
+        module: 'Module 5: Interactive Visualizations & Design',
+        tag: 'MODULE 5 • REPORT DESIGN',
+        lessons: [
+          {
+            id: 'PBI_L17',
+            title: '17. Core Visuals: Bar, Line, Area & Donut Charts',
+            concept: 'Select the right chart type: Bar charts for category comparisons, Line charts for continuous time trends, and Matrix tables for granular audits.',
+            formula: '// Visual Guide:\n// Time Trends -> Line Chart | Comparisons -> Bar Chart | Composition -> Waterfall',
+            quiz: {
+              q: 'Which visual is best suited for showing revenue progression over 12 consecutive months?',
+              options: ['Line Chart', 'Pie Chart', 'Gauge Chart', 'Treemap'],
+              correctIndex: 0,
+              explanation: 'Line charts are the gold standard for displaying continuous time-series trends.'
+            }
+          },
+          {
+            id: 'PBI_L18',
+            title: '18. Slicers, Sync Slicers & Page Navigation Menus',
+            concept: 'Empower users with interactive dropdowns and tile slicers. Use Sync Slicers to synchronize filter states across multiple report pages.',
+            formula: '// Sync Slicers:\n// View -> Sync Slicers Pane -> Check boxes for target pages',
+            quiz: {
+              q: 'What feature allows a slicer on Page 1 to filter visuals on Page 2 and Page 3 simultaneously?',
+              options: ['Sync Slicers', 'Cross Join', 'Page Duplication', 'Bookmarks only'],
+              correctIndex: 0,
+              explanation: 'The Sync Slicers pane synchronizes filter selections across multiple pages in a report.'
+            }
+          },
+          {
+            id: 'PBI_L19',
+            title: '19. Drillthrough, Custom Tooltips & Report Hierarchies',
+            concept: 'Create deep dive experiences: Right-click a data point to drillthrough to a detailed student inspection page or hover for rich report page tooltips.',
+            formula: '// Drillthrough:\n// Add field to "Drillthrough fields" well on target destination page.',
+            quiz: {
+              q: 'How does a user trigger a Drillthrough action in Power BI?',
+              options: ['Right-click a data point and select Drillthrough', 'Double click canvas', 'Press Esc', 'Refresh browser'],
+              correctIndex: 0,
+              explanation: 'Right-clicking a chart element provides the contextual Drillthrough menu to open detailed sub-reports.'
+            }
+          },
+          {
+            id: 'PBI_L20',
+            title: '20. Bookmarks, Selection Pane & Dynamic Popups',
+            concept: 'Use Bookmarks with buttons to toggle between table and chart views, reset all filters with 1 click, or show slide-out filter drawers.',
+            formula: '// Bookmarks:\n// Captures canvas state, visual visibility, and active slicer filters.',
+            quiz: {
+              q: 'What feature captures the exact visibility and filter state of a page for interactive toggles?',
+              options: ['Bookmarks', 'Screenshots', 'Templates', 'Theme JSON'],
+              correctIndex: 0,
+              explanation: 'Bookmarks capture the state of visuals, filters, and visibility for rich interactive UX.'
+            }
+          }
+        ]
+      },
+      {
+        module: 'Module 6: Power BI Service, Workspaces & Capstone',
+        tag: 'MODULE 6 • CAPSTONE & DEPLOYMENT',
+        lessons: [
+          {
+            id: 'PBI_L21',
+            title: '21. Publishing to Power BI Service Workspaces',
+            concept: 'Deploy your completed `.pbix` report to the cloud. Organize reports in collaboration Workspaces and distribute via secure Power BI Apps.',
+            formula: '// Publishing Flow:\n// Home -> Publish -> Select Workspace -> Open in Browser',
+            quiz: {
+              q: 'What is the primary cloud container for collaborating on reports with team members in Power BI Service?',
+              options: ['Workspace', 'OneLake folder', 'ZIP archive', 'OneDrive root'],
+              correctIndex: 0,
+              explanation: 'Workspaces are the collaborative cloud workspaces where datasets, reports, and dashboards live.'
+            }
+          },
+          {
+            id: 'PBI_L22',
+            title: '22. Scheduled Refresh & On-Premises Data Gateways',
+            concept: 'Automate daily or hourly report updates. On-Premises Data Gateways securely bridge cloud Power BI Service with local databases or network folders.',
+            formula: '// Refresh Setup:\n// Gateway Connection -> Data source credentials -> Scheduled Refresh toggle',
+            quiz: {
+              q: 'What software bridges local company database files with cloud Power BI Service for scheduled refresh?',
+              options: ['On-Premises Data Gateway', 'FTP Client', 'VPN Router', 'Windows Firewall'],
+              correctIndex: 0,
+              explanation: 'The On-Premises Data Gateway acts as a secure encrypted bridge for scheduled cloud refreshes.'
+            }
+          },
+          {
+            id: 'PBI_L23',
+            title: '23. Row-Level Security (RLS) & Role Management',
+            concept: 'Enforce enterprise security: Ensure regional managers only see data from their assigned state using DAX security filter roles.',
+            formula: '// RLS DAX Rule:\n[Region] = USERNAME()',
+            quiz: {
+              q: 'What Power BI feature restricts data access for specific users based on their login credentials?',
+              options: ['Row-Level Security (RLS)', 'BitLocker', 'SSL Pinning', 'Password Protection'],
+              correctIndex: 0,
+              explanation: 'Row-Level Security (RLS) filters rows visible to users based on assigned role definitions.'
+            }
+          },
+          {
+            id: 'PBI_L24',
+            title: '24. Capstone Portfolio Project: Executive Analytics Dashboard',
+            concept: 'Build and submit your complete end-to-end Power BI report featuring Star Schema modeling, 10+ DAX measures, synchronized slicers, and executive storytelling.',
+            formula: '// Final Capstone Checklist:\n// 1. ETL Complete -> 2. Star Schema Verified -> 3. DAX Measures -> 4. Publish',
+            quiz: {
+              q: 'Congratulations! What is the final step to earn your verified Power BI Specialist Credential?',
+              options: ['Submit your completed Capstone report in the project portal', 'Close browser', 'Delete workspace', 'Uninstall Desktop'],
+              correctIndex: 0,
+              explanation: 'Submitting your completed Capstone project activates your verified certificate in the Greach Academy public registry.'
+            }
+          }
+        ]
+      }
+    ];
+
+    let currentModuleIdx = 0;
+    let currentLessonIdx = 0;
+    let completedLessons = JSON.parse(localStorage.getItem('greach_pbi_completed_lessons') || '[]');
+
+    // 3. Initialize Classroom & Authentication
+    window.addEventListener('DOMContentLoaded', () => {
+      checkPbiAccessAuth();
+      renderCurriculumSidebar();
+      loadLesson(0, 0);
+      updateSimulatedReport();
+      initPresenceHeartbeat();
+    });
+
+    function checkPbiAccessAuth() {
+      const session = JSON.parse(localStorage.getItem('greach_student_session') || 'null');
+      const isLead = (localStorage.getItem('greach_instructor_login') === 'true');
+      const pillName = document.getElementById('studentDisplayName');
+
+      if (isLead) {
+        if (pillName) pillName.innerHTML = '👑 <strong>Lead Instructor</strong>';
+        return;
+      }
+
+      if (!session || !session.verified) {
+        showGateModal('Please enter your unique access code to unlock the Power BI Classroom.');
+        return;
+      }
+
+      if (window.GreachDB && window.GreachDB.canAccessCourse) {
+        const access = window.GreachDB.canAccessCourse(session, 'power_bi');
+        if (!access.allowed) {
+          showGateModal(`Your current pass is registered for <strong>"${session.course}"</strong>.<br><br>This classroom is dedicated to <strong>Power BI for Beginners</strong>. Please enter a valid Power BI code or switch to your enrolled classroom.`);
+          return;
+        }
+      }
+
+      if (pillName) {
+        pillName.innerHTML = `🎓 <strong>${session.name || 'Verified Student'}</strong>`;
+      }
+    }
+
+    function showGateModal(msg) {
+      const modal = document.getElementById('securityGateModal');
+      const text = document.getElementById('gateMessageText');
+      if (text) text.innerHTML = msg;
+      if (modal) modal.classList.add('active');
+    }
+
+    async function verifyPbiCode() {
+      const inp = document.getElementById('gatePbiAccessCode');
+      const code = inp ? inp.value.trim() : '';
+      if (!code) {
+        alert('Please enter an access code.');
+        return;
+      }
+
+      if (window.GreachDB && window.GreachDB.verifyAccessCodeAny) {
+        const res = await window.GreachDB.verifyAccessCodeAny(code);
+        if (res && res.valid) {
+          const s = res.student || {};
+          const session = {
+            role: res.isInstructor ? 'instructor' : 'student',
+            id: s.id || 'STU-PBI-VERIFIED',
+            name: s.name || 'Verified Student',
+            email: s.email || '',
+            course: s.course || 'Power BI for Beginners',
+            courseKey: window.GreachDB.normalizeCourseKey(s.courseKey || s.course || 'power_bi'),
+            cohort: s.cohort || 'Batch 2: 2026 Masterclass',
+            verified: true,
+            authMethod: 'code',
+            accessCode: code
+          };
+          localStorage.setItem('greach_student_session', JSON.stringify(session));
+          document.getElementById('securityGateModal').classList.remove('active');
+          checkPbiAccessAuth();
+          alert(`Welcome, ${session.name}! Access granted for Power BI Classroom.`);
+          return;
+        }
+      }
+
+      alert('Invalid or inactive access code for Power BI. Please check your confirmation email.');
+    }
+
+    function initPresenceHeartbeat() {
+      const session = JSON.parse(localStorage.getItem('greach_student_session') || '{}');
+      if (window.GreachDB && window.GreachDB.updateStudentHeartbeat && session.id) {
+        window.GreachDB.updateStudentHeartbeat(session.id);
+        setInterval(() => {
+          if (window.GreachDB && window.GreachDB.updateStudentHeartbeat && session.id) {
+            window.GreachDB.updateStudentHeartbeat(session.id);
+          }
+        }, 45000);
+      }
+    }
+
+    // 4. Render Sidebar Curriculum
+    function renderCurriculumSidebar() {
+      const container = document.getElementById('curriculumModuleList');
+      if (!container) return;
+      container.innerHTML = '';
+
+      let totalLessons = 0;
+      CURRICULUM.forEach((m, mIdx) => {
+        const modGroup = document.createElement('div');
+        modGroup.className = 'module-group';
+
+        const modTitle = document.createElement('div');
+        modTitle.className = 'module-title';
+        modTitle.innerHTML = `<span>${m.module}</span> <i class="fas fa-chevron-down" style="font-size:0.75rem;"></i>`;
+        modGroup.appendChild(modTitle);
+
+        const list = document.createElement('ul');
+        list.className = 'lesson-list';
+
+        m.lessons.forEach((l, lIdx) => {
+          totalLessons++;
+          const li = document.createElement('li');
+          const isDone = completedLessons.includes(l.id);
+          li.className = `lesson-item ${isDone ? 'completed' : ''} ${mIdx === currentModuleIdx && lIdx === currentLessonIdx ? 'active' : ''}`;
+          li.id = `nav_lesson_${mIdx}_${lIdx}`;
+          li.innerHTML = `
+            <i class="fas ${isDone ? 'fa-check-circle' : 'fa-circle'} check-icon"></i>
+            <span>${l.title}</span>
+          `;
+          li.onclick = () => loadLesson(mIdx, lIdx);
+          list.appendChild(li);
+        });
+
+        modGroup.appendChild(list);
+        container.appendChild(modGroup);
+      });
+
+      updateProgressStats(totalLessons);
+    }
+
+    function updateProgressStats(total = 24) {
+      const count = completedLessons.length;
+      const pct = Math.round((count / total) * 100);
+      const txt = document.getElementById('progressPercent');
+      const bar = document.getElementById('progressBarFill');
+      if (txt) txt.textContent = `${pct}%`;
+      if (bar) bar.style.width = `${pct}%`;
+    }
+
+    // 5. Load Lesson View
+    function loadLesson(mIdx, lIdx) {
+      currentModuleIdx = mIdx;
+      currentLessonIdx = lIdx;
+      const mod = CURRICULUM[mIdx];
+      const lesson = mod.lessons[lIdx];
+
+      document.getElementById('lessonModuleTag').textContent = mod.tag;
+      document.getElementById('lessonTitle').textContent = lesson.title;
+
+      document.querySelectorAll('.lesson-item').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById(`nav_lesson_${mIdx}_${lIdx}`);
+      if (activeEl) activeEl.classList.add('active');
+
+      const isDone = completedLessons.includes(lesson.id);
+      const btnComplete = document.getElementById('btnCompleteLesson');
+      if (btnComplete) {
+        btnComplete.innerHTML = isDone 
+          ? '<i class="fas fa-check-double"></i> Completed' 
+          : '<i class="fas fa-check"></i> Mark Complete';
+      }
+
+      const card = document.getElementById('lessonContentCard');
+      card.innerHTML = `
+        <h3><i class="fas fa-lightbulb" style="color:var(--accent-pbi);"></i> Core Concept</h3>
+        <p>${lesson.concept}</p>
+
+        <h3 style="margin-top:1.5rem;"><i class="fas fa-calculator" style="color:var(--accent-pbi);"></i> DAX / Architecture Pattern</h3>
+        <div style="background:#0f172a; border-radius:8px; padding:1.2rem; position:relative; margin:1.2rem 0;">
+          <button onclick="navigator.clipboard.writeText(\`${escapeForAttr(lesson.formula)}\`).then(()=>alert('Copied to clipboard!'))" style="position:absolute; top:0.6rem; right:0.6rem; background:#334155; color:#cbd5e1; border:none; padding:0.35rem 0.7rem; border-radius:6px; font-size:0.75rem; cursor:pointer;">
+            <i class="fas fa-copy"></i> Copy
+          </button>
+          <pre style="color:#fde047; font-family:'JetBrains Mono',monospace; font-size:0.9rem; line-height:1.6; overflow-x:auto;"><code>${escapeHtml(lesson.formula)}</code></pre>
+        </div>
+
+        <div class="quiz-box">
+          <div class="quiz-title">
+            <i class="fas fa-question-circle"></i> Quick Knowledge Check
+          </div>
+          <p style="font-size:0.9rem; font-weight:700; color:#334155; margin-bottom:0.8rem;">
+            ${lesson.quiz.q}
+          </p>
+          <div>
+            ${lesson.quiz.options.map((opt, i) => `
+              <div class="quiz-option" onclick="checkQuizAnswer(${i}, ${lesson.quiz.correctIndex}, \`${escapeForAttr(lesson.quiz.explanation)}\`, this)">
+                <i class="far fa-circle"></i>
+                <span>${opt}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="quiz-feedback" id="quizFeedbackBox"></div>
+        </div>
+      `;
+    }
+
+    function toggleCompleteCurrentLesson() {
+      const lesson = CURRICULUM[currentModuleIdx].lessons[currentLessonIdx];
+      const idx = completedLessons.indexOf(lesson.id);
+      if (idx > -1) {
+        completedLessons.splice(idx, 1);
+      } else {
+        completedLessons.push(lesson.id);
+      }
+      localStorage.setItem('greach_pbi_completed_lessons', JSON.stringify(completedLessons));
+      renderCurriculumSidebar();
+      loadLesson(currentModuleIdx, currentLessonIdx);
+    }
+
+    function prevLesson() {
+      if (currentLessonIdx > 0) {
+        loadLesson(currentModuleIdx, currentLessonIdx - 1);
+      } else if (currentModuleIdx > 0) {
+        const prevM = currentModuleIdx - 1;
+        loadLesson(prevM, CURRICULUM[prevM].lessons.length - 1);
+      }
+    }
+
+    function nextLesson() {
+      const mod = CURRICULUM[currentModuleIdx];
+      if (currentLessonIdx < mod.lessons.length - 1) {
+        loadLesson(currentModuleIdx, currentLessonIdx + 1);
+      } else if (currentModuleIdx < CURRICULUM.length - 1) {
+        loadLesson(currentModuleIdx + 1, 0);
+      }
+    }
+
+    function checkQuizAnswer(selectedIdx, correctIdx, explanation, el) {
+      const container = el.parentElement;
+      const feedback = document.getElementById('quizFeedbackBox');
+      container.querySelectorAll('.quiz-option').forEach(opt => opt.classList.remove('correct', 'wrong'));
+
+      if (selectedIdx === correctIdx) {
+        el.classList.add('correct');
+        feedback.style.display = 'block';
+        feedback.style.color = '#15803d';
+        feedback.innerHTML = `<strong><i class="fas fa-check-circle"></i> Correct!</strong> ${explanation}`;
+      } else {
+        el.classList.add('wrong');
+        feedback.style.display = 'block';
+        feedback.style.color = '#991b1b';
+        feedback.innerHTML = `<strong><i class="fas fa-times-circle"></i> Try Again:</strong> ${explanation}`;
+      }
+    }
+
+    // 6. DAX Formula Studio Helpers
+    const DAX_PRESETS = {
+      m1: `Total Revenue = 
+SUMX (
+    Fact_Orders,
+    Fact_Orders[Quantity] * RELATED ( Dim_Course[Fee] )
+)`,
+      m2: `Lagos Executive Revenue = 
+CALCULATE (
+    [Total Revenue],
+    Dim_Region[City] = "Lagos",
+    Dim_Course[Track] = "Executive"
+)`,
+      m3: `Revenue YTD = 
+TOTALYTD (
+    [Total Revenue],
+    Dim_Date[FullDate]
+)`,
+      m4: `Profit Margin % = 
+DIVIDE (
+    [Total Gross Profit],
+    [Total Revenue],
+    0
+)`,
+      m5: `Revenue Prior Year (YoY) = 
+CALCULATE (
+    [Total Revenue],
+    SAMEPERIODLASTYEAR ( Dim_Date[FullDate] )
+)`
+    };
+
+    function loadDaxFormula(key) {
+      if (DAX_PRESETS[key]) {
+        document.getElementById('daxCodeBox').textContent = DAX_PRESETS[key];
+      }
+    }
+
+    function copyCurrentDax() {
+      const code = document.getElementById('daxCodeBox').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        alert('DAX Measure copied to clipboard!');
+      });
+    }
+
+    // 7. Live Studio & Screen Recorder
+    let mediaRecorder = null;
+    let recordedChunks = [];
+
+    function openLiveStudio() { document.getElementById('liveStudioModal').classList.add('active'); }
+    function closeLiveStudio() { document.getElementById('liveStudioModal').classList.remove('active'); }
+
+    async function startRecording() {
+      try {
+        const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+        recordedChunks = [];
+        mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+
+        mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: 'video/webm' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Greach_PowerBI_Session_${new Date().toISOString().slice(0,10)}.webm`;
+          a.click();
+          document.getElementById('recorderStatusPill').textContent = 'Saved to Downloads';
+          document.getElementById('recorderStatusPill').style.background = '#065f46';
+          document.getElementById('recorderStatusPill').style.color = '#6ee7b7';
+        };
+
+        mediaRecorder.start();
+        document.getElementById('btnStartRecord').disabled = true;
+        document.getElementById('btnStartRecord').style.opacity = '0.5';
+        document.getElementById('btnStopRecord').disabled = false;
+        document.getElementById('btnStopRecord').style.background = '#22c55e';
+        document.getElementById('btnStopRecord').style.color = 'white';
+        document.getElementById('btnStopRecord').style.cursor = 'pointer';
+        document.getElementById('recorderStatusPill').textContent = '🔴 Recording Live...';
+        document.getElementById('recorderStatusPill').style.background = '#991b1b';
+        document.getElementById('recorderStatusPill').style.color = '#fee2e2';
+      } catch (err) {
+        alert('Screen recording permission denied.');
+      }
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        document.getElementById('btnStartRecord').disabled = false;
+        document.getElementById('btnStartRecord').style.opacity = '1';
+        document.getElementById('btnStopRecord').disabled = true;
+        document.getElementById('btnStopRecord').style.background = '#475569';
+        document.getElementById('btnStopRecord').style.color = '#94a3b8';
+        document.getElementById('btnStopRecord').style.cursor = 'not-allowed';
+      }
+    }
+
+    function openDownloadsModal() { document.getElementById('downloadsModal').classList.add('active'); }
+    function closeDownloadsModal() { document.getElementById('downloadsModal').classList.remove('active'); }
+
+    function downloadPbiSampleFile() {
+      alert('Downloading Greach_Executive_Report_Starter.pbix template pack...');
+    }
+
+    function toggleSwitcher(e) {
+      e.stopPropagation();
+      document.getElementById('switcherMenu').classList.toggle('active');
+    }
+    window.addEventListener('click', () => {
+      const m = document.getElementById('switcherMenu');
+      if (m) m.classList.remove('active');
+    });
+
+    function logoutClassroom() {
+      if (confirm('Log out of Power BI Classroom?')) {
+        localStorage.removeItem('greach_student_session');
+        window.location.href = 'index.html';
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function escapeForAttr(text) {
+      if (!text) return '';
+      return String(text).replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+    }
+  </script>
+</body>
+</html>

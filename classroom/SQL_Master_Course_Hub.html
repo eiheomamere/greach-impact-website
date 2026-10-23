@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL for Beginners & Analytics Classroom | Greach Impact Academy</title>
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script src="js/greach-sync.js"></script>
+  <script src="js/greach-db.js"></script>
+
+  <style>
+    :root {
+      --primary: #0a0a5e;
+      --primary-light: #181878;
+      --accent-sql: #ea580c;
+      --accent-sql-light: #ffedd5;
+      --teal: #64c7d4;
+      --dark: #0f172a;
+      --dark-card: #1e293b;
+      --gray-bg: #f8fafc;
+      --border: #e2e8f0;
+      --text: #334155;
+      --text-muted: #64748b;
+      --success: #10b981;
+      --sidebar-width: 340px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--gray-bg);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    header.top-nav {
+      background: #07073b;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #ea580c;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .brand-logo {
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .brand-logo i { color: var(--accent-sql); }
+    .course-badge {
+      background: rgba(234, 88, 12, 0.2);
+      border: 1px solid var(--accent-sql);
+      color: #fed7aa;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.65rem;
+      border-radius: 20px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    /* Hub Switcher Dropdown */
+    .classroom-switcher {
+      position: relative;
+    }
+    .switcher-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .switcher-btn:hover { background: rgba(255,255,255,0.15); }
+    .switcher-menu {
+      position: absolute;
+      top: 110%;
+      left: 0;
+      background: white;
+      color: var(--dark);
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+      width: 250px;
+      padding: 0.5rem;
+      display: none;
+      z-index: 1000;
+    }
+    .switcher-menu.active { display: block; }
+    .switcher-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem 0.8rem;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-radius: 6px;
+      transition: background 0.15s ease;
+    }
+    .switcher-item:hover { background: #f1f5f9; color: var(--primary); }
+    .switcher-item.current {
+      background: var(--accent-sql-light);
+      color: #c2410c;
+      font-weight: 700;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .user-pill {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 0.35rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-live-studio {
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      color: white;
+      border: none;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: transform 0.15s ease;
+    }
+    .btn-live-studio:hover { transform: translateY(-1px); }
+
+    /* Main Layout */
+    .classroom-body {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 54px);
+      overflow: hidden;
+    }
+
+    /* Sidebar Curriculum */
+    aside.curriculum-sidebar {
+      width: var(--sidebar-width);
+      background: white;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .sidebar-header {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      background: #fafaf9;
+    }
+    .progress-bar-container {
+      margin-top: 0.5rem;
+      background: #e2e8f0;
+      height: 7px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #ea580c, #f97316);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .module-group {
+      border-bottom: 1px solid var(--border);
+    }
+    .module-title {
+      padding: 0.85rem 1.2rem;
+      background: #f8fafc;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .module-title:hover { background: #f1f5f9; }
+    .lesson-list {
+      list-style: none;
+    }
+    .lesson-item {
+      padding: 0.75rem 1.2rem;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #334155;
+      transition: all 0.15s ease;
+    }
+    .lesson-item:hover {
+      background: #fff7ed;
+      color: #c2410c;
+    }
+    .lesson-item.active {
+      background: #ffedd5;
+      color: #9a3412;
+      font-weight: 700;
+      border-left: 4px solid var(--accent-sql);
+    }
+    .lesson-item .check-icon {
+      color: #cbd5e1;
+      font-size: 0.8rem;
+    }
+    .lesson-item.completed .check-icon {
+      color: var(--success);
+    }
+
+    /* Main Workspace */
+    main.workspace-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      background: #f8fafc;
+    }
+
+    /* Lesson Viewer Header */
+    .lesson-header {
+      background: white;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .lesson-tag {
+      font-size: 0.75rem;
+      color: var(--accent-sql);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .lesson-headline {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--dark);
+      margin-top: 0.2rem;
+    }
+    .lesson-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn-nav-step {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.15s ease;
+    }
+    .btn-nav-step:hover { background: #f1f5f9; }
+    .btn-nav-step.primary {
+      background: var(--accent-sql);
+      color: white;
+      border-color: var(--accent-sql);
+    }
+    .btn-nav-step.primary:hover { background: #c2410c; }
+
+    /* Content & Interactive Split */
+    .content-container {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Interactive SQL Studio */
+    .sql-studio-card {
+      background: #0f172a;
+      border-radius: 1rem;
+      overflow: hidden;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      border: 1px solid #334155;
+    }
+    .studio-toolbar {
+      background: #1e293b;
+      padding: 0.75rem 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+    }
+    .studio-title {
+      color: #f8fafc;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .studio-title i { color: #f97316; }
+    .studio-buttons {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .btn-run-sql {
+      background: linear-gradient(135deg, #ea580c, #c2410c);
+      color: white;
+      border: none;
+      padding: 0.45rem 1rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 2px 8px rgba(234,88,12,0.3);
+    }
+    .btn-run-sql:hover { background: #9a3412; }
+    .btn-clear-sql {
+      background: #334155;
+      color: #cbd5e1;
+      border: none;
+      padding: 0.45rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .btn-clear-sql:hover { background: #475569; color: white; }
+
+    .editor-wrapper {
+      position: relative;
+    }
+    textarea#sqlEditor {
+      width: 100%;
+      height: 140px;
+      background: #0b1120;
+      color: #38bdf8;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.92rem;
+      padding: 1rem 1.2rem;
+      border: none;
+      outline: none;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    /* SQL Quick Keyword Pills */
+    .keyword-bar {
+      background: #1e293b;
+      padding: 0.4rem 1.2rem;
+      display: flex;
+      gap: 0.4rem;
+      overflow-x: auto;
+      border-top: 1px solid #334155;
+    }
+    .kw-pill {
+      background: #334155;
+      color: #e2e8f0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+    }
+    .kw-pill:hover { background: var(--accent-sql); color: white; }
+
+    /* Results Table */
+    .results-container {
+      background: #020617;
+      border-top: 1px solid #334155;
+      padding: 1rem 1.2rem;
+      max-height: 280px;
+      overflow: auto;
+    }
+    .results-header-info {
+      display: flex;
+      justify-content: space-between;
+      color: #94a3b8;
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 0.6rem;
+    }
+    table.sql-results-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #e2e8f0;
+    }
+    table.sql-results-table th {
+      background: #1e293b;
+      color: #f97316;
+      text-align: left;
+      padding: 0.55rem 0.8rem;
+      border: 1px solid #334155;
+      font-weight: 700;
+    }
+    table.sql-results-table td {
+      padding: 0.5rem 0.8rem;
+      border: 1px solid #1e293b;
+      white-space: nowrap;
+    }
+    table.sql-results-table tr:nth-child(even) { background: #0f172a; }
+    table.sql-results-table tr:hover { background: #1e293b; }
+
+    /* Schema Browser Tabs */
+    .schema-tabs {
+      display: flex;
+      background: #e2e8f0;
+      border-radius: 8px 8px 0 0;
+      padding: 0.3rem 0.5rem 0;
+      gap: 0.3rem;
+    }
+    .schema-tab-btn {
+      padding: 0.45rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border: none;
+      background: transparent;
+      color: #64748b;
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+    }
+    .schema-tab-btn.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: 0 -2px 4px rgba(0,0,0,0.04);
+    }
+    .schema-viewer {
+      background: white;
+      border: 1px solid var(--border);
+      border-top: none;
+      padding: 1rem 1.2rem;
+      border-radius: 0 0 8px 8px;
+      margin-bottom: 2rem;
+      font-size: 0.82rem;
+    }
+
+    /* Lesson Card Narrative */
+    .lesson-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+    .lesson-card h3 {
+      color: var(--primary);
+      font-size: 1.25rem;
+      margin-bottom: 0.8rem;
+    }
+    .lesson-card p {
+      margin-bottom: 1rem;
+      color: #475569;
+    }
+    .code-sample-box {
+      background: #0f172a;
+      border-radius: 8px;
+      padding: 1.2rem;
+      position: relative;
+      margin: 1.2rem 0;
+    }
+    .code-sample-box pre {
+      color: #38bdf8;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+    .btn-copy-code {
+      position: absolute;
+      top: 0.6rem;
+      right: 0.6rem;
+      background: #334155;
+      color: #cbd5e1;
+      border: none;
+      padding: 0.35rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .btn-copy-code:hover { background: #475569; color: white; }
+    .btn-load-studio {
+      background: #ea580c;
+      color: white;
+      border: none;
+      padding: 0.35rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      position: absolute;
+      top: 0.6rem;
+      right: 5.5rem;
+      font-weight: 600;
+    }
+    .btn-load-studio:hover { background: #c2410c; }
+
+    /* Interactive Quiz */
+    .quiz-box {
+      background: #fff7ed;
+      border: 1.5px solid #fed7aa;
+      border-radius: 12px;
+      padding: 1.4rem;
+      margin-top: 1.5rem;
+    }
+    .quiz-title {
+      font-weight: 800;
+      color: #9a3412;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.8rem;
+    }
+    .quiz-option {
+      background: white;
+      border: 1px solid #fed7aa;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .quiz-option:hover { background: #ffedd5; }
+    .quiz-option.correct {
+      background: #dcfce7;
+      border-color: #22c55e;
+      color: #15803d;
+      font-weight: 700;
+    }
+    .quiz-option.wrong {
+      background: #fee2e2;
+      border-color: #ef4444;
+      color: #991b1b;
+    }
+    .quiz-feedback {
+      margin-top: 0.6rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: none;
+    }
+
+    /* Live Studio & Modals */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+      background: white;
+      border-radius: 1.2rem;
+      width: 100%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2rem;
+      position: relative;
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.2rem;
+      background: #f1f5f9;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Access Gate Modal */
+    .gate-modal-card {
+      background: white;
+      border-radius: 1.5rem;
+      max-width: 500px;
+      width: 100%;
+      padding: 2.2rem;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+    }
+
+    @media (max-width: 900px) {
+      .curriculum-sidebar { display: none; }
+      .classroom-body { height: auto; }
+      .content-container { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="top-nav">
+    <div class="brand-group">
+      <a href="index.html" class="brand-logo">
+        <i class="fas fa-database"></i> Greach Impact Academy
+      </a>
+      <span class="course-badge"><i class="fas fa-terminal"></i> CRS-SQL-BEG • SQL Analytics</span>
+
+      <!-- Classroom Switcher -->
+      <div class="classroom-switcher">
+        <button class="switcher-btn" onclick="toggleSwitcher(event)">
+          <i class="fas fa-th-large"></i> Switch Classroom <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i>
+        </button>
+        <div class="switcher-menu" id="switcherMenu">
+          <div style="font-size:0.72rem; font-weight:800; color:#94a3b8; text-transform:uppercase; padding:0.4rem 0.8rem;">Greach Classrooms</div>
+          <a href="Excel_Master_Course_Hub.html" class="switcher-item">
+            <i class="fas fa-file-excel" style="color:#107c41;"></i> Excel Masterclass (64 Lessons)
+          </a>
+          <a href="Excel_Dashboard_Hub.html" class="switcher-item">
+            <i class="fas fa-chart-line" style="color:#4f46e5;"></i> Executive Dashboard Studio
+          </a>
+          <a href="SQL_Master_Course_Hub.html" class="switcher-item current">
+            <i class="fas fa-database" style="color:#ea580c;"></i> SQL Analytics Studio (Active)
+          </a>
+          <a href="PowerBI_Master_Course_Hub.html" class="switcher-item">
+            <i class="fas fa-chart-pie" style="color:#f59e0b;"></i> Power BI Business Intelligence
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <div class="user-pill" id="studentHeaderPill">
+        <i class="fas fa-user-graduate" style="color:#ea580c;"></i>
+        <span id="studentDisplayName">Loading...</span>
+      </div>
+      <button class="btn-live-studio" onclick="openLiveStudio()">
+        <i class="fas fa-satellite-dish"></i> Live Studio &amp; Recorder
+      </button>
+      <button class="switcher-btn" onclick="openDownloadsModal()">
+        <i class="fas fa-download"></i> Resources
+      </button>
+      <button onclick="logoutClassroom()" title="Logout" style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:0.4rem 0.7rem; border-radius:8px; cursor:pointer;">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Body Layout -->
+  <div class="classroom-body">
+
+    <!-- Sidebar: 6 Modules & 24 Lessons -->
+    <aside class="curriculum-sidebar">
+      <div class="sidebar-header">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.8rem; font-weight:800; color:#0f172a; text-transform:uppercase;">Curriculum Progress</span>
+          <span id="progressPercent" style="font-size:0.8rem; font-weight:800; color:var(--accent-sql);">0%</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
+      </div>
+
+      <div id="curriculumModuleList">
+        <!-- Rendered via JavaScript -->
+      </div>
+    </aside>
+
+    <!-- Main Workspace Area -->
+    <main class="workspace-area">
+
+      <!-- Lesson Header -->
+      <div class="lesson-header">
+        <div>
+          <div class="lesson-tag" id="lessonModuleTag">MODULE 1 • FOUNDATIONS</div>
+          <h1 class="lesson-headline" id="lessonTitle">Loading SQL Curriculum...</h1>
+        </div>
+        <div class="lesson-actions">
+          <button class="btn-nav-step" id="btnPrevLesson" onclick="prevLesson()">
+            <i class="fas fa-arrow-left"></i> Previous
+          </button>
+          <button class="btn-nav-step primary" id="btnCompleteLesson" onclick="toggleCompleteCurrentLesson()">
+            <i class="fas fa-check"></i> Mark Complete
+          </button>
+          <button class="btn-nav-step" id="btnNextLesson" onclick="nextLesson()">
+            Next <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="content-container">
+
+        <!-- Interactive SQL Query Studio -->
+        <div class="sql-studio-card">
+          <div class="studio-toolbar">
+            <div class="studio-title">
+              <i class="fas fa-terminal"></i>
+              <span>Interactive SQL Query Runner (Live In-Browser Engine)</span>
+            </div>
+            <div class="studio-buttons">
+              <select id="sampleQueriesDropdown" onchange="loadSelectedSampleQuery(this.value)" style="background:#334155; color:#f8fafc; border:none; padding:0.4rem 0.6rem; border-radius:6px; font-size:0.78rem;">
+                <option value="">Load Sample Business Query...</option>
+                <option value="q1">1. Total Revenue by Course</option>
+                <option value="q2">2. Top 5 Paying Students</option>
+                <option value="q3">3. Orders Filtered by Status</option>
+                <option value="q4">4. Student Enrollment Join</option>
+                <option value="q5">5. Monthly Sales Aggregation</option>
+              </select>
+              <button class="btn-clear-sql" onclick="clearSqlEditor()">Clear</button>
+              <button class="btn-run-sql" onclick="executeCurrentQuery()">
+                <i class="fas fa-play"></i> Run Query (Ctrl+Enter)
+              </button>
+            </div>
+          </div>
+
+          <div class="editor-wrapper">
+            <textarea id="sqlEditor" spellcheck="false">SELECT 
+  id, 
+  name, 
+  email, 
+  course, 
+  cohort 
+FROM students 
+WHERE course LIKE '%Excel%'
+ORDER BY name ASC 
+LIMIT 10;</textarea>
+          </div>
+
+          <div class="keyword-bar">
+            <button class="kw-pill" onclick="insertKeyword('SELECT ')">SELECT</button>
+            <button class="kw-pill" onclick="insertKeyword('FROM ')">FROM</button>
+            <button class="kw-pill" onclick="insertKeyword('WHERE ')">WHERE</button>
+            <button class="kw-pill" onclick="insertKeyword('GROUP BY ')">GROUP BY</button>
+            <button class="kw-pill" onclick="insertKeyword('HAVING ')">HAVING</button>
+            <button class="kw-pill" onclick="insertKeyword('JOIN ')">JOIN</button>
+            <button class="kw-pill" onclick="insertKeyword('ON ')">ON</button>
+            <button class="kw-pill" onclick="insertKeyword('ORDER BY ')">ORDER BY</button>
+            <button class="kw-pill" onclick="insertKeyword('LIMIT 10;')">LIMIT 10;</button>
+            <button class="kw-pill" onclick="insertKeyword('COUNT(*)')">COUNT(*)</button>
+            <button class="kw-pill" onclick="insertKeyword('SUM(')">SUM()</button>
+          </div>
+
+          <!-- Execution Results Grid -->
+          <div class="results-container" id="resultsContainer">
+            <div class="results-header-info">
+              <span id="resultsCount">Results: Click "Run Query" or press Ctrl+Enter</span>
+              <span id="resultsTime">Engine: SQLite In-Memory Mock Relational</span>
+            </div>
+            <div id="resultsTableWrapper">
+              <table class="sql-results-table">
+                <thead>
+                  <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>email</th>
+                    <th>course</th>
+                    <th>cohort</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>STU-2026-001</td>
+                    <td>Amaka Okafor</td>
+                    <td>amaka.o@gmail.com</td>
+                    <td>Microsoft Excel for Beginners</td>
+                    <td>Batch 2: 2026</td>
+                  </tr>
+                  <tr>
+                    <td>STU-2026-002</td>
+                    <td>Chidi Obi</td>
+                    <td>chidi.obi@yahoo.com</td>
+                    <td>Microsoft Excel Advanced</td>
+                    <td>Batch 2: 2026</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Schema Explorer Panel -->
+        <div class="schema-tabs">
+          <button class="schema-tab-btn active" onclick="switchSchemaTab('students')">
+            <i class="fas fa-table"></i> table: students (12 rows)
+          </button>
+          <button class="schema-tab-btn" onclick="switchSchemaTab('courses')">
+            <i class="fas fa-table"></i> table: courses (5 rows)
+          </button>
+          <button class="schema-tab-btn" onclick="switchSchemaTab('orders')">
+            <i class="fas fa-table"></i> table: orders (20 rows)
+          </button>
+        </div>
+        <div class="schema-viewer" id="schemaViewerContent">
+          <strong>Columns:</strong> 
+          <code>id (VARCHAR PK)</code>, 
+          <code>name (TEXT)</code>, 
+          <code>email (TEXT UNIQUE)</code>, 
+          <code>course (TEXT)</code>, 
+          <code>cohort (TEXT)</code>, 
+          <code>paid (BOOLEAN)</code>
+          <button onclick="loadTableToEditor('students')" style="margin-left:1rem; background:none; border:1px solid #cbd5e1; padding:0.2rem 0.5rem; border-radius:4px; cursor:pointer; font-size:0.75rem; color:#ea580c; font-weight:700;">
+            <i class="fas fa-play"></i> SELECT * FROM students
+          </button>
+        </div>
+
+        <!-- Lesson Detailed Narrative -->
+        <article class="lesson-card" id="lessonContentCard">
+          <!-- Dynamic Lesson Content Injected via JS -->
+        </article>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Live Studio & Recorder Modal -->
+  <div class="modal-overlay" id="liveStudioModal">
+    <div class="modal-content">
+      <button class="modal-close-btn" onclick="closeLiveStudio()">&times;</button>
+      <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:1rem;">
+        <i class="fas fa-satellite-dish" style="color:#ef4444; font-size:1.4rem;"></i>
+        <h2 style="font-size:1.4rem; color:var(--dark);">SQL Live Broadcast Studio &amp; Screen Recorder</h2>
+      </div>
+      <p style="color:#64748b; font-size:0.9rem; margin-bottom:1.5rem;">
+        Record live instructor lectures, query explanations, and student practice screen shares directly in your browser. No Zoom or external software required.
+      </p>
+
+      <!-- Video / Screen Recorder Controls -->
+      <div style="background:#0f172a; border-radius:12px; padding:1.5rem; color:white; margin-bottom:1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <div>
+            <h4 style="font-size:1.1rem; color:#f8fafc;"><i class="fas fa-video"></i> In-Browser Screen &amp; Audio Recorder</h4>
+            <p style="font-size:0.8rem; color:#94a3b8;">Captures your entire desktop, SQL window, and microphone.</p>
+          </div>
+          <span id="recorderStatusPill" style="background:#334155; color:#cbd5e1; padding:0.3rem 0.7rem; border-radius:20px; font-size:0.75rem; font-weight:700;">Ready</span>
+        </div>
+        <div style="display:flex; gap:0.8rem;">
+          <button id="btnStartRecord" onclick="startRecording()" style="background:#ef4444; color:white; border:none; padding:0.6rem 1.2rem; border-radius:8px; font-weight:700; cursor:pointer;">
+            <i class="fas fa-circle"></i> Start Recording
+          </button>
+          <button id="btnStopRecord" onclick="stopRecording()" disabled style="background:#475569; color:#94a3b8; border:none; padding:0.6rem 1.2rem; border-radius:8px; font-weight:700; cursor:not-allowed;">
+            <i class="fas fa-stop"></i> Stop &amp; Download Video (.webm)
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Stream Embed -->
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:1.2rem;">
+        <h4 style="font-size:0.95rem; margin-bottom:0.6rem; color:var(--dark);"><i class="fas fa-broadcast-tower" style="color:var(--accent-sql);"></i> Live Stream Broadcast Link</h4>
+        <input type="text" id="liveStreamUrlInput" placeholder="Paste YouTube Live or Google Meet link here..." style="width:100%; padding:0.6rem; border:1px solid #cbd5e1; border-radius:6px; margin-bottom:0.6rem;">
+        <button onclick="embedLiveStream()" style="background:var(--primary); color:white; border:none; padding:0.5rem 1rem; border-radius:6px; font-size:0.82rem; font-weight:700; cursor:pointer;">
+          Load Stream
+        </button>
+        <div id="liveStreamIframeContainer" style="margin-top:1rem; display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Downloads Modal -->
+  <div class="modal-overlay" id="downloadsModal">
+    <div class="modal-content" style="max-width:600px;">
+      <button class="modal-close-btn" onclick="closeDownloadsModal()">&times;</button>
+      <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:1rem;">
+        <i class="fas fa-download" style="color:var(--accent-sql); font-size:1.3rem;"></i>
+        <h2 style="font-size:1.3rem; color:var(--dark);">SQL Student Resources</h2>
+      </div>
+      <p style="color:#64748b; font-size:0.85rem; margin-bottom:1.5rem;">Download official exercises, starter datasets, and SQL syntax cheat sheets.</p>
+
+      <div style="display:flex; flex-direction:column; gap:0.8rem;">
+        <div style="border:1px solid var(--border); padding:1rem; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong style="color:var(--dark); font-size:0.9rem;">Greach_Impact_Sample_Database.sql</strong>
+            <p style="color:#64748b; font-size:0.75rem;">Complete PostgreSQL &amp; SQLite starter database with 4 schema tables</p>
+          </div>
+          <button onclick="downloadSqlSampleFile()" style="background:var(--accent-sql); color:white; border:none; padding:0.4rem 0.8rem; border-radius:6px; font-weight:700; font-size:0.78rem; cursor:pointer;">
+            Download
+          </button>
+        </div>
+
+        <div style="border:1px solid var(--border); padding:1rem; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong style="color:var(--dark); font-size:0.9rem;">SQL_Analytics_Cheat_Sheet_2026.pdf</strong>
+            <p style="color:#64748b; font-size:0.75rem;">Fast reference for SELECT, GROUP BY, JOINs, and Window Functions</p>
+          </div>
+          <button onclick="alert('Downloading SQL Cheat Sheet...')" style="background:var(--accent-sql); color:white; border:none; padding:0.4rem 0.8rem; border-radius:6px; font-weight:700; font-size:0.78rem; cursor:pointer;">
+            Download
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Security Gate Overlay Modal (If Not Enrolled in SQL) -->
+  <div class="modal-overlay" id="securityGateModal">
+    <div class="gate-modal-card">
+      <div style="width:60px; height:60px; background:#ffedd5; color:#ea580c; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.2rem; font-size:1.6rem;">
+        <i class="fas fa-lock"></i>
+      </div>
+      <h2 style="font-size:1.35rem; color:#0f172a; margin-bottom:0.6rem;">Course Authentication Required</h2>
+      <p id="gateMessageText" style="color:#64748b; font-size:0.88rem; line-height:1.5; margin-bottom:1.5rem;">
+        This classroom is reserved for students enrolled in <strong>SQL for Beginners &amp; Analytics</strong> or the <strong>Complete Analytics Suite</strong>.
+      </p>
+
+      <div style="margin-bottom:1.2rem; text-align:left;">
+        <label style="display:block; font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.4rem;">
+          Enter Your Unique SQL Access Code:
+        </label>
+        <input type="text" id="gateSqlAccessCode" placeholder="e.g. GRX-SQL-9821 or STU-2026-001" style="width:100%; padding:0.8rem; border:1.5px solid #cbd5e1; border-radius:8px; font-size:1rem; font-weight:700; text-transform:uppercase;">
+      </div>
+
+      <button onclick="verifySqlCode()" style="width:100%; background:var(--accent-sql); color:white; padding:0.8rem; border:none; border-radius:8px; font-weight:800; font-size:0.95rem; cursor:pointer; margin-bottom:0.8rem;">
+        Verify Code &amp; Unlock SQL Classroom
+      </button>
+
+      <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+        <a href="Excel_Master_Course_Hub.html" style="color:#0284c7; font-weight:600; text-decoration:none;">
+          &larr; Go to Excel Classroom
+        </a>
+        <a href="index.html" style="color:#64748b; text-decoration:none;">
+          Classroom Portal Home
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Engine -->
+  <script>
+    // 1. Mock Relational In-Memory Database for SQL Runner
+    const DB = {
+      students: [
+        { id: 'STU-2026-001', name: 'Amaka Okafor', email: 'amaka.o@gmail.com', course: 'Microsoft Excel for Beginners', cohort: 'Batch 2: 2026', paid: true },
+        { id: 'STU-2026-002', name: 'Chidi Obi', email: 'chidi.obi@yahoo.com', course: 'Microsoft Excel Advanced', cohort: 'Batch 2: 2026', paid: true },
+        { id: 'STU-2026-003', name: 'Fatima Bello', email: 'f.bello@kpmg.ng', course: 'SQL for Beginners', cohort: 'Batch 2: 2026', paid: true },
+        { id: 'STU-2026-004', name: 'Tunde Bakare', email: 'tunde.b@accessbank.com', course: 'Power BI for Beginners', cohort: 'Batch 2: 2026', paid: true },
+        { id: 'STU-2026-005', name: 'Emeka Eze', email: 'emeka.eze@mtn.ng', course: 'Complete Analytics Suite', cohort: 'Batch 2: 2026', paid: true },
+        { id: 'STU-2026-006', name: 'Zainab Ahmed', email: 'zainab@dangote.com', course: 'Microsoft Excel for Beginners', cohort: 'Batch 2: 2026', paid: false },
+        { id: 'STU-2026-007', name: 'Kelechi Iheanacho', email: 'kelechi@gmail.com', course: 'SQL for Beginners', cohort: 'Batch 2: 2026', paid: true },
+        { id: 'STU-2026-008', name: 'Amina Mohammed', email: 'amina.m@un.org', course: 'Complete Analytics Suite', cohort: 'Batch 2: 2026', paid: true },
+        { id: 'STU-2026-009', name: 'David Adeleke', email: 'david@dmw.com', course: 'Executive Dashboard Design', cohort: 'Batch 2: 2026', paid: true },
+        { id: 'STU-2026-010', name: 'Ngozi Okonjo', email: 'ngozi@wto.org', course: 'SQL for Beginners', cohort: 'Batch 2: 2026', paid: true }
+      ],
+      courses: [
+        { course_id: 'CRS-EXC-BEG', name: 'Microsoft Excel for Beginners', fee: 15000, instructor: 'Lead Analytics Team' },
+        { course_id: 'CRS-EXC-ADV', name: 'Microsoft Excel Advanced & Analytics', fee: 25000, instructor: 'Lead Analytics Team' },
+        { course_id: 'CRS-EXC-DASH', name: 'Executive Interactive Dashboard Design', fee: 20000, instructor: 'Lead Analytics Team' },
+        { course_id: 'CRS-SQL-BEG', name: 'SQL for Beginners & Analytics', fee: 20000, instructor: 'Lead Analytics Team' },
+        { course_id: 'CRS-PBI-BEG', name: 'Power BI for Beginners', fee: 25000, instructor: 'Lead Analytics Team' }
+      ],
+      orders: [
+        { order_id: 101, student_id: 'STU-2026-001', course_id: 'CRS-EXC-BEG', amount: 15000, status: 'Completed', date: '2026-10-01' },
+        { order_id: 102, student_id: 'STU-2026-002', course_id: 'CRS-EXC-ADV', amount: 25000, status: 'Completed', date: '2026-10-02' },
+        { order_id: 103, student_id: 'STU-2026-003', course_id: 'CRS-SQL-BEG', amount: 20000, status: 'Completed', date: '2026-10-03' },
+        { order_id: 104, student_id: 'STU-2026-004', course_id: 'CRS-PBI-BEG', amount: 25000, status: 'Completed', date: '2026-10-04' },
+        { order_id: 105, student_id: 'STU-2026-005', course_id: 'CRS-DAT-SUITE', amount: 65000, status: 'Completed', date: '2026-10-05' },
+        { order_id: 106, student_id: 'STU-2026-006', course_id: 'CRS-EXC-BEG', amount: 15000, status: 'Pending', date: '2026-10-06' },
+        { order_id: 107, student_id: 'STU-2026-007', course_id: 'CRS-SQL-BEG', amount: 20000, status: 'Completed', date: '2026-10-07' },
+        { order_id: 108, student_id: 'STU-2026-008', course_id: 'CRS-DAT-SUITE', amount: 65000, status: 'Completed', date: '2026-10-08' }
+      ]
+    };
+
+    // 2. Curriculum: 6 Modules, 24 Lessons
+    const CURRICULUM = [
+      {
+        module: 'Module 1: Relational Databases & SQL Foundations',
+        tag: 'MODULE 1 • FOUNDATIONS',
+        lessons: [
+          {
+            id: 'L1',
+            title: '1. What is SQL & Relational Databases?',
+            concept: 'SQL (Structured Query Language) is the universal language used to communicate with Relational Database Management Systems (RDBMS) like PostgreSQL, MySQL, SQL Server, and SQLite.',
+            syntax: 'SELECT column1, column2 FROM table_name;',
+            sampleSql: 'SELECT * FROM courses;',
+            quiz: {
+              q: 'What does RDBMS stand for?',
+              options: [
+                'Relational Database Management System',
+                'Random Data Binary Machine System',
+                'Row Dynamic Base Memory Storage',
+                'Rapid Database Migration Software'
+              ],
+              correctIndex: 0,
+              explanation: 'RDBMS stands for Relational Database Management System, which stores data in structured tables linked by relationships.'
+            }
+          },
+          {
+            id: 'L2',
+            title: '2. Database Schemas, Tables & Primary Keys',
+            concept: 'A database table contains rows (records) and columns (attributes). Every record must have a unique Primary Key (PK) to ensure data integrity.',
+            syntax: 'CREATE TABLE students (\n  id VARCHAR(20) PRIMARY KEY,\n  name TEXT NOT NULL,\n  email TEXT UNIQUE\n);',
+            sampleSql: 'SELECT id, name, email FROM students LIMIT 5;',
+            quiz: {
+              q: 'What is the main role of a Primary Key in SQL?',
+              options: [
+                'To encrypt user passwords',
+                'To uniquely identify each record in a table',
+                'To speed up website loading speed',
+                'To format dates into year-month-day'
+              ],
+              correctIndex: 1,
+              explanation: 'A Primary Key uniquely identifies every record in a table without duplicates.'
+            }
+          },
+          {
+            id: 'L3',
+            title: '3. SQL Data Types (TEXT, INTEGER, BOOLEAN, DATE)',
+            concept: 'Each column in an SQL table has a strict data type ensuring consistency. Numeric calculations require INTEGER or NUMERIC, dates use DATE/TIMESTAMP.',
+            syntax: 'SELECT name, fee FROM courses WHERE fee >= 20000;',
+            sampleSql: 'SELECT name, fee FROM courses WHERE fee >= 20000;',
+            quiz: {
+              q: 'Which data type is best suited for monetary transaction amounts?',
+              options: ['TEXT', 'NUMERIC / DECIMAL', 'BOOLEAN', 'BLOB'],
+              correctIndex: 1,
+              explanation: 'NUMERIC or DECIMAL preserves exact decimal precision without floating point rounding errors.'
+            }
+          },
+          {
+            id: 'L4',
+            title: '4. Understanding Foreign Keys & Entity Relationships',
+            concept: 'Foreign Keys create links between tables (e.g. orders.student_id references students.id), allowing us to reconstruct complete business events without duplicating data.',
+            syntax: 'FOREIGN KEY (student_id) REFERENCES students(id)',
+            sampleSql: 'SELECT order_id, student_id, amount FROM orders;',
+            quiz: {
+              q: 'What relationship connects students to their orders?',
+              options: ['One-to-One', 'One-to-Many', 'Many-to-None', 'Static Array'],
+              correctIndex: 1,
+              explanation: 'One student can place many orders over time, representing a classic One-to-Many relationship.'
+            }
+          }
+        ]
+      },
+      {
+        module: 'Module 2: Fundamental Querying (SELECT & WHERE)',
+        tag: 'MODULE 2 • QUERYING',
+        lessons: [
+          {
+            id: 'L5',
+            title: '5. The SELECT Statement & Column Aliases',
+            concept: 'The SELECT clause determines which columns are retrieved. Use AS to rename columns cleanly for reports.',
+            syntax: 'SELECT name AS student_name, course AS enrolled_course FROM students;',
+            sampleSql: 'SELECT name AS student_name, course AS enrolled_course FROM students LIMIT 5;',
+            quiz: {
+              q: 'What keyword gives a temporary display name to a column?',
+              options: ['RENAME', 'AS', 'NEW', 'LABEL'],
+              correctIndex: 1,
+              explanation: 'The AS keyword assigns an alias to a column or table expression.'
+            }
+          },
+          {
+            id: 'L6',
+            title: '6. Filtering Records with WHERE & Comparison Operators',
+            concept: 'The WHERE clause restricts query results to records matching specific criteria using =, !=, >, <, >=, <=.',
+            syntax: 'SELECT * FROM orders WHERE amount > 20000;',
+            sampleSql: 'SELECT * FROM orders WHERE amount > 20000;',
+            quiz: {
+              q: 'Where does the WHERE clause appear in a basic SELECT statement?',
+              options: ['Before SELECT', 'After FROM', 'At the very end after LIMIT', 'Inside parentheses only'],
+              correctIndex: 1,
+              explanation: 'In SQL execution order and syntax, WHERE comes immediately after FROM.'
+            }
+          },
+          {
+            id: 'L7',
+            title: '7. Logical Operators (AND, OR, NOT, IN, BETWEEN)',
+            concept: 'Combine multiple conditions using AND (both true) and OR (either true). Use IN for value lists and BETWEEN for ranges.',
+            syntax: 'SELECT * FROM orders WHERE status = "Completed" AND amount BETWEEN 15000 AND 30000;',
+            sampleSql: 'SELECT * FROM orders WHERE status = "Completed" AND amount BETWEEN 15000 AND 30000;',
+            quiz: {
+              q: 'Which operator checks if a column value matches any item in a list?',
+              options: ['LIKE', 'IN', 'WITHIN', 'EXISTS'],
+              correctIndex: 1,
+              explanation: 'IN allows you to specify multiple values in a WHERE clause shorthand.'
+            }
+          },
+          {
+            id: 'L8',
+            title: '8. Pattern Matching with LIKE & Wildcards',
+            concept: 'Use LIKE with % (matches any number of characters) or _ (matches single character) for text searches.',
+            syntax: 'SELECT * FROM students WHERE email LIKE "%@gmail.com";',
+            sampleSql: 'SELECT * FROM students WHERE email LIKE "%@gmail.com";',
+            quiz: {
+              q: 'What wildcard character represents zero, one, or multiple characters in SQL LIKE?',
+              options: ['*', '?', '%', '#'],
+              correctIndex: 2,
+              explanation: 'In SQL standard LIKE clauses, % represents zero or more characters.'
+            }
+          }
+        ]
+      },
+      {
+        module: 'Module 3: Aggregations & Group Operations',
+        tag: 'MODULE 3 • AGGREGATIONS',
+        lessons: [
+          {
+            id: 'L9',
+            title: '9. Aggregate Functions (COUNT, SUM, AVG, MIN, MAX)',
+            concept: 'Aggregates summarize thousands of rows into executive metrics.',
+            syntax: 'SELECT COUNT(*) AS total_orders, SUM(amount) AS total_revenue FROM orders;',
+            sampleSql: 'SELECT COUNT(*) AS total_orders, SUM(amount) AS total_revenue, AVG(amount) AS avg_order FROM orders;',
+            quiz: {
+              q: 'What does COUNT(*) calculate?',
+              options: ['Total sum of numerical values', 'Total number of rows in the table', 'Average row length', 'Distinct columns'],
+              correctIndex: 1,
+              explanation: 'COUNT(*) calculates the total number of rows matching the query criteria.'
+            }
+          },
+          {
+            id: 'L10',
+            title: '10. The GROUP BY Clause for Dimensional Metrics',
+            concept: 'GROUP BY collapses rows with identical values into summary groups for categorical analytics.',
+            syntax: 'SELECT course, COUNT(*) AS student_count FROM students GROUP BY course;',
+            sampleSql: 'SELECT course, COUNT(*) AS student_count FROM students GROUP BY course;',
+            quiz: {
+              q: 'Every unaggregated column in the SELECT clause must be included in which clause?',
+              options: ['ORDER BY', 'GROUP BY', 'HAVING', 'WHERE'],
+              correctIndex: 1,
+              explanation: 'Standard SQL requires all non-aggregated columns in the SELECT list to appear in the GROUP BY clause.'
+            }
+          },
+          {
+            id: 'L11',
+            title: '11. Filtering Aggregates with HAVING vs WHERE',
+            concept: 'WHERE filters individual raw rows before grouping. HAVING filters aggregated group metrics after GROUP BY.',
+            syntax: 'SELECT course, COUNT(*) AS total FROM students GROUP BY course HAVING COUNT(*) > 1;',
+            sampleSql: 'SELECT course, COUNT(*) AS total FROM students GROUP BY course HAVING COUNT(*) > 1;',
+            quiz: {
+              q: 'Can you use aggregate functions like SUM() or COUNT() inside a WHERE clause?',
+              options: ['Yes, always', 'No, aggregates must be filtered using HAVING', 'Only in MySQL', 'Only with primary keys'],
+              correctIndex: 1,
+              explanation: 'WHERE executes before aggregates are calculated, so aggregate conditions must be placed in HAVING.'
+            }
+          },
+          {
+            id: 'L12',
+            title: '12. Sorting Results with ORDER BY (ASC / DESC)',
+            concept: 'Control presentation order using ORDER BY. Default is ascending (ASC); use DESC for highest first.',
+            syntax: 'SELECT name, fee FROM courses ORDER BY fee DESC;',
+            sampleSql: 'SELECT name, fee FROM courses ORDER BY fee DESC;',
+            quiz: {
+              q: 'Which keyword sorts numbers from largest to smallest?',
+              options: ['ASC', 'DESC', 'TOP', 'MAX'],
+              correctIndex: 1,
+              explanation: 'DESC (descending) orders numbers from largest to smallest.'
+            }
+          }
+        ]
+      },
+      {
+        module: 'Module 4: Relational JOINs & Multi-Table Analytics',
+        tag: 'MODULE 4 • RELATIONAL JOINS',
+        lessons: [
+          {
+            id: 'L13',
+            title: '13. Introduction to Relational JOINs & Keys',
+            concept: 'JOINs combine columns from two or more tables based on a shared relationship (Primary Key = Foreign Key).',
+            syntax: 'SELECT o.order_id, s.name, o.amount\nFROM orders o\nJOIN students s ON o.student_id = s.id;',
+            sampleSql: 'SELECT o.order_id, s.name, o.amount, o.status FROM orders o JOIN students s ON o.student_id = s.id;',
+            quiz: {
+              q: 'What is the ON clause used for in a JOIN statement?',
+              options: ['To specify where the database is located', 'To define matching columns between two tables', 'To start query execution', 'To rename table columns'],
+              correctIndex: 1,
+              explanation: 'The ON clause specifies the condition that links records between the joined tables.'
+            }
+          },
+          {
+            id: 'L14',
+            title: '14. INNER JOIN vs LEFT OUTER JOIN',
+            concept: 'INNER JOIN returns only matching rows from both tables. LEFT JOIN returns all rows from the left table, with NULLs if no match exists.',
+            syntax: 'SELECT s.name, o.order_id, o.amount\nFROM students s\nLEFT JOIN orders o ON s.id = o.student_id;',
+            sampleSql: 'SELECT s.name, o.order_id, o.amount FROM students s LEFT JOIN orders o ON s.id = o.student_id;',
+            quiz: {
+              q: 'If a student has never placed an order, what does a LEFT JOIN produce for order columns?',
+              options: ['Zero (0)', 'NULL', 'Error', 'The row is omitted'],
+              correctIndex: 1,
+              explanation: 'A LEFT JOIN keeps the student record and fills unmatched order columns with NULL.'
+            }
+          },
+          {
+            id: 'L15',
+            title: '15. Multi-Table JOINs: Students + Orders + Courses',
+            concept: 'Connect 3 or more tables in a single query to produce comprehensive analytical reporting views.',
+            syntax: 'SELECT s.name, c.name AS course_name, o.amount, o.status\nFROM orders o\nJOIN students s ON o.student_id = s.id\nJOIN courses c ON o.course_id = c.course_id;',
+            sampleSql: 'SELECT s.name, c.name AS course_name, o.amount, o.status FROM orders o JOIN students s ON o.student_id = s.id JOIN courses c ON o.course_id = c.course_id;',
+            quiz: {
+              q: 'How many JOIN statements are required to connect 3 tables together?',
+              options: ['1', '2', '3', '4'],
+              correctIndex: 1,
+              explanation: 'Connecting N tables requires N-1 JOIN clauses; connecting 3 tables requires 2 JOINs.'
+            }
+          },
+          {
+            id: 'L16',
+            title: '16. Resolving NULLs with COALESCE & IFNULL',
+            concept: 'Unmatched records produce NULL. Use COALESCE(column, default_value) to provide clean fallbacks like 0 or "N/A".',
+            syntax: 'SELECT s.name, COALESCE(SUM(o.amount), 0) AS total_spent\nFROM students s\nLEFT JOIN orders o ON s.id = o.student_id\nGROUP BY s.name;',
+            sampleSql: 'SELECT s.name, COALESCE(SUM(o.amount), 0) AS total_spent FROM students s LEFT JOIN orders o ON s.id = o.student_id GROUP BY s.name;',
+            quiz: {
+              q: 'What does COALESCE(amount, 0) return if amount is NULL?',
+              options: ['NULL', '0', 'Error', 'Empty string'],
+              correctIndex: 1,
+              explanation: 'COALESCE returns the first non-null argument in its list, so it outputs 0.'
+            }
+          }
+        ]
+      },
+      {
+        module: 'Module 5: Intermediate Functions & Subqueries',
+        tag: 'MODULE 5 • INTERMEDIATE SQL',
+        lessons: [
+          {
+            id: 'L17',
+            title: '17. Conditional Logic with CASE WHEN Statements',
+            concept: 'Implement if-then business rules directly in SQL queries to bucket or label records dynamically.',
+            syntax: 'SELECT name,\n  CASE\n    WHEN fee >= 25000 THEN "Premium Tier"\n    ELSE "Standard Tier"\n  END AS tier\nFROM courses;',
+            sampleSql: 'SELECT name, fee, CASE WHEN fee >= 25000 THEN "Premium Tier" ELSE "Standard Tier" END AS tier FROM courses;',
+            quiz: {
+              q: 'What keyword closes every CASE statement in SQL?',
+              options: ['STOP', 'END', 'FINISH', 'CLOSE'],
+              correctIndex: 1,
+              explanation: 'Every CASE statement must conclude with the END keyword.'
+            }
+          },
+          {
+            id: 'L18',
+            title: '18. String Functions (CONCAT, UPPER, LOWER, SUBSTR)',
+            concept: 'Clean and format messy string data directly during query execution.',
+            syntax: 'SELECT UPPER(name) AS loud_name, LOWER(email) AS clean_email FROM students;',
+            sampleSql: 'SELECT UPPER(name) AS loud_name, LOWER(email) AS clean_email FROM students;',
+            quiz: {
+              q: 'Which function transforms text into lowercase letters?',
+              options: ['DOWNCASE()', 'LOWER()', 'TOLOWER()', 'SMALL()'],
+              correctIndex: 1,
+              explanation: 'Standard SQL uses LOWER() to convert characters to lowercase.'
+            }
+          },
+          {
+            id: 'L19',
+            title: '19. Subqueries in WHERE & FROM Clauses',
+            concept: 'A subquery (nested query) passes results into an outer query, solving multi-step questions like "students who paid above average".',
+            syntax: 'SELECT * FROM orders\nWHERE amount > (SELECT AVG(amount) FROM orders);',
+            sampleSql: 'SELECT * FROM orders WHERE amount > (SELECT AVG(amount) FROM orders);',
+            quiz: {
+              q: 'A subquery must always be enclosed in what?',
+              options: ['Square brackets []', 'Parentheses ()', 'Curly braces {}', 'Quotation marks ""'],
+              correctIndex: 1,
+              explanation: 'Subqueries must always be wrapped in parentheses ().'
+            }
+          },
+          {
+            id: 'L20',
+            title: '20. Common Table Expressions (CTEs with WITH)',
+            concept: 'CTEs make complex SQL readable and modular by defining temporary named result sets at the start of a query.',
+            syntax: 'WITH StudentTotals AS (\n  SELECT student_id, SUM(amount) AS total\n  FROM orders GROUP BY student_id\n)\nSELECT * FROM StudentTotals WHERE total > 20000;',
+            sampleSql: 'SELECT student_id, SUM(amount) AS total FROM orders GROUP BY student_id HAVING SUM(amount) > 20000;',
+            quiz: {
+              q: 'What keyword defines a Common Table Expression?',
+              options: ['LET', 'WITH', 'DEFINE', 'CTE'],
+              correctIndex: 1,
+              explanation: 'The WITH keyword initiates a Common Table Expression.'
+            }
+          }
+        ]
+      },
+      {
+        module: 'Module 6: Analytics Capstone & Production SQL',
+        tag: 'MODULE 6 • ANALYTICS CAPSTONE',
+        lessons: [
+          {
+            id: 'L21',
+            title: '21. Customer Cohort & Retention Analysis',
+            concept: 'Track student registration cohorts over time to calculate monthly enrollment velocity and course demand.',
+            syntax: 'SELECT cohort, course, COUNT(*) AS total_students\nFROM students\nGROUP BY cohort, course\nORDER BY cohort, total_students DESC;',
+            sampleSql: 'SELECT cohort, course, COUNT(*) AS total_students FROM students GROUP BY cohort, course ORDER BY cohort, total_students DESC;',
+            quiz: {
+              q: 'What is a cohort in analytics?',
+              options: ['A database error code', 'A group of users who share a common characteristic or sign-up period', 'An encrypted password hash', 'A column data type'],
+              correctIndex: 1,
+              explanation: 'A cohort represents users grouped by a shared time period or characteristic.'
+            }
+          },
+          {
+            id: 'L22',
+            title: '22. Revenue Run-Rate & Payment Audit Queries',
+            concept: 'Audit paid vs pending transactions to calculate realized cash flow and identify unpaid accounts receivable.',
+            syntax: 'SELECT status, COUNT(*) AS order_count, SUM(amount) AS total_revenue\nFROM orders\nGROUP BY status;',
+            sampleSql: 'SELECT status, COUNT(*) AS order_count, SUM(amount) AS total_revenue FROM orders GROUP BY status;',
+            quiz: {
+              q: 'Which function sums monetary values by payment status?',
+              options: ['COUNT()', 'SUM()', 'MAX()', 'MEDIAN()'],
+              correctIndex: 1,
+              explanation: 'SUM() computes the mathematical total of numerical order amounts.'
+            }
+          },
+          {
+            id: 'L23',
+            title: '23. Indexing & Query Performance Optimization',
+            concept: 'Indexes (B-Trees) dramatically speed up SELECT queries on large tables with millions of rows by avoiding full table scans.',
+            syntax: 'CREATE INDEX idx_orders_student ON orders(student_id);',
+            sampleSql: 'SELECT * FROM orders WHERE student_id = "STU-2026-001";',
+            quiz: {
+              q: 'What is the primary benefit of creating an index on a foreign key column?',
+              options: ['Reduces database storage', 'Accelerates search and JOIN query performance', 'Enforces automatic backups', 'Formats text strings'],
+              correctIndex: 1,
+              explanation: 'Indexes create fast search paths allowing database engines to locate records rapidly without scanning every row.'
+            }
+          },
+          {
+            id: 'L24',
+            title: '24. Capstone Portfolio Project: Executive Analytics Report',
+            concept: 'Combine all skills: Write an end-to-end analytical query summarizing student enrollment, course revenue, paid percentage, and instructor performance.',
+            syntax: 'SELECT \n  c.name AS course_name,\n  COUNT(o.order_id) AS total_enrollments,\n  SUM(CASE WHEN o.status = "Completed" THEN o.amount ELSE 0 END) AS collected_revenue\nFROM courses c\nLEFT JOIN orders o ON c.course_id = o.course_id\nGROUP BY c.name\nORDER BY collected_revenue DESC;',
+            sampleSql: 'SELECT c.name AS course_name, COUNT(o.order_id) AS total_enrollments, SUM(CASE WHEN o.status = "Completed" THEN o.amount ELSE 0 END) AS collected_revenue FROM courses c LEFT JOIN orders o ON c.course_id = o.course_id GROUP BY c.name ORDER BY collected_revenue DESC;',
+            quiz: {
+              q: 'Congratulations! What is the final step to earn your SQL Analytics Certificate?',
+              options: ['Submit your Capstone query in the project portal', 'Close browser', 'Delete database', 'Reset password'],
+              correctIndex: 0,
+              explanation: 'Submitting your completed Capstone report unlocks your verified credential in the Greach Academy verification registry.'
+            }
+          }
+        ]
+      }
+    ];
+
+    let currentModuleIdx = 0;
+    let currentLessonIdx = 0;
+    let completedLessons = JSON.parse(localStorage.getItem('greach_sql_completed_lessons') || '[]');
+
+    // 3. Initialize Classroom & Authentication
+    window.addEventListener('DOMContentLoaded', () => {
+      checkSqlAccessAuth();
+      renderCurriculumSidebar();
+      loadLesson(0, 0);
+      setupKeyboardShortcuts();
+      initPresenceHeartbeat();
+    });
+
+    function checkSqlAccessAuth() {
+      const session = JSON.parse(localStorage.getItem('greach_student_session') || 'null');
+      const isLead = (localStorage.getItem('greach_instructor_login') === 'true');
+      
+      const pillName = document.getElementById('studentDisplayName');
+
+      if (isLead) {
+        if (pillName) pillName.innerHTML = '👑 <strong>Lead Instructor</strong>';
+        return;
+      }
+
+      if (!session || !session.verified) {
+        showGateModal('Please enter your unique course access code to unlock the SQL Analytics Classroom.');
+        return;
+      }
+
+      // Check course permission
+      if (window.GreachDB && window.GreachDB.canAccessCourse) {
+        const access = window.GreachDB.canAccessCourse(session, 'sql_beginners');
+        if (!access.allowed) {
+          showGateModal(`Your current pass is registered for <strong>"${session.course}"</strong>.<br><br>This classroom is dedicated to <strong>SQL for Beginners &amp; Analytics</strong>. Please enter an SQL access code or switch to your enrolled classroom.`);
+          return;
+        }
+      }
+
+      if (pillName) {
+        pillName.innerHTML = `🎓 <strong>${session.name || 'Verified Student'}</strong>`;
+      }
+    }
+
+    function showGateModal(msg) {
+      const modal = document.getElementById('securityGateModal');
+      const text = document.getElementById('gateMessageText');
+      if (text) text.innerHTML = msg;
+      if (modal) modal.classList.add('active');
+    }
+
+    async function verifySqlCode() {
+      const inp = document.getElementById('gateSqlAccessCode');
+      const code = inp ? inp.value.trim() : '';
+      if (!code) {
+        alert('Please enter an access code.');
+        return;
+      }
+
+      if (window.GreachDB && window.GreachDB.verifyAccessCodeAny) {
+        const res = await window.GreachDB.verifyAccessCodeAny(code);
+        if (res && res.valid) {
+          const s = res.student || {};
+          const session = {
+            role: res.isInstructor ? 'instructor' : 'student',
+            id: s.id || 'STU-SQL-VERIFIED',
+            name: s.name || 'Verified Student',
+            email: s.email || '',
+            course: s.course || 'SQL for Beginners & Analytics',
+            courseKey: window.GreachDB.normalizeCourseKey(s.courseKey || s.course || 'sql_beginners'),
+            cohort: s.cohort || 'Batch 2: 2026 Masterclass',
+            verified: true,
+            authMethod: 'code',
+            accessCode: code
+          };
+          localStorage.setItem('greach_student_session', JSON.stringify(session));
+          document.getElementById('securityGateModal').classList.remove('active');
+          checkSqlAccessAuth();
+          alert(`Welcome, ${session.name}! Access granted for SQL Classroom.`);
+          return;
+        }
+      }
+
+      alert('Invalid or inactive access code for SQL. Please check your confirmation email or contact support.');
+    }
+
+    function initPresenceHeartbeat() {
+      const session = JSON.parse(localStorage.getItem('greach_student_session') || '{}');
+      if (window.GreachDB && window.GreachDB.updateStudentHeartbeat && session.id) {
+        window.GreachDB.updateStudentHeartbeat(session.id);
+        setInterval(() => {
+          if (window.GreachDB && window.GreachDB.updateStudentHeartbeat && session.id) {
+            window.GreachDB.updateStudentHeartbeat(session.id);
+          }
+        }, 45000);
+      }
+    }
+
+    // 4. Render Sidebar Curriculum
+    function renderCurriculumSidebar() {
+      const container = document.getElementById('curriculumModuleList');
+      if (!container) return;
+      container.innerHTML = '';
+
+      let totalLessons = 0;
+      CURRICULUM.forEach((m, mIdx) => {
+        const modGroup = document.createElement('div');
+        modGroup.className = 'module-group';
+
+        const modTitle = document.createElement('div');
+        modTitle.className = 'module-title';
+        modTitle.innerHTML = `<span>${m.module}</span> <i class="fas fa-chevron-down" style="font-size:0.75rem;"></i>`;
+        modGroup.appendChild(modTitle);
+
+        const list = document.createElement('ul');
+        list.className = 'lesson-list';
+
+        m.lessons.forEach((l, lIdx) => {
+          totalLessons++;
+          const li = document.createElement('li');
+          const isDone = completedLessons.includes(l.id);
+          li.className = `lesson-item ${isDone ? 'completed' : ''} ${mIdx === currentModuleIdx && lIdx === currentLessonIdx ? 'active' : ''}`;
+          li.id = `nav_lesson_${mIdx}_${lIdx}`;
+          li.innerHTML = `
+            <i class="fas ${isDone ? 'fa-check-circle' : 'fa-circle'} check-icon"></i>
+            <span>${l.title}</span>
+          `;
+          li.onclick = () => loadLesson(mIdx, lIdx);
+          list.appendChild(li);
+        });
+
+        modGroup.appendChild(list);
+        container.appendChild(modGroup);
+      });
+
+      updateProgressStats(totalLessons);
+    }
+
+    function updateProgressStats(total = 24) {
+      const count = completedLessons.length;
+      const pct = Math.round((count / total) * 100);
+      const txt = document.getElementById('progressPercent');
+      const bar = document.getElementById('progressBarFill');
+      if (txt) txt.textContent = `${pct}%`;
+      if (bar) bar.style.width = `${pct}%`;
+    }
+
+    // 5. Load Lesson View
+    function loadLesson(mIdx, lIdx) {
+      currentModuleIdx = mIdx;
+      currentLessonIdx = lIdx;
+      const mod = CURRICULUM[mIdx];
+      const lesson = mod.lessons[lIdx];
+
+      document.getElementById('lessonModuleTag').textContent = mod.tag;
+      document.getElementById('lessonTitle').textContent = lesson.title;
+
+      // Update sidebar active state
+      document.querySelectorAll('.lesson-item').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById(`nav_lesson_${mIdx}_${lIdx}`);
+      if (activeEl) activeEl.classList.add('active');
+
+      // Update Complete button label
+      const isDone = completedLessons.includes(lesson.id);
+      const btnComplete = document.getElementById('btnCompleteLesson');
+      if (btnComplete) {
+        btnComplete.innerHTML = isDone 
+          ? '<i class="fas fa-check-double"></i> Completed' 
+          : '<i class="fas fa-check"></i> Mark Complete';
+      }
+
+      // Render Lesson Narrative
+      const card = document.getElementById('lessonContentCard');
+      card.innerHTML = `
+        <h3><i class="fas fa-lightbulb" style="color:var(--accent-sql);"></i> Core Concept</h3>
+        <p>${lesson.concept}</p>
+
+        <h3 style="margin-top:1.5rem;"><i class="fas fa-code" style="color:var(--accent-sql);"></i> SQL Syntax Pattern</h3>
+        <div class="code-sample-box">
+          <button class="btn-load-studio" onclick="loadSnippetToEditor(\`${escapeForAttr(lesson.sampleSql)}\`)">
+            <i class="fas fa-play"></i> Try in Studio
+          </button>
+          <button class="btn-copy-code" onclick="copySnippet(\`${escapeForAttr(lesson.syntax)}\`)">
+            <i class="fas fa-copy"></i> Copy
+          </button>
+          <pre><code>${escapeHtml(lesson.syntax)}</code></pre>
+        </div>
+
+        <div class="quiz-box">
+          <div class="quiz-title">
+            <i class="fas fa-question-circle"></i> Quick Knowledge Check
+          </div>
+          <p style="font-size:0.9rem; font-weight:700; color:#334155; margin-bottom:0.8rem;">
+            ${lesson.quiz.q}
+          </p>
+          <div id="quizOptionsContainer">
+            ${lesson.quiz.options.map((opt, i) => `
+              <div class="quiz-option" onclick="checkQuizAnswer(${i}, ${lesson.quiz.correctIndex}, \`${escapeForAttr(lesson.quiz.explanation)}\`, this)">
+                <i class="far fa-circle"></i>
+                <span>${opt}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="quiz-feedback" id="quizFeedbackBox"></div>
+        </div>
+      `;
+
+      // Preload sample SQL into studio
+      if (lesson.sampleSql) {
+        document.getElementById('sqlEditor').value = lesson.sampleSql;
+      }
+    }
+
+    function toggleCompleteCurrentLesson() {
+      const lesson = CURRICULUM[currentModuleIdx].lessons[currentLessonIdx];
+      const idx = completedLessons.indexOf(lesson.id);
+      if (idx > -1) {
+        completedLessons.splice(idx, 1);
+      } else {
+        completedLessons.push(lesson.id);
+      }
+      localStorage.setItem('greach_sql_completed_lessons', JSON.stringify(completedLessons));
+      renderCurriculumSidebar();
+      loadLesson(currentModuleIdx, currentLessonIdx);
+    }
+
+    function prevLesson() {
+      if (currentLessonIdx > 0) {
+        loadLesson(currentModuleIdx, currentLessonIdx - 1);
+      } else if (currentModuleIdx > 0) {
+        const prevM = currentModuleIdx - 1;
+        loadLesson(prevM, CURRICULUM[prevM].lessons.length - 1);
+      }
+    }
+
+    function nextLesson() {
+      const mod = CURRICULUM[currentModuleIdx];
+      if (currentLessonIdx < mod.lessons.length - 1) {
+        loadLesson(currentModuleIdx, currentLessonIdx + 1);
+      } else if (currentModuleIdx < CURRICULUM.length - 1) {
+        loadLesson(currentModuleIdx + 1, 0);
+      }
+    }
+
+    // 6. Interactive In-Browser SQL Engine
+    function executeCurrentQuery() {
+      const sql = document.getElementById('sqlEditor').value.trim();
+      const countEl = document.getElementById('resultsCount');
+      const timeEl = document.getElementById('resultsTime');
+      const wrapper = document.getElementById('resultsTableWrapper');
+      const start = performance.now();
+
+      if (!sql) {
+        alert('Please enter an SQL query.');
+        return;
+      }
+
+      try {
+        const cleanSql = sql.toLowerCase().replace(/;/g, '');
+        let rows = [];
+
+        // Simple mock relational parser
+        if (cleanSql.includes('from students') && cleanSql.includes('from courses') || cleanSql.includes('join')) {
+          // Join students and orders
+          rows = DB.orders.map(o => {
+            const stu = DB.students.find(s => s.id === o.student_id) || {};
+            const crs = DB.courses.find(c => c.course_id === o.course_id) || {};
+            return {
+              order_id: o.order_id,
+              student_name: stu.name || 'Unknown',
+              course_name: crs.name || o.course_id,
+              amount: '₦' + Number(o.amount).toLocaleString(),
+              status: o.status,
+              date: o.date
+            };
+          });
+        } else if (cleanSql.includes('from courses')) {
+          rows = DB.courses.map(c => ({
+            course_id: c.course_id,
+            course_name: c.name,
+            fee: '₦' + Number(c.fee).toLocaleString(),
+            instructor: c.instructor
+          }));
+        } else if (cleanSql.includes('from orders')) {
+          rows = DB.orders.map(o => ({
+            order_id: o.order_id,
+            student_id: o.student_id,
+            course_id: o.course_id,
+            amount: '₦' + Number(o.amount).toLocaleString(),
+            status: o.status,
+            date: o.date
+          }));
+        } else {
+          // Default to students
+          rows = DB.students.map(s => ({
+            id: s.id,
+            name: s.name,
+            email: s.email,
+            course: s.course,
+            cohort: s.cohort,
+            paid: s.paid ? 'TRUE' : 'FALSE'
+          }));
+        }
+
+        // Apply simple WHERE filter simulation
+        if (cleanSql.includes('where')) {
+          if (cleanSql.includes('paid')) {
+            rows = rows.filter(r => r.paid === 'TRUE' || (r.status && r.status === 'Completed'));
+          } else if (cleanSql.includes('excel')) {
+            rows = rows.filter(r => String(r.course || r.course_name).toLowerCase().includes('excel'));
+          } else if (cleanSql.includes('sql')) {
+            rows = rows.filter(r => String(r.course || r.course_name).toLowerCase().includes('sql'));
+          }
+        }
+
+        // Apply LIMIT simulation
+        if (cleanSql.includes('limit 5')) {
+          rows = rows.slice(0, 5);
+        } else if (cleanSql.includes('limit 10')) {
+          rows = rows.slice(0, 10);
+        }
+
+        const duration = Math.round(performance.now() - start);
+        countEl.textContent = `Returned ${rows.length} record(s)`;
+        timeEl.textContent = `Executed in ${duration}ms • In-Memory Mock Database`;
+
+        if (rows.length === 0) {
+          wrapper.innerHTML = '<div style="padding:1rem; color:#94a3b8; font-family:monospace;">Query returned 0 rows.</div>';
+          return;
+        }
+
+        const headers = Object.keys(rows[0]);
+        let html = '<table class="sql-results-table"><thead><tr>';
+        headers.forEach(h => html += `<th>${h}</th>`);
+        html += '</tr></thead><tbody>';
+
+        rows.forEach(r => {
+          html += '<tr>';
+          headers.forEach(h => html += `<td>${escapeHtml(String(r[h]))}</td>`);
+          html += '</tr>';
+        });
+        html += '</tbody></table>';
+
+        wrapper.innerHTML = html;
+      } catch (err) {
+        wrapper.innerHTML = `<div style="padding:1rem; color:#f87171; font-family:monospace;"><strong>SQL Error:</strong> ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function clearSqlEditor() {
+      document.getElementById('sqlEditor').value = '';
+      document.getElementById('sqlEditor').focus();
+    }
+
+    function insertKeyword(kw) {
+      const editor = document.getElementById('sqlEditor');
+      editor.value += ' ' + kw;
+      editor.focus();
+    }
+
+    function loadSnippetToEditor(code) {
+      document.getElementById('sqlEditor').value = code;
+      executeCurrentQuery();
+      window.scrollTo({ top: 180, behavior: 'smooth' });
+    }
+
+    function copySnippet(code) {
+      navigator.clipboard.writeText(code).then(() => {
+        alert('SQL Syntax copied to clipboard!');
+      });
+    }
+
+    function loadSelectedSampleQuery(key) {
+      const queries = {
+        q1: 'SELECT course, COUNT(*) AS student_count FROM students GROUP BY course ORDER BY student_count DESC;',
+        q2: 'SELECT student_id, SUM(amount) AS total_paid FROM orders WHERE status = "Completed" GROUP BY student_id ORDER BY total_paid DESC LIMIT 5;',
+        q3: 'SELECT * FROM orders WHERE status = "Completed" ORDER BY amount DESC;',
+        q4: 'SELECT o.order_id, s.name, o.amount, o.status FROM orders o JOIN students s ON o.student_id = s.id;',
+        q5: 'SELECT date, SUM(amount) AS daily_revenue FROM orders GROUP BY date ORDER BY date ASC;'
+      };
+      if (queries[key]) {
+        document.getElementById('sqlEditor').value = queries[key];
+        executeCurrentQuery();
+      }
+    }
+
+    // 7. Schema Browser
+    function switchSchemaTab(tab) {
+      document.querySelectorAll('.schema-tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      const box = document.getElementById('schemaViewerContent');
+
+      if (tab === 'students') {
+        box.innerHTML = `
+          <strong>Columns:</strong> 
+          <code>id (VARCHAR PK)</code>, <code>name (TEXT)</code>, <code>email (TEXT UNIQUE)</code>, <code>course (TEXT)</code>, <code>cohort (TEXT)</code>, <code>paid (BOOLEAN)</code>
+          <button onclick="loadTableToEditor('students')" style="margin-left:1rem; background:none; border:1px solid #cbd5e1; padding:0.2rem 0.5rem; border-radius:4px; cursor:pointer; font-size:0.75rem; color:#ea580c; font-weight:700;">
+            <i class="fas fa-play"></i> SELECT * FROM students
+          </button>
+        `;
+      } else if (tab === 'courses') {
+        box.innerHTML = `
+          <strong>Columns:</strong> 
+          <code>course_id (VARCHAR PK)</code>, <code>name (TEXT)</code>, <code>fee (NUMERIC)</code>, <code>instructor (TEXT)</code>
+          <button onclick="loadTableToEditor('courses')" style="margin-left:1rem; background:none; border:1px solid #cbd5e1; padding:0.2rem 0.5rem; border-radius:4px; cursor:pointer; font-size:0.75rem; color:#ea580c; font-weight:700;">
+            <i class="fas fa-play"></i> SELECT * FROM courses
+          </button>
+        `;
+      } else if (tab === 'orders') {
+        box.innerHTML = `
+          <strong>Columns:</strong> 
+          <code>order_id (INTEGER PK)</code>, <code>student_id (VARCHAR FK)</code>, <code>course_id (VARCHAR FK)</code>, <code>amount (NUMERIC)</code>, <code>status (TEXT)</code>, <code>date (DATE)</code>
+          <button onclick="loadTableToEditor('orders')" style="margin-left:1rem; background:none; border:1px solid #cbd5e1; padding:0.2rem 0.5rem; border-radius:4px; cursor:pointer; font-size:0.75rem; color:#ea580c; font-weight:700;">
+            <i class="fas fa-play"></i> SELECT * FROM orders
+          </button>
+        `;
+      }
+    }
+
+    function loadTableToEditor(tbl) {
+      document.getElementById('sqlEditor').value = `SELECT * FROM ${tbl} LIMIT 10;`;
+      executeCurrentQuery();
+    }
+
+    // 8. Quiz Logic
+    function checkQuizAnswer(selectedIdx, correctIdx, explanation, el) {
+      const container = el.parentElement;
+      const feedback = document.getElementById('quizFeedbackBox');
+      container.querySelectorAll('.quiz-option').forEach(opt => opt.classList.remove('correct', 'wrong'));
+
+      if (selectedIdx === correctIdx) {
+        el.classList.add('correct');
+        feedback.style.display = 'block';
+        feedback.style.color = '#15803d';
+        feedback.innerHTML = `<strong><i class="fas fa-check-circle"></i> Correct!</strong> ${explanation}`;
+      } else {
+        el.classList.add('wrong');
+        feedback.style.display = 'block';
+        feedback.style.color = '#991b1b';
+        feedback.innerHTML = `<strong><i class="fas fa-times-circle"></i> Try Again:</strong> ${explanation}`;
+      }
+    }
+
+    // 9. Live Studio, Screen Recorder & Downloads
+    let mediaRecorder = null;
+    let recordedChunks = [];
+
+    function openLiveStudio() {
+      document.getElementById('liveStudioModal').classList.add('active');
+    }
+    function closeLiveStudio() {
+      document.getElementById('liveStudioModal').classList.remove('active');
+    }
+
+    async function startRecording() {
+      try {
+        const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+        recordedChunks = [];
+        mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+
+        mediaRecorder.ondataavailable = e => {
+          if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: 'video/webm' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Greach_SQL_Class_Recording_${new Date().toISOString().slice(0,10)}.webm`;
+          a.click();
+          document.getElementById('recorderStatusPill').textContent = 'Saved to Downloads';
+          document.getElementById('recorderStatusPill').style.background = '#065f46';
+          document.getElementById('recorderStatusPill').style.color = '#6ee7b7';
+        };
+
+        mediaRecorder.start();
+        document.getElementById('btnStartRecord').disabled = true;
+        document.getElementById('btnStartRecord').style.opacity = '0.5';
+        document.getElementById('btnStopRecord').disabled = false;
+        document.getElementById('btnStopRecord').style.background = '#22c55e';
+        document.getElementById('btnStopRecord').style.color = 'white';
+        document.getElementById('btnStopRecord').style.cursor = 'pointer';
+        document.getElementById('recorderStatusPill').textContent = '🔴 Recording Live...';
+        document.getElementById('recorderStatusPill').style.background = '#991b1b';
+        document.getElementById('recorderStatusPill').style.color = '#fee2e2';
+      } catch (err) {
+        alert('Screen recording permission was denied or not supported in this browser.');
+      }
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        document.getElementById('btnStartRecord').disabled = false;
+        document.getElementById('btnStartRecord').style.opacity = '1';
+        document.getElementById('btnStopRecord').disabled = true;
+        document.getElementById('btnStopRecord').style.background = '#475569';
+        document.getElementById('btnStopRecord').style.color = '#94a3b8';
+        document.getElementById('btnStopRecord').style.cursor = 'not-allowed';
+      }
+    }
+
+    function embedLiveStream() {
+      const url = document.getElementById('liveStreamUrlInput').value.trim();
+      const container = document.getElementById('liveStreamIframeContainer');
+      if (!url) return;
+      let embedUrl = url;
+      if (url.includes('youtube.com/watch?v=')) {
+        embedUrl = url.replace('watch?v=', 'embed/');
+      } else if (url.includes('youtu.be/')) {
+        embedUrl = url.replace('youtu.be/', 'youtube.com/embed/');
+      }
+      container.style.display = 'block';
+      container.innerHTML = `<iframe width="100%" height="320" src="${embedUrl}" frameborder="0" allowfullscreen style="border-radius:8px;"></iframe>`;
+    }
+
+    function openDownloadsModal() {
+      document.getElementById('downloadsModal').classList.add('active');
+    }
+    function closeDownloadsModal() {
+      document.getElementById('downloadsModal').classList.remove('active');
+    }
+
+    function downloadSqlSampleFile() {
+      const content = `-- Greach Impact Academy: Sample SQL Relational Schema
+CREATE TABLE students (
+  id VARCHAR(20) PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  course TEXT NOT NULL,
+  cohort TEXT NOT NULL
+);
+
+CREATE TABLE courses (
+  course_id VARCHAR(20) PRIMARY KEY,
+  name TEXT NOT NULL,
+  fee NUMERIC NOT NULL,
+  instructor TEXT
+);
+
+CREATE TABLE orders (
+  order_id INTEGER PRIMARY KEY,
+  student_id VARCHAR(20) REFERENCES students(id),
+  course_id VARCHAR(20) REFERENCES courses(course_id),
+  amount NUMERIC NOT NULL,
+  status TEXT NOT NULL,
+  date DATE NOT NULL
+);
+`;
+      const blob = new Blob([content], { type: 'text/sql' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'Greach_Impact_Sample_Database.sql';
+      a.click();
+    }
+
+    // 10. Switcher & Utilities
+    function toggleSwitcher(e) {
+      e.stopPropagation();
+      document.getElementById('switcherMenu').classList.toggle('active');
+    }
+    window.addEventListener('click', () => {
+      const m = document.getElementById('switcherMenu');
+      if (m) m.classList.remove('active');
+    });
+
+    function setupKeyboardShortcuts() {
+      document.addEventListener('keydown', e => {
+        if (e.ctrlKey && e.key === 'Enter') {
+          e.preventDefault();
+          executeCurrentQuery();
+        }
+      });
+    }
+
+    function logoutClassroom() {
+      if (confirm('Log out of SQL Classroom?')) {
+        localStorage.removeItem('greach_student_session');
+        window.location.href = 'index.html';
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function escapeForAttr(text) {
+      if (!text) return '';
+      return String(text).replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+    }
+  </script>
+</body>
+</html>

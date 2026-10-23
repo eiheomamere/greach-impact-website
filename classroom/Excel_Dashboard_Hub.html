@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Executive Excel Dashboard Studio | Greach Impact Academy</title>
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script src="js/greach-sync.js"></script>
+  <script src="js/greach-db.js"></script>
+
+  <style>
+    :root {
+      --primary: #0a0a5e;
+      --accent-dash: #4f46e5;
+      --accent-dash-dark: #3730a3;
+      --accent-dash-light: #e0e7ff;
+      --excel-green: #107c41;
+      --dark: #0f172a;
+      --gray-bg: #f8fafc;
+      --border: #e2e8f0;
+      --text: #334155;
+      --text-muted: #64748b;
+      --success: #10b981;
+      --sidebar-width: 340px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--gray-bg);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    header.top-nav {
+      background: #07073b;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--accent-dash);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .brand-logo {
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .brand-logo i { color: #818cf8; }
+    .course-badge {
+      background: rgba(79, 70, 229, 0.25);
+      border: 1px solid #818cf8;
+      color: #c7d2fe;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.65rem;
+      border-radius: 20px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    /* Hub Switcher Dropdown */
+    .classroom-switcher { position: relative; }
+    .switcher-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .switcher-btn:hover { background: rgba(255,255,255,0.15); }
+    .switcher-menu {
+      position: absolute;
+      top: 110%;
+      left: 0;
+      background: white;
+      color: var(--dark);
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+      width: 250px;
+      padding: 0.5rem;
+      display: none;
+      z-index: 1000;
+    }
+    .switcher-menu.active { display: block; }
+    .switcher-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem 0.8rem;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-radius: 6px;
+      transition: background 0.15s ease;
+    }
+    .switcher-item:hover { background: #f1f5f9; color: var(--primary); }
+    .switcher-item.current {
+      background: var(--accent-dash-light);
+      color: var(--accent-dash-dark);
+      font-weight: 700;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .user-pill {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 0.35rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-live-studio {
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      color: white;
+      border: none;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: transform 0.15s ease;
+    }
+    .btn-live-studio:hover { transform: translateY(-1px); }
+
+    /* Main Layout */
+    .classroom-body {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 54px);
+      overflow: hidden;
+    }
+
+    /* Sidebar Curriculum */
+    aside.curriculum-sidebar {
+      width: var(--sidebar-width);
+      background: white;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .sidebar-header {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      background: #fafaf9;
+    }
+    .progress-bar-container {
+      margin-top: 0.5rem;
+      background: #e2e8f0;
+      height: 7px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #4f46e5, #818cf8);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .module-group { border-bottom: 1px solid var(--border); }
+    .module-title {
+      padding: 0.85rem 1.2rem;
+      background: #f8fafc;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .module-title:hover { background: #f1f5f9; }
+    .lesson-list { list-style: none; }
+    .lesson-item {
+      padding: 0.75rem 1.2rem;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #334155;
+      transition: all 0.15s ease;
+    }
+    .lesson-item:hover {
+      background: #eef2ff;
+      color: #3730a3;
+    }
+    .lesson-item.active {
+      background: var(--accent-dash-light);
+      color: #312e81;
+      font-weight: 700;
+      border-left: 4px solid var(--accent-dash);
+    }
+    .lesson-item .check-icon {
+      color: #cbd5e1;
+      font-size: 0.8rem;
+    }
+    .lesson-item.completed .check-icon { color: var(--success); }
+
+    /* Main Workspace */
+    main.workspace-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      background: #f8fafc;
+    }
+
+    /* Lesson Viewer Header */
+    .lesson-header {
+      background: white;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .lesson-tag {
+      font-size: 0.75rem;
+      color: var(--accent-dash);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .lesson-headline {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--dark);
+      margin-top: 0.2rem;
+    }
+    .lesson-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn-nav-step {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.15s ease;
+    }
+    .btn-nav-step:hover { background: #f1f5f9; }
+    .btn-nav-step.primary {
+      background: var(--accent-dash);
+      color: white;
+      border-color: var(--accent-dash);
+    }
+    .btn-nav-step.primary:hover { background: var(--accent-dash-dark); }
+
+    .content-container {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Interactive Executive Dashboard Simulator */
+    .dashboard-simulator-card {
+      background: #ffffff;
+      border-radius: 1.2rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    .dash-header-bar {
+      background: #0f172a;
+      color: white;
+      padding: 1rem 1.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--accent-dash);
+    }
+    .dash-title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .dash-title-group i { color: #818cf8; font-size: 1.2rem; }
+
+    /* Dynamic Formula Headline */
+    .formula-bar-display {
+      background: #f1f5f9;
+      padding: 0.6rem 1.4rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+    .fx-tag {
+      background: #cbd5e1;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 700;
+      color: #334155;
+    }
+    .fx-content {
+      color: #0284c7;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Excel Slicer Ribbon */
+    .slicer-ribbon {
+      background: #f8fafc;
+      padding: 0.85rem 1.4rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .excel-slicer-box {
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: white;
+      padding: 0.5rem 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .excel-slicer-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #64748b;
+      text-transform: uppercase;
+    }
+    .slicer-pill {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .slicer-pill:hover { border-color: var(--accent-dash); }
+    .slicer-pill.active {
+      background: var(--accent-dash);
+      color: white;
+      border-color: var(--accent-dash-dark);
+    }
+
+    /* KPI Cards */
+    .dash-kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      padding: 1.4rem;
+    }
+    .dash-kpi {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.2rem;
+      border-top: 4px solid var(--accent-dash);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .dash-kpi-sub {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+    }
+    .dash-kpi-val {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--dark);
+      margin: 0.4rem 0 0.2rem;
+    }
+    .dash-kpi-note {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* Visual Chart Container */
+    .dash-chart-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.2rem;
+      padding: 0 1.4rem 1.4rem;
+    }
+    @media (max-width: 850px) {
+      .dash-chart-grid { grid-template-columns: 1fr; }
+    }
+    .dash-chart-panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.2rem;
+    }
+    .chart-header {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Lesson Card Narrative */
+    .lesson-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+    .lesson-card h3 {
+      color: var(--primary);
+      font-size: 1.25rem;
+      margin-bottom: 0.8rem;
+    }
+    .lesson-card p {
+      margin-bottom: 1rem;
+      color: #475569;
+    }
+
+    /* Quiz Box */
+    .quiz-box {
+      background: #eef2ff;
+      border: 1.5px solid #c7d2fe;
+      border-radius: 12px;
+      padding: 1.4rem;
+      margin-top: 1.5rem;
+    }
+    .quiz-title {
+      font-weight: 800;
+      color: #3730a3;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.8rem;
+    }
+    .quiz-option {
+      background: white;
+      border: 1px solid #c7d2fe;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .quiz-option:hover { background: #e0e7ff; }
+    .quiz-option.correct {
+      background: #dcfce7;
+      border-color: #22c55e;
+      color: #15803d;
+      font-weight: 700;
+    }
+    .quiz-option.wrong {
+      background: #fee2e2;
+      border-color: #ef4444;
+      color: #991b1b;
+    }
+    .quiz-feedback {
+      margin-top: 0.6rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: none;
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+      background: white;
+      border-radius: 1.2rem;
+      width: 100%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2rem;
+      position: relative;
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.2rem;
+      background: #f1f5f9;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gate-modal-card {
+      background: white;
+      border-radius: 1.5rem;
+      max-width: 500px;
+      width: 100%;
+      padding: 2.2rem;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+    }
+
+    @media (max-width: 900px) {
+      .curriculum-sidebar { display: none; }
+      .classroom-body { height: auto; }
+      .content-container { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="top-nav">
+    <div class="brand-group">
+      <a href="index.html" class="brand-logo">
+        <i class="fas fa-chart-line"></i> Greach Impact Academy
+      </a>
+      <span class="course-badge"><i class="fas fa-columns"></i> CRS-EXC-DASH • Dashboard Studio</span>
+
+      <!-- Classroom Switcher -->
+      <div class="classroom-switcher">
+        <button class="switcher-btn" onclick="toggleSwitcher(event)">
+          <i class="fas fa-th-large"></i> Switch Classroom <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i>
+        </button>
+        <div class="switcher-menu" id="switcherMenu">
+          <div style="font-size:0.72rem; font-weight:800; color:#94a3b8; text-transform:uppercase; padding:0.4rem 0.8rem;">Greach Classrooms</div>
+          <a href="Excel_Master_Course_Hub.html" class="switcher-item">
+            <i class="fas fa-file-excel" style="color:#107c41;"></i> Excel Masterclass (64 Lessons)
+          </a>
+          <a href="Excel_Dashboard_Hub.html" class="switcher-item current">
+            <i class="fas fa-chart-line" style="color:#4f46e5;"></i> Executive Dashboard Studio (Active)
+          </a>
+          <a href="SQL_Master_Course_Hub.html" class="switcher-item">
+            <i class="fas fa-database" style="color:#ea580c;"></i> SQL Analytics Studio
+          </a>
+          <a href="PowerBI_Master_Course_Hub.html" class="switcher-item">
+            <i class="fas fa-chart-pie" style="color:#f59e0b;"></i> Power BI Business Intelligence
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <div class="user-pill" id="studentHeaderPill">
+        <i class="fas fa-user-graduate" style="color:#818cf8;"></i>
+        <span id="studentDisplayName">Loading...</span>
+      </div>
+      <button class="btn-live-studio" onclick="openLiveStudio()">
+        <i class="fas fa-satellite-dish"></i> Live Studio &amp; Recorder
+      </button>
+      <button class="switcher-btn" onclick="openDownloadsModal()">
+        <i class="fas fa-download"></i> Templates (.xlsx)
+      </button>
+      <button onclick="logoutClassroom()" title="Logout" style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:0.4rem 0.7rem; border-radius:8px; cursor:pointer;">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Body Layout -->
+  <div class="classroom-body">
+
+    <!-- Sidebar: 4 Modules & 16 Lessons -->
+    <aside class="curriculum-sidebar">
+      <div class="sidebar-header">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.8rem; font-weight:800; color:#0f172a; text-transform:uppercase;">Dashboard Curriculum</span>
+          <span id="progressPercent" style="font-size:0.8rem; font-weight:800; color:var(--accent-dash);">0%</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
+      </div>
+
+      <div id="curriculumModuleList">
+        <!-- Injected via JavaScript -->
+      </div>
+    </aside>
+
+    <!-- Main Workspace Area -->
+    <main class="workspace-area">
+
+      <!-- Lesson Header -->
+      <div class="lesson-header">
+        <div>
+          <div class="lesson-tag" id="lessonModuleTag">MODULE 1 • UI/UX ARCHITECTURE</div>
+          <h1 class="lesson-headline" id="lessonTitle">Loading Dashboard Studio...</h1>
+        </div>
+        <div class="lesson-actions">
+          <button class="btn-nav-step" id="btnPrevLesson" onclick="prevLesson()">
+            <i class="fas fa-arrow-left"></i> Previous
+          </button>
+          <button class="btn-nav-step primary" id="btnCompleteLesson" onclick="toggleCompleteCurrentLesson()">
+            <i class="fas fa-check"></i> Mark Complete
+          </button>
+          <button class="btn-nav-step" id="btnNextLesson" onclick="nextLesson()">
+            Next <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="content-container">
+
+        <!-- Interactive Executive Dashboard Simulator -->
+        <div class="dashboard-simulator-card">
+          <div class="dash-header-bar">
+            <div class="dash-title-group">
+              <i class="fas fa-columns"></i>
+              <strong style="font-size:1rem;" id="liveDashboardTitle">Executive Performance Scorecard 2026</strong>
+            </div>
+            <span style="font-size:0.75rem; background:rgba(255,255,255,0.1); padding:0.25rem 0.6rem; border-radius:4px;">
+              Dynamic Excel Pivot Simulator
+            </span>
+          </div>
+
+          <!-- Formula Bar Display -->
+          <div class="formula-bar-display">
+            <span class="fx-tag">fx</span>
+            <span class="fx-content" id="formulaBarContent">="Executive Performance Scorecard - " &amp; Slicer_Dept &amp; " (" &amp; TEXT(SUM(Revenue), "₦#,##0") &amp; ")"</span>
+          </div>
+
+          <!-- Excel Dynamic Slicers Ribbon -->
+          <div class="slicer-ribbon">
+            <div class="excel-slicer-box">
+              <span class="excel-slicer-title"><i class="fas fa-filter"></i> Quarter:</span>
+              <button class="slicer-pill active" onclick="setQuarterFilter('All', this)">All</button>
+              <button class="slicer-pill" onclick="setQuarterFilter('Q1', this)">Q1</button>
+              <button class="slicer-pill" onclick="setQuarterFilter('Q2', this)">Q2</button>
+              <button class="slicer-pill" onclick="setQuarterFilter('Q3', this)">Q3</button>
+              <button class="slicer-pill" onclick="setQuarterFilter('Q4', this)">Q4</button>
+            </div>
+
+            <div class="excel-slicer-box">
+              <span class="excel-slicer-title"><i class="fas fa-briefcase"></i> Division:</span>
+              <button class="slicer-pill active" onclick="setDivisionFilter('All', this)">All Divisions</button>
+              <button class="slicer-pill" onclick="setDivisionFilter('Enterprise', this)">Enterprise</button>
+              <button class="slicer-pill" onclick="setDivisionFilter('Retail', this)">Retail</button>
+              <button class="slicer-pill" onclick="setDivisionFilter('Digital', this)">Digital</button>
+            </div>
+          </div>
+
+          <!-- KPI Cards -->
+          <div class="dash-kpi-row">
+            <div class="dash-kpi">
+              <div class="dash-kpi-sub">Total Revenue Generated</div>
+              <div class="dash-kpi-val" id="dashKpiRevenue">₦24,800,000</div>
+              <div class="dash-kpi-note"><i class="fas fa-arrow-up"></i> +21.5% Target Achieved</div>
+            </div>
+            <div class="dash-kpi">
+              <div class="dash-kpi-sub">Gross Profit Margin</div>
+              <div class="dash-kpi-val" id="dashKpiMargin">38.4%</div>
+              <div class="dash-kpi-note"><i class="fas fa-check-circle"></i> Above 35% Threshold</div>
+            </div>
+            <div class="dash-kpi">
+              <div class="dash-kpi-sub">Active Students &amp; Clients</div>
+              <div class="dash-kpi-val" id="dashKpiClients">620</div>
+              <div class="dash-kpi-note"><i class="fas fa-users"></i> 96% Client Retention</div>
+            </div>
+            <div class="dash-kpi">
+              <div class="dash-kpi-sub">Customer Satisfaction (CSAT)</div>
+              <div class="dash-kpi-val" id="dashKpiCsat">4.9 / 5.0</div>
+              <div class="dash-kpi-note"><i class="fas fa-star" style="color:#f59e0b;"></i> Top Rating</div>
+            </div>
+          </div>
+
+          <!-- Charts Grid -->
+          <div class="dash-chart-grid">
+            <div class="dash-chart-panel">
+              <div class="chart-header">
+                <span>Revenue Breakdown by Channel</span>
+                <span style="font-size:0.75rem; color:#64748b;">Values in ₦ Millions</span>
+              </div>
+              <div id="dashBarsContainer" style="display:flex; flex-direction:column; gap:0.75rem;">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+
+            <div class="dash-chart-panel">
+              <div class="chart-header">
+                <span>Quarterly Target Completion</span>
+                <span style="font-size:0.75rem; color:#64748b;">Progress %</span>
+              </div>
+              <div id="dashQuarterProgressContainer" style="display:flex; flex-direction:column; gap:0.8rem; padding-top:0.4rem;">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lesson Detailed Narrative Card -->
+        <article class="lesson-card" id="lessonContentCard">
+          <!-- Dynamic Content -->
+        </article>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Live Studio Modal -->
+  <div class="modal-overlay" id="liveStudioModal">
+    <div class="modal-content">
+      <button class="modal-close-btn" onclick="closeLiveStudio()">&times;</button>
+      <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:1rem;">
+        <i class="fas fa-satellite-dish" style="color:#ef4444; font-size:1.4rem;"></i>
+        <h2 style="font-size:1.4rem; color:var(--dark);">Dashboard Live Broadcast Studio &amp; Screen Recorder</h2>
+      </div>
+      <p style="color:#64748b; font-size:0.9rem; margin-bottom:1.5rem;">
+        Record live executive presentations, formula breakdowns, and Excel dashboard walkthroughs directly in your browser.
+      </p>
+
+      <div style="background:#0f172a; border-radius:12px; padding:1.5rem; color:white; margin-bottom:1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <div>
+            <h4 style="font-size:1.1rem; color:#f8fafc;"><i class="fas fa-video"></i> In-Browser Screen &amp; Audio Recorder</h4>
+            <p style="font-size:0.8rem; color:#94a3b8;">Captures your Excel workbook window and microphone.</p>
+          </div>
+          <span id="recorderStatusPill" style="background:#334155; color:#cbd5e1; padding:0.3rem 0.7rem; border-radius:20px; font-size:0.75rem; font-weight:700;">Ready</span>
+        </div>
+        <div style="display:flex; gap:0.8rem;">
+          <button id="btnStartRecord" onclick="startRecording()" style="background:#ef4444; color:white; border:none; padding:0.6rem 1.2rem; border-radius:8px; font-weight:700; cursor:pointer;">
+            <i class="fas fa-circle"></i> Start Recording
+          </button>
+          <button id="btnStopRecord" onclick="stopRecording()" disabled style="background:#475569; color:#94a3b8; border:none; padding:0.6rem 1.2rem; border-radius:8px; font-weight:700; cursor:not-allowed;">
+            <i class="fas fa-stop"></i> Stop &amp; Download Video (.webm)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Downloads Modal -->
+  <div class="modal-overlay" id="downloadsModal">
+    <div class="modal-content" style="max-width:600px;">
+      <button class="modal-close-btn" onclick="closeDownloadsModal()">&times;</button>
+      <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:1rem;">
+        <i class="fas fa-download" style="color:var(--accent-dash); font-size:1.3rem;"></i>
+        <h2 style="font-size:1.3rem; color:var(--dark);">Dashboard Student Templates</h2>
+      </div>
+      <p style="color:#64748b; font-size:0.85rem; margin-bottom:1.5rem;">Download official Excel dashboard templates with pre-linked Pivot Tables and Slicers.</p>
+
+      <div style="display:flex; flex-direction:column; gap:0.8rem;">
+        <div style="border:1px solid var(--border); padding:1rem; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong style="color:var(--dark); font-size:0.9rem;">Master_Executive_KPI_Dashboard_Template.xlsx</strong>
+            <p style="color:#64748b; font-size:0.75rem;">Fully responsive Excel dashboard with dynamic Slicers, KPI Cards, and dark mode palette</p>
+          </div>
+          <button onclick="downloadDashSampleFile()" style="background:var(--accent-dash); color:white; border:none; padding:0.4rem 0.8rem; border-radius:6px; font-weight:700; font-size:0.78rem; cursor:pointer;">
+            Download
+          </button>
+        </div>
+
+        <div style="border:1px solid var(--border); padding:1rem; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong style="color:var(--dark); font-size:0.9rem;">Dashboard_Design_Principles_Executive_Guide.pdf</strong>
+            <p style="color:#64748b; font-size:0.75rem;">Layout rules, color theory, font sizing, and 5-second executive glance rule</p>
+          </div>
+          <button onclick="alert('Downloading Dashboard Guide...')" style="background:var(--accent-dash); color:white; border:none; padding:0.4rem 0.8rem; border-radius:6px; font-weight:700; font-size:0.78rem; cursor:pointer;">
+            Download
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Security Gate Overlay Modal (If Not Enrolled in Dashboard) -->
+  <div class="modal-overlay" id="securityGateModal">
+    <div class="gate-modal-card">
+      <div style="width:60px; height:60px; background:#e0e7ff; color:#4f46e5; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.2rem; font-size:1.6rem;">
+        <i class="fas fa-lock"></i>
+      </div>
+      <h2 style="font-size:1.35rem; color:#0f172a; margin-bottom:0.6rem;">Dashboard Access Authentication</h2>
+      <p id="gateMessageText" style="color:#64748b; font-size:0.88rem; line-height:1.5; margin-bottom:1.5rem;">
+        This studio is reserved for students enrolled in <strong>Executive Interactive Dashboard Design</strong>, <strong>Excel Advanced</strong>, or the <strong>Complete Analytics Suite</strong>.
+      </p>
+
+      <div style="margin-bottom:1.2rem; text-align:left;">
+        <label style="display:block; font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.4rem;">
+          Enter Your Unique Dashboard Access Code:
+        </label>
+        <input type="text" id="gateDashAccessCode" placeholder="e.g. GRX-DASH-1928 or STU-2026-001" style="width:100%; padding:0.8rem; border:1.5px solid #cbd5e1; border-radius:8px; font-size:1rem; font-weight:700; text-transform:uppercase;">
+      </div>
+
+      <button onclick="verifyDashCode()" style="width:100%; background:var(--accent-dash); color:white; padding:0.8rem; border:none; border-radius:8px; font-weight:800; font-size:0.95rem; cursor:pointer; margin-bottom:0.8rem;">
+        Verify Code &amp; Unlock Dashboard Studio
+      </button>
+
+      <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+        <a href="Excel_Master_Course_Hub.html" style="color:#0284c7; font-weight:600; text-decoration:none;">
+          &larr; Go to Excel Classroom
+        </a>
+        <a href="index.html" style="color:#64748b; text-decoration:none;">
+          Classroom Portal Home
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Engine -->
+  <script>
+    // 1. Interactive Simulator State
+    let selQuarter = 'All';
+    let selDivision = 'All';
+
+    const DASH_DATA = [
+      { quarter: 'Q1', division: 'Enterprise', channel: 'Direct Sales', revenue: 6200000, margin: 42.0 },
+      { quarter: 'Q1', division: 'Retail', channel: 'Online Portal', revenue: 3800000, margin: 36.5 },
+      { quarter: 'Q2', division: 'Enterprise', channel: 'Corporate Partners', revenue: 7100000, margin: 40.0 },
+      { quarter: 'Q2', division: 'Digital', channel: 'Self-Serve SaaS', revenue: 4500000, margin: 44.0 },
+      { quarter: 'Q3', division: 'Enterprise', channel: 'Direct Sales', revenue: 5800000, margin: 39.0 },
+      { quarter: 'Q3', division: 'Retail', channel: 'Affiliates', revenue: 3200000, margin: 33.0 },
+      { quarter: 'Q4', division: 'Digital', channel: 'Self-Serve SaaS', revenue: 6400000, margin: 45.0 },
+      { quarter: 'Q4', division: 'Enterprise', channel: 'Direct Sales', revenue: 8200000, margin: 41.5 }
+    ];
+
+    function updateDashboardSimulator() {
+      let filtered = DASH_DATA.filter(r => {
+        if (selQuarter !== 'All' && r.quarter !== selQuarter) return false;
+        if (selDivision !== 'All' && r.division !== selDivision) return false;
+        return true;
+      });
+
+      const totalRev = filtered.reduce((acc, r) => acc + r.revenue, 0);
+      const avgMargin = filtered.length > 0 ? (filtered.reduce((acc, r) => acc + r.margin, 0) / filtered.length).toFixed(1) : '0';
+
+      document.getElementById('dashKpiRevenue').textContent = '₦' + totalRev.toLocaleString();
+      document.getElementById('dashKpiMargin').textContent = avgMargin + '%';
+
+      // Update Formula Headline
+      const divLabel = selDivision === 'All' ? 'All Divisions' : selDivision;
+      const qLabel = selQuarter === 'All' ? 'Full Year' : selQuarter;
+      document.getElementById('formulaBarContent').textContent = 
+        `="Executive Performance Scorecard - ${divLabel} [${qLabel}] (₦" & TEXT(SUM(Revenue), "#,##0") & ")"`;
+      document.getElementById('liveDashboardTitle').textContent = 
+        `Executive Scorecard: ${divLabel} • ${qLabel}`;
+
+      // Render Channel Bars
+      const channelTotals = {};
+      filtered.forEach(r => {
+        channelTotals[r.channel] = (channelTotals[r.channel] || 0) + r.revenue;
+      });
+
+      const barsContainer = document.getElementById('dashBarsContainer');
+      barsContainer.innerHTML = '';
+      const maxVal = Math.max(...Object.values(channelTotals), 1);
+
+      Object.entries(channelTotals).forEach(([chan, val]) => {
+        const pct = Math.round((val / maxVal) * 100);
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex; align-items:center; gap:0.8rem; font-size:0.78rem;';
+        row.innerHTML = `
+          <div style="width:120px; font-weight:600; color:#334155; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${chan}</div>
+          <div style="flex:1; height:18px; background:#e2e8f0; border-radius:4px; overflow:hidden;">
+            <div style="height:100%; width:${pct}%; background:linear-gradient(90deg, #4f46e5, #818cf8); border-radius:4px; transition:width 0.4s ease;"></div>
+          </div>
+          <div style="width:75px; text-align:right; font-weight:700; font-family:monospace; color:#0f172a;">₦${(val / 1000000).toFixed(1)}M</div>
+        `;
+        barsContainer.appendChild(row);
+      });
+
+      // Render Target Progress
+      const progContainer = document.getElementById('dashQuarterProgressContainer');
+      progContainer.innerHTML = '';
+      ['Q1', 'Q2', 'Q3', 'Q4'].forEach(q => {
+        const qSum = DASH_DATA.filter(r => r.quarter === q).reduce((acc, r) => acc + r.revenue, 0);
+        const target = 10000000;
+        const pct = Math.min(Math.round((qSum / target) * 100), 100);
+        const div = document.createElement('div');
+        div.style.cssText = 'display:flex; flex-direction:column; gap:0.2rem; font-size:0.78rem;';
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; font-weight:600;">
+            <span>${q} Benchmark</span>
+            <span style="font-family:monospace; font-weight:700;">${pct}% (₦${(qSum/1000000).toFixed(1)}M / ₦10M)</span>
+          </div>
+          <div style="height:8px; background:#e2e8f0; border-radius:4px; overflow:hidden;">
+            <div style="height:100%; width:${pct}%; background:#10b981; border-radius:4px;"></div>
+          </div>
+        `;
+        progContainer.appendChild(div);
+      });
+    }
+
+    function setQuarterFilter(q, btn) {
+      selQuarter = q;
+      btn.parentElement.querySelectorAll('.slicer-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateDashboardSimulator();
+    }
+    function setDivisionFilter(div, btn) {
+      selDivision = div;
+      btn.parentElement.querySelectorAll('.slicer-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateDashboardSimulator();
+    }
+
+    // 2. Dashboard Curriculum: 4 Modules & 16 Lessons
+    const CURRICULUM = [
+      {
+        module: 'Module 1: Dashboard UI/UX & Executive Layout',
+        tag: 'MODULE 1 • UI/UX ARCHITECTURE',
+        lessons: [
+          {
+            id: 'DASH_L1',
+            title: '1. The 5-Second Rule of Executive Dashboards',
+            concept: 'An executive dashboard must communicate company health in 5 seconds or less. Follow the inverted pyramid: high-level KPIs at the top, trends in the middle, and granular breakdowns at the bottom.',
+            formula: '// Visual Hierarchy:\n// [Top 20%: KPI Summary Cards] -> [Middle 50%: Trend Charts] -> [Bottom 30%: Breakdown Tables]',
+            quiz: {
+              q: 'What is the primary objective of an Executive Dashboard?',
+              options: ['To display high-level strategic metrics at a glance within 5 seconds', 'To show thousands of raw rows of numbers', 'To animate spinning 3D charts', 'To print long PDF booklets'],
+              correctIndex: 0,
+              explanation: 'Executive dashboards prioritize instant comprehension with clean summary metrics.'
+            }
+          },
+          {
+            id: 'DASH_L2',
+            title: '2. Grid Systems, Spacing & Container Architecture',
+            concept: 'Structure your dashboard using a standard 12-column grid. Standardize cell widths, align card borders, and hide Excel row/column gridlines to create a modern web application aesthetic.',
+            formula: '// Excel Setup:\n// View Tab -> Uncheck "Gridlines" -> Fill background with soft off-white (#F8FAFC)',
+            quiz: {
+              q: 'Why should default Excel gridlines be unchecked on an executive dashboard sheet?',
+              options: ['To give the dashboard a polished, professional software application look', 'To reduce Excel file size', 'To disable cell editing', 'To speed up formula calculation'],
+              correctIndex: 0,
+              explanation: 'Disabling default gridlines eliminates visual noise and allows custom card borders to frame metrics cleanly.'
+            }
+          },
+          {
+            id: 'DASH_L3',
+            title: '3. Professional Color Palettes & Contrast Guidelines',
+            concept: 'Adhere to the 60-30-10 color rule: 60% neutral background, 30% structural brand color (Navy), and 10% high-contrast accent (Teal or Emerald) reserved strictly for key callouts and alarms.',
+            formula: '// 60-30-10 Rule:\n// 60% Slate/White Base | 30% Navy Navigation | 10% Emerald Accent',
+            quiz: {
+              q: 'In dashboard design, what should vibrant accent colors (like Red or Emerald) be reserved for?',
+              options: ['Alerts, target thresholds, and focal KPI callouts', 'Every column in a table', 'Header backgrounds only', 'Random chart bars'],
+              correctIndex: 0,
+              explanation: 'Vibrant accent colors draw the viewer’s eye and should be reserved for highlights and status indicators.'
+            }
+          },
+          {
+            id: 'DASH_L4',
+            title: '4. Designing Compact & High-Impact KPI Cards',
+            concept: 'Design KPI cards with 4 vital elements: Metric Title, Primary Value (large 20pt+ font), Contextual Trend Arrow (YoY/MoM), and Benchmark Target comparison.',
+            formula: '// KPI Card Formula Pattern:\n= TEXT(SUM(Revenue), "$#,##0") & " (" & TEXT((SUM(Revenue)-Target)/Target, "+0.0%") & ")"',
+            quiz: {
+              q: 'What 4 elements constitute a best-practice KPI Card?',
+              options: ['Title, Primary Big Number, Benchmark Target, and Trend Indicator', 'Name, Address, Phone, Email', 'Picture, Logo, Timestamp, Signature', 'Column A, B, C, D'],
+              correctIndex: 0,
+              explanation: 'A great KPI card displays the metric name, big bold value, target comparison, and historical trend.'
+            }
+          }
+        ]
+      },
+      {
+        module: 'Module 2: Data Modeling & Pivot Table Engines',
+        tag: 'MODULE 2 • PIVOT ENGINES',
+        lessons: [
+          {
+            id: 'DASH_L5',
+            title: '5. The Three-Layer Dashboard Architecture',
+            concept: 'Separate your workbook into 3 clean sheets: 1) Data Layer (Raw tables), 2) Calculation Layer (Hidden Pivot Tables & helper formulas), and 3) Presentation Layer (The visible Dashboard).',
+            formula: '// Three-Layer Model:\n// [Raw_Data] ---> [Calc_Pivots] ---> [Executive_Dashboard]',
+            quiz: {
+              q: 'Why should the Calculation layer be kept separate from the Presentation Dashboard sheet?',
+              options: ['To maintain clean layout architecture and protect formulas from accidental tampering', 'Because Excel crashes otherwise', 'To make files larger', 'To enable macros'],
+              correctIndex: 0,
+              explanation: 'Separating layers keeps the visual presentation clean while allowing complex pivot mechanics to operate behind the scenes.'
+            }
+          },
+          {
+            id: 'DASH_L6',
+            title: '6. Converting Raw Ranges into Structured Excel Tables',
+            concept: 'Always format source data as an official Excel Table (Ctrl+T). Structured tables auto-expand when new rows are pasted, ensuring Pivot Tables update seamlessly.',
+            formula: '// Shortcut: Select data -> Press Ctrl + T -> Check "My table has headers"',
+            quiz: {
+              q: 'What is the key advantage of using an Excel Table (Ctrl+T) as the dashboard data source?',
+              options: ['It automatically expands to include new rows without needing to update Pivot range references', 'It locks the screen', 'It converts numbers to text', 'It adds passwords'],
+              correctIndex: 0,
+              explanation: 'Excel Tables dynamically expand their named boundaries when new data is added.'
+            }
+          },
+          {
+            id: 'DASH_L7',
+            title: '7. Building Backend Summary Pivot Tables',
+            concept: 'Construct lightweight summary Pivot Tables on your calculation sheet to pre-aggregate sales by month, channel, and division.',
+            formula: '// Best Practice: Turn off "Autofit column widths on update" in PivotTable Options.',
+            quiz: {
+              q: 'Why should "Autofit column widths on update" be disabled in Pivot Table Options for dashboard backends?',
+              options: ['To prevent Pivot updates from resizing cells and disrupting dashboard visual layouts', 'To speed up saving', 'To hide columns', 'To enable printing'],
+              correctIndex: 0,
+              explanation: 'Disabling autofit ensures that refreshing data does not distort column widths across your sheets.'
+            }
+          },
+          {
+            id: 'DASH_L8',
+            title: '8. Using the GETPIVOTDATA Function Safely',
+            concept: 'Extract precise cell values from Pivot Tables onto your dashboard canvas using GETPIVOTDATA with dynamic cell references for headers.',
+            formula: '= GETPIVOTDATA("Revenue", Calc_Sheet!$A$3, "Quarter", "Q1", "Division", "Digital")',
+            quiz: {
+              q: 'What is the purpose of the GETPIVOTDATA function?',
+              options: ['To extract specific aggregated metrics from a Pivot Table based on field names', 'To download data from the internet', 'To sort rows alphabetically', 'To format dates'],
+              correctIndex: 0,
+              explanation: 'GETPIVOTDATA extracts values based on field names rather than rigid cell coordinates, preventing broken links.'
+            }
+          }
+        ]
+      },
+      {
+        module: 'Module 3: Dynamic Visuals & Interactive Controls',
+        tag: 'MODULE 3 • INTERACTIVE CONTROLS',
+        lessons: [
+          {
+            id: 'DASH_L9',
+            title: '9. Connecting Slicers to Multiple Pivot Tables',
+            concept: 'Use Slicer "Report Connections" to link a single Slicer (e.g. Region or Quarter) to 5 different Pivot Tables simultaneously, updating all charts in 1 click.',
+            formula: '// Setup: Right click Slicer -> "Report Connections..." -> Check all target Pivot Tables',
+            quiz: {
+              q: 'How do you configure one Slicer to filter multiple Pivot Charts simultaneously in Excel?',
+              options: ['Open Slicer Report Connections and select all target Pivot Tables', 'Copy paste the slicer 5 times', 'Write a VBA macro', 'Merge all cells'],
+              correctIndex: 0,
+              explanation: 'Report Connections allows a single slicer to control multiple Pivot Tables across the entire workbook.'
+            }
+          },
+          {
+            id: 'DASH_L10',
+            title: '10. Building Timeline Slicers for Chronological Filtering',
+            concept: 'Insert Timeline Slicers for date fields to allow executives to filter data by Years, Quarters, Months, or Days with a sliding visual scrub bar.',
+            formula: '// Insert Tab -> Slicer Dropdown -> Timeline -> Select Date Column',
+            quiz: {
+              q: 'What special type of slicer provides a sliding time-scrub bar for date columns?',
+              options: ['Timeline Slicer', 'Date Formula', 'VBA Timer', 'Clock Object'],
+              correctIndex: 0,
+              explanation: 'Timeline Slicers provide an interactive visual scrubber tailored specifically for temporal analysis.'
+            }
+          },
+          {
+            id: 'DASH_L11',
+            title: '11. Dynamic Chart Titles Linked to Formulas',
+            concept: 'Make your chart titles dynamic! Create a formula in a cell that concatenates the active slicer value, then link the chart title to that cell.',
+            formula: '// Step 1: Cell A1 = "Sales Summary - " & Slicer_Selection\n// Step 2: Click Chart Title -> Type "=" in Formula Bar -> Click Cell A1',
+            quiz: {
+              q: 'How do you link an Excel chart title to a dynamic cell formula?',
+              options: ['Select the chart title box, click the formula bar, type "=" and click the cell', 'Double click the title and type the formula inside the box', 'Right click and choose export', 'Press Ctrl+F'],
+              correctIndex: 0,
+              explanation: 'Clicking the chart title box and referencing the cell in the formula bar binds the title dynamically.'
+            }
+          },
+          {
+            id: 'DASH_L12',
+            title: '12. In-Cell Micro Charts: Sparklines & Data Bars',
+            concept: 'Enhance summary tables with miniature line or win/loss Sparklines inside single cells to convey 12-month trends without cluttering the screen.',
+            formula: '// Insert Tab -> Sparklines -> Line -> Select 12-month data range',
+            quiz: {
+              q: 'What are miniature charts that fit entirely inside a single Excel cell called?',
+              options: ['Sparklines', 'Micro Bars', 'Thumbnail Charts', 'Nano Plots'],
+              correctIndex: 0,
+              explanation: 'Sparklines are tiny in-cell charts that display visual trends alongside tabular data.'
+            }
+          }
+        ]
+      },
+      {
+        module: 'Module 4: Advanced Controls, Protection & Capstone',
+        tag: 'MODULE 4 • CAPSTONE & POLISH',
+        lessons: [
+          {
+            id: 'DASH_L13',
+            title: '13. Creating Seamless Sheet Navigation Menus',
+            concept: 'Design modern web-like navigation tabs using rounded rectangle shapes with hyperlinks to switch between Executive, Sales, and Ops views.',
+            formula: '// Insert Shape -> Right Click -> Link -> "Place in This Document" -> Select Target Sheet',
+            quiz: {
+              q: 'How can you create clickable tab buttons to navigate between dashboard pages in Excel?',
+              options: ['Format shapes and assign Hyperlinks pointing to specific sheets in the workbook', 'Write complex C++ plugins', 'Use external browser tabs', 'Duplicate Excel windows'],
+              correctIndex: 0,
+              explanation: 'Hyperlinked shapes provide smooth, professional app-like tab navigation within Excel.'
+            }
+          },
+          {
+            id: 'DASH_L14',
+            title: '14. Form Controls: Option Buttons & Dropdowns',
+            concept: 'Use Developer tab Form Controls (Option Buttons, Combo Boxes) linked to INDEX formulas to let users switch metrics (e.g. Revenue vs Units).',
+            formula: '= INDEX( Metric_Range, $A$1 )  // Where A1 is linked to the Option Button (1, 2, 3)',
+            quiz: {
+              q: 'Which function dynamically swaps metric rows based on the numeric output of a Form Control Option Button?',
+              options: ['INDEX', 'SUM', 'COUNT', 'LEN'],
+              correctIndex: 0,
+              explanation: 'INDEX retrieves values from a range using the row position output by form controls.'
+            }
+          },
+          {
+            id: 'DASH_L15',
+            title: '15. Protecting Dashboard Sheets from User Tampering',
+            concept: 'Unlock interactive Slicer cells, then protect the dashboard worksheet with a password to prevent accidental formula overwrites or column dragging.',
+            formula: '// Review Tab -> Protect Sheet -> Allow: "Use PivotTable & PivotChart" and "Edit Objects"',
+            quiz: {
+              q: 'When protecting an interactive dashboard sheet, which permissions MUST remain checked for Slicers to function?',
+              options: ['Edit Objects and Use PivotTable & PivotChart', 'Format Cells only', 'Delete Rows', 'Select Locked Cells only'],
+              correctIndex: 0,
+              explanation: 'Slicers are graphical shapes ("Objects") connected to Pivot Tables, requiring these permissions to remain enabled.'
+            }
+          },
+          {
+            id: 'DASH_L16',
+            title: '16. Capstone Portfolio: Executive Scorecard Submission',
+            concept: 'Assemble your complete capstone project: Build a responsive, 4-quarter executive dashboard with dynamic slicers, KPI scorecards, and clean visual storytelling.',
+            formula: '// Final Checklist:\n// 1. Clean Data Layer -> 2. Pivot Summary Layer -> 3. Protected Dashboard Canvas',
+            quiz: {
+              q: 'Congratulations! What is the final step to earn your Executive Dashboard Specialist Credential?',
+              options: ['Submit your completed Dashboard workbook in the student portal', 'Close Excel', 'Delete formulas', 'Unprotect sheets'],
+              correctIndex: 0,
+              explanation: 'Submitting your completed dashboard workbook activates your official Greach Academy verified credential.'
+            }
+          }
+        ]
+      }
+    ];
+
+    let currentModuleIdx = 0;
+    let currentLessonIdx = 0;
+    let completedLessons = JSON.parse(localStorage.getItem('greach_dash_completed_lessons') || '[]');
+
+    // 3. Authentication & Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      checkDashAccessAuth();
+      renderCurriculumSidebar();
+      loadLesson(0, 0);
+      updateDashboardSimulator();
+      initPresenceHeartbeat();
+    });
+
+    function checkDashAccessAuth() {
+      const session = JSON.parse(localStorage.getItem('greach_student_session') || 'null');
+      const isLead = (localStorage.getItem('greach_instructor_login') === 'true');
+      const pillName = document.getElementById('studentDisplayName');
+
+      if (isLead) {
+        if (pillName) pillName.innerHTML = '👑 <strong>Lead Instructor</strong>';
+        return;
+      }
+
+      if (!session || !session.verified) {
+        showGateModal('Please enter your unique access code to unlock the Executive Dashboard Studio.');
+        return;
+      }
+
+      if (window.GreachDB && window.GreachDB.canAccessCourse) {
+        const access = window.GreachDB.canAccessCourse(session, 'excel_dashboard');
+        if (!access.allowed) {
+          showGateModal(`Your current pass is registered for <strong>"${session.course}"</strong>.<br><br>This studio is dedicated to <strong>Executive Dashboard Design</strong>. Please enter an upgraded access code or switch to your enrolled classroom.`);
+          return;
+        }
+      }
+
+      if (pillName) {
+        pillName.innerHTML = `🎓 <strong>${session.name || 'Verified Student'}</strong>`;
+      }
+    }
+
+    function showGateModal(msg) {
+      const modal = document.getElementById('securityGateModal');
+      const text = document.getElementById('gateMessageText');
+      if (text) text.innerHTML = msg;
+      if (modal) modal.classList.add('active');
+    }
+
+    async function verifyDashCode() {
+      const inp = document.getElementById('gateDashAccessCode');
+      const code = inp ? inp.value.trim() : '';
+      if (!code) {
+        alert('Please enter an access code.');
+        return;
+      }
+
+      if (window.GreachDB && window.GreachDB.verifyAccessCodeAny) {
+        const res = await window.GreachDB.verifyAccessCodeAny(code);
+        if (res && res.valid) {
+          const s = res.student || {};
+          const session = {
+            role: res.isInstructor ? 'instructor' : 'student',
+            id: s.id || 'STU-DASH-VERIFIED',
+            name: s.name || 'Verified Student',
+            email: s.email || '',
+            course: s.course || 'Executive Interactive Dashboard Design',
+            courseKey: window.GreachDB.normalizeCourseKey(s.courseKey || s.course || 'excel_dashboard'),
+            cohort: s.cohort || 'Batch 2: 2026 Masterclass',
+            verified: true,
+            authMethod: 'code',
+            accessCode: code
+          };
+          localStorage.setItem('greach_student_session', JSON.stringify(session));
+          document.getElementById('securityGateModal').classList.remove('active');
+          checkDashAccessAuth();
+          alert(`Welcome, ${session.name}! Access granted for Executive Dashboard Studio.`);
+          return;
+        }
+      }
+
+      alert('Invalid or inactive access code for Dashboard Studio. Please check your confirmation email.');
+    }
+
+    function initPresenceHeartbeat() {
+      const session = JSON.parse(localStorage.getItem('greach_student_session') || '{}');
+      if (window.GreachDB && window.GreachDB.updateStudentHeartbeat && session.id) {
+        window.GreachDB.updateStudentHeartbeat(session.id);
+        setInterval(() => {
+          if (window.GreachDB && window.GreachDB.updateStudentHeartbeat && session.id) {
+            window.GreachDB.updateStudentHeartbeat(session.id);
+          }
+        }, 45000);
+      }
+    }
+
+    // 4. Render Sidebar Curriculum
+    function renderCurriculumSidebar() {
+      const container = document.getElementById('curriculumModuleList');
+      if (!container) return;
+      container.innerHTML = '';
+
+      let totalLessons = 0;
+      CURRICULUM.forEach((m, mIdx) => {
+        const modGroup = document.createElement('div');
+        modGroup.className = 'module-group';
+
+        const modTitle = document.createElement('div');
+        modTitle.className = 'module-title';
+        modTitle.innerHTML = `<span>${m.module}</span> <i class="fas fa-chevron-down" style="font-size:0.75rem;"></i>`;
+        modGroup.appendChild(modTitle);
+
+        const list = document.createElement('ul');
+        list.className = 'lesson-list';
+
+        m.lessons.forEach((l, lIdx) => {
+          totalLessons++;
+          const li = document.createElement('li');
+          const isDone = completedLessons.includes(l.id);
+          li.className = `lesson-item ${isDone ? 'completed' : ''} ${mIdx === currentModuleIdx && lIdx === currentLessonIdx ? 'active' : ''}`;
+          li.id = `nav_lesson_${mIdx}_${lIdx}`;
+          li.innerHTML = `
+            <i class="fas ${isDone ? 'fa-check-circle' : 'fa-circle'} check-icon"></i>
+            <span>${l.title}</span>
+          `;
+          li.onclick = () => loadLesson(mIdx, lIdx);
+          list.appendChild(li);
+        });
+
+        modGroup.appendChild(list);
+        container.appendChild(modGroup);
+      });
+
+      updateProgressStats(totalLessons);
+    }
+
+    function updateProgressStats(total = 16) {
+      const count = completedLessons.length;
+      const pct = Math.round((count / total) * 100);
+      const txt = document.getElementById('progressPercent');
+      const bar = document.getElementById('progressBarFill');
+      if (txt) txt.textContent = `${pct}%`;
+      if (bar) bar.style.width = `${pct}%`;
+    }
+
+    // 5. Load Lesson View
+    function loadLesson(mIdx, lIdx) {
+      currentModuleIdx = mIdx;
+      currentLessonIdx = lIdx;
+      const mod = CURRICULUM[mIdx];
+      const lesson = mod.lessons[lIdx];
+
+      document.getElementById('lessonModuleTag').textContent = mod.tag;
+      document.getElementById('lessonTitle').textContent = lesson.title;
+
+      document.querySelectorAll('.lesson-item').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById(`nav_lesson_${mIdx}_${lIdx}`);
+      if (activeEl) activeEl.classList.add('active');
+
+      const isDone = completedLessons.includes(lesson.id);
+      const btnComplete = document.getElementById('btnCompleteLesson');
+      if (btnComplete) {
+        btnComplete.innerHTML = isDone 
+          ? '<i class="fas fa-check-double"></i> Completed' 
+          : '<i class="fas fa-check"></i> Mark Complete';
+      }
+
+      const card = document.getElementById('lessonContentCard');
+      card.innerHTML = `
+        <h3><i class="fas fa-lightbulb" style="color:var(--accent-dash);"></i> Core Principle</h3>
+        <p>${lesson.concept}</p>
+
+        <h3 style="margin-top:1.5rem;"><i class="fas fa-columns" style="color:var(--accent-dash);"></i> Dashboard Architecture Pattern</h3>
+        <div style="background:#0f172a; border-radius:8px; padding:1.2rem; position:relative; margin:1.2rem 0;">
+          <button onclick="navigator.clipboard.writeText(\`${escapeForAttr(lesson.formula)}\`).then(()=>alert('Copied to clipboard!'))" style="position:absolute; top:0.6rem; right:0.6rem; background:#334155; color:#cbd5e1; border:none; padding:0.35rem 0.7rem; border-radius:6px; font-size:0.75rem; cursor:pointer;">
+            <i class="fas fa-copy"></i> Copy
+          </button>
+          <pre style="color:#818cf8; font-family:'JetBrains Mono',monospace; font-size:0.9rem; line-height:1.6; overflow-x:auto;"><code>${escapeHtml(lesson.formula)}</code></pre>
+        </div>
+
+        <div class="quiz-box">
+          <div class="quiz-title">
+            <i class="fas fa-question-circle"></i> Quick Knowledge Check
+          </div>
+          <p style="font-size:0.9rem; font-weight:700; color:#334155; margin-bottom:0.8rem;">
+            ${lesson.quiz.q}
+          </p>
+          <div>
+            ${lesson.quiz.options.map((opt, i) => `
+              <div class="quiz-option" onclick="checkQuizAnswer(${i}, ${lesson.quiz.correctIndex}, \`${escapeForAttr(lesson.quiz.explanation)}\`, this)">
+                <i class="far fa-circle"></i>
+                <span>${opt}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="quiz-feedback" id="quizFeedbackBox"></div>
+        </div>
+      `;
+    }
+
+    function toggleCompleteCurrentLesson() {
+      const lesson = CURRICULUM[currentModuleIdx].lessons[currentLessonIdx];
+      const idx = completedLessons.indexOf(lesson.id);
+      if (idx > -1) {
+        completedLessons.splice(idx, 1);
+      } else {
+        completedLessons.push(lesson.id);
+      }
+      localStorage.setItem('greach_dash_completed_lessons', JSON.stringify(completedLessons));
+      renderCurriculumSidebar();
+      loadLesson(currentModuleIdx, currentLessonIdx);
+    }
+
+    function prevLesson() {
+      if (currentLessonIdx > 0) {
+        loadLesson(currentModuleIdx, currentLessonIdx - 1);
+      } else if (currentModuleIdx > 0) {
+        const prevM = currentModuleIdx - 1;
+        loadLesson(prevM, CURRICULUM[prevM].lessons.length - 1);
+      }
+    }
+
+    function nextLesson() {
+      const mod = CURRICULUM[currentModuleIdx];
+      if (currentLessonIdx < mod.lessons.length - 1) {
+        loadLesson(currentModuleIdx, currentLessonIdx + 1);
+      } else if (currentModuleIdx < CURRICULUM.length - 1) {
+        loadLesson(currentModuleIdx + 1, 0);
+      }
+    }
+
+    function checkQuizAnswer(selectedIdx, correctIdx, explanation, el) {
+      const container = el.parentElement;
+      const feedback = document.getElementById('quizFeedbackBox');
+      container.querySelectorAll('.quiz-option').forEach(opt => opt.classList.remove('correct', 'wrong'));
+
+      if (selectedIdx === correctIdx) {
+        el.classList.add('correct');
+        feedback.style.display = 'block';
+        feedback.style.color = '#15803d';
+        feedback.innerHTML = `<strong><i class="fas fa-check-circle"></i> Correct!</strong> ${explanation}`;
+      } else {
+        el.classList.add('wrong');
+        feedback.style.display = 'block';
+        feedback.style.color = '#991b1b';
+        feedback.innerHTML = `<strong><i class="fas fa-times-circle"></i> Try Again:</strong> ${explanation}`;
+      }
+    }
+
+    // 6. Live Studio & Screen Recorder
+    let mediaRecorder = null;
+    let recordedChunks = [];
+
+    function openLiveStudio() { document.getElementById('liveStudioModal').classList.add('active'); }
+    function closeLiveStudio() { document.getElementById('liveStudioModal').classList.remove('active'); }
+
+    async function startRecording() {
+      try {
+        const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+        recordedChunks = [];
+        mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+
+        mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: 'video/webm' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Greach_Dashboard_Presentation_${new Date().toISOString().slice(0,10)}.webm`;
+          a.click();
+          document.getElementById('recorderStatusPill').textContent = 'Saved to Downloads';
+          document.getElementById('recorderStatusPill').style.background = '#065f46';
+          document.getElementById('recorderStatusPill').style.color = '#6ee7b7';
+        };
+
+        mediaRecorder.start();
+        document.getElementById('btnStartRecord').disabled = true;
+        document.getElementById('btnStartRecord').style.opacity = '0.5';
+        document.getElementById('btnStopRecord').disabled = false;
+        document.getElementById('btnStopRecord').style.background = '#22c55e';
+        document.getElementById('btnStopRecord').style.color = 'white';
+        document.getElementById('btnStopRecord').style.cursor = 'pointer';
+        document.getElementById('recorderStatusPill').textContent = '🔴 Recording Live...';
+        document.getElementById('recorderStatusPill').style.background = '#991b1b';
+        document.getElementById('recorderStatusPill').style.color = '#fee2e2';
+      } catch (err) {
+        alert('Screen recording permission denied.');
+      }
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        document.getElementById('btnStartRecord').disabled = false;
+        document.getElementById('btnStartRecord').style.opacity = '1';
+        document.getElementById('btnStopRecord').disabled = true;
+        document.getElementById('btnStopRecord').style.background = '#475569';
+        document.getElementById('btnStopRecord').style.color = '#94a3b8';
+        document.getElementById('btnStopRecord').style.cursor = 'not-allowed';
+      }
+    }
+
+    function openDownloadsModal() { document.getElementById('downloadsModal').classList.add('active'); }
+    function closeDownloadsModal() { document.getElementById('downloadsModal').classList.remove('active'); }
+
+    function downloadDashSampleFile() {
+      alert('Downloading Master_Executive_KPI_Dashboard_Template.xlsx...');
+    }
+
+    function toggleSwitcher(e) {
+      e.stopPropagation();
+      document.getElementById('switcherMenu').classList.toggle('active');
+    }
+    window.addEventListener('click', () => {
+      const m = document.getElementById('switcherMenu');
+      if (m) m.classList.remove('active');
+    });
+
+    function logoutClassroom() {
+      if (confirm('Log out of Executive Dashboard Studio?')) {
+        localStorage.removeItem('greach_student_session');
+        window.location.href = 'index.html';
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function escapeForAttr(text) {
+      if (!text) return '';
+      return String(text).replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+    }
+  </script>
+</body>
+</html>

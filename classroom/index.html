@@ -414,7 +414,8 @@
       gap: 0.4rem;
     }
     
-</style>
+    #idxSwitcherMenu.active { display: block !important; }
+  </style>
   <script src="js/greach-sync.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -567,6 +568,27 @@
       <a href="../index.html" class="nav-btn" style="background:#0a0a5e; border-color:#64c7d4;">
         <i class="fas fa-globe"></i> <strong>Main Website</strong>
       </a>
+      <!-- Classroom Switcher Dropdown -->
+      <div style="position:relative; display:inline-block;" id="topClassroomSwitcher">
+        <button type="button" onclick="document.getElementById('idxSwitcherMenu').classList.toggle('active'); event.stopPropagation();" class="nav-btn" style="background:rgba(255,255,255,0.12); border-color:rgba(255,255,255,0.25); color:white; cursor:pointer;">
+          <i class="fas fa-th-large" style="color:#64c7d4;"></i> <strong>All Classrooms</strong> <i class="fas fa-chevron-down" style="font-size:0.7rem; margin-left:3px;"></i>
+        </button>
+        <div id="idxSwitcherMenu" style="position:absolute; top:115%; left:0; background:white; color:#0f172a; border-radius:10px; box-shadow:0 10px 25px rgba(0,0,0,0.25); border:1px solid #e2e8f0; width:260px; padding:0.5rem; display:none; z-index:1000; text-align:left;">
+          <div style="font-size:0.72rem; font-weight:800; color:#94a3b8; text-transform:uppercase; padding:0.4rem 0.8rem;">Greach Classrooms</div>
+          <a href="Excel_Master_Course_Hub.html" style="display:flex; align-items:center; gap:0.6rem; padding:0.55rem 0.8rem; border-radius:6px; text-decoration:none; color:#15803d; font-weight:600; font-size:0.82rem;">
+            <i class="fas fa-file-excel" style="color:#107c41;"></i> Excel Masterclass (64 Lessons)
+          </a>
+          <a href="Excel_Dashboard_Hub.html" style="display:flex; align-items:center; gap:0.6rem; padding:0.55rem 0.8rem; border-radius:6px; text-decoration:none; color:#3730a3; font-weight:600; font-size:0.82rem;">
+            <i class="fas fa-chart-line" style="color:#4f46e5;"></i> Executive Dashboard Studio
+          </a>
+          <a href="SQL_Master_Course_Hub.html" style="display:flex; align-items:center; gap:0.6rem; padding:0.55rem 0.8rem; border-radius:6px; text-decoration:none; color:#c2410c; font-weight:600; font-size:0.82rem;">
+            <i class="fas fa-database" style="color:#ea580c;"></i> SQL Analytics Studio
+          </a>
+          <a href="PowerBI_Master_Course_Hub.html" style="display:flex; align-items:center; gap:0.6rem; padding:0.55rem 0.8rem; border-radius:6px; text-decoration:none; color:#b45309; font-weight:600; font-size:0.82rem;">
+            <i class="fas fa-chart-pie" style="color:#f59e0b;"></i> Power BI Business Intelligence
+          </a>
+        </div>
+      </div>
       <a href="../admin.html" class="nav-btn" style="background:rgba(245,158,11,0.15); border-color:#f59e0b; color:#f59e0b;">
         <i class="fas fa-user-shield"></i> <strong>Admin Console</strong>
       </a>
@@ -604,31 +626,83 @@
 
     <!-- Hero Banner -->
     
-    <!-- Two Primary Portals: Interactive Course Course vs Live Studio -->
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem; margin-bottom:2.2rem;">
-      <div style="background:linear-gradient(135deg, #0b1a2d, #1b365d); color:white; border-radius:1.2rem; padding:1.8rem; box-shadow:0 10px 25px rgba(11,26,45,0.15); display:flex; flex-direction:column; justify-content:space-between;">
+    <!-- Dynamic Enrolled Course Action Banner -->
+    <div id="enrolledCourseBanner" style="background: linear-gradient(135deg, #07073b, #1e1b4b); color: white; border-radius: 1.3rem; padding: 1.8rem 2.2rem; margin-bottom: 2.2rem; border: 1.5px solid rgba(100,199,212,0.3); box-shadow: 0 15px 35px rgba(7,7,59,0.25); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.2rem;">
+      <div>
+        <span id="enrolledCourseTag" style="background: rgba(100,199,212,0.2); color: #64c7d4; font-size: 0.78rem; font-weight: 800; padding: 0.25rem 0.75rem; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.04em;">Enrolled Masterclass</span>
+        <h2 id="enrolledStudentHeading" style="font-size: 1.6rem; margin: 0.6rem 0 0.3rem; color: white;">Welcome to Your Classroom</h2>
+        <p id="enrolledCourseSub" style="color: #cbd5e1; font-size: 0.92rem; margin: 0;">Access your full curriculum lessons, interactive exercises, formula labs, and live broadcast studio.</p>
+      </div>
+      <div style="display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap;">
+        <a id="btnLaunchMyClassroom" href="Excel_Master_Course_Hub.html" class="nav-btn primary" style="font-size: 1.05rem; padding: 0.85rem 1.6rem; background: linear-gradient(135deg, #107c41, #0b5e31); border-color: #22c55e; box-shadow: 0 6px 20px rgba(16,124,65,0.35);">
+          <i class="fas fa-play-circle"></i> <strong>Launch My Enrolled Classroom</strong> &rarr;
+        </a>
+        <a id="btnLaunchLiveStudio" href="Excel_Master_Course_Hub.html?mode=live" class="nav-btn record" style="font-size: 0.95rem; padding: 0.85rem 1.4rem;">
+          <i class="fas fa-satellite-dish"></i> <strong>Live Studio</strong>
+        </a>
+      </div>
+    </div>
+
+    <!-- 4 Dedicated Greach Academy Course Classrooms Grid -->
+    <h2 class="section-title"><i class="fas fa-chalkboard-teacher" style="color:#0284c7;"></i> Greach Academy Dedicated Classrooms</h2>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(265px, 1fr)); gap:1.4rem; margin-bottom:2.5rem;">
+      <!-- Classroom 1: Excel Masterclass -->
+      <div class="dl-card" id="cardExcel">
         <div>
-          <span style="background:rgba(56, 189, 248, 0.2); color:#38bdf8; font-size:0.78rem; font-weight:800; padding:0.25rem 0.75rem; border-radius:20px; text-transform:uppercase;">Self-Paced Learning Portal</span>
-          <h3 style="font-size:1.4rem; margin:0.8rem 0 0.5rem; color:white;"><i class="fas fa-graduation-cap" style="color:#38bdf8;"></i> Interactive Masterclass Player</h3>
-          <p style="color:#cbd5e1; font-size:0.9rem; line-height:1.5; margin-bottom:1.5rem;">
-            64 step-by-step modular lessons with an expandable curriculum sidebar, lesson completion checkmarks, practice lab sheets, formula references, and interactive Q&amp;A.
-          </p>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem;">
+            <div class="dl-icon" style="color:#107c41; margin-bottom:0;"><i class="fas fa-file-excel"></i></div>
+            <span id="badgeExcel" style="font-size:0.75rem; font-weight:800; padding:0.2rem 0.6rem; border-radius:20px; background:#dcfce7; color:#15803d;">Available</span>
+          </div>
+          <h3 style="color:#0f172a;">Microsoft Excel Masterclass</h3>
+          <p>64 interactive lessons (Beginners &amp; Advanced), auto-checking formulas, practice labs, and screen recorder.</p>
         </div>
-        <a href="Excel_Master_Course_Hub.html?mode=course" class="btn-action web" style="font-size:1rem; padding:0.85rem;">
-          <i class="fas fa-play"></i> Open Interactive Course Player
+        <a id="cardBtnExcel" href="Excel_Master_Course_Hub.html" class="btn-action excel" style="width:100%; justify-content:center;">
+          <i class="fas fa-play"></i> Enter Excel Classroom
         </a>
       </div>
 
-      <div style="background:linear-gradient(135deg, #1e1b4b, #312e81); color:white; border-radius:1.2rem; padding:1.8rem; box-shadow:0 10px 25px rgba(30,27,75,0.15); display:flex; flex-direction:column; justify-content:space-between; border:1.5px solid #6366f1;">
+      <!-- Classroom 2: Executive Dashboard Studio -->
+      <div class="dl-card" id="cardDashboard">
         <div>
-          <span style="background:rgba(239, 68, 68, 0.2); color:#fca5a5; font-size:0.78rem; font-weight:800; padding:0.25rem 0.75rem; border-radius:20px; text-transform:uppercase;">Live Broadcast Mode</span>
-          <h3 style="font-size:1.4rem; margin:0.8rem 0 0.5rem; color:white;"><i class="fas fa-satellite-dish" style="color:#f87171;"></i> Live Class Broadcast Studio</h3>
-          <p style="color:#e0e7ff; font-size:0.9rem; line-height:1.5; margin-bottom:1.5rem;">
-            Host interactive live classes for all enrolled students with YouTube Live/Google Meet video streaming, in-browser screen &amp; mic recording, 5-minute lab timer, and student live chat.
-          </p>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem;">
+            <div class="dl-icon" style="color:#4f46e5; margin-bottom:0;"><i class="fas fa-chart-line"></i></div>
+            <span id="badgeDashboard" style="font-size:0.75rem; font-weight:800; padding:0.2rem 0.6rem; border-radius:20px; background:#e0e7ff; color:#3730a3;">Available</span>
+          </div>
+          <h3 style="color:#0f172a;">Executive Dashboard Studio</h3>
+          <p>16 specialist lessons, dynamic Slicers, KPI cards, timeline scrubbers, Pivot engines, and executive templates.</p>
         </div>
-        <a href="Excel_Master_Course_Hub.html?mode=live" class="btn-action record" style="font-size:1rem; padding:0.85rem;">
-          <i class="fas fa-broadcast-tower"></i> Launch Live Broadcast Studio (Unlimited Capacity)
+        <a id="cardBtnDashboard" href="Excel_Dashboard_Hub.html" class="btn-action web" style="background:#4f46e5; border-color:#6366f1; width:100%; justify-content:center;">
+          <i class="fas fa-columns"></i> Enter Dashboard Studio
+        </a>
+      </div>
+
+      <!-- Classroom 3: SQL Analytics Studio -->
+      <div class="dl-card" id="cardSql">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem;">
+            <div class="dl-icon" style="color:#ea580c; margin-bottom:0;"><i class="fas fa-database"></i></div>
+            <span id="badgeSql" style="font-size:0.75rem; font-weight:800; padding:0.2rem 0.6rem; border-radius:20px; background:#ffedd5; color:#c2410c;">Available</span>
+          </div>
+          <h3 style="color:#0f172a;">SQL Analytics Studio</h3>
+          <p>24 modular lessons, in-browser live SQL query runner, schema explorer, sample datasets, and analytics capstone.</p>
+        </div>
+        <a id="cardBtnSql" href="SQL_Master_Course_Hub.html" class="btn-action" style="background:#ea580c; color:white; width:100%; justify-content:center;">
+          <i class="fas fa-terminal"></i> Enter SQL Studio
+        </a>
+      </div>
+
+      <!-- Classroom 4: Power BI Business Intelligence -->
+      <div class="dl-card" id="cardPbi">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem;">
+            <div class="dl-icon" style="color:#f59e0b; margin-bottom:0;"><i class="fas fa-chart-pie"></i></div>
+            <span id="badgePbi" style="font-size:0.75rem; font-weight:800; padding:0.2rem 0.6rem; border-radius:20px; background:#fef3c7; color:#b45309;">Available</span>
+          </div>
+          <h3 style="color:#0f172a;">Power BI Business Intelligence</h3>
+          <p>24 modular lessons, Star Schema visualizer, DAX formula studio, interactive slicer canvas, and starter .pbix.</p>
+        </div>
+        <a id="cardBtnPbi" href="PowerBI_Master_Course_Hub.html" class="btn-action gold" style="width:100%; justify-content:center;">
+          <i class="fas fa-chart-pie"></i> Enter Power BI Hub
         </a>
       </div>
     </div>
@@ -686,54 +760,54 @@
     </div>
 
     <!-- Download Center Grid -->
-    <h2 class="section-title"><i class="fas fa-download"></i> Downloadable Course Materials &amp; Portal</h2>
+    <h2 class="section-title"><i class="fas fa-download"></i> Official Student Resource Packs &amp; Workbooks</h2>
     <div class="grid-downloads">
 
-      <!-- Card 1: Interactive Learning Hub -->
-      <div class="dl-card">
-        <div>
-          <div class="dl-icon" style="color:#0284c7;"><i class="fas fa-laptop-code"></i></div>
-          <h3>Online Classroom Portal</h3>
-          <p>The interactive 64-slide master classroom with lesson search, interactive quizzes, live lab timer, drawing pen, and screen recorder.</p>
-        </div>
-        <a href="Excel_Master_Course_Hub.html" class="btn-action web">
-          <i class="fas fa-play"></i> Open Classroom (64 Lessons)
-        </a>
-      </div>
-
-      <!-- Card 2: Complete Exercise Workbook -->
+      <!-- Card 1: Excel Exercise Workbook -->
       <div class="dl-card">
         <div>
           <div class="dl-icon" style="color:#107c41;"><i class="fas fa-file-excel"></i></div>
-          <h3>16-Sheet Exercise Workbook</h3>
-          <p>Every module (M1 to M6) covered in dedicated exercise tabs with yellow practice columns and green automated checkmarks (<code>✅ Correct!</code>).</p>
+          <h3>16-Sheet Excel Workbook</h3>
+          <p>Every Excel module (M1 to M6) with yellow practice columns and green automated checkmarks (<code>✅ Correct!</code>).</p>
         </div>
         <a href="Master_Excel_Course_Exercises.xlsx" download="Master_Excel_Course_Exercises.xlsx" class="btn-action excel">
           <i class="fas fa-download"></i> Download Workbook (.xlsx)
         </a>
       </div>
 
-      <!-- Card 3: Student Handbook -->
+      <!-- Card 2: Executive Dashboard Template -->
       <div class="dl-card">
         <div>
-          <div class="dl-icon" style="color:#2563eb;"><i class="fas fa-file-word"></i></div>
-          <h3>Student Handbook &amp; Guide</h3>
-          <p>Exhaustive printable manual: workplace scenarios, step-by-step guides, 30+ shortcuts, quiz answer keys, and error troubleshooting.</p>
+          <div class="dl-icon" style="color:#4f46e5;"><i class="fas fa-chart-line"></i></div>
+          <h3>Dashboard Template (.xlsx)</h3>
+          <p>Pre-built executive scorecard template with interactive slicers, KPI widgets, and dark mode palette.</p>
         </div>
-        <a href="Master_Excel_Student_Handbook.docx" download="Master_Excel_Student_Handbook.docx" class="btn-action">
-          <i class="fas fa-download"></i> Download Handbook (.docx)
+        <a href="Master_Excel_Practice_Workbook.xlsx" download="Executive_Dashboard_Template.xlsx" class="btn-action web" style="background:#4f46e5; border-color:#6366f1;">
+          <i class="fas fa-download"></i> Download Template (.xlsx)
         </a>
       </div>
 
-      <!-- Card 4: Raw Datasets -->
+      <!-- Card 3: SQL Relational Database Script -->
       <div class="dl-card">
         <div>
-          <div class="dl-icon" style="color:#d97706;"><i class="fas fa-database"></i></div>
-          <h3>Raw Combined Datasets</h3>
-          <p>100+ raw transactional records, HR messy exports, and budget tables for additional practice.</p>
+          <div class="dl-icon" style="color:#ea580c;"><i class="fas fa-database"></i></div>
+          <h3>SQL Sample Database (.sql)</h3>
+          <p>Complete starter relational schema with students, courses, orders, and payment audit tables for hands-on querying.</p>
         </div>
-        <a href="Dataset/All Combine Dataset.xlsx" download="All_Combine_Dataset.xlsx" class="btn-action gold">
-          <i class="fas fa-download"></i> Download Datasets (.xlsx)
+        <a href="SQL_Master_Course_Hub.html" class="btn-action" style="background:#ea580c; color:white;">
+          <i class="fas fa-terminal"></i> Open SQL Studio
+        </a>
+      </div>
+
+      <!-- Card 4: Power BI Starter Template -->
+      <div class="dl-card">
+        <div>
+          <div class="dl-icon" style="color:#f59e0b;"><i class="fas fa-chart-pie"></i></div>
+          <h3>Power BI Report Pack (.pbix)</h3>
+          <p>Starter Star Schema data model, 20+ DAX measures, synchronized slicers, and executive visual canvases.</p>
+        </div>
+        <a href="PowerBI_Master_Course_Hub.html" class="btn-action gold">
+          <i class="fas fa-chart-pie"></i> Open Power BI Hub
         </a>
       </div>
 
@@ -1044,6 +1118,9 @@
           if (verifiedStudentName) {
             const courseLabel = session.course || 'Beginner';
             verifiedStudentName.innerHTML = `🎓 <strong>${escapeHtml(session.name)}</strong> <span style="font-size:0.75rem; background:#107c41; color:white; padding:2px 8px; border-radius:12px; margin-left:4px;">${escapeHtml(courseLabel)}</span>`;
+          }
+          if (typeof updateClassroomPortalUI === 'function') {
+            updateClassroomPortalUI(session);
           }
         } else {
           if (securityGateOverlay) securityGateOverlay.classList.remove('unlocked');
@@ -1406,6 +1483,7 @@
       }
     };
 
+    window.addEventListener('click', () => { const m = document.getElementById('idxSwitcherMenu'); if(m) m.classList.remove('active'); });
     window.addEventListener('beforeunload', () => {
       const session = JSON.parse(localStorage.getItem(ACTIVE_SESSION_KEY) || '{}');
       if (session && session.id && window.GreachDB && window.GreachDB.recordStudentLogout) {
