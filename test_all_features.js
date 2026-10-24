@@ -29,9 +29,10 @@ const GreachBrevo = global.window.GreachBrevo;
 console.log('=== TEST 1: PRICE UPDATE & AUDIT TRAIL LOGGING ===');
 GreachDB.updateCoursePrice('dashboard', 4000, 80000, 'Greachimpact');
 const prices = GreachDB.getPrices();
-console.log('Dashboard price in DB:', prices.dashboard.current);
-console.log('Dashboard discount in DB:', prices.dashboard.discount);
-if (prices.dashboard.current !== 4000 || !prices.dashboard.discount.includes('95%')) {
+const dashPrice = prices.excel_dashboard || prices.dashboard;
+console.log('Dashboard price in DB:', dashPrice.current);
+console.log('Dashboard discount in DB:', dashPrice.discount);
+if (dashPrice.current !== 4000 || !dashPrice.discount.includes('95%')) {
   throw new Error('Price update failed!');
 }
 
@@ -212,6 +213,26 @@ if (unconfirmedLogin.success) {
     throw new Error('Blog post deletion failed!');
   }
   console.log('✅ Blog publishing, updating, and deleting verified 100%.');
+
+  console.log('\n=== TEST 7: SUPERUSER 6-CLASSROOM LIVE COMMAND CENTER ===');
+  const allClassrooms = GreachDB.getAllClassrooms();
+  console.log('Total dedicated classrooms:', allClassrooms.length);
+  if (allClassrooms.length !== 6) {
+    throw new Error('Expected 6 dedicated classrooms!');
+  }
+  // Stop SQL classroom as Superuser
+  GreachDB.stopClassroom('sql_beginners', 'Greachimpact', 'Paused for instructor Q&A');
+  if (GreachDB.isClassroomOpen('sql_beginners') !== false) {
+    throw new Error('SQL classroom should be stopped!');
+  }
+  console.log('SQL Classroom open state after stop:', GreachDB.isClassroomOpen('sql_beginners'));
+  // Start SQL classroom back ON
+  GreachDB.startClassroom('sql_beginners', 'Greachimpact', 'SQL Live Class is now ON');
+  if (GreachDB.isClassroomOpen('sql_beginners') !== true) {
+    throw new Error('SQL classroom should be ON!');
+  }
+  console.log('SQL Classroom open state after start:', GreachDB.isClassroomOpen('sql_beginners'));
+  console.log('✅ All 6 classrooms & Superuser ON/STOP controls verified 100%.');
 
   console.log('\n=============================================');
   console.log('🎉 ALL COMPREHENSIVE SYSTEM TESTS PASSED 100%!');
