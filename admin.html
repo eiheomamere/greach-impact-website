@@ -2484,6 +2484,10 @@
       if (currentAdminSession) {
         badge.innerHTML = currentAdminSession.isSuper ? '<i class="fas fa-crown"></i> Super Admin' : '<i class="fas fa-user-shield"></i> Sub-Admin';
         greet.textContent = `Logged in as: ${currentAdminSession.username} • ${currentAdminSession.isSuper ? 'Global Superuser Access' : 'Delegated Admin'}`;
+        localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(currentAdminSession));
+      }
+      if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
+        window.GreachDB.activateAdminClassroomSession(currentAdminSession ? currentAdminSession.username : 'Greachimpact');
       }
       refreshAllData();
     }
@@ -2505,6 +2509,10 @@
           token: res.token
         };
         sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(currentAdminSession));
+        localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(currentAdminSession));
+        if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
+          window.GreachDB.activateAdminClassroomSession(currentAdminSession.username);
+        }
         errBox.style.display = 'none';
         unlockAdminConsole();
       } else {
@@ -2762,8 +2770,8 @@
             <button class="btn-action" style="background:#f1f5f9; color:#334155; border-color:#cbd5e1; font-weight:700; padding:7px 10px;" onclick="handleResetClassroomTimer('${cls.key}', this)" title="Reset elapsed class timer to 00m 00s">
               <i class="fas fa-redo-alt"></i>
             </button>
-            <a href="classroom/${cls.hubUrl}" target="_blank" class="btn-action" style="background:#0A0A5E; color:#ffffff; border-color:#0A0A5E; font-weight:700; text-decoration:none; padding:7px 10px;" title="Enter this classroom as Superuser">
-              <i class="fas fa-external-link-alt"></i> Enter
+            <a href="classroom/${cls.hubUrl}${cls.hubUrl.includes('?') ? '&' : '?'}admin=true" target="_blank" onclick="if(window.GreachDB&&window.GreachDB.activateAdminClassroomSession)window.GreachDB.activateAdminClassroomSession('Greachimpact');" class="btn-action" style="background:#0A0A5E; color:#ffffff; border-color:#0A0A5E; font-weight:700; text-decoration:none; padding:7px 10px;" title="Enter this classroom directly as Admin (No password required)">
+              <i class="fas fa-external-link-alt"></i> Enter (Admin)
             </a>
           </div>
         </div>

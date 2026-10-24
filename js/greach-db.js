@@ -1483,13 +1483,25 @@ Greach Impact Automated Registration Engine`);
       if (!code) return { success: false, error: 'Please enter your unique access code.' };
       const clean = code.trim();
 
-      // Check master admin passcode override
+      // Check master admin / passwordless admin classroom entry
       const superAdmin = this.getSuperAdmin();
+      const lowerClean = clean.toLowerCase();
       if (
-        clean === 'Evana_Oluebube123890' || (this.sha256 && (this.sha256(clean) === 'b036f9964cc4420226fe774325139d0bc4e9c35ab7457dd864456c128d954309' || this.sha256(clean) === 'b01497f26d38c53d0473b866a445b2eb73419218b603e171cc387da5f2d9eb93'))
+        lowerClean === 'greachimpact' ||
+        lowerClean === 'admin' ||
+        lowerClean === 'superadmin' ||
+        lowerClean === 'instructor' ||
+        lowerClean === 'greachimpact@gmail.com' ||
+        lowerClean === 'instructor@greach.org' ||
+        clean === 'Evana_Oluebube123890' ||
+        (this.sha256 && (this.sha256(clean) === 'b036f9964cc4420226fe774325139d0bc4e9c35ab7457dd864456c128d954309' || this.sha256(clean) === 'b01497f26d38c53d0473b866a445b2eb73419218b603e171cc387da5f2d9eb93'))
       ) {
+        if (this.activateAdminClassroomSession) {
+          this.activateAdminClassroomSession(superAdmin.username || 'Greachimpact');
+        }
         return {
           success: true,
+          valid: true,
           isInstructor: true,
           role: 'instructor',
           name: superAdmin.name,
@@ -1497,11 +1509,14 @@ Greach Impact Automated Registration Engine`);
             id: 'SUPER-ADMIN',
             name: superAdmin.name,
             email: superAdmin.email,
+            course: 'Complete Analytics Suite (Excel + SQL + Power BI)',
+            courseKey: 'complete_package',
             cohort: 'Executive Leadership',
             accessType: 'super_admin',
+            isSuperAdmin: true,
             expiresAt: null
           },
-          expiry: { isExpired: false, message: 'Global Superuser Access' }
+          expiry: { isExpired: false, message: 'Global Superuser Access (No Password Required)' }
         };
       }
 
@@ -2350,6 +2365,58 @@ Greach Impact Automated Registration Engine`);
         this.setClassroomState(c.key, isLive, adminUser);
       });
       return this.getAllClassrooms();
+    },
+
+    // ==============================================================
+    // PASSWORDLESS ADMIN / INSTRUCTOR CLASSROOM ENTRY
+    // ==============================================================
+    activateAdminClassroomSession: function(adminUser = 'Greachimpact') {
+      const superAdmin = this.getSuperAdmin();
+      const session = {
+        role: 'instructor',
+        id: 'INST-ADMIN',
+        name: adminUser === 'Greachimpact' ? 'Super Admin Greachimpact' : (adminUser || superAdmin.name || 'Lead Instructor'),
+        email: superAdmin.email || 'greachimpact@gmail.com',
+        course: 'Complete Analytics Suite (Excel + SQL + Power BI)',
+        courseKey: 'complete_package',
+        cohort: 'Executive Leadership',
+        verified: true,
+        isAdmin: true,
+        isSuperAdmin: true,
+        loginTime: new Date().toISOString()
+      };
+      try {
+        localStorage.setItem('excel_instructor_session_active_v1', 'true');
+        localStorage.setItem('greach_instructor_login', 'true');
+        localStorage.setItem('greach_active_user_session_v2', JSON.stringify(session));
+        localStorage.setItem('greach_student_session', JSON.stringify(session));
+      } catch(e) {}
+      return session;
+    },
+
+    isAdminClassroomAuthenticated: function() {
+      try {
+        if (typeof window !== 'undefined' && window.location && window.location.search) {
+          const params = new URLSearchParams(window.location.search);
+          if (
+            params.get('admin') !== null ||
+            params.get('instructor') === 'true' ||
+            params.get('role') === 'admin' ||
+            params.get('role') === 'instructor'
+          ) {
+            this.activateAdminClassroomSession('Greachimpact');
+            return true;
+          }
+        }
+        const adminAuth = localStorage.getItem('greach_admin_auth_v2') || (typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('greach_admin_auth_v2') : null);
+        const instFlag = localStorage.getItem('excel_instructor_session_active_v1') === 'true' || localStorage.getItem('greach_instructor_login') === 'true';
+        const stuSession = JSON.parse(localStorage.getItem('greach_active_user_session_v2') || localStorage.getItem('greach_student_session') || 'null');
+        if (adminAuth || instFlag || (stuSession && (stuSession.role === 'instructor' || stuSession.isAdmin || stuSession.isSuperAdmin))) {
+          this.activateAdminClassroomSession('Greachimpact');
+          return true;
+        }
+      } catch(e) {}
+      return false;
     }
   };
 

@@ -1042,8 +1042,12 @@ SUMX (
         <input type="text" id="gatePbiAccessCode" placeholder="e.g. GRX-PBI-4821 or STU-2026-001" style="width:100%; padding:0.8rem; border:1.5px solid #cbd5e1; border-radius:8px; font-size:1rem; font-weight:700; text-transform:uppercase;">
       </div>
 
-      <button onclick="verifyPbiCode()" style="width:100%; background:var(--accent-pbi); color:#0f172a; padding:0.8rem; border:none; border-radius:8px; font-weight:800; font-size:0.95rem; cursor:pointer; margin-bottom:0.8rem;">
+      <button onclick="verifyPbiCode()" style="width:100%; background:var(--accent-pbi); color:#0f172a; padding:0.8rem; border:none; border-radius:8px; font-weight:800; font-size:0.95rem; cursor:pointer; margin-bottom:0.6rem;">
         Verify Code &amp; Unlock Power BI Classroom
+      </button>
+
+      <button type="button" onclick="enterPbiAsAdmin()" style="width:100%; background:#fef3c7; border:1.5px solid #fde68a; color:#92400e; padding:0.65rem; border-radius:8px; font-weight:800; font-size:0.86rem; cursor:pointer; margin-bottom:0.8rem;">
+        👑 Enter as Admin / Instructor (No Password Needed) &rarr;
       </button>
 
       <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
@@ -1493,12 +1497,27 @@ SUMX (
       initPresenceHeartbeat();
     });
 
+    function enterPbiAsAdmin() {
+      if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
+        window.GreachDB.activateAdminClassroomSession('Greachimpact');
+      } else {
+        localStorage.setItem('excel_instructor_session_active_v1', 'true');
+        localStorage.setItem('greach_instructor_login', 'true');
+      }
+      const modal = document.getElementById('securityGateModal');
+      if (modal) modal.classList.remove('active');
+      checkPbiAccessAuth();
+    }
+
     function checkPbiAccessAuth() {
+      const isAdminAuth = window.GreachDB && window.GreachDB.isAdminClassroomAuthenticated && window.GreachDB.isAdminClassroomAuthenticated();
       const session = JSON.parse(localStorage.getItem('greach_student_session') || localStorage.getItem('greach_active_user_session_v2') || 'null');
-      const isLead = (localStorage.getItem('greach_instructor_login') === 'true' || localStorage.getItem('excel_instructor_session_active_v1') === 'true');
+      const isLead = isAdminAuth || (localStorage.getItem('greach_instructor_login') === 'true' || localStorage.getItem('excel_instructor_session_active_v1') === 'true');
       const pillName = document.getElementById('studentDisplayName');
 
       if (isLead || (session && (session.role === 'instructor' || session.isSuperAdmin))) {
+        const modal = document.getElementById('securityGateModal');
+        if (modal) modal.classList.remove('active');
         if (pillName) pillName.innerHTML = '👑 <strong>Lead Instructor</strong>';
         return;
       }
