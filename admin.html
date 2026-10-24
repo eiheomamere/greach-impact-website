@@ -573,7 +573,12 @@
 
     <!-- KPI Metric Cards -->
     <section class="stats-grid">
-      <div class="stat-card green" style="border-left: 5px solid #22c55e;">
+      <div class="stat-card green" style="border-left: 5px solid #10b981; cursor:pointer;" onclick="switchAdminTab('classrooms')" title="Click to manage all 6 Live Classrooms">
+        <div class="stat-title"><span>Classrooms Live</span> <i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i></div>
+        <div class="stat-val" id="statClassroomsLive">6/6</div>
+        <div class="stat-sub"><span style="display:inline-block; width:8px; height:8px; background:#10b981; border-radius:50%; margin-right:4px;"></span>Click to Stop or Leave On</div>
+      </div>
+      <div class="stat-card green" style="border-left: 5px solid #22c55e; cursor:pointer;" onclick="switchAdminTab('activity')" title="Click to view who is in class">
         <div class="stat-title"><span>Students Online</span> <i class="fas fa-satellite-dish" style="color:#22c55e;"></i></div>
         <div class="stat-val" id="statOnlineStudents">0</div>
         <div class="stat-sub"><span style="display:inline-block; width:8px; height:8px; background:#22c55e; border-radius:50%; margin-right:4px;"></span>Live Presence Active</div>
@@ -618,6 +623,8 @@
     <!-- Navigation Tabs -->
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchAdminTab('students')"><i class="fas fa-user-graduate"></i> Student Roster &amp; Bank</button>
+      <button class="tab-btn" onclick="switchAdminTab('classrooms')"><i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i> 🏫 Live Classrooms Control (6)</button>
+      <button class="tab-btn" onclick="switchAdminTab('activity')"><i class="fas fa-satellite-dish" style="color:#22c55e;"></i> Live Student Logins &amp; Presence</button>
       <button class="tab-btn" onclick="switchAdminTab('orders')"><i class="fas fa-shopping-cart"></i> Orders &amp; Pipeline</button>
       <button class="tab-btn" onclick="switchAdminTab('session_passes')"><i class="fas fa-stopwatch"></i> Temporary Session Passes</button>
       <button class="tab-btn" onclick="switchAdminTab('blog')"><i class="fas fa-newspaper" style="color:#0284c7;"></i> Blog Articles &amp; Content</button>
@@ -629,28 +636,64 @@
       <button class="tab-btn" onclick="switchAdminTab('superuser')"><i class="fas fa-user-cog"></i> Superuser Settings</button>
       <button class="tab-btn" onclick="switchAdminTab('admins')"><i class="fas fa-user-shield"></i> Sub-Admins Manager</button>
       <button class="tab-btn" onclick="switchAdminTab('certificates')"><i class="fas fa-certificate"></i> Certificate Vault</button>
-      <button class="tab-btn" onclick="switchAdminTab('activity')"><i class="fas fa-satellite-dish"></i> Live Student Logins &amp; Presence</button>
       <button class="tab-btn" onclick="switchAdminTab('broadcast')"><i class="fas fa-bullhorn"></i> Live Stream &amp; Broadcast</button>
     </div>
 
     <!-- ========================================== -->
-    <!-- TAB 1: STUDENT ROSTER & ACCESS CODES -->
+    <!-- TAB: SUPERUSER LIVE CLASSROOMS COMMAND CENTER (ALL 6 CLASSES) -->
     <!-- ========================================== -->
-    
+    <section id="tabClassrooms" class="admin-card" style="display:none;">
+      <div class="card-head">
+        <div>
+          <h2><i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i> Superuser Live Classrooms Command Center (All 6 Classes)</h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+            Monitor every dedicated course classroom in real time: see <strong>which class is ON or STOPPED</strong>, <strong>how long it has been ON</strong>, <strong>who is currently inside it</strong>, and as Superuser (<code>Greachimpact</code>) <strong>stop any class or leave it on</strong> with 1 click.
+          </p>
+        </div>
+        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+          <button class="btn-primary" style="background:#107C41; border-color:#107C41;" onclick="handleSetAllClassrooms(true)"><i class="fas fa-play-circle"></i> Leave All 6 Classes ON</button>
+          <button class="btn-gold" style="background:#dc2626; color:#fff;" onclick="handleSetAllClassrooms(false)"><i class="fas fa-stop-circle"></i> Stop All 6 Classes</button>
+          <button class="btn-primary" onclick="renderClassroomsControlCenter()"><i class="fas fa-sync-alt"></i> Refresh Live Status</button>
+        </div>
+      </div>
+
+      <div id="liveClassroomsControlGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(340px, 1fr)); gap:1.25rem; margin-top:1.25rem;">
+        <!-- Dynamically populated by renderClassroomsControlCenter() -->
+      </div>
+    </section>
+
     <!-- ========================================== -->
     <!-- TAB: LIVE STUDENT PRESENCE & ACTIVITY LOG -->
     <!-- ========================================== -->
     <section id="tabActivity" class="admin-card" style="display:none;">
       <div class="card-head">
         <div>
-          <h2><i class="fas fa-satellite-dish" style="color:#22c55e;"></i> Live Student Presence &amp; Login / Logout Activity</h2>
+          <h2><i class="fas fa-satellite-dish" style="color:#22c55e;"></i> Live Student Presence, Active Classrooms &amp; Login / Logout Activity</h2>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
-            Real-time presence monitoring of enrolled students. View who is currently in class, their enrolled course, active duration, and force-terminate any suspicious session.
+            Real-time presence monitoring of all 6 classrooms and enrolled students. View which class is ON, how long it has been running, who is inside it, and stop or leave classes on.
           </p>
         </div>
-        <div style="display:flex; gap:0.6rem;">
+        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+          <button class="btn-primary" style="background:#107C41; border-color:#107C41;" onclick="switchAdminTab('classrooms')"><i class="fas fa-chalkboard-teacher"></i> Full Classroom Command View</button>
           <button class="btn-primary" onclick="renderStudentActivity()"><i class="fas fa-sync-alt"></i> Refresh Presence</button>
           <button class="btn-gold" style="background:#dc2626;" onclick="clearActivityHistory()"><i class="fas fa-trash-alt"></i> Clear Activity History</button>
+        </div>
+      </div>
+
+      <!-- SUB-SECTION 0: COMPACT LIVE CLASSROOMS STATUS OVERVIEW -->
+      <div style="margin-top:1.25rem; margin-bottom:2rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; flex-wrap:wrap; gap:0.5rem;">
+          <h3 style="font-size:1.08rem; color:var(--navy-900); display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i>
+            All 6 Course Classrooms — Live Status, Uptime &amp; Superuser Controls
+          </h3>
+          <div style="display:flex; gap:0.5rem;">
+            <button class="btn-action" style="background:#ecfdf5; color:#065f46; border-color:#a7f3d0; font-weight:700;" onclick="handleSetAllClassrooms(true)"><i class="fas fa-play"></i> Turn All ON</button>
+            <button class="btn-action" style="background:#fee2e2; color:#dc2626; border-color:#fca5a5; font-weight:700;" onclick="handleSetAllClassrooms(false)"><i class="fas fa-stop"></i> Stop All</button>
+          </div>
+        </div>
+        <div id="activityClassroomsMiniGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(310px, 1fr)); gap:1rem;">
+          <!-- Dynamically populated by renderClassroomsControlCenter() -->
         </div>
       </div>
 
@@ -1922,6 +1965,15 @@
     }
 
     function setButtonLoading(btn, isLoading, loadingText = 'Processing...') {
+      if (window.GreachLoader) {
+        if (btn) window.GreachLoader.setButton(btn, isLoading, loadingText || 'GREACH IMPACT');
+        if (isLoading) {
+          window.GreachLoader.show(loadingText || 'Processing Request...');
+        } else {
+          window.GreachLoader.hide();
+        }
+        return;
+      }
       if (!btn) return;
       if (isLoading) {
         btn.dataset.prevHtml = btn.innerHTML;
@@ -2472,6 +2524,7 @@
     // Comprehensive Tab Switching Map
     const ADMIN_TAB_MAP = {
       students: 'tabStudents',
+      classrooms: 'tabClassrooms',
       orders: 'tabOrders',
       session_passes: 'tabSessionPasses',
       blog: 'tabBlog',
@@ -2506,8 +2559,10 @@
         if (el) el.style.display = (key === tabKey) ? 'block' : 'none';
       });
 
-      // Tab specific data hydration
-      if (tabKey === 'blog') {
+      // Tab specific data hydration (Instant Local First!)
+      if (tabKey === 'classrooms') {
+        if (typeof renderClassroomsControlCenter === 'function') renderClassroomsControlCenter();
+      } else if (tabKey === 'blog') {
         if (typeof renderBlogTable === 'function') renderBlogTable();
       } else if (tabKey === 'session_passes') {
         if (typeof renderSessionPassesTable === 'function') renderSessionPassesTable();
@@ -2519,9 +2574,10 @@
         if (typeof populateSuperUserForm === 'function') populateSuperUserForm();
       } else if (tabKey === 'schedules') {
         if (typeof renderScheduleCards === 'function') renderScheduleCards();
-        if (typeof syncSiteDataToCloud === 'function') syncSiteDataToCloud();
       } else if (tabKey === 'orders') {
         if (typeof renderOrdersTable === 'function') renderOrdersTable();
+      } else if (tabKey === 'audit') {
+        if (typeof renderAuditTable === 'function') renderAuditTable();
       } else if (tabKey === 'brevo') {
         if (typeof loadBrevoConfig === 'function') loadBrevoConfig();
         if (typeof renderDispatchLogsTable === 'function') renderDispatchLogsTable();
@@ -2533,8 +2589,26 @@
       }
     }
 
+    async function syncSiteDataToCloud() {
+      if (window.GreachLoader) window.GreachLoader.show('Publishing Live Updates to Supabase Cloud...');
+      try {
+        if (typeof syncLocalToSupabase === 'function') {
+          await syncLocalToSupabase();
+        }
+        if (window.GreachSync && window.GreachSync.refresh) {
+          window.GreachSync.refresh();
+        }
+        showToast('Live Updates Published!', 'All course prices, schedules, and student records are synced to cloud.', 'success');
+      } catch(e) {
+        showToast('Publish Warning', e.message || 'Saved locally.', 'warning');
+      } finally {
+        if (window.GreachLoader) window.GreachLoader.hide();
+      }
+    }
+
     // Refresh All Data
     function refreshAllData() {
+      if (typeof renderClassroomsControlCenter === 'function') renderClassroomsControlCenter();
       if (typeof renderStudentActivity === 'function') renderStudentActivity();
       renderStats();
       renderStudentsTable();
@@ -2551,6 +2625,13 @@
       const certs = window.GreachDB.getAllCertificates();
       const orders = window.GreachBrevo ? window.GreachBrevo.getAllOrders() : [];
       const dispatches = window.GreachBrevo ? window.GreachBrevo.getDispatchLogs() : [];
+
+      if (window.GreachDB && window.GreachDB.getAllClassrooms) {
+        const classrooms = window.GreachDB.getAllClassrooms();
+        const liveCount = classrooms.filter(c => c.isLive).length;
+        const statClsEl = document.getElementById('statClassroomsLive');
+        if (statClsEl) statClsEl.textContent = `${liveCount}/${classrooms.length}`;
+      }
 
       let totalRevenue = 0;
       orders.forEach(o => {
@@ -2590,11 +2671,205 @@
       document.getElementById('statCertsIssued').textContent = certs.length.toLocaleString();
     }
 
+    // ==============================================================
+    // SUPERUSER LIVE CLASSROOMS COMMAND CENTER (ALL 6 CLASSES)
+    // ==============================================================
+    function buildClassroomCardHTML(cls, isCompact) {
+      const statusBg = cls.isLive ? '#ecfdf5' : '#fef2f2';
+      const statusBorder = cls.isLive ? '#a7f3d0' : '#fecaca';
+      const statusColor = cls.isLive ? '#065f46' : '#991b1b';
+      const dotColor = cls.isLive ? '#10b981' : '#ef4444';
+      const startTimeStr = cls.startedAt ? new Date(cls.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A';
+
+      const participantsHtml = cls.participants.length === 0
+        ? `<div style="font-size:0.8rem; color:#94a3b8; padding:0.65rem; background:#f8fafc; border-radius:8px; text-align:center; border:1px dashed #e2e8f0;">
+             <i class="fas fa-user-clock"></i> No students inside this classroom right now
+           </div>`
+        : `<div style="display:flex; flex-direction:column; gap:6px; max-height:165px; overflow-y:auto;">
+             ${cls.participants.map(p => `
+               <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:6px 10px; font-size:0.8rem;">
+                 <div>
+                   <strong style="color:#0f172a;">${escapeHtml(p.name)}</strong>
+                   <span style="font-family:monospace; font-size:0.72rem; color:#64748b; margin-left:4px;">(${escapeHtml(p.studentId)})</span>
+                   <div style="font-size:0.72rem; color:#059669; font-weight:700;" data-student-login-ts="${escapeHtml(p.loginTime)}">
+                     <i class="fas fa-clock"></i> In class for: <span class="live-student-dur">${escapeHtml(p.durationFormatted)}</span>
+                   </div>
+                 </div>
+                 <button class="btn-action" style="background:#fee2e2; color:#dc2626; border-color:#fca5a5; padding:3px 8px; font-size:0.72rem; font-weight:700;" onclick="handleForceLogout('${escapeHtml(p.studentId)}')" title="Remove student from classroom">
+                   <i class="fas fa-user-slash"></i> Kick
+                 </button>
+               </div>
+             `).join('')}
+           </div>`;
+
+      return `
+        <div class="classroom-cmd-card" style="background:#ffffff; border:2px solid ${cls.isLive ? '#cbd5e1' : '#fca5a5'}; border-top:5px solid ${cls.color}; border-radius:14px; padding:1.25rem; box-shadow:0 4px 12px rgba(0,0,0,0.04); display:flex; flex-direction:column; justify-content:space-between; gap:0.9rem;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:0.65rem;">
+              <div>
+                <span style="font-family:monospace; font-size:0.72rem; font-weight:800; background:#f1f5f9; color:#475569; padding:2px 7px; border-radius:5px; border:1px solid #e2e8f0;">${escapeHtml(cls.id)}</span>
+                <span style="font-size:0.72rem; color:#64748b; margin-left:4px;">&bull; ${escapeHtml(cls.slidesCount)}</span>
+              </div>
+              <span style="background:${statusBg}; color:${statusColor}; border:1px solid ${statusBorder}; padding:3px 10px; border-radius:20px; font-size:0.74rem; font-weight:800; display:inline-flex; align-items:center; gap:6px;">
+                <span style="width:8px; height:8px; border-radius:50%; background:${dotColor}; display:inline-block;"></span>
+                ${cls.isLive ? '🟢 CLASS ON / LIVE' : '🔴 STOPPED / OFF'}
+              </span>
+            </div>
+
+            <h4 style="font-size:1.02rem; color:var(--navy-900); margin:0 0 0.5rem; display:flex; align-items:center; gap:8px;">
+              <i class="fas ${cls.icon}" style="color:${cls.color};"></i>
+              <span>${escapeHtml(cls.label)}</span>
+            </h4>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:0.65rem 0.8rem; margin-bottom:0.85rem;">
+              <div>
+                <div style="font-size:0.7rem; text-transform:uppercase; color:#64748b; font-weight:700;">How Long Class Has Been On</div>
+                <div style="font-size:0.95rem; font-weight:800; color:${cls.isLive ? '#059669' : '#dc2626'}; font-family:monospace; margin-top:2px;" data-classroom-start-ts="${cls.isLive && cls.startedAt ? escapeHtml(cls.startedAt) : ''}">
+                  <i class="fas fa-stopwatch"></i> <span class="live-classroom-uptime">${escapeHtml(cls.uptimeFormatted)}</span>
+                </div>
+                <div style="font-size:0.68rem; color:#94a3b8;">${cls.isLive ? 'Started at ' + startTimeStr : 'Stopped by Superuser'}</div>
+              </div>
+              <div>
+                <div style="font-size:0.7rem; text-transform:uppercase; color:#64748b; font-weight:700;">Who Is In It Right Now</div>
+                <div style="font-size:0.95rem; font-weight:800; color:var(--navy-900); margin-top:2px;">
+                  <i class="fas fa-users" style="color:${cls.color};"></i> ${cls.participantsCount} ${cls.participantsCount === 1 ? 'Student' : 'Students'}
+                </div>
+                <div style="font-size:0.68rem; color:#94a3b8;">Real-time active heartbeat</div>
+              </div>
+            </div>
+
+            <div style="margin-bottom:0.5rem;">
+              <div style="font-size:0.75rem; font-weight:700; color:#334155; margin-bottom:0.4rem; display:flex; justify-content:space-between;">
+                <span><i class="fas fa-user-check" style="color:#10b981;"></i> Participants Inside Classroom (${cls.participantsCount}):</span>
+              </div>
+              ${participantsHtml}
+            </div>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; gap:6px; padding-top:0.75rem; border-top:1px solid #f1f5f9;">
+            ${cls.isLive ? `
+              <button class="btn-action" style="flex:1; background:#ecfdf5; color:#065f46; border-color:#6ee7b7; font-weight:800; justify-content:center; padding:7px 10px;" onclick="handleSetClassroomState('${cls.key}', true, this)" title="Keep this classroom ON and active">
+                <i class="fas fa-check-circle"></i> Leave ON
+              </button>
+              <button class="btn-action" style="flex:1; background:#dc2626; color:#ffffff; border-color:#dc2626; font-weight:800; justify-content:center; padding:7px 10px;" onclick="handleSetClassroomState('${cls.key}', false, this)" title="Stop this classroom immediately">
+                <i class="fas fa-stop-circle"></i> Stop Class
+              </button>
+            ` : `
+              <button class="btn-action" style="flex:1; background:#107C41; color:#ffffff; border-color:#107C41; font-weight:800; justify-content:center; padding:7px 10px;" onclick="handleSetClassroomState('${cls.key}', true, this)" title="Start / Turn ON this classroom">
+                <i class="fas fa-play-circle"></i> Start / Turn Class ON
+              </button>
+            `}
+            <button class="btn-action" style="background:#f1f5f9; color:#334155; border-color:#cbd5e1; font-weight:700; padding:7px 10px;" onclick="handleResetClassroomTimer('${cls.key}', this)" title="Reset elapsed class timer to 00m 00s">
+              <i class="fas fa-redo-alt"></i>
+            </button>
+            <a href="classroom/${cls.hubUrl}" target="_blank" class="btn-action" style="background:#0A0A5E; color:#ffffff; border-color:#0A0A5E; font-weight:700; text-decoration:none; padding:7px 10px;" title="Enter this classroom as Superuser">
+              <i class="fas fa-external-link-alt"></i> Enter
+            </a>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderClassroomsControlCenter() {
+      if (!window.GreachDB || !window.GreachDB.getAllClassrooms) return;
+      const classrooms = window.GreachDB.getAllClassrooms();
+      const liveCount = classrooms.filter(c => c.isLive).length;
+
+      const statClsEl = document.getElementById('statClassroomsLive');
+      if (statClsEl) statClsEl.textContent = `${liveCount}/${classrooms.length}`;
+
+      const fullGrid = document.getElementById('liveClassroomsControlGrid');
+      if (fullGrid) {
+        fullGrid.innerHTML = classrooms.map(c => buildClassroomCardHTML(c, false)).join('');
+      }
+
+      const miniGrid = document.getElementById('activityClassroomsMiniGrid');
+      if (miniGrid) {
+        miniGrid.innerHTML = classrooms.map(c => buildClassroomCardHTML(c, true)).join('');
+      }
+    }
+
+    function handleSetClassroomState(courseKey, isLive, btn) {
+      if (!window.GreachDB) return;
+      const adminUser = currentAdminSession ? currentAdminSession.username : 'Greachimpact';
+      const cls = window.GreachDB.getClassroomState(courseKey);
+      if (!isLive) {
+        if (!confirm(`Stop "${cls.label}" (${cls.id})?\n\nStopping this classroom will pause student access and disconnect any students currently inside it until you turn it back ON.`)) {
+          return;
+        }
+      }
+      if (window.GreachLoader) {
+        window.GreachLoader.show(isLive ? `Activating ${cls.shortLabel || cls.label}...` : `Stopping ${cls.shortLabel || cls.label}...`);
+        setTimeout(() => window.GreachLoader.hide(), 420);
+      }
+      window.GreachDB.setClassroomState(courseKey, isLive, adminUser);
+      renderClassroomsControlCenter();
+      renderStudentActivity();
+      renderStats();
+      showToast(
+        isLive ? 'Classroom is LIVE (ON)' : 'Classroom Stopped (OFF)',
+        `${cls.label} (${cls.id}) is now ${isLive ? 'LIVE & open to enrolled students' : 'STOPPED by Superuser'}.`,
+        isLive ? 'success' : 'warning'
+      );
+    }
+
+    function handleResetClassroomTimer(courseKey, btn) {
+      if (!window.GreachDB) return;
+      const adminUser = currentAdminSession ? currentAdminSession.username : 'Greachimpact';
+      const updated = window.GreachDB.resetClassroomTimer(courseKey, adminUser);
+      renderClassroomsControlCenter();
+      showToast('Class Timer Reset', `Uptime timer restarted for ${updated.label}.`, 'info');
+    }
+
+    function handleSetAllClassrooms(isLive) {
+      if (!window.GreachDB) return;
+      const adminUser = currentAdminSession ? currentAdminSession.username : 'Greachimpact';
+      if (!isLive && !confirm('Are you sure you want to STOP all 6 course classrooms?')) return;
+      if (window.GreachLoader) {
+        window.GreachLoader.show(isLive ? 'Turning All 6 Classrooms ON...' : 'Stopping All 6 Classrooms...');
+        setTimeout(() => window.GreachLoader.hide(), 450);
+      }
+      window.GreachDB.setAllClassroomsState(isLive, adminUser);
+      renderClassroomsControlCenter();
+      renderStudentActivity();
+      renderStats();
+      showToast(
+        isLive ? 'All 6 Classrooms ON!' : 'All 6 Classrooms Stopped',
+        isLive ? 'Every course classroom is now LIVE and open.' : 'All 6 course classrooms have been stopped by Superuser.',
+        isLive ? 'success' : 'warning'
+      );
+    }
+
+    // Live 1-Second Ticker for Classroom Uptime & Student In-Class Duration
+    setInterval(() => {
+      if (!window.GreachDB || !window.GreachDB.formatDuration) return;
+      const now = Date.now();
+      document.querySelectorAll('[data-classroom-start-ts]').forEach(el => {
+        const ts = el.getAttribute('data-classroom-start-ts');
+        const span = el.querySelector('.live-classroom-uptime');
+        if (ts && span) {
+          const ms = Math.max(0, now - new Date(ts).getTime());
+          span.textContent = window.GreachDB.formatDuration(ms);
+        }
+      });
+      document.querySelectorAll('[data-student-login-ts]').forEach(el => {
+        const ts = el.getAttribute('data-student-login-ts');
+        const span = el.querySelector('.live-student-dur');
+        if (ts && span) {
+          const ms = Math.max(0, now - new Date(ts).getTime());
+          span.textContent = window.GreachDB.formatDuration(ms);
+        }
+      });
+    }, 1000);
+
     // 3. Render Student Roster Table
     
     // Render Live Presence & Activity Tracker
     function renderStudentActivity() {
       if (!window.GreachDB) return;
+      if (typeof renderClassroomsControlCenter === 'function') {
+        renderClassroomsControlCenter();
+      }
       const activeSessions = window.GreachDB.getActiveStudentSessions ? window.GreachDB.getActiveStudentSessions() : [];
       const activityLogs = window.GreachDB.getStudentActivityLogs ? window.GreachDB.getStudentActivityLogs() : [];
 
@@ -2617,6 +2892,8 @@
           activeTbody.innerHTML = activeSessions.map(s => {
             const loginDate = new Date(s.loginTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             const lastActive = new Date(s.lastHeartbeat || s.loginTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const durMs = Math.max(0, Date.now() - new Date(s.loginTime).getTime());
+            const durFormatted = window.GreachDB.formatDuration ? window.GreachDB.formatDuration(durMs) : '';
             return `
               <tr>
                 <td>
@@ -2630,7 +2907,7 @@
                 </td>
                 <td>
                   <span class="badge-status badge-active" style="background:#ecfdf5; color:#065f46; border-color:#a7f3d0; font-weight:800;">
-                    <span style="display:inline-block; width:7px; height:7px; background:#10b981; border-radius:50%; margin-right:4px;"></span> ONLINE
+                    <span style="display:inline-block; width:7px; height:7px; background:#10b981; border-radius:50%; margin-right:4px;"></span> ONLINE (${escapeHtml(durFormatted)})
                   </span>
                 </td>
                 <td>${loginDate}</td>
@@ -2687,10 +2964,10 @@
       if (!confirm(`Are you sure you want to terminate live classroom session for student ${studentId}?`)) return;
       const res = window.GreachDB.forceLogoutStudent(studentId, currentAdminSession ? currentAdminSession.username : 'Greachimpact');
       if (res.success) {
-        alert(res.message);
+        showToast('Session Terminated', res.message, 'warning');
         renderStudentActivity();
       } else {
-        alert('Error: ' + res.error);
+        showToast('Error', res.error, 'error');
       }
     }
 
@@ -3730,58 +4007,64 @@ greachimpact@gmail.com`;
       const emptyState = document.getElementById('sessionPassesEmptyState');
       if (!tbody) return;
 
-      let passes = [];
-      if (window.GreachDB && window.GreachDB.fetchSessionPassesFromCloud) {
-        passes = await window.GreachDB.fetchSessionPassesFromCloud();
-      } else if (window.GreachDB) {
-        passes = window.GreachDB.getAllSessionPasses();
-      }
+      function paintPasses(passes) {
+        if (!passes || passes.length === 0) {
+          tbody.innerHTML = '';
+          if (emptyState) emptyState.style.display = 'block';
+          return;
+        }
+        if (emptyState) emptyState.style.display = 'none';
 
-      if (!passes || passes.length === 0) {
-        tbody.innerHTML = '';
-        if (emptyState) emptyState.style.display = 'block';
-        return;
-      }
-      if (emptyState) emptyState.style.display = 'none';
+        tbody.innerHTML = passes.map(p => {
+          const isLive = p.isActive && (!p.expiresAt || new Date(p.expiresAt).getTime() > Date.now());
+          const statusBadge = isLive
+            ? '<span class="status-badge active"><i class="fas fa-broadcast-tower"></i> Live & Active</span>'
+            : '<span class="status-badge expired"><i class="fas fa-ban"></i> Revoked / Expired</span>';
+          const expStr = p.expiresAt ? new Date(p.expiresAt).toLocaleString() : 'Manual Revoke Only';
 
-      tbody.innerHTML = passes.map(p => {
-        const isLive = p.isActive && (!p.expiresAt || new Date(p.expiresAt).getTime() > Date.now());
-        const statusBadge = isLive
-          ? '<span class="status-badge active"><i class="fas fa-broadcast-tower"></i> Live & Active</span>'
-          : '<span class="status-badge expired"><i class="fas fa-ban"></i> Revoked / Expired</span>';
-        const expStr = p.expiresAt ? new Date(p.expiresAt).toLocaleString() : 'Manual Revoke Only';
-
-        return `
-          <tr>
-            <td>
-              <strong style="color:var(--navy-900); font-family:monospace; font-size:1rem; letter-spacing:1px;">${escapeHtml(p.code)}</strong>
-              ${p.id ? `<div style="font-family:monospace; font-size:0.75rem; color:#94a3b8;">${escapeHtml(p.id)}</div>` : ''}
-            </td>
-            <td>
-              <div style="font-weight:700; color:#0f172a;">${escapeHtml(p.label || 'Live Class Session Pass')}</div>
-              <div style="font-size:0.78rem; color:#64748b;">${escapeHtml(p.course || 'Microsoft Excel for Beginners')}</div>
-            </td>
-            <td><span style="font-size:0.82rem; font-weight:600; color:#334155;">${escapeHtml(p.cohort || 'Batch 2: 2026')}</span></td>
-            <td><span style="font-size:0.8rem; color:#475569;">${expStr}</span></td>
-            <td>${statusBadge}</td>
-            <td style="text-align:right;">
-              <div style="display:flex; justify-content:flex-end; gap:6px;">
-                <button onclick="copySessionCode('${escapeHtml(p.code)}', this)" class="btn-action" title="Copy Pass Code">
-                  <i class="fas fa-copy"></i>
-                </button>
-                ${isLive ? `
-                  <button onclick="handleExpireSessionPass('${escapeHtml(p.code)}', this)" class="btn-action" title="Revoke Pass" style="color:#d97706;">
-                    <i class="fas fa-pause-circle"></i>
+          return `
+            <tr>
+              <td>
+                <strong style="color:var(--navy-900); font-family:monospace; font-size:1rem; letter-spacing:1px;">${escapeHtml(p.code)}</strong>
+                ${p.id ? `<div style="font-family:monospace; font-size:0.75rem; color:#94a3b8;">${escapeHtml(p.id)}</div>` : ''}
+              </td>
+              <td>
+                <div style="font-weight:700; color:#0f172a;">${escapeHtml(p.label || 'Live Class Session Pass')}</div>
+                <div style="font-size:0.78rem; color:#64748b;">${escapeHtml(p.course || 'Microsoft Excel for Beginners')}</div>
+              </td>
+              <td><span style="font-size:0.82rem; font-weight:600; color:#334155;">${escapeHtml(p.cohort || 'Batch 2: 2026')}</span></td>
+              <td><span style="font-size:0.8rem; color:#475569;">${expStr}</span></td>
+              <td>${statusBadge}</td>
+              <td style="text-align:right;">
+                <div style="display:flex; justify-content:flex-end; gap:6px;">
+                  <button onclick="copySessionCode('${escapeHtml(p.code)}', this)" class="btn-action" title="Copy Pass Code">
+                    <i class="fas fa-copy"></i>
                   </button>
-                ` : ''}
-                <button onclick="handleDeleteSessionPass('${escapeHtml(p.code)}', this)" class="btn-action" title="Delete from Cloud DB" style="color:#ef4444;">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
+                  ${isLive ? `
+                    <button onclick="handleExpireSessionPass('${escapeHtml(p.code)}', this)" class="btn-action" title="Revoke Pass" style="color:#d97706;">
+                      <i class="fas fa-pause-circle"></i>
+                    </button>
+                  ` : ''}
+                  <button onclick="handleDeleteSessionPass('${escapeHtml(p.code)}', this)" class="btn-action" title="Delete from Cloud DB" style="color:#ef4444;">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // Render local cache immediately (0ms)
+      const localPasses = window.GreachDB ? window.GreachDB.getAllSessionPasses() : [];
+      paintPasses(localPasses);
+
+      // Hydrate from cloud in background without blocking UI
+      if (window.GreachDB && window.GreachDB.fetchSessionPassesFromCloud) {
+        window.GreachDB.fetchSessionPassesFromCloud().then(cloudPasses => {
+          if (cloudPasses) paintPasses(cloudPasses);
+        }).catch(() => {});
+      }
     }
 
     function copySessionCode(code, btn) {
@@ -3935,63 +4218,64 @@ greachimpact@gmail.com`;
       const emptyState = document.getElementById('blogEmptyState');
       if (!tbody) return;
 
-      let posts = [];
-      try {
-        if (window.GreachDB && window.GreachDB.fetchBlogPostsFromCloud) {
-          posts = await window.GreachDB.fetchBlogPostsFromCloud();
-        } else if (window.GreachDB) {
-          posts = window.GreachDB.getBlogPosts();
+      function paintBlogTable(posts) {
+        cachedBlogPosts = posts || [];
+        const search = (document.getElementById('filterBlogSearch') ? document.getElementById('filterBlogSearch').value : '').toLowerCase().trim();
+        const cat = document.getElementById('filterBlogCategory') ? document.getElementById('filterBlogCategory').value : 'all';
+
+        let filtered = cachedBlogPosts.filter(p => {
+          const matchCat = (cat === 'all') || (p.category === cat);
+          const matchSearch = !search || 
+            (p.title && p.title.toLowerCase().includes(search)) ||
+            (p.summary && p.summary.toLowerCase().includes(search)) ||
+            (p.content && p.content.toLowerCase().includes(search));
+          return matchCat && matchSearch;
+        });
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = '';
+          if (emptyState) emptyState.style.display = 'block';
+          return;
         }
-      } catch(err) {
-        posts = window.GreachDB ? window.GreachDB.getBlogPosts() : [];
+        if (emptyState) emptyState.style.display = 'none';
+
+        tbody.innerHTML = filtered.map(p => {
+          return `
+            <tr>
+              <td style="font-weight:700; color:#64748b; font-family:monospace;">#${p.id}</td>
+              <td>
+                <strong style="color:var(--navy-primary); font-size:0.92rem;">${escapeHtml(p.title)}</strong>
+              </td>
+              <td>
+                <span class="badge" style="background:#f1f5f9; color:#0f172a; font-weight:600; font-size:0.75rem; padding:3px 8px; border-radius:12px;">
+                  ${escapeHtml(p.category || 'General')}
+                </span>
+              </td>
+              <td style="font-size:0.8rem; color:#64748b; white-space:nowrap;">${escapeHtml(p.date || '')}</td>
+              <td style="font-size:0.8rem; color:#64748b; white-space:nowrap;">${escapeHtml(p.readTime || '5 min')}</td>
+              <td style="font-size:0.8rem; color:#475569; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(p.summary || '')}</td>
+              <td>
+                <div style="display:flex; gap:0.35rem;">
+                  <button class="btn-action" onclick="openBlogModal('${p.id}')" title="Edit Post"><i class="fas fa-edit"></i> Edit</button>
+                  <a href="blog.html" target="_blank" class="btn-action" title="View on Blog" style="text-decoration:none;"><i class="fas fa-external-link-alt"></i> View</a>
+                  <button class="btn-action delete" onclick="handleDeleteBlogPost('${p.id}', this)" title="Delete Post" style="color:#ef4444;"><i class="fas fa-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
       }
 
-      cachedBlogPosts = posts || [];
+      // Render local cache immediately (0ms)
+      const localPosts = window.GreachDB ? window.GreachDB.getBlogPosts() : [];
+      paintBlogTable(localPosts);
 
-      const search = (document.getElementById('filterBlogSearch') ? document.getElementById('filterBlogSearch').value : '').toLowerCase().trim();
-      const cat = document.getElementById('filterBlogCategory') ? document.getElementById('filterBlogCategory').value : 'all';
-
-      let filtered = cachedBlogPosts.filter(p => {
-        const matchCat = (cat === 'all') || (p.category === cat);
-        const matchSearch = !search || 
-          (p.title && p.title.toLowerCase().includes(search)) ||
-          (p.summary && p.summary.toLowerCase().includes(search)) ||
-          (p.content && p.content.toLowerCase().includes(search));
-        return matchCat && matchSearch;
-      });
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = '';
-        if (emptyState) emptyState.style.display = 'block';
-        return;
+      // Hydrate from cloud in background without blocking UI
+      if (window.GreachDB && window.GreachDB.fetchBlogPostsFromCloud) {
+        window.GreachDB.fetchBlogPostsFromCloud().then(cloudPosts => {
+          if (cloudPosts) paintBlogTable(cloudPosts);
+        }).catch(() => {});
       }
-      if (emptyState) emptyState.style.display = 'none';
-
-      tbody.innerHTML = filtered.map(p => {
-        return `
-          <tr>
-            <td style="font-weight:700; color:#64748b; font-family:monospace;">#${p.id}</td>
-            <td>
-              <strong style="color:var(--navy-primary); font-size:0.92rem;">${escapeHtml(p.title)}</strong>
-            </td>
-            <td>
-              <span class="badge" style="background:#f1f5f9; color:#0f172a; font-weight:600; font-size:0.75rem; padding:3px 8px; border-radius:12px;">
-                ${escapeHtml(p.category || 'General')}
-              </span>
-            </td>
-            <td style="font-size:0.8rem; color:#64748b; white-space:nowrap;">${escapeHtml(p.date || '')}</td>
-            <td style="font-size:0.8rem; color:#64748b; white-space:nowrap;">${escapeHtml(p.readTime || '5 min')}</td>
-            <td style="font-size:0.8rem; color:#475569; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(p.summary || '')}</td>
-            <td>
-              <div style="display:flex; gap:0.35rem;">
-                <button class="btn-action" onclick="openBlogModal('${p.id}')" title="Edit Post"><i class="fas fa-edit"></i> Edit</button>
-                <a href="blog.html" target="_blank" class="btn-action" title="View on Blog" style="text-decoration:none;"><i class="fas fa-external-link-alt"></i> View</a>
-                <button class="btn-action delete" onclick="handleDeleteBlogPost('${p.id}', this)" title="Delete Post" style="color:#ef4444;"><i class="fas fa-trash"></i></button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
     }
 
     async function handleDeleteBlogPost(id, btn) {

@@ -846,6 +846,9 @@ footer .socials a:hover {
 
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Registration...';
+    if (window.GreachLoader) {
+      window.GreachLoader.show('Processing Your Greach Impact Registration...');
+    }
 
     try {
       const isFree = (paymentMethod === 'Already Paid / Admin Code');
@@ -900,6 +903,7 @@ footer .socials a:hover {
 
     } catch (err) {
       console.error('[Registration] Error processing enrollment:', err);
+      if (window.GreachLoader) window.GreachLoader.hide();
       submitBtn.disabled = false;
       submitBtn.innerHTML = '<i class="fas fa-lock"></i> Try Again';
       alert('Registration error: ' + (err.message || 'Please check your connection and try again.'));

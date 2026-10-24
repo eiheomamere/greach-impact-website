@@ -643,66 +643,96 @@
       </div>
     </div>
 
-    <!-- 4 Dedicated Greach Academy Course Classrooms Grid -->
-    <h2 class="section-title"><i class="fas fa-chalkboard-teacher" style="color:#0284c7;"></i> Greach Academy Dedicated Classrooms</h2>
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(265px, 1fr)); gap:1.4rem; margin-bottom:2.5rem;">
-      <!-- Classroom 1: Excel Masterclass -->
-      <div class="dl-card" id="cardExcel">
+    <!-- All 6 Dedicated Greach Academy Course Classrooms Grid -->
+    <h2 class="section-title"><i class="fas fa-chalkboard-teacher" style="color:#0284c7;"></i> Greach Academy Dedicated Course Classrooms (6 Live Studios)</h2>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.4rem; margin-bottom:2.5rem;">
+      <!-- Classroom 1: Excel Beginners -->
+      <div class="dl-card" id="cardExcelBeg">
         <div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem;">
             <div class="dl-icon" style="color:#107c41; margin-bottom:0;"><i class="fas fa-file-excel"></i></div>
-            <span id="badgeExcel" style="font-size:0.75rem; font-weight:800; padding:0.2rem 0.6rem; border-radius:20px; background:#dcfce7; color:#15803d;">Available</span>
+            <span id="badgeExcelBeg" style="font-size:0.74rem; font-weight:800; padding:0.2rem 0.65rem; border-radius:20px; background:#dcfce7; color:#15803d;">🟢 Class ON</span>
           </div>
-          <h3 style="color:#0f172a;">Microsoft Excel Masterclass</h3>
-          <p>64 interactive lessons (Beginners &amp; Advanced), auto-checking formulas, practice labs, and screen recorder.</p>
+          <h3 style="color:#0f172a;">Microsoft Excel for Beginners</h3>
+          <p>31 interactive lessons (Modules 1–3), live formula syntax builders, practice labs, and screen recorder.</p>
         </div>
-        <a id="cardBtnExcel" href="Excel_Master_Course_Hub.html" class="btn-action excel" style="width:100%; justify-content:center;">
-          <i class="fas fa-play"></i> Enter Excel Classroom
+        <a id="cardBtnExcelBeg" href="Excel_Master_Course_Hub.html?track=beginners" class="btn-action excel" style="width:100%; justify-content:center;">
+          <i class="fas fa-play"></i> Enter Excel Beginners
         </a>
       </div>
 
-      <!-- Classroom 2: Executive Dashboard Studio -->
+      <!-- Classroom 2: Excel Advanced & Analytics -->
+      <div class="dl-card" id="cardExcelAdv">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem;">
+            <div class="dl-icon" style="color:#0284c7; margin-bottom:0;"><i class="fas fa-chart-line"></i></div>
+            <span id="badgeExcelAdv" style="font-size:0.74rem; font-weight:800; padding:0.2rem 0.65rem; border-radius:20px; background:#e0f2fe; color:#0369a1;">🟢 Class ON</span>
+          </div>
+          <h3 style="color:#0f172a;">Microsoft Excel Advanced &amp; Analytics</h3>
+          <p>48 interactive lessons (Modules 1–5), XLOOKUP, INDEX/MATCH, PivotTables, Financial Modeling &amp; Macros.</p>
+        </div>
+        <a id="cardBtnExcelAdv" href="Excel_Master_Course_Hub.html?track=advanced" class="btn-action web" style="background:#0284c7; border-color:#0284c7; width:100%; justify-content:center;">
+          <i class="fas fa-chart-line"></i> Enter Excel Advanced
+        </a>
+      </div>
+
+      <!-- Classroom 3: Executive Dashboard Studio -->
       <div class="dl-card" id="cardDashboard">
         <div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem;">
-            <div class="dl-icon" style="color:#4f46e5; margin-bottom:0;"><i class="fas fa-chart-line"></i></div>
-            <span id="badgeDashboard" style="font-size:0.75rem; font-weight:800; padding:0.2rem 0.6rem; border-radius:20px; background:#e0e7ff; color:#3730a3;">Available</span>
+            <div class="dl-icon" style="color:#4f46e5; margin-bottom:0;"><i class="fas fa-tachometer-alt"></i></div>
+            <span id="badgeDashboard" style="font-size:0.74rem; font-weight:800; padding:0.2rem 0.65rem; border-radius:20px; background:#e0e7ff; color:#3730a3;">🟢 Class ON</span>
           </div>
           <h3 style="color:#0f172a;">Executive Dashboard Studio</h3>
-          <p>16 specialist lessons, dynamic Slicers, KPI cards, timeline scrubbers, Pivot engines, and executive templates.</p>
+          <p>30 specialist studio slides, interactive KPI cards, dynamic Slicers, timeline scrubbers, and executive templates.</p>
         </div>
         <a id="cardBtnDashboard" href="Excel_Dashboard_Hub.html" class="btn-action web" style="background:#4f46e5; border-color:#6366f1; width:100%; justify-content:center;">
           <i class="fas fa-columns"></i> Enter Dashboard Studio
         </a>
       </div>
 
-      <!-- Classroom 3: SQL Analytics Studio -->
+      <!-- Classroom 4: SQL Analytics Studio -->
       <div class="dl-card" id="cardSql">
         <div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem;">
             <div class="dl-icon" style="color:#ea580c; margin-bottom:0;"><i class="fas fa-database"></i></div>
-            <span id="badgeSql" style="font-size:0.75rem; font-weight:800; padding:0.2rem 0.6rem; border-radius:20px; background:#ffedd5; color:#c2410c;">Available</span>
+            <span id="badgeSql" style="font-size:0.74rem; font-weight:800; padding:0.2rem 0.65rem; border-radius:20px; background:#ffedd5; color:#c2410c;">🟢 Class ON</span>
           </div>
           <h3 style="color:#0f172a;">SQL Analytics Studio</h3>
-          <p>24 modular lessons, in-browser live SQL query runner, schema explorer, sample datasets, and analytics capstone.</p>
+          <p>30 modular lessons, in-browser live SQL query runner, schema explorer, sample datasets, and analytics capstone.</p>
         </div>
         <a id="cardBtnSql" href="SQL_Master_Course_Hub.html" class="btn-action" style="background:#ea580c; color:white; width:100%; justify-content:center;">
           <i class="fas fa-terminal"></i> Enter SQL Studio
         </a>
       </div>
 
-      <!-- Classroom 4: Power BI Business Intelligence -->
+      <!-- Classroom 5: Power BI Business Intelligence -->
       <div class="dl-card" id="cardPbi">
         <div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem;">
             <div class="dl-icon" style="color:#f59e0b; margin-bottom:0;"><i class="fas fa-chart-pie"></i></div>
-            <span id="badgePbi" style="font-size:0.75rem; font-weight:800; padding:0.2rem 0.6rem; border-radius:20px; background:#fef3c7; color:#b45309;">Available</span>
+            <span id="badgePbi" style="font-size:0.74rem; font-weight:800; padding:0.2rem 0.65rem; border-radius:20px; background:#fef3c7; color:#b45309;">🟢 Class ON</span>
           </div>
           <h3 style="color:#0f172a;">Power BI Business Intelligence</h3>
-          <p>24 modular lessons, Star Schema visualizer, DAX formula studio, interactive slicer canvas, and starter .pbix.</p>
+          <p>30 modular lessons, Star Schema visualizer, DAX formula studio, interactive slicer canvas, and starter .pbix.</p>
         </div>
         <a id="cardBtnPbi" href="PowerBI_Master_Course_Hub.html" class="btn-action gold" style="width:100%; justify-content:center;">
           <i class="fas fa-chart-pie"></i> Enter Power BI Hub
+        </a>
+      </div>
+
+      <!-- Classroom 6: Complete Analytics Suite (All-Access VIP) -->
+      <div class="dl-card" id="cardComplete">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem;">
+            <div class="dl-icon" style="color:#0A0A5E; margin-bottom:0;"><i class="fas fa-layer-group"></i></div>
+            <span id="badgeComplete" style="font-size:0.74rem; font-weight:800; padding:0.2rem 0.65rem; border-radius:20px; background:#e0e7ff; color:#1e1b4b;">🟢 Class ON</span>
+          </div>
+          <h3 style="color:#0f172a;">Complete Analytics Suite (VIP)</h3>
+          <p>All-inclusive 154-lesson master suite: Excel Beginners, Excel Advanced, Executive Dashboards, SQL &amp; Power BI.</p>
+        </div>
+        <a id="cardBtnComplete" href="Excel_Master_Course_Hub.html?track=all" class="btn-action" style="background:#0A0A5E; color:white; width:100%; justify-content:center;">
+          <i class="fas fa-crown"></i> Enter Complete Suite
         </a>
       </div>
     </div>
@@ -952,6 +982,7 @@
   </div>
 
         <script src="js/greach-db.js"></script>
+        <script src="js/greach-sync.js"></script>
   <script>
     const INSTRUCTOR_LOGIN_KEY = 'excel_instructor_session_active_v1';
     const ACTIVE_SESSION_KEY = 'greach_active_user_session_v2';
@@ -1130,10 +1161,75 @@
         if (securityGateOverlay) securityGateOverlay.classList.remove('unlocked');
         if (studentStatusPill) studentStatusPill.style.display = 'none';
       }
+      if (typeof updateClassroomPortalUI === 'function' && localStorage.getItem(INSTRUCTOR_LOGIN_KEY) === 'true') {
+        updateClassroomPortalUI({ role: 'instructor', name: 'Lead Instructor', course: 'Complete Analytics Suite (VIP)', courseKey: 'complete_package', isSuperAdmin: true });
+      }
     }
     window.checkAccessSecurity = checkAccessSecurity;
 
-    // Student Access Code Sign-In Handler (Cloud Synchronized)
+    // Update All 6 Classroom Cards & Hero Launch Buttons
+    function updateClassroomPortalUI(session) {
+      if (!window.GreachDB) return;
+      const myKey = session ? window.GreachDB.normalizeCourseKey(session.courseKey || session.course) : 'excel_beginners';
+      const targetUrl = window.GreachDB.getCourseClassroomUrl ? window.GreachDB.getCourseClassroomUrl(myKey) : 'Excel_Master_Course_Hub.html';
+
+      const launchBtn = document.getElementById('btnLaunchMyClassroom');
+      if (launchBtn) launchBtn.setAttribute('href', targetUrl);
+
+      const studioBtn = document.getElementById('btnLaunchLiveStudio');
+      if (studioBtn) {
+        studioBtn.setAttribute('href', targetUrl.includes('?') ? `${targetUrl}&mode=live` : `${targetUrl}?mode=live`);
+      }
+
+      const tagEl = document.getElementById('enrolledCourseTag');
+      if (tagEl && session && session.course) tagEl.textContent = session.course;
+
+      const headEl = document.getElementById('enrolledStudentHeading');
+      if (headEl && session && session.name) headEl.textContent = `Welcome, ${session.name}!`;
+
+      // Update live ON / STOPPED status badges across all 6 classroom cards
+      const badgeMap = [
+        { key: 'excel_beginners', badgeId: 'badgeExcelBeg', cardId: 'cardExcelBeg' },
+        { key: 'excel_advanced', badgeId: 'badgeExcelAdv', cardId: 'cardExcelAdv' },
+        { key: 'excel_dashboard', badgeId: 'badgeDashboard', cardId: 'cardDashboard' },
+        { key: 'sql_beginners', badgeId: 'badgeSql', cardId: 'cardSql' },
+        { key: 'power_bi', badgeId: 'badgePbi', cardId: 'cardPbi' },
+        { key: 'complete_package', badgeId: 'badgeComplete', cardId: 'cardComplete' }
+      ];
+
+      badgeMap.forEach(item => {
+        const badgeEl = document.getElementById(item.badgeId);
+        const cardEl = document.getElementById(item.cardId);
+        const isLive = window.GreachDB.isClassroomOpen ? window.GreachDB.isClassroomOpen(item.key) : true;
+        const canAccess = session ? window.GreachDB.canAccessCourse(session, item.key).allowed : true;
+
+        if (badgeEl) {
+          if (!isLive) {
+            badgeEl.textContent = '🔴 Stopped by Admin';
+            badgeEl.style.background = '#fee2e2';
+            badgeEl.style.color = '#991b1b';
+          } else if (myKey === item.key) {
+            badgeEl.textContent = '🟢 Enrolled • Class ON';
+            badgeEl.style.background = '#dcfce7';
+            badgeEl.style.color = '#15803d';
+          } else if (canAccess) {
+            badgeEl.textContent = '🟢 Class ON • Unlocked';
+            badgeEl.style.background = '#dcfce7';
+            badgeEl.style.color = '#15803d';
+          } else {
+            badgeEl.textContent = '🔒 Requires Upgrade';
+            badgeEl.style.background = '#f1f5f9';
+            badgeEl.style.color = '#64748b';
+          }
+        }
+        if (cardEl && myKey === item.key) {
+          cardEl.style.border = '2px solid #10b981';
+          cardEl.style.boxShadow = '0 10px 25px rgba(16,185,129,0.15)';
+        }
+      });
+    }
+
+    // Student Access Code Sign-In Handler (Fast Local + Parallel Cloud Synchronized)
     window.handleCodeLogin = async function(e) {
       if (e) e.preventDefault();
       const codeInp = document.getElementById('gateInputCode');
@@ -1163,115 +1259,30 @@
         return;
       }
 
-      // Show verifying spinner
+      // Show animated GREACH IMPACT loader + inline feedback
+      if (window.GreachLoader) {
+        window.GreachLoader.show('Verifying Classroom Access Code...');
+      }
       if (errBox && errText) {
         errBox.style.display = 'block';
         errBox.style.background = '#eff6ff';
         errBox.style.color = '#1e40af';
         errBox.style.borderLeftColor = '#3b82f6';
-        errText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying access credentials with cloud database...';
+        errText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying access credentials...';
       }
 
       let verifyRes = null;
-      if (window.GreachDB) {
-        if (window.GreachDB.verifyStudentByCodeCloud) {
-        verifyRes = await window.GreachDB.verifyStudentByCodeCloud(code);
-      } else {
-        verifyRes = window.GreachDB.verifyStudentByCode(code);
-      }
-      }
-
-      // If not in local browser cache, verify in real-time with Supabase Cloud DB
-      if (!verifyRes || !verifyRes.success) {
-        const SUPABASE_URL = 'https://fkltvxhqizqrbvogodxv.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
-
-        try {
-          const cleanCode = code.trim().toUpperCase();
-
-          // 1. Check access_codes table
-          const acRes = await fetch(`${SUPABASE_URL}/rest/v1/access_codes?code=ilike.${encodeURIComponent(cleanCode)}&select=*`, {
-            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-          });
-          const codes = await acRes.json();
-
-          if (Array.isArray(codes) && codes.length > 0) {
-            const pass = codes[0];
-            if (!pass.is_active || (pass.expires_at && new Date(pass.expires_at).getTime() < Date.now())) {
-              if (errBox && errText) {
-                errBox.style.background = '#fef2f2';
-                errBox.style.color = '#991b1b';
-                errBox.style.borderLeftColor = '#ef4444';
-                errText.textContent = `Access code "${cleanCode}" has expired or been revoked.`;
-              }
-              return;
-            }
-
-            // Cache locally so subsequent visits are instant
-            const localPasses = JSON.parse(localStorage.getItem('greach_session_passes') || '[]');
-            if (!localPasses.some(p => p.code && p.code.toUpperCase() === cleanCode)) {
-              localPasses.unshift({
-                code: pass.code,
-                label: pass.label,
-                course: pass.course_name,
-                cohort: pass.cohort,
-                expiresAt: pass.expires_at,
-                isActive: true
-              });
-              localStorage.setItem('greach_session_passes', JSON.stringify(localPasses));
-            }
-
-            verifyRes = {
-              success: true,
-              isSessionPass: pass.is_session_pass,
-              student: {
-                id: pass.student_id || ('PASS-' + pass.code),
-                name: pass.label || 'Enrolled Student',
-                email: pass.student_email || 'student@greachimpact.com',
-                course: pass.course_name || 'Microsoft Excel for Beginners',
-                cohort: pass.cohort || 'Batch 2: 2026 Masterclass',
-                expiresAt: pass.expires_at
-              },
-              expiry: { isExpired: false, message: pass.expires_at ? `Valid until ${new Date(pass.expires_at).toLocaleDateString()}` : 'Active Cloud Access' }
-            };
+      try {
+        if (window.GreachDB) {
+          if (window.GreachDB.verifyStudentByCodeCloud) {
+            verifyRes = await window.GreachDB.verifyStudentByCodeCloud(code);
           } else {
-            // 2. Check students table in Supabase
-            const stuRes = await fetch(`${SUPABASE_URL}/rest/v1/students?secret_password=ilike.${encodeURIComponent(cleanCode)}&select=*`, {
-              headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-            });
-            const stus = await stuRes.json();
-            if (Array.isArray(stus) && stus.length > 0) {
-              const s = stus[0];
-              const localStudents = JSON.parse(localStorage.getItem('greach_students_roster') || '[]');
-              if (!localStudents.some(stu => stu.id === s.id)) {
-                localStudents.unshift({
-                  id: s.id,
-                  name: s.full_name,
-                  email: s.registered_email,
-                  password: s.secret_password,
-                  course: s.enrolled_course,
-                  cohort: s.cohort,
-                  expiresAt: s.expires_at
-                });
-                localStorage.setItem('greach_students_roster', JSON.stringify(localStudents));
-              }
-
-              verifyRes = {
-                success: true,
-                student: {
-                  id: s.id,
-                  name: s.full_name,
-                  email: s.registered_email,
-                  course: s.enrolled_course || 'Microsoft Excel for Beginners',
-                  cohort: s.cohort || 'Batch 2: 2026 Masterclass',
-                  expiresAt: s.expires_at
-                },
-                expiry: { isExpired: false, message: s.expires_at ? `Valid until ${new Date(s.expires_at).toLocaleDateString()}` : 'Active Cloud Access' }
-              };
-            }
+            verifyRes = window.GreachDB.verifyStudentByCode(code);
           }
-        } catch(cloudErr) {
-          console.warn('[Classroom Cloud DB Lookup Warning]:', cloudErr);
+        }
+      } finally {
+        if (window.GreachLoader) {
+          window.GreachLoader.hide();
         }
       }
 
@@ -1279,6 +1290,18 @@
         const s = verifyRes.student;
         const courseName = s.course || 'Microsoft Excel for Beginners';
         const courseKey = window.GreachDB ? window.GreachDB.normalizeCourseKey(s.courseKey || s.course) : 'excel_beginners';
+
+        // Check if Superuser has stopped this classroom (unless user is Instructor/Super Admin)
+        if (!verifyRes.isInstructor && window.GreachDB && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen(courseKey)) {
+          if (errBox && errText) {
+            errBox.style.background = '#fef2f2';
+            errBox.style.color = '#991b1b';
+            errBox.style.borderLeftColor = '#ef4444';
+            errText.innerHTML = `<strong><i class="fas fa-pause-circle"></i> Classroom Paused by Admin:</strong> The <strong>${escapeHtml(courseName)}</strong> classroom is currently stopped by the Super Administrator. Please wait for the instructor to start the class.`;
+          }
+          return;
+        }
+
         const session = {
           role: verifyRes.isInstructor ? 'instructor' : 'student',
           id: s.id,
@@ -1292,17 +1315,20 @@
           loginTime: new Date().toISOString()
         };
         localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
+        localStorage.setItem('greach_student_session', JSON.stringify(session));
         if (verifyRes.isInstructor) {
           localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
+          localStorage.setItem('greach_instructor_login', 'true');
         } else {
           localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
+          localStorage.removeItem('greach_instructor_login');
         }
 
         if (window.GreachDB && window.GreachDB.recordStudentLogin) {
-          window.GreachDB.recordStudentLogin(s);
+          window.GreachDB.recordStudentLogin(s, { classroomKey: courseKey });
         }
 
-        // Record presence in Supabase Cloud
+        // Fire-and-forget presence to Supabase Cloud
         try {
           const SUPABASE_URL = 'https://fkltvxhqizqrbvogodxv.supabase.co';
           const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
@@ -1323,7 +1349,6 @@
 
         if (errBox) errBox.style.display = 'none';
         checkAccessSecurity();
-        alert(`Welcome, ${s.name}!\n\nAccess Granted for: ${courseName}\nCode Verified: ${code}`);
         return;
       } else if (verifyRes && verifyRes.isPendingPayment) {
         if (errBox && errText) {

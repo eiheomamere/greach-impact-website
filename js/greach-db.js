@@ -218,6 +218,9 @@
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
 
   async function callSupabase(path, options = {}) {
+    const timeoutMs = options.timeoutMs || 2400;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
       const url = `${SUPABASE_URL}/rest/v1/${path}`;
       const headers = {
@@ -226,10 +229,12 @@
         'Content-Type': 'application/json',
         ...(options.headers || {})
       };
-      return await fetch(url, { ...options, headers });
+      return await fetch(url, { ...options, headers, signal: controller.signal });
     } catch (err) {
-      console.warn('[GreachDB] Supabase Cloud Fetch Warning:', err);
+      console.warn('[GreachDB] Supabase Cloud Fetch Warning (or fast timeout):', err && err.message ? err.message : err);
       return null;
+    } finally {
+      clearTimeout(timer);
     }
   }
 
@@ -535,6 +540,34 @@
       this.notifyAdminOfRegistration(newStudent);
 
       console.log('[GreachDB] Enrolled new student:', newStudent.name, newStudent.id, 'Expires:', newStudent.expiresAt);
+      return newStudent;
+    },
+
+    createStudent: function(stuData, adminUser) {
+      const db = this.getAllStudents();
+      const newStudent = {
+        id: stuData.id || ('STU-2026-' + Math.floor(1000 + Math.random() * 9000)),
+        name: (stuData.name || 'Registered Student').trim(),
+        email: (stuData.email || 'student@greachimpact.com').trim().toLowerCase(),
+        phone: stuData.phone || '',
+        password: stuData.password || this.generateSystemPassword(),
+        cohort: stuData.cohort || 'Batch 2: 2026 Masterclass',
+        course: stuData.course || 'Microsoft Excel for Beginners',
+        courseKey: this.normalizeCourseKey(stuData.courseKey || stuData.course || 'excel_beginners'),
+        status: 'Active',
+        paymentStatus: 'Verified & Paid',
+        isCodeActive: true,
+        classEndDate: stuData.classEndDate || new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
+        expiresAt: stuData.expiresAt || null,
+        accessType: stuData.accessType || 'Full Course',
+        certificateClaimed: !!stuData.certificateClaimed,
+        registeredAt: new Date().toISOString()
+      };
+      db.unshift(newStudent);
+      this.saveAllStudents(db);
+      if (this.logAudit) {
+        this.logAudit(adminUser || 'Super Admin', 'Student Code Created', `Created student ${newStudent.name} (${newStudent.id}) with code ${newStudent.password} for ${newStudent.course}`);
+      }
       return newStudent;
     },
 
@@ -931,7 +964,10 @@ Greach Impact Automated Registration Engine`);
 
     fetchSessionPassesFromCloud: async function() {
       try {
-        const res = await callSupabase('live_session_passes?order=created_at.desc&select=*');
+        const [res, acRes] = await Promise.all([
+          callSupabase('live_session_passes?order=created_at.desc&select=*'),
+          callSupabase('access_codes?is_session_pass=eq.true&order=created_at.desc&select=*')
+        ]);
         if (res && res.ok) {
           const rows = await res.json();
           if (Array.isArray(rows) && rows.length > 0) {
@@ -951,8 +987,6 @@ Greach Impact Automated Registration Engine`);
             return passes;
           }
         }
-        // Fallback to access_codes with is_session_pass = true
-        const acRes = await callSupabase('access_codes?is_session_pass=eq.true&order=created_at.desc&select=*');
         if (acRes && acRes.ok) {
           const acRows = await acRes.json();
           if (Array.isArray(acRows) && acRows.length > 0) {
@@ -1543,42 +1577,35 @@ Greach Impact Automated Registration Engine`);
     },
 
     verifyStudentByCodeCloud: async function(code) {
-      if (!code) return { success: false, error: 'Please enter your unique access code.' };
+      if (!code) return { success: false, valid: false, error: 'Please enter your unique access code.' };
       const clean = code.trim().toUpperCase();
 
-      // Master admin passcode check
-      if (clean === 'EVANA_OLUEBUBE123890') {
-        const superAdmin = this.getSuperAdmin();
-        return {
-          success: true,
-          isInstructor: true,
-          role: 'instructor',
-          name: superAdmin.name,
-          student: {
-            id: 'SUPER-ADMIN',
-            name: superAdmin.name,
-            email: superAdmin.email,
-            cohort: 'Executive Leadership',
-            accessType: 'super_admin',
-            expiresAt: null
-          },
-          expiry: { isExpired: false, message: 'Global Superuser Access' }
-        };
+      // 0. Instant 0ms Local & Master Admin Passcode Verification First!
+      const localCheck = this.verifyStudentByCode(code);
+      if (localCheck && (localCheck.success || localCheck.isExpired || localCheck.isPendingPayment)) {
+        return { ...localCheck, valid: !!localCheck.success };
       }
 
       try {
+        // Run all 3 cloud lookups in PARALLEL (1 single network round-trip instead of 3 sequential!)
+        const [lpRes, acRes, stRes] = await Promise.all([
+          callSupabase(`live_session_passes?pass_code=ilike.${encodeURIComponent(clean)}&select=*`),
+          callSupabase(`access_codes?code=ilike.${encodeURIComponent(clean)}&select=*`),
+          callSupabase(`students?secret_password=ilike.${encodeURIComponent(clean)}&select=*`)
+        ]);
+
         // 1. Check live_session_passes table in Supabase
-        const lpRes = await callSupabase(`live_session_passes?pass_code=ilike.${encodeURIComponent(clean)}&select=*`);
         if (lpRes && lpRes.ok) {
           const lps = await lpRes.json();
           if (Array.isArray(lps) && lps.length > 0) {
             const pass = lps[0];
             const isExpired = !pass.is_active || (pass.expires_at && new Date(pass.expires_at).getTime() < Date.now());
             if (isExpired) {
-              return { success: false, isExpired: true, error: `Live session pass "${clean}" has expired or been revoked.` };
+              return { success: false, valid: false, isExpired: true, error: `Live session pass "${clean}" has expired or been revoked.` };
             }
             return {
               success: true,
+              valid: true,
               isSessionPass: true,
               passType: 'Live Session Pass',
               student: {
@@ -1600,17 +1627,17 @@ Greach Impact Automated Registration Engine`);
         }
 
         // 2. Check access_codes table in Supabase
-        const acRes = await callSupabase(`access_codes?code=ilike.${encodeURIComponent(clean)}&select=*`);
         if (acRes && acRes.ok) {
           const acs = await acRes.json();
           if (Array.isArray(acs) && acs.length > 0) {
             const pass = acs[0];
             const isExpired = !pass.is_active || (pass.expires_at && new Date(pass.expires_at).getTime() < Date.now());
             if (isExpired) {
-              return { success: false, isExpired: true, error: `Access code "${clean}" has expired (1-month validity).` };
+              return { success: false, valid: false, isExpired: true, error: `Access code "${clean}" has expired (1-month validity).` };
             }
             return {
               success: true,
+              valid: true,
               isSessionPass: !!pass.is_session_pass,
               passType: pass.is_session_pass ? 'Live Session Pass' : 'Course Enrollment Code',
               student: {
@@ -1631,20 +1658,20 @@ Greach Impact Automated Registration Engine`);
         }
 
         // 3. Check students table in Supabase
-        const stRes = await callSupabase(`students?secret_password=ilike.${encodeURIComponent(clean)}&select=*`);
         if (stRes && stRes.ok) {
           const sts = await stRes.json();
           if (Array.isArray(sts) && sts.length > 0) {
             const s = sts[0];
             if (s.status === 'Pending Payment') {
-              return { success: false, isPendingPayment: true, error: 'Registration payment is pending verification.' };
+              return { success: false, valid: false, isPendingPayment: true, error: 'Registration payment is pending verification.' };
             }
             const isExpired = s.expires_at && new Date(s.expires_at).getTime() < Date.now();
             if (isExpired) {
-              return { success: false, isExpired: true, error: `Student enrollment expired on ${new Date(s.expires_at).toLocaleDateString()}.` };
+              return { success: false, valid: false, isExpired: true, error: `Student enrollment expired on ${new Date(s.expires_at).toLocaleDateString()}.` };
             }
             return {
               success: true,
+              valid: true,
               passType: 'Student Account',
               student: {
                 id: s.id,
@@ -1664,11 +1691,15 @@ Greach Impact Automated Registration Engine`);
           }
         }
       } catch(err) {
-        console.warn('[GreachDB] Cloud verification network issue, checking local cache:', err);
+        console.warn('[GreachDB] Cloud verification network issue, using local cache:', err);
       }
 
-      // 4. Fallback to local synchronous check
-      return this.verifyStudentByCode(code);
+      return { ...localCheck, valid: !!localCheck.success };
+    },
+
+    verifyAccessCodeAny: async function(code) {
+      const res = await this.verifyStudentByCodeCloud(code);
+      return { ...res, valid: !!res.success };
     },
 
 // ==============================================================
@@ -1802,7 +1833,7 @@ Greach Impact Automated Registration Engine`);
         const activeSessions = this.getActiveStudentSessionsRaw();
         const now = new Date().toISOString();
         const courseName = student.course || 'Microsoft Excel for Beginners';
-        const courseKey = this.normalizeCourseKey(student.courseKey || student.course);
+        const courseKey = this.normalizeCourseKey(metadata.classroomKey || student.courseKey || student.course);
 
         // Remove existing session for same student to avoid duplicate entries
         const filtered = activeSessions.filter(s => s.studentId !== student.id);
@@ -1814,6 +1845,7 @@ Greach Impact Automated Registration Engine`);
           email: student.email,
           course: courseName,
           courseKey: courseKey,
+          classroomKey: metadata.classroomKey ? this.normalizeCourseKey(metadata.classroomKey) : courseKey,
           cohort: student.cohort || 'Batch 2',
           loginTime: now,
           lastHeartbeat: now,
@@ -1824,6 +1856,23 @@ Greach Impact Automated Registration Engine`);
 
         filtered.unshift(newSession);
         localStorage.setItem(ACTIVE_SESSIONS_KEY, JSON.stringify(filtered));
+
+        // Sync both session storage keys used across all 6 classroom hubs
+        try {
+          const unifiedSessionPayload = JSON.stringify({
+            id: student.id,
+            name: student.name,
+            email: student.email,
+            course: courseName,
+            courseKey: courseKey,
+            cohort: student.cohort || 'Batch 2',
+            role: student.role || (student.isInstructor ? 'instructor' : 'student'),
+            expiresAt: student.expiresAt || null,
+            loginTime: now
+          });
+          localStorage.setItem('greach_active_user_session_v2', unifiedSessionPayload);
+          localStorage.setItem('greach_student_session', unifiedSessionPayload);
+        } catch(e) {}
 
         // Add to persistent activity log
         this.addStudentActivityLog({
@@ -1887,22 +1936,49 @@ Greach Impact Automated Registration Engine`);
       }
     },
 
-    updateStudentHeartbeat: function(studentId) {
+    updateStudentHeartbeat: function(studentId, metadata = {}) {
       if (!studentId) return;
       try {
         const activeSessions = this.getActiveStudentSessionsRaw();
         const now = new Date().toISOString();
-        let changed = false;
+        let found = false;
 
         activeSessions.forEach(s => {
           if (s.studentId === studentId) {
             s.lastHeartbeat = now;
             s.status = 'online';
-            changed = true;
+            if (metadata && metadata.classroomKey) {
+              s.classroomKey = this.normalizeCourseKey(metadata.classroomKey);
+              s.courseKey = s.classroomKey;
+            }
+            if (metadata && metadata.course) {
+              s.course = metadata.course;
+            }
+            found = true;
           }
         });
 
-        if (changed) {
+        // Auto-register session if student is inside a classroom hub but not yet in ACTIVE_SESSIONS_KEY
+        if (!found && metadata && (metadata.name || metadata.email)) {
+          const cKey = this.normalizeCourseKey(metadata.classroomKey || metadata.courseKey || metadata.course || 'excel_beginners');
+          activeSessions.unshift({
+            sessionId: 'SESS-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+            studentId: studentId,
+            name: metadata.name || studentId,
+            email: metadata.email || 'student@greachimpact.com',
+            course: metadata.course || 'Microsoft Excel for Beginners',
+            courseKey: cKey,
+            classroomKey: cKey,
+            cohort: metadata.cohort || 'Batch 2',
+            loginTime: metadata.loginTime || now,
+            lastHeartbeat: now,
+            status: 'online',
+            device: (typeof navigator !== 'undefined' && /Mobile|Android|iPhone/i.test(navigator.userAgent)) ? 'Mobile Device' : 'Desktop Browser'
+          });
+          found = true;
+        }
+
+        if (found) {
           localStorage.setItem(ACTIVE_SESSIONS_KEY, JSON.stringify(activeSessions));
         }
       } catch(e) {}
@@ -1965,11 +2041,11 @@ Greach Impact Automated Registration Engine`);
 
         this.recordStudentLogout(studentId, `Terminated by Admin (${adminUser})`);
 
-        this.logAudit({
-          action: 'Force Student Logout',
-          user: adminUser,
-          details: `Terminated live session for student ${match ? match.name : studentId} (${studentId})`
-        });
+        this.logAudit(
+          adminUser,
+          'Force Student Logout',
+          `Terminated live session for student ${match ? match.name : studentId} (${studentId})`
+        );
 
         return { success: true, message: `Student session for ${studentId} terminated.` };
       } catch(e) {
@@ -2020,6 +2096,261 @@ Greach Impact Automated Registration Engine`);
         return false;
       }
     },
+
+    // ==============================================================
+    // SUPERUSER LIVE CLASSROOMS COMMAND & PRESENCE ENGINE (6 CLASSES)
+    // ==============================================================
+    formatDuration: function(ms) {
+      if (!ms || ms < 0 || isNaN(ms)) return '00m 00s';
+      const totalSecs = Math.floor(ms / 1000);
+      const hrs = Math.floor(totalSecs / 3600);
+      const mins = Math.floor((totalSecs % 3600) / 60);
+      const secs = totalSecs % 60;
+      const pad = n => String(n).padStart(2, '0');
+      if (hrs > 0) {
+        return `${pad(hrs)}h ${pad(mins)}m ${pad(secs)}s`;
+      }
+      return `${pad(mins)}m ${pad(secs)}s`;
+    },
+
+    getClassroomCatalog: function() {
+      return [
+        {
+          key: 'excel_beginners',
+          id: 'CLS-EXC-BEG',
+          courseId: 'CRS-EXC-BEG',
+          label: 'Microsoft Excel for Beginners',
+          shortLabel: 'Excel Beginners',
+          hubUrl: 'Excel_Master_Course_Hub.html?track=beginners',
+          icon: 'fa-file-excel',
+          color: '#107C41',
+          slidesCount: '31 Interactive Slides',
+          defaultStartOffsetMins: 85
+        },
+        {
+          key: 'excel_advanced',
+          id: 'CLS-EXC-ADV',
+          courseId: 'CRS-EXC-ADV',
+          label: 'Microsoft Excel Advanced & Analytics',
+          shortLabel: 'Excel Advanced',
+          hubUrl: 'Excel_Master_Course_Hub.html?track=advanced',
+          icon: 'fa-chart-line',
+          color: '#0284c7',
+          slidesCount: '48 Interactive Slides',
+          defaultStartOffsetMins: 62
+        },
+        {
+          key: 'excel_dashboard',
+          id: 'CLS-EXC-DASH',
+          courseId: 'CRS-EXC-DASH',
+          label: 'Executive Interactive Dashboard Design',
+          shortLabel: 'Dashboard Studio',
+          hubUrl: 'Excel_Dashboard_Hub.html',
+          icon: 'fa-tachometer-alt',
+          color: '#4f46e5',
+          slidesCount: '30 Studio Slides',
+          defaultStartOffsetMins: 48
+        },
+        {
+          key: 'sql_beginners',
+          id: 'CLS-SQL-BEG',
+          courseId: 'CRS-SQL-BEG',
+          label: 'SQL for Beginners & Analytics',
+          shortLabel: 'SQL Analytics Studio',
+          hubUrl: 'SQL_Master_Course_Hub.html',
+          icon: 'fa-database',
+          color: '#ea580c',
+          slidesCount: '30 SQL Lab Slides',
+          defaultStartOffsetMins: 35
+        },
+        {
+          key: 'power_bi',
+          id: 'CLS-PBI-BEG',
+          courseId: 'CRS-PBI-BEG',
+          label: 'Power BI for Beginners',
+          shortLabel: 'Power BI Studio',
+          hubUrl: 'PowerBI_Master_Course_Hub.html',
+          icon: 'fa-chart-pie',
+          color: '#d97706',
+          slidesCount: '30 BI Studio Slides',
+          defaultStartOffsetMins: 27
+        },
+        {
+          key: 'complete_package',
+          id: 'CLS-DAT-SUITE',
+          courseId: 'CRS-DAT-SUITE',
+          label: 'Complete Analytics Suite (Excel + SQL + Power BI)',
+          shortLabel: 'Complete Analytics Suite',
+          hubUrl: 'Excel_Master_Course_Hub.html?track=all',
+          icon: 'fa-layer-group',
+          color: '#0A0A5E',
+          slidesCount: '154 All-Access Slides',
+          defaultStartOffsetMins: 110
+        }
+      ];
+    },
+
+    getClassroomStatesRaw: function() {
+      const KEY = 'greach_classroom_states_v2';
+      let states = {};
+      try {
+        const stored = localStorage.getItem(KEY);
+        if (stored) states = JSON.parse(stored);
+      } catch(e) {}
+
+      let updated = false;
+      const catalog = this.getClassroomCatalog();
+      catalog.forEach(cls => {
+        if (!states[cls.key]) {
+          const startedAt = new Date(Date.now() - (cls.defaultStartOffsetMins * 60 * 1000)).toISOString();
+          states[cls.key] = {
+            key: cls.key,
+            id: cls.id,
+            isLive: true,
+            startedAt: startedAt,
+            stoppedAt: null,
+            updatedBy: 'Greachimpact (Super Admin)',
+            updatedAt: startedAt
+          };
+          updated = true;
+        }
+      });
+
+      if (updated) {
+        try {
+          localStorage.setItem(KEY, JSON.stringify(states));
+        } catch(e) {}
+      }
+      return states;
+    },
+
+    getAllClassrooms: function() {
+      const catalog = this.getClassroomCatalog();
+      const states = this.getClassroomStatesRaw();
+      const activeSessions = this.getActiveStudentSessions();
+      const now = Date.now();
+
+      return catalog.map(cls => {
+        const st = states[cls.key] || { isLive: true, startedAt: new Date().toISOString() };
+        const isLive = st.isLive !== false;
+        const startTs = st.startedAt ? new Date(st.startedAt).getTime() : now;
+        const uptimeMs = isLive ? Math.max(0, now - startTs) : 0;
+
+        // Match participants currently inside this classroom
+        const participants = activeSessions.filter(s => {
+          const sKey = this.normalizeCourseKey(s.classroomKey || s.courseKey || s.course);
+          return sKey === cls.key;
+        }).map(s => {
+          const loginTs = s.loginTime ? new Date(s.loginTime).getTime() : now;
+          const durMs = Math.max(0, now - loginTs);
+          return {
+            ...s,
+            durationMs: durMs,
+            durationFormatted: this.formatDuration(durMs)
+          };
+        });
+
+        return {
+          ...cls,
+          isLive: isLive,
+          statusText: isLive ? 'LIVE / ON' : 'STOPPED / OFF',
+          startedAt: st.startedAt,
+          stoppedAt: st.stoppedAt || null,
+          updatedBy: st.updatedBy || 'Greachimpact',
+          uptimeMs: uptimeMs,
+          uptimeFormatted: isLive ? this.formatDuration(uptimeMs) : 'Stopped',
+          participantsCount: participants.length,
+          participants: participants
+        };
+      });
+    },
+
+    getClassroomState: function(courseKey) {
+      const norm = this.normalizeCourseKey(courseKey);
+      const all = this.getAllClassrooms();
+      return all.find(c => c.key === norm) || all[0];
+    },
+
+    isClassroomOpen: function(courseKey) {
+      const st = this.getClassroomState(courseKey);
+      return st ? st.isLive !== false : true;
+    },
+
+    setClassroomState: function(courseKey, isLive, adminUser = 'Greachimpact') {
+      const KEY = 'greach_classroom_states_v2';
+      const norm = this.normalizeCourseKey(courseKey);
+      const states = this.getClassroomStatesRaw();
+      const catalog = this.getClassroomCatalog();
+      const clsInfo = catalog.find(c => c.key === norm) || { key: norm, id: 'CLS-GEN', label: courseKey };
+      const now = new Date().toISOString();
+
+      const prev = states[norm] || {};
+      states[norm] = {
+        key: norm,
+        id: clsInfo.id,
+        isLive: !!isLive,
+        startedAt: isLive ? (prev.isLive && prev.startedAt ? prev.startedAt : now) : prev.startedAt,
+        stoppedAt: isLive ? null : now,
+        updatedBy: adminUser,
+        updatedAt: now
+      };
+
+      localStorage.setItem(KEY, JSON.stringify(states));
+
+      // If Superuser stops the classroom, log out non-admin participants in that classroom
+      let disconnectedCount = 0;
+      if (!isLive) {
+        const active = this.getActiveStudentSessionsRaw();
+        active.forEach(s => {
+          const sKey = this.normalizeCourseKey(s.classroomKey || s.courseKey || s.course);
+          if (sKey === norm && s.studentId !== 'SUPER-ADMIN') {
+            this.recordStudentLogout(s.studentId, `Classroom Stopped by Superuser (${adminUser})`);
+            disconnectedCount++;
+          }
+        });
+      }
+
+      this.logAudit(
+        adminUser,
+        isLive ? 'Classroom Started / Kept Live' : 'Classroom Stopped',
+        `${isLive ? 'Set LIVE (ON)' : 'STOPPED (OFF)'} classroom "${clsInfo.label}" (${clsInfo.id})${!isLive && disconnectedCount > 0 ? ` — disconnected ${disconnectedCount} active student(s)` : ''}`
+      );
+
+      return this.getClassroomState(norm);
+    },
+
+    startClassroom: function(courseKey, adminUser = 'Greachimpact') {
+      return this.setClassroomState(courseKey, true, adminUser);
+    },
+
+    stopClassroom: function(courseKey, adminUser = 'Greachimpact') {
+      return this.setClassroomState(courseKey, false, adminUser);
+    },
+
+    resetClassroomTimer: function(courseKey, adminUser = 'Greachimpact') {
+      const KEY = 'greach_classroom_states_v2';
+      const norm = this.normalizeCourseKey(courseKey);
+      const states = this.getClassroomStatesRaw();
+      const now = new Date().toISOString();
+      if (states[norm]) {
+        states[norm].isLive = true;
+        states[norm].startedAt = now;
+        states[norm].stoppedAt = null;
+        states[norm].updatedBy = adminUser;
+        states[norm].updatedAt = now;
+        localStorage.setItem(KEY, JSON.stringify(states));
+      }
+      this.logAudit(adminUser, 'Classroom Timer Reset', `Restarted live session timer for ${norm}`);
+      return this.getClassroomState(norm);
+    },
+
+    setAllClassroomsState: function(isLive, adminUser = 'Greachimpact') {
+      const catalog = this.getClassroomCatalog();
+      catalog.forEach(c => {
+        this.setClassroomState(c.key, isLive, adminUser);
+      });
+      return this.getAllClassrooms();
+    }
   };
 
     

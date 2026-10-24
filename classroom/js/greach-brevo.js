@@ -265,16 +265,20 @@
         }
       }
 
-      // Serverless Endpoint Fallback
+      // Serverless Endpoint Fallback (with fast 2200ms timeout)
       try {
+        const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+        const timer = controller ? setTimeout(() => controller.abort(), 2200) : null;
         const resp = await fetch('/api/brevo', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'api-key': apiKey
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
+          ...(controller ? { signal: controller.signal } : {})
         });
+        if (timer) clearTimeout(timer);
         const result = await resp.json();
 
         this.logDispatch({
@@ -287,7 +291,7 @@
 
         return result;
       } catch(err) {
-        console.error('[GreachBrevo] All automated dispatchers failed:', err);
+        console.warn('[GreachBrevo] Automated dispatcher fallback:', err.message);
         return { success: false, error: err.message };
       }
     },
@@ -308,32 +312,22 @@
         paymentMethod: orderInfo.paymentMethod || 'Direct Bank Transfer'
       });
 
-      let stuResult = null;
-      if (isPaid) {
-        // Send Active Access Code
-        stuResult = await this.sendEmail({
-          type: 'welcome',
-          student: student
-        });
-      } else {
-        // Send Payment Pending Instructions (do NOT send access code until payment is confirmed)
-        stuResult = await this.sendEmail({
-          type: 'payment_pending',
-          student: student,
-          amount: orderInfo.amount || 3000
-        });
-      }
+      const stuPromise = isPaid
+        ? this.sendEmail({ type: 'welcome', student: student })
+        : this.sendEmail({ type: 'payment_pending', student: student, amount: orderInfo.amount || 3000 });
 
-      // Send New Order / Registration Alert to Admin
-      const adminResult = await this.sendEmail({
+      const adminPromise = this.sendEmail({
         type: 'admin_alert',
         student: student
       });
 
+      // Dispatch both emails in PARALLEL so registration completes twice as fast
+      const [stuRes, adminRes] = await Promise.allSettled([stuPromise, adminPromise]);
+
       return {
         success: true,
-        studentEmail: stuResult,
-        adminAlert: adminResult
+        studentEmail: stuRes.status === 'fulfilled' ? stuRes.value : null,
+        adminAlert: adminRes.status === 'fulfilled' ? adminRes.value : null
       };
     },
 

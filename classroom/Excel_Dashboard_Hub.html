@@ -1207,17 +1207,22 @@
     });
 
     function checkDashAccessAuth() {
-      const session = JSON.parse(localStorage.getItem('greach_student_session') || 'null');
-      const isLead = (localStorage.getItem('greach_instructor_login') === 'true');
+      const session = JSON.parse(localStorage.getItem('greach_student_session') || localStorage.getItem('greach_active_user_session_v2') || 'null');
+      const isLead = (localStorage.getItem('greach_instructor_login') === 'true' || localStorage.getItem('excel_instructor_session_active_v1') === 'true');
       const pillName = document.getElementById('studentDisplayName');
 
-      if (isLead) {
+      if (isLead || (session && (session.role === 'instructor' || session.isSuperAdmin))) {
         if (pillName) pillName.innerHTML = '👑 <strong>Lead Instructor</strong>';
         return;
       }
 
       if (!session || !session.verified) {
         showGateModal('Please enter your unique access code to unlock the Executive Dashboard Studio.');
+        return;
+      }
+
+      if (window.GreachDB && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen('excel_dashboard')) {
+        showGateModal('🛑 <strong>Classroom Stopped by Superuser:</strong> The <strong>Executive Dashboard Studio</strong> has been paused by the Super Administrator. Please wait for the instructor to start the class.');
         return;
       }
 
@@ -1249,43 +1254,64 @@
         return;
       }
 
-      if (window.GreachDB && window.GreachDB.verifyAccessCodeAny) {
-        const res = await window.GreachDB.verifyAccessCodeAny(code);
-        if (res && res.valid) {
-          const s = res.student || {};
-          const session = {
-            role: res.isInstructor ? 'instructor' : 'student',
-            id: s.id || 'STU-DASH-VERIFIED',
-            name: s.name || 'Verified Student',
-            email: s.email || '',
-            course: s.course || 'Executive Interactive Dashboard Design',
-            courseKey: window.GreachDB.normalizeCourseKey(s.courseKey || s.course || 'excel_dashboard'),
-            cohort: s.cohort || 'Batch 2: 2026 Masterclass',
-            verified: true,
-            authMethod: 'code',
-            accessCode: code
-          };
-          localStorage.setItem('greach_student_session', JSON.stringify(session));
-          document.getElementById('securityGateModal').classList.remove('active');
-          checkDashAccessAuth();
-          alert(`Welcome, ${session.name}! Access granted for Executive Dashboard Studio.`);
-          return;
+      if (window.GreachLoader) window.GreachLoader.show('Verifying Dashboard Studio Access...');
+      try {
+        if (window.GreachDB && window.GreachDB.verifyAccessCodeAny) {
+          const res = await window.GreachDB.verifyAccessCodeAny(code);
+          if (res && res.valid) {
+            const s = res.student || {};
+            const session = {
+              role: res.isInstructor ? 'instructor' : 'student',
+              id: s.id || 'STU-DASH-VERIFIED',
+              name: s.name || 'Verified Student',
+              email: s.email || '',
+              course: s.course || 'Executive Interactive Dashboard Design',
+              courseKey: window.GreachDB.normalizeCourseKey(s.courseKey || s.course || 'excel_dashboard'),
+              cohort: s.cohort || 'Batch 2: 2026 Masterclass',
+              verified: true,
+              authMethod: 'code',
+              accessCode: code,
+              loginTime: new Date().toISOString()
+            };
+            localStorage.setItem('greach_student_session', JSON.stringify(session));
+            localStorage.setItem('greach_active_user_session_v2', JSON.stringify(session));
+            if (window.GreachDB.recordStudentLogin) {
+              window.GreachDB.recordStudentLogin(session, { classroomKey: 'excel_dashboard' });
+            }
+            document.getElementById('securityGateModal').classList.remove('active');
+            checkDashAccessAuth();
+            return;
+          }
         }
+      } finally {
+        if (window.GreachLoader) window.GreachLoader.hide();
       }
 
       alert('Invalid or inactive access code for Dashboard Studio. Please check your confirmation email.');
     }
 
     function initPresenceHeartbeat() {
-      const session = JSON.parse(localStorage.getItem('greach_student_session') || '{}');
-      if (window.GreachDB && window.GreachDB.updateStudentHeartbeat && session.id) {
-        window.GreachDB.updateStudentHeartbeat(session.id);
-        setInterval(() => {
-          if (window.GreachDB && window.GreachDB.updateStudentHeartbeat && session.id) {
-            window.GreachDB.updateStudentHeartbeat(session.id);
+      const tick = () => {
+        const session = JSON.parse(localStorage.getItem('greach_student_session') || localStorage.getItem('greach_active_user_session_v2') || '{}');
+        if (window.GreachDB && session && session.id) {
+          if (window.GreachDB.isSessionTerminated && window.GreachDB.isSessionTerminated(session.id)) {
+            localStorage.removeItem('greach_student_session');
+            localStorage.removeItem('greach_active_user_session_v2');
+            showGateModal('Your live classroom session was terminated by the Super Administrator.');
+            return;
           }
-        }, 45000);
-      }
+          const isLead = (localStorage.getItem('greach_instructor_login') === 'true' || localStorage.getItem('excel_instructor_session_active_v1') === 'true' || session.role === 'instructor');
+          if (!isLead && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen('excel_dashboard')) {
+            showGateModal('🛑 <strong>Classroom Stopped by Superuser:</strong> The Executive Dashboard Studio has been stopped by the Super Administrator.');
+            return;
+          }
+          if (window.GreachDB.updateStudentHeartbeat) {
+            window.GreachDB.updateStudentHeartbeat(session.id, { ...session, classroomKey: 'excel_dashboard', course: 'Executive Interactive Dashboard Design' });
+          }
+        }
+      };
+      tick();
+      setInterval(tick, 10000);
     }
 
     // 4. Render Sidebar Curriculum
