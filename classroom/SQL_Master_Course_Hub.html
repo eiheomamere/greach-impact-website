@@ -680,6 +680,13 @@
           <a href="PowerBI_Master_Course_Hub.html" class="switcher-item">
             <i class="fas fa-chart-pie" style="color:#f59e0b;"></i> Power BI Business Intelligence
           </a>
+          <div style="border-top:1px solid #f1f5f9; margin:4px 0;"></div>
+          <a href="index.html" class="switcher-item">
+            <i class="fas fa-th-large" style="color:#0A0A5E;"></i> All Classrooms Portal
+          </a>
+          <a href="../admin.html" class="switcher-item" style="color:#0A0A5E; font-weight:800; background:#f8fafc;">
+            <i class="fas fa-crown" style="color:#f59e0b;"></i> Admin Console &rarr;
+          </a>
         </div>
       </div>
     </div>
@@ -1405,16 +1412,29 @@ LIMIT 10;</textarea>
     }
 
     function checkSqlAccessAuth() {
-      const isAdminAuth = window.GreachDB && window.GreachDB.isAdminClassroomAuthenticated && window.GreachDB.isAdminClassroomAuthenticated();
       const session = JSON.parse(localStorage.getItem('greach_student_session') || localStorage.getItem('greach_active_user_session_v2') || 'null');
-      const isLead = isAdminAuth || (localStorage.getItem('greach_instructor_login') === 'true' || localStorage.getItem('excel_instructor_session_active_v1') === 'true');
+      const isSessPass = session && (session.isSessionPass || (session.id && String(session.id).startsWith('PAS-')));
+      if (isSessPass) {
+        localStorage.removeItem('excel_instructor_session_active_v1');
+        localStorage.removeItem('greach_instructor_login');
+      }
+
+      const isAdminAuth = !isSessPass && window.GreachDB && window.GreachDB.isAdminClassroomAuthenticated && window.GreachDB.isAdminClassroomAuthenticated();
+      const isLead = !isSessPass && (isAdminAuth || (localStorage.getItem('greach_instructor_login') === 'true' || localStorage.getItem('excel_instructor_session_active_v1') === 'true'));
       
       const pillName = document.getElementById('studentDisplayName');
 
       if (isLead || (session && (session.role === 'instructor' || session.isSuperAdmin))) {
         const modal = document.getElementById('securityGateModal');
         if (modal) modal.classList.remove('active');
-        if (pillName) pillName.innerHTML = '👑 <strong>Lead Instructor</strong>';
+        if (pillName) pillName.innerHTML = '👑 <strong>Lead Instructor</strong> (Admin Mode)';
+        // Seamlessly propagate admin parameter to classroom switcher
+        document.querySelectorAll('.switcher-item').forEach(el => {
+          const href = el.getAttribute('href');
+          if (href && !href.includes('admin=')) {
+            el.setAttribute('href', href + (href.includes('?') ? '&' : '?') + 'admin=true');
+          }
+        });
         return;
       }
 
@@ -1463,8 +1483,15 @@ LIMIT 10;</textarea>
           const res = await window.GreachDB.verifyAccessCodeAny(code);
           if (res && res.valid) {
             const s = res.student || {};
+            const isSessionPass = !!(res.isSessionPass || code.toUpperCase().startsWith('LIVE-') || code.toUpperCase().startsWith('PAS-'));
+            const isInstructor = !isSessionPass && !!res.isInstructor;
+
             const session = {
-              role: res.isInstructor ? 'instructor' : 'student',
+              role: isInstructor ? 'instructor' : 'student',
+              isInstructor: isInstructor,
+              isAdmin: isInstructor,
+              isSuperAdmin: isInstructor,
+              isSessionPass: isSessionPass,
               id: s.id || 'STU-SQL-VERIFIED',
               name: s.name || 'Verified Student',
               email: s.email || '',
@@ -1478,6 +1505,13 @@ LIMIT 10;</textarea>
             };
             localStorage.setItem('greach_student_session', JSON.stringify(session));
             localStorage.setItem('greach_active_user_session_v2', JSON.stringify(session));
+            if (isInstructor) {
+              localStorage.setItem('excel_instructor_session_active_v1', 'true');
+              localStorage.setItem('greach_instructor_login', 'true');
+            } else {
+              localStorage.removeItem('excel_instructor_session_active_v1');
+              localStorage.removeItem('greach_instructor_login');
+            }
             if (window.GreachDB.recordStudentLogin) {
               window.GreachDB.recordStudentLogin(session, { classroomKey: 'sql_beginners' });
             }

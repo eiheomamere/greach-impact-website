@@ -563,7 +563,34 @@
       <button onclick="openUniversalCodeModal()" class="btn-nav" style="background:#107C41; border-color:#107C41; font-weight:700;"><i class="fas fa-key"></i> + Generate Access Code</button>
       <button onclick="syncSiteDataToCloud()" class="btn-nav" style="background:var(--accent-teal); color:#0A0A5E; border-color:var(--accent-teal); font-weight:700;"><i class="fas fa-cloud-upload-alt"></i> Publish Live Updates</button>
       <a href="index.html" class="btn-nav" target="_blank"><i class="fas fa-globe"></i> View Website</a>
-      <a href="classroom/index.html" class="btn-nav classroom" target="_blank"><i class="fas fa-chalkboard-teacher"></i> Open Classroom</a>
+      <!-- Direct 1-Click Admin Classroom Access Dropdown -->
+      <div class="admin-classroom-menu" style="position:relative; display:inline-block;">
+        <button type="button" onclick="toggleAdminClassroomMenu(event)" class="btn-nav classroom" style="background:#0A0A5E; color:#ffffff; border:1.5px solid #38bdf8; font-weight:700; display:flex; align-items:center; gap:6px;">
+          <i class="fas fa-crown" style="color:#facc15;"></i> Classrooms (Admin Access) <i class="fas fa-chevron-down" style="font-size:0.7rem;"></i>
+        </button>
+        <div id="adminClassroomDropdown" style="display:none; position:absolute; top:calc(100% + 6px); right:0; background:#ffffff; min-width:275px; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,0.2); border:1.5px solid #cbd5e1; z-index:9999; padding:0.5rem; text-align:left;">
+          <div style="font-size:0.72rem; font-weight:800; color:#64748b; text-transform:uppercase; padding:0.4rem 0.75rem; letter-spacing:0.04em;">Universal Admin Clearance</div>
+          <a href="classroom/index.html?admin=true" target="_blank" onclick="enterAdminHub()" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#0f172a; font-weight:700; font-size:0.85rem;">
+            <i class="fas fa-th-large" style="color:#0A0A5E; width:16px;"></i> All Classrooms Portal
+          </a>
+          <a href="classroom/Excel_Master_Course_Hub.html?admin=true" target="_blank" onclick="enterAdminHub()" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#15803d; font-weight:700; font-size:0.85rem;">
+            <i class="fas fa-file-excel" style="color:#107c41; width:16px;"></i> Microsoft Excel Masterclass
+          </a>
+          <a href="classroom/Excel_Dashboard_Hub.html?admin=true" target="_blank" onclick="enterAdminHub()" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#3730a3; font-weight:700; font-size:0.85rem;">
+            <i class="fas fa-tachometer-alt" style="color:#4f46e5; width:16px;"></i> Executive Dashboard Studio
+          </a>
+          <a href="classroom/SQL_Master_Course_Hub.html?admin=true" target="_blank" onclick="enterAdminHub()" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#c2410c; font-weight:700; font-size:0.85rem;">
+            <i class="fas fa-database" style="color:#ea580c; width:16px;"></i> SQL Analytics Studio
+          </a>
+          <a href="classroom/PowerBI_Master_Course_Hub.html?admin=true" target="_blank" onclick="enterAdminHub()" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#b45309; font-weight:700; font-size:0.85rem;">
+            <i class="fas fa-chart-pie" style="color:#d97706; width:16px;"></i> Power BI Business Intelligence
+          </a>
+          <div style="border-top:1px solid #f1f5f9; margin:4px 0;"></div>
+          <a href="classroom/Excel_Master_Course_Hub.html?track=all&admin=true" target="_blank" onclick="enterAdminHub()" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#0A0A5E; font-weight:800; font-size:0.85rem; background:#f8fafc;">
+            <i class="fas fa-crown" style="color:#facc15; width:16px;"></i> Complete Analytics Suite (VIP)
+          </a>
+        </div>
+      </div>
       <button onclick="handleAdminLogout()" class="btn-nav" style="background:#ef4444; border-color:#ef4444;"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
   </header>
@@ -1827,6 +1854,20 @@
         <button onclick="closeSessionPassModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#64748b;">&times;</button>
       </div>
       <form id="sessionPassForm" onsubmit="handleCreateSessionPass(event)">
+        <div style="background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; border-radius:10px; padding:0.75rem 0.9rem; font-size:0.8rem; margin-bottom:1rem; line-height:1.4;">
+          <strong><i class="fas fa-shield-alt" style="color:#2563eb;"></i> Strict Student-Only Attendance Access:</strong> Quick Live Passes strictly authenticate as student level for joining the live session. Under no circumstances do they grant instructor clearances, admin permissions, or lesson editing.
+        </div>
+        <div class="form-group">
+          <label>Target Course Classroom:</label>
+          <select id="spCourse" class="form-control" style="font-weight:700;">
+            <option value="Microsoft Excel for Beginners">Microsoft Excel for Beginners</option>
+            <option value="Microsoft Excel Advanced & Analytics">Microsoft Excel Advanced & Analytics</option>
+            <option value="Executive Interactive Dashboard Design">Executive Interactive Dashboard Design</option>
+            <option value="SQL for Beginners & Analytics">SQL for Beginners & Analytics</option>
+            <option value="Power BI for Beginners">Power BI for Beginners</option>
+            <option value="Complete Analytics Suite (Excel + SQL + Power BI)">Complete Analytics Suite (All Classes)</option>
+          </select>
+        </div>
         <div class="form-group">
           <label>Session Label / Class Description:</label>
           <input type="text" id="spLabel" class="form-control" required placeholder="e.g. Live Excel Masterclass - Session 1" />
@@ -2528,6 +2569,23 @@
         window.location.reload();
       }
     }
+
+    window.enterAdminHub = function() {
+      if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
+        window.GreachDB.activateAdminClassroomSession('Greachimpact');
+      }
+    };
+
+    window.toggleAdminClassroomMenu = function(e) {
+      if (e) e.stopPropagation();
+      const m = document.getElementById('adminClassroomDropdown');
+      if (m) m.style.display = m.style.display === 'block' ? 'none' : 'block';
+    };
+
+    document.addEventListener('click', () => {
+      const m = document.getElementById('adminClassroomDropdown');
+      if (m) m.style.display = 'none';
+    });
 
     // Comprehensive Tab Switching Map
     const ADMIN_TAB_MAP = {
@@ -3994,12 +4052,14 @@ greachimpact@gmail.com`;
       const label = document.getElementById('spLabel').value.trim();
       const customCode = document.getElementById('spCustomCode').value.trim();
       const cohort = document.getElementById('spCohort').value.trim();
+      const course = document.getElementById('spCourse') ? document.getElementById('spCourse').value : 'Microsoft Excel for Beginners';
       const durationHours = parseFloat(document.getElementById('spDuration').value);
 
       const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
       const pass = window.GreachDB.createSessionPass({
         label: label,
         customCode: customCode || null,
+        course: course,
         cohort: cohort,
         durationHours: durationHours
       }, currentUser);

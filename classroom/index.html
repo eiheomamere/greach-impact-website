@@ -477,6 +477,12 @@
         <button type="submit" class="gate-submit-btn" style="width:100%; background:linear-gradient(135deg, #107c41, #0b5e31); color:white; padding:0.85rem; border-radius:10px; font-weight:800; font-size:1rem; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem; box-shadow:0 4px 12px rgba(16,124,65,0.25);">
           <span>Enter Classroom</span> <i class="fas fa-arrow-right"></i>
         </button>
+
+        <div style="margin-top:1rem; text-align:center;">
+          <button type="button" onclick="autoFillInstructorKeyClassroom()" style="background:#fef3c7; border:1.5px solid #fde68a; color:#92400e; padding:0.6rem 0.9rem; border-radius:10px; font-size:0.84rem; font-weight:800; cursor:pointer; width:100%; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+            👑 Admin / Lead Instructor? Click for Instant Clearance (No Password Needed) &rarr;
+          </button>
+        </div>
       </form>
 
       <!-- Form 2: Email & Password (Alternative Flow) -->
@@ -1104,8 +1110,13 @@
         }
       }
 
-      // 2. Check Instructor Login
-      if (localStorage.getItem(INSTRUCTOR_LOGIN_KEY) === 'true') {
+      // 2. Check Instructor / Admin Direct Access
+      const isAdminAuth = window.GreachDB && window.GreachDB.isAdminClassroomAuthenticated && window.GreachDB.isAdminClassroomAuthenticated();
+      const isLeadAdmin = isAdminAuth || localStorage.getItem(INSTRUCTOR_LOGIN_KEY) === 'true' || localStorage.getItem('greach_instructor_login') === 'true';
+
+      if (isLeadAdmin) {
+        localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
+        localStorage.setItem('greach_instructor_login', 'true');
         if (securityGateOverlay) securityGateOverlay.classList.add('unlocked');
         if (studentStatusPill) {
           studentStatusPill.style.display = 'inline-flex';
@@ -1113,8 +1124,18 @@
           studentStatusPill.style.border = '1.5px solid #22c55e';
         }
         if (verifiedStudentName) {
-          verifiedStudentName.innerHTML = '👑 <strong>Lead Instructor</strong> (Admin Mode)';
+          verifiedStudentName.innerHTML = '👑 <strong>Lead Instructor</strong> (Admin Clearance)';
         }
+        const adminSession = {
+          role: 'instructor',
+          name: 'Lead Instructor (Super Admin)',
+          course: 'Complete Analytics Suite (Universal Access)',
+          courseKey: 'complete_package',
+          isAdmin: true,
+          isSuperAdmin: true,
+          verified: true
+        };
+        updateClassroomPortalUI(adminSession);
         return;
       }
 
@@ -1151,70 +1172,123 @@
         if (securityGateOverlay) securityGateOverlay.classList.remove('unlocked');
         if (studentStatusPill) studentStatusPill.style.display = 'none';
       }
-      if (typeof updateClassroomPortalUI === 'function' && localStorage.getItem(INSTRUCTOR_LOGIN_KEY) === 'true') {
-        updateClassroomPortalUI({ role: 'instructor', name: 'Lead Instructor', course: 'Complete Analytics Suite (VIP)', courseKey: 'complete_package', isSuperAdmin: true });
-      }
     }
     window.checkAccessSecurity = checkAccessSecurity;
+
+    // Fast 1-Click Instructor Instant Clearance Handler
+    window.autoFillInstructorKeyClassroom = function() {
+      if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
+        window.GreachDB.activateAdminClassroomSession('Greachimpact');
+      }
+      localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
+      localStorage.setItem('greach_instructor_login', 'true');
+      localStorage.setItem('excel_instructor_session_active_v1', 'true');
+      checkAccessSecurity();
+    };
 
     // Update All 6 Classroom Cards & Hero Launch Buttons
     function updateClassroomPortalUI(session) {
       if (!window.GreachDB) return;
-      const myKey = session ? window.GreachDB.normalizeCourseKey(session.courseKey || session.course) : 'excel_beginners';
-      const targetUrl = window.GreachDB.getCourseClassroomUrl ? window.GreachDB.getCourseClassroomUrl(myKey) : 'Excel_Master_Course_Hub.html';
-
-      const launchBtn = document.getElementById('btnLaunchMyClassroom');
-      if (launchBtn) launchBtn.setAttribute('href', targetUrl);
-
-      const studioBtn = document.getElementById('btnLaunchLiveStudio');
-      if (studioBtn) {
-        studioBtn.setAttribute('href', targetUrl.includes('?') ? `${targetUrl}&mode=live` : `${targetUrl}?mode=live`);
-      }
+      const isLead = !!(
+        (session && (session.role === 'instructor' || session.isAdmin || session.isSuperAdmin)) ||
+        localStorage.getItem(INSTRUCTOR_LOGIN_KEY) === 'true' ||
+        localStorage.getItem('greach_instructor_login') === 'true'
+      );
 
       const tagEl = document.getElementById('enrolledCourseTag');
-      if (tagEl && session && session.course) tagEl.textContent = session.course;
-
       const headEl = document.getElementById('enrolledStudentHeading');
-      if (headEl && session && session.name) headEl.textContent = `Welcome, ${session.name}!`;
+      const launchBtn = document.getElementById('btnLaunchMyClassroom');
+      const studioBtn = document.getElementById('btnLaunchLiveStudio');
 
-      // Update live ON / STOPPED status badges across all 6 classroom cards
+      if (isLead) {
+        if (headEl) headEl.innerHTML = '👑 Welcome, Lead Instructor (Super Admin)!';
+        if (tagEl) tagEl.textContent = 'Universal Admin Clearance (All 4 Classrooms)';
+        if (launchBtn) {
+          launchBtn.setAttribute('href', 'Excel_Master_Course_Hub.html?admin=true');
+          launchBtn.innerHTML = '<i class="fas fa-crown"></i> Enter Excel Masterclass (Admin)';
+        }
+        if (studioBtn) {
+          studioBtn.setAttribute('href', 'Excel_Dashboard_Hub.html?admin=true');
+          studioBtn.innerHTML = '<i class="fas fa-tachometer-alt"></i> Enter Dashboard Studio (Admin)';
+        }
+      } else {
+        const myKey = session ? window.GreachDB.normalizeCourseKey(session.courseKey || session.course) : 'excel_beginners';
+        const targetUrl = window.GreachDB.getCourseClassroomUrl ? window.GreachDB.getCourseClassroomUrl(myKey) : 'Excel_Master_Course_Hub.html';
+        if (launchBtn) launchBtn.setAttribute('href', targetUrl);
+        if (studioBtn) {
+          studioBtn.setAttribute('href', targetUrl.includes('?') ? `${targetUrl}&mode=live` : `${targetUrl}?mode=live`);
+        }
+        if (tagEl && session && session.course) tagEl.textContent = session.course;
+        if (headEl && session && session.name) headEl.textContent = `Welcome, ${session.name}!`;
+      }
+
+      // Update live ON / STOPPED status badges & buttons across all 6 classroom cards
       const badgeMap = [
-        { key: 'excel_beginners', badgeId: 'badgeExcelBeg', cardId: 'cardExcelBeg' },
-        { key: 'excel_advanced', badgeId: 'badgeExcelAdv', cardId: 'cardExcelAdv' },
-        { key: 'excel_dashboard', badgeId: 'badgeDashboard', cardId: 'cardDashboard' },
-        { key: 'sql_beginners', badgeId: 'badgeSql', cardId: 'cardSql' },
-        { key: 'power_bi', badgeId: 'badgePbi', cardId: 'cardPbi' },
-        { key: 'complete_package', badgeId: 'badgeComplete', cardId: 'cardComplete' }
+        { key: 'excel_beginners', badgeId: 'badgeExcelBeg', cardId: 'cardExcelBeg', btnId: 'cardBtnExcelBeg', defaultUrl: 'Excel_Master_Course_Hub.html?track=beginners' },
+        { key: 'excel_advanced', badgeId: 'badgeExcelAdv', cardId: 'cardExcelAdv', btnId: 'cardBtnExcelAdv', defaultUrl: 'Excel_Master_Course_Hub.html?track=advanced' },
+        { key: 'excel_dashboard', badgeId: 'badgeDashboard', cardId: 'cardDashboard', btnId: 'cardBtnDashboard', defaultUrl: 'Excel_Dashboard_Hub.html' },
+        { key: 'sql_beginners', badgeId: 'badgeSql', cardId: 'cardSql', btnId: 'cardBtnSql', defaultUrl: 'SQL_Master_Course_Hub.html' },
+        { key: 'power_bi', badgeId: 'badgePbi', cardId: 'cardPbi', btnId: 'cardBtnPbi', defaultUrl: 'PowerBI_Master_Course_Hub.html' },
+        { key: 'complete_package', badgeId: 'badgeComplete', cardId: 'cardComplete', btnId: 'cardBtnComplete', defaultUrl: 'Excel_Master_Course_Hub.html?track=all' }
       ];
 
       badgeMap.forEach(item => {
         const badgeEl = document.getElementById(item.badgeId);
         const cardEl = document.getElementById(item.cardId);
+        const btnEl = document.getElementById(item.btnId);
         const isLive = window.GreachDB.isClassroomOpen ? window.GreachDB.isClassroomOpen(item.key) : true;
         const canAccess = session ? window.GreachDB.canAccessCourse(session, item.key).allowed : true;
 
-        if (badgeEl) {
-          if (!isLive) {
-            badgeEl.textContent = '🔴 Stopped by Admin';
-            badgeEl.style.background = '#fee2e2';
-            badgeEl.style.color = '#991b1b';
-          } else if (myKey === item.key) {
-            badgeEl.textContent = '🟢 Enrolled • Class ON';
+        if (isLead) {
+          if (badgeEl) {
+            badgeEl.textContent = '👑 Admin Clearance (Full Access)';
             badgeEl.style.background = '#dcfce7';
             badgeEl.style.color = '#15803d';
-          } else if (canAccess) {
-            badgeEl.textContent = '🟢 Class ON • Unlocked';
-            badgeEl.style.background = '#dcfce7';
-            badgeEl.style.color = '#15803d';
-          } else {
-            badgeEl.textContent = '🔒 Requires Upgrade';
-            badgeEl.style.background = '#f1f5f9';
-            badgeEl.style.color = '#64748b';
+            badgeEl.style.border = '1px solid #86efac';
           }
-        }
-        if (cardEl && myKey === item.key) {
-          cardEl.style.border = '2px solid #10b981';
-          cardEl.style.boxShadow = '0 10px 25px rgba(16,185,129,0.15)';
+          if (btnEl) {
+            const adminUrl = item.defaultUrl + (item.defaultUrl.includes('?') ? '&' : '?') + 'admin=true';
+            btnEl.setAttribute('href', adminUrl);
+            btnEl.innerHTML = '<i class="fas fa-crown"></i> Enter as Admin &rarr;';
+            btnEl.style.background = '#0A0A5E';
+            btnEl.style.color = '#ffffff';
+            btnEl.style.borderColor = '#0A0A5E';
+            btnEl.style.pointerEvents = 'auto';
+            btnEl.style.opacity = '1';
+            btnEl.onclick = function() {
+              if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
+                window.GreachDB.activateAdminClassroomSession('Greachimpact');
+              }
+            };
+          }
+          if (cardEl) {
+            cardEl.style.border = '2px solid #cbd5e1';
+            cardEl.style.boxShadow = '0 4px 15px rgba(10,10,94,0.08)';
+          }
+        } else {
+          if (badgeEl) {
+            if (!isLive) {
+              badgeEl.textContent = '🔴 Stopped by Admin';
+              badgeEl.style.background = '#fee2e2';
+              badgeEl.style.color = '#991b1b';
+            } else if (session && session.courseKey === item.key) {
+              badgeEl.textContent = '🟢 Enrolled • Class ON';
+              badgeEl.style.background = '#dcfce7';
+              badgeEl.style.color = '#15803d';
+            } else if (canAccess) {
+              badgeEl.textContent = '🟢 Class ON • Unlocked';
+              badgeEl.style.background = '#dcfce7';
+              badgeEl.style.color = '#15803d';
+            } else {
+              badgeEl.textContent = '🔒 Requires Upgrade';
+              badgeEl.style.background = '#f1f5f9';
+              badgeEl.style.color = '#64748b';
+            }
+          }
+          if (cardEl && session && session.courseKey === item.key) {
+            cardEl.style.border = '2px solid #10b981';
+            cardEl.style.boxShadow = '0 10px 25px rgba(16,185,129,0.15)';
+          }
         }
       });
     }
@@ -1292,8 +1366,15 @@
           return;
         }
 
+        const isSessionPass = !!(verifyRes.isSessionPass || code.toUpperCase().startsWith('LIVE-') || code.toUpperCase().startsWith('PAS-'));
+        const isInstructor = !isSessionPass && !!(verifyRes.isInstructor || (s && s.isSuperAdmin));
+
         const session = {
-          role: verifyRes.isInstructor ? 'instructor' : 'student',
+          role: isInstructor ? 'instructor' : 'student',
+          isInstructor: isInstructor,
+          isAdmin: isInstructor,
+          isSuperAdmin: isInstructor,
+          isSessionPass: isSessionPass,
           id: s.id,
           name: s.name,
           email: s.email,
@@ -1306,12 +1387,14 @@
         };
         localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
         localStorage.setItem('greach_student_session', JSON.stringify(session));
-        if (verifyRes.isInstructor) {
+        if (isInstructor) {
           localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
           localStorage.setItem('greach_instructor_login', 'true');
+          localStorage.setItem('excel_instructor_session_active_v1', 'true');
         } else {
           localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
           localStorage.removeItem('greach_instructor_login');
+          localStorage.removeItem('excel_instructor_session_active_v1');
         }
 
         if (window.GreachDB && window.GreachDB.recordStudentLogin) {
