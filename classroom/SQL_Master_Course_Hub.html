@@ -1449,8 +1449,18 @@ LIMIT 10;</textarea>
         return;
       }
 
+      // Check revocation
+      const sqlPassCode = session.accessCode || (session.id && String(session.id).replace(/^PASS-/, ''));
+      if (window.GreachDB && window.GreachDB.isCodeRevoked && (window.GreachDB.isCodeRevoked(sqlPassCode) || window.GreachDB.isCodeRevoked(session.id))) {
+        localStorage.removeItem('greach_student_session');
+        localStorage.removeItem('greach_active_user_session_v2');
+        showGateModal('<strong><i class="fas fa-ban"></i> Access Revoked:</strong> Your classroom session pass has been revoked by the instructor.');
+        return;
+      }
+
       if (window.GreachDB && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen('sql_beginners')) {
-        showGateModal('🛑 <strong>Classroom Stopped by Superuser:</strong> The <strong>SQL Analytics Studio</strong> has been paused by the Super Administrator. Please wait for the instructor to start the class.');
+        const sched = window.GreachDB.isClassroomInScheduledHours ? window.GreachDB.isClassroomInScheduledHours('sql_beginners') : null;
+        showGateModal('🛑 <strong>Classroom Currently Offline:</strong> The SQL Analytics Studio is not in session at this time.<br><br><span style="font-size:0.8rem; color:#475569;"><strong>Scheduled Live Hours:</strong> ' + (sched ? sched.scheduleText : 'Mondays & Wednesdays, 07:00 PM – 09:00 PM WAT') + '<br>(Current WAT Time: ' + (sched ? sched.currentWATTime + ', ' + sched.currentWATDay : '') + ')</span>');
         return;
       }
 
@@ -1458,7 +1468,8 @@ LIMIT 10;</textarea>
       if (window.GreachDB && window.GreachDB.canAccessCourse) {
         const access = window.GreachDB.canAccessCourse(session, 'sql_beginners');
         if (!access.allowed) {
-          showGateModal(`Your current pass is registered for <strong>"${session.course}"</strong>.<br><br>This classroom is dedicated to <strong>SQL for Beginners &amp; Analytics</strong>. Please enter an SQL access code or switch to your enrolled classroom.`);
+          const enrolledUrl = window.GreachDB.getCourseClassroomUrl ? window.GreachDB.getCourseClassroomUrl(session.courseKey) : 'Excel_Master_Course_Hub.html';
+          showGateModal('Your current pass is registered for <strong>"' + escapeHtml(session.course) + '"</strong>.<br><br>This classroom is dedicated to <strong>SQL for Beginners & Analytics</strong>.<br><br><a href="' + enrolledUrl + '" style="color:#0284c7; font-weight:700; text-decoration:underline;">Click here to enter your enrolled classroom &rarr;</a>');
           return;
         }
       }
@@ -1537,15 +1548,23 @@ LIMIT 10;</textarea>
       const tick = () => {
         const session = JSON.parse(localStorage.getItem('greach_student_session') || localStorage.getItem('greach_active_user_session_v2') || '{}');
         if (window.GreachDB && session && session.id) {
-          if (window.GreachDB.isSessionTerminated && window.GreachDB.isSessionTerminated(session.id)) {
+          const sCode = session.accessCode || (session.id && String(session.id).replace(/^PASS-/, ''));
+          if (window.GreachDB && window.GreachDB.isCodeRevoked && (window.GreachDB.isCodeRevoked(sCode) || window.GreachDB.isCodeRevoked(session.id))) {
+            localStorage.removeItem('greach_student_session');
+            localStorage.removeItem('greach_active_user_session_v2');
+            showGateModal('<strong><i class="fas fa-ban"></i> Access Revoked:</strong> Your classroom pass has been revoked by the instructor.');
+            return;
+          }
+          if (window.GreachDB && window.GreachDB.isSessionTerminated && (window.GreachDB.isSessionTerminated(session.id) || window.GreachDB.isSessionTerminated(sCode))) {
             localStorage.removeItem('greach_student_session');
             localStorage.removeItem('greach_active_user_session_v2');
             showGateModal('Your live classroom session was terminated by the Super Administrator.');
             return;
           }
-          const isLead = (localStorage.getItem('greach_instructor_login') === 'true' || localStorage.getItem('excel_instructor_session_active_v1') === 'true' || session.role === 'instructor');
+          const isLead = (localStorage.getItem('greach_instructor_login') === 'true' || localStorage.getItem('excel_instructor_session_active_v1') === 'true' || session.role === 'instructor' || session.isSuperAdmin);
           if (!isLead && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen('sql_beginners')) {
-            showGateModal('🛑 <strong>Classroom Stopped by Superuser:</strong> The SQL Analytics Studio has been stopped by the Super Administrator.');
+            const sched = window.GreachDB.isClassroomInScheduledHours ? window.GreachDB.isClassroomInScheduledHours('sql_beginners') : null;
+            showGateModal('🛑 <strong>Classroom Currently Offline:</strong> Live session is not active at this time.<br><small style="color:#64748b;">Scheduled: ' + (sched ? sched.scheduleText : 'Mondays & Wednesdays, 07:00 PM – 09:00 PM WAT') + '</small>');
             return;
           }
           if (window.GreachDB.updateStudentHeartbeat) {

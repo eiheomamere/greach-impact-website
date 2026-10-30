@@ -678,8 +678,9 @@
           </p>
         </div>
         <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
-          <button class="btn-primary" style="background:#107C41; border-color:#107C41;" onclick="handleSetAllClassrooms(true)"><i class="fas fa-play-circle"></i> Leave All 6 Classes ON</button>
-          <button class="btn-gold" style="background:#dc2626; color:#fff;" onclick="handleSetAllClassrooms(false)"><i class="fas fa-stop-circle"></i> Stop All 6 Classes</button>
+          <button class="btn-primary" style="background:#0284c7; border-color:#0284c7;" onclick="handleSetAllClassrooms('auto')"><i class="fas fa-clock"></i> Set All to Auto-Schedule (Timetable)</button>
+          <button class="btn-primary" style="background:#107C41; border-color:#107C41;" onclick="handleSetAllClassrooms('force_on')"><i class="fas fa-play-circle"></i> Force All 6 ON</button>
+          <button class="btn-gold" style="background:#dc2626; color:#fff;" onclick="handleSetAllClassrooms('force_off')"><i class="fas fa-stop-circle"></i> Force Stop All 6</button>
           <button class="btn-primary" onclick="renderClassroomsControlCenter()"><i class="fas fa-sync-alt"></i> Refresh Live Status</button>
         </div>
       </div>
@@ -715,8 +716,9 @@
             All 6 Course Classrooms â€” Live Status, Uptime &amp; Superuser Controls
           </h3>
           <div style="display:flex; gap:0.5rem;">
-            <button class="btn-action" style="background:#ecfdf5; color:#065f46; border-color:#a7f3d0; font-weight:700;" onclick="handleSetAllClassrooms(true)"><i class="fas fa-play"></i> Turn All ON</button>
-            <button class="btn-action" style="background:#fee2e2; color:#dc2626; border-color:#fca5a5; font-weight:700;" onclick="handleSetAllClassrooms(false)"><i class="fas fa-stop"></i> Stop All</button>
+            <button class="btn-action" style="background:#e0f2fe; color:#0369a1; border-color:#38bdf8; font-weight:700;" onclick="handleSetAllClassrooms('auto')"><i class="fas fa-clock"></i> Auto-Schedule</button>
+            <button class="btn-action" style="background:#ecfdf5; color:#065f46; border-color:#a7f3d0; font-weight:700;" onclick="handleSetAllClassrooms('force_on')"><i class="fas fa-play"></i> Force All ON</button>
+            <button class="btn-action" style="background:#fee2e2; color:#dc2626; border-color:#fca5a5; font-weight:700;" onclick="handleSetAllClassrooms('force_off')"><i class="fas fa-stop"></i> Stop All</button>
           </div>
         </div>
         <div id="activityClassroomsMiniGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(310px, 1fr)); gap:1rem;">
@@ -3040,24 +3042,24 @@
             </div>
           </div>
 
-          <div style="display:flex; flex-wrap:wrap; gap:6px; padding-top:0.75rem; border-top:1px solid #f1f5f9;">
-            ${cls.isLive ? `
-              <button class="btn-action" style="flex:1; background:#ecfdf5; color:#065f46; border-color:#6ee7b7; font-weight:800; justify-content:center; padding:7px 10px;" onclick="handleSetClassroomState('${cls.key}', true, this)" title="Keep this classroom ON and active">
-                <i class="fas fa-check-circle"></i> Leave ON
-              </button>
-              <button class="btn-action" style="flex:1; background:#dc2626; color:#ffffff; border-color:#dc2626; font-weight:800; justify-content:center; padding:7px 10px;" onclick="handleSetClassroomState('${cls.key}', false, this)" title="Stop this classroom immediately">
-                <i class="fas fa-stop-circle"></i> Stop Class
-              </button>
-            ` : `
-              <button class="btn-action" style="flex:1; background:#107C41; color:#ffffff; border-color:#107C41; font-weight:800; justify-content:center; padding:7px 10px;" onclick="handleSetClassroomState('${cls.key}', true, this)" title="Start / Turn ON this classroom">
-                <i class="fas fa-play-circle"></i> Start / Turn Class ON
-              </button>
-            `}
-            <button class="btn-action" style="background:#f1f5f9; color:#334155; border-color:#cbd5e1; font-weight:700; padding:7px 10px;" onclick="handleResetClassroomTimer('${cls.key}', this)" title="Reset elapsed class timer to 00m 00s">
-              <i class="fas fa-redo-alt"></i>
+          <!-- Course Timetable & Mode Info -->
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:0.5rem 0.75rem; margin-bottom:0.75rem; font-size:0.76rem;">
+            <div style="color:#334155; margin-bottom:2px;"><i class="fas fa-calendar-check" style="color:#0284c7;"></i> <strong>Scheduled Hours (WAT):</strong> ${escapeHtml(cls.scheduleText || 'Weekly Sessions')}</div>
+            <div style="color:#64748b;"><strong>Current Mode:</strong> <span style="font-weight:800; color:${cls.mode === 'auto' ? '#0284c7' : (cls.mode === 'force_on' ? '#15803d' : '#dc2626')};">${cls.mode === 'auto' ? '⏰ Auto-Schedule (Timetable)' : (cls.mode === 'force_on' ? '🟢 Forced ON (Admin Override)' : '🔴 Stopped (Admin Override)')}</span></div>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; gap:5px; padding-top:0.75rem; border-top:1px solid #f1f5f9;">
+            <button class="btn-action" style="flex:1; background:${cls.mode === 'auto' ? '#e0f2fe' : '#f8fafc'}; color:${cls.mode === 'auto' ? '#0369a1' : '#475569'}; border-color:${cls.mode === 'auto' ? '#38bdf8' : '#cbd5e1'}; font-weight:800; font-size:0.73rem; justify-content:center; padding:6px 6px;" onclick="handleSetClassroomState('${cls.key}', 'auto', this)" title="Automate class live status based on official schedule">
+              <i class="fas fa-clock"></i> Auto-Schedule
             </button>
-            <a href="classroom/${cls.hubUrl}${cls.hubUrl.includes('?') ? '&' : '?'}admin=true" target="_blank" onclick="return enterAdminHub('classroom/${cls.hubUrl}${cls.hubUrl.includes('?') ? '&' : '?'}admin=true', event);" class="btn-action" style="background:#0A0A5E; color:#ffffff; border-color:#0A0A5E; font-weight:700; text-decoration:none; padding:7px 10px;" title="Enter this classroom as Super Admin (Password Required)">
-              <i class="fas fa-lock"></i> Enter (Admin)
+            <button class="btn-action" style="flex:1; background:${cls.mode === 'force_on' ? '#107c41' : '#ecfdf5'}; color:${cls.mode === 'force_on' ? '#ffffff' : '#065f46'}; border-color:#107c41; font-weight:800; font-size:0.73rem; justify-content:center; padding:6px 6px;" onclick="handleSetClassroomState('${cls.key}', 'force_on', this)" title="Force classroom ON immediately outside scheduled hours">
+              <i class="fas fa-play-circle"></i> Force ON
+            </button>
+            <button class="btn-action" style="flex:1; background:${cls.mode === 'force_off' ? '#dc2626' : '#fef2f2'}; color:${cls.mode === 'force_off' ? '#ffffff' : '#991b1b'}; border-color:#dc2626; font-weight:800; font-size:0.73rem; justify-content:center; padding:6px 6px;" onclick="handleSetClassroomState('${cls.key}', 'force_off', this)" title="Stop this classroom immediately">
+              <i class="fas fa-stop-circle"></i> Stop Class
+            </button>
+            <a href="classroom/${cls.hubUrl}${cls.hubUrl.includes('?') ? '&' : '?'}admin=true" target="_blank" onclick="return enterAdminHub('classroom/${cls.hubUrl}${cls.hubUrl.includes('?') ? '&' : '?'}admin=true', event);" class="btn-action" style="background:#0A0A5E; color:#ffffff; border-color:#0A0A5E; font-weight:700; text-decoration:none; padding:6px 8px; font-size:0.74rem;" title="Enter this classroom as Super Admin (Password Required)">
+              <i class="fas fa-crown"></i> Admin Hub
             </a>
           </div>
         </div>
@@ -3083,35 +3085,37 @@
       }
     }
 
-    function handleSetClassroomState(courseKey, isLive, btn) {
+    function handleSetClassroomState(courseKey, modeOrLive, btn) {
       if (!window.GreachDB) return;
       const cls = window.GreachDB.getClassroomState(courseKey);
-      const actionDesc = isLive ? `Turn Classroom ON (Live): "${cls.label}"` : `Stop Classroom (Turn OFF): "${cls.label}"`;
+      const modeStr = modeOrLive === 'auto' ? 'Auto-Schedule (Timetable)' : (modeOrLive === 'force_on' || modeOrLive === true ? 'Force ON (Live)' : 'Stop Classroom (Turn OFF)');
+      const actionDesc = `Change Classroom Mode to ${modeStr}: "${cls.label}"`;
       requireSuperAdminAuth(actionDesc, () => {
-        executeSetClassroomState(courseKey, isLive, btn);
+        executeSetClassroomState(courseKey, modeOrLive, btn);
       });
     }
 
-    function executeSetClassroomState(courseKey, isLive, btn) {
+    function executeSetClassroomState(courseKey, modeOrLive, btn) {
       const adminUser = currentAdminSession ? currentAdminSession.username : 'Greachimpact';
       const cls = window.GreachDB.getClassroomState(courseKey);
-      if (!isLive) {
-        if (!confirm(`Stop "${cls.label}" (${cls.id})?\n\nStopping this classroom will pause student access and disconnect any students currently inside it until you turn it back ON.`)) {
+      if (modeOrLive === false || modeOrLive === 'force_off') {
+        if (!confirm(`Stop "${cls.label}" (${cls.id})?\n\nStopping this classroom will pause student access and disconnect any students currently inside it.`)) {
           return;
         }
       }
       if (window.GreachLoader) {
-        window.GreachLoader.show(isLive ? `Activating ${cls.shortLabel || cls.label}...` : `Stopping ${cls.shortLabel || cls.label}...`);
-        setTimeout(() => window.GreachLoader.hide(), 420);
+        window.GreachLoader.show(`Updating ${cls.shortLabel || cls.label}...`);
+        setTimeout(() => window.GreachLoader.hide(), 350);
       }
-      window.GreachDB.setClassroomState(courseKey, isLive, adminUser);
+      window.GreachDB.setClassroomState(courseKey, modeOrLive, adminUser);
       renderClassroomsControlCenter();
       renderStudentActivity();
       renderStats();
+      const updated = window.GreachDB.getClassroomState(courseKey);
       showToast(
-        isLive ? 'Classroom is LIVE (ON)' : 'Classroom Stopped (OFF)',
-        `${cls.label} (${cls.id}) is now ${isLive ? 'LIVE & open to enrolled students' : 'STOPPED by Superuser'}.`,
-        isLive ? 'success' : 'warning'
+        'Classroom Mode Updated',
+        `${cls.label} is now in ${updated.mode.toUpperCase()} mode (${updated.isLive ? 'LIVE' : 'OFFLINE'}).`,
+        updated.isLive ? 'success' : 'info'
       );
     }
 
@@ -3130,29 +3134,30 @@
       showToast('Class Timer Reset', `Uptime timer restarted for ${updated.label}.`, 'info');
     }
 
-    function handleSetAllClassrooms(isLive) {
+    function handleSetAllClassrooms(modeOrLive) {
       if (!window.GreachDB) return;
-      const actionDesc = isLive ? 'Turn ALL 6 Course Classrooms ON (Live)' : 'Stop ALL 6 Course Classrooms (Turn OFF)';
+      const modeStr = modeOrLive === 'auto' ? 'Auto-Schedule (Timetable)' : (modeOrLive === 'force_on' || modeOrLive === true ? 'Force ON (Live)' : 'Stop ALL 6 Classrooms');
+      const actionDesc = `Set ALL 6 Course Classrooms to ${modeStr}`;
       requireSuperAdminAuth(actionDesc, () => {
-        executeSetAllClassrooms(isLive);
+        executeSetAllClassrooms(modeOrLive);
       });
     }
 
-    function executeSetAllClassrooms(isLive) {
+    function executeSetAllClassrooms(modeOrLive) {
       const adminUser = currentAdminSession ? currentAdminSession.username : 'Greachimpact';
-      if (!isLive && !confirm('Are you sure you want to STOP all 6 course classrooms?')) return;
+      if ((modeOrLive === false || modeOrLive === 'force_off') && !confirm('Are you sure you want to STOP all 6 course classrooms?')) return;
       if (window.GreachLoader) {
-        window.GreachLoader.show(isLive ? 'Turning All 6 Classrooms ON...' : 'Stopping All 6 Classrooms...');
-        setTimeout(() => window.GreachLoader.hide(), 450);
+        window.GreachLoader.show(`Setting All 6 Classrooms to ${String(modeOrLive).toUpperCase()}...`);
+        setTimeout(() => window.GreachLoader.hide(), 400);
       }
-      window.GreachDB.setAllClassroomsState(isLive, adminUser);
+      window.GreachDB.setAllClassroomsState(modeOrLive, adminUser);
       renderClassroomsControlCenter();
       renderStudentActivity();
       renderStats();
       showToast(
-        isLive ? 'All 6 Classrooms ON!' : 'All 6 Classrooms Stopped',
-        isLive ? 'Every course classroom is now LIVE and open.' : 'All 6 course classrooms have been stopped by Superuser.',
-        isLive ? 'success' : 'warning'
+        'All Classrooms Updated',
+        `All 6 course classrooms updated to ${String(modeOrLive).toUpperCase()}.`,
+        'success'
       );
     }
 
@@ -3181,12 +3186,30 @@
     // 3. Render Student Roster Table
     
     // Render Live Presence & Activity Tracker
-    function renderStudentActivity() {
+    async function renderStudentActivity() {
       if (!window.GreachDB) return;
       if (typeof renderClassroomsControlCenter === 'function') {
         renderClassroomsControlCenter();
       }
-      const activeSessions = window.GreachDB.getActiveStudentSessions ? window.GreachDB.getActiveStudentSessions() : [];
+      const localSessions = window.GreachDB.getActiveStudentSessions ? window.GreachDB.getActiveStudentSessions() : [];
+      let cloudSessions = [];
+      try {
+        if (window.GreachDB.fetchActiveStudentSessionsCloud) {
+          cloudSessions = await window.GreachDB.fetchActiveStudentSessionsCloud();
+        }
+      } catch(e) {}
+
+      // Combine cloud + local sessions, prioritizing cloud entries
+      const sessionMap = new Map();
+      cloudSessions.forEach(s => {
+        if (s && s.studentId) sessionMap.set(s.studentId, s);
+      });
+      localSessions.forEach(s => {
+        if (s && s.studentId && !sessionMap.has(s.studentId)) {
+          sessionMap.set(s.studentId, s);
+        }
+      });
+      const activeSessions = Array.from(sessionMap.values());
       const activityLogs = window.GreachDB.getStudentActivityLogs ? window.GreachDB.getStudentActivityLogs() : [];
 
       // Update KPI
@@ -4454,10 +4477,31 @@ greachimpact@gmail.com`;
     // TEMPORARY LIVE SESSION PASSES CONTROLLER
     // ==============================================================
     function openSessionPassModal() {
-      document.getElementById('spLabel').value = '';
+      const lblInput = document.getElementById('spLabel');
+      const courseSelect = document.getElementById('spCourse');
+      lblInput.value = '';
       document.getElementById('spCustomCode').value = '';
       document.getElementById('spCohort').value = 'Batch 2: 2026 Masterclass';
       document.getElementById('spDuration').value = '2';
+
+      // Auto-detect course when typing in label
+      lblInput.oninput = function() {
+        const val = (lblInput.value || '').toLowerCase();
+        if (val.includes('power') || val.includes('pbi')) {
+          courseSelect.value = 'Power BI for Beginners';
+        } else if (val.includes('sql')) {
+          courseSelect.value = 'SQL for Beginners & Analytics';
+        } else if (val.includes('dash')) {
+          courseSelect.value = 'Executive Interactive Dashboard Design';
+        } else if (val.includes('adv')) {
+          courseSelect.value = 'Microsoft Excel Advanced & Analytics';
+        } else if (val.includes('beg')) {
+          courseSelect.value = 'Microsoft Excel for Beginners';
+        } else if (val.includes('complete') || val.includes('all') || val.includes('suite')) {
+          courseSelect.value = 'Complete Analytics Suite (Excel + SQL + Power BI)';
+        }
+      };
+
       document.getElementById('sessionPassModal').classList.add('open');
     }
 
@@ -4575,12 +4619,13 @@ greachimpact@gmail.com`;
     }
 
     async function executeExpireSessionPass(code, btn) {
-      if (!confirm(`Revoke access for session pass ${code}?`)) return;
+      if (!confirm(`Revoke access for session pass ${code}?\n\nThis will revoke access in Supabase Cloud, add the pass to the blacklist, and terminate any active browser session using it.`)) return;
       if (btn) setButtonLoading(btn, true, '');
       const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
       window.GreachDB.expireSessionPass(code, currentUser);
-      showToast('Pass Revoked', `Pass ${code} is now revoked.`, 'warning');
+      showToast('Pass Revoked', `Pass ${code} is now revoked across all classrooms and Cloud DB.`, 'warning');
       await renderSessionPassesTable();
+      if (typeof renderStudentActivity === 'function') renderStudentActivity();
     }
 
     function handleDeleteSessionPass(code, btn) {

@@ -1153,6 +1153,26 @@
       try {
         const session = JSON.parse(localStorage.getItem(ACTIVE_SESSION_KEY) || 'null');
         if (session && session.verified) {
+          const passCode = session.accessCode || (session.id && String(session.id).replace(/^PASS-/, ''));
+          // Strict revocation check against local blacklist and database
+          if (window.GreachDB && window.GreachDB.isCodeRevoked && (window.GreachDB.isCodeRevoked(passCode) || window.GreachDB.isCodeRevoked(session.id))) {
+            localStorage.removeItem(ACTIVE_SESSION_KEY);
+            localStorage.removeItem('greach_student_session');
+            localStorage.removeItem('greach_active_user_session_v2');
+            if (securityGateOverlay) securityGateOverlay.classList.remove('unlocked');
+            if (studentStatusPill) studentStatusPill.style.display = 'none';
+            const errBox = document.getElementById('codeErrorBox');
+            const errText = document.getElementById('codeErrorText');
+            if (errBox && errText) {
+              errBox.style.display = 'block';
+              errBox.style.background = '#fef2f2';
+              errBox.style.color = '#991b1b';
+              errBox.style.borderLeftColor = '#ef4444';
+              errText.innerHTML = '<strong><i class="fas fa-ban"></i> Access Revoked:</strong> Your classroom access pass has been revoked by the instructor.';
+            }
+            return;
+          }
+
           // Check expiration
           if (session.expiresAt && new Date(session.expiresAt).getTime() < Date.now()) {
             localStorage.removeItem(ACTIVE_SESSION_KEY);
@@ -1361,13 +1381,14 @@
         const courseName = s.course || 'Microsoft Excel for Beginners';
         const courseKey = window.GreachDB ? window.GreachDB.normalizeCourseKey(s.courseKey || s.course) : 'excel_beginners';
 
-        // Check if Superuser has stopped this classroom (unless user is Instructor/Super Admin)
+        // Check if Classroom is in scheduled hours or forced ON (unless user is Instructor/Super Admin)
         if (!verifyRes.isInstructor && window.GreachDB && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen(courseKey)) {
           if (errBox && errText) {
             errBox.style.background = '#fef2f2';
             errBox.style.color = '#991b1b';
             errBox.style.borderLeftColor = '#ef4444';
-            errText.innerHTML = `<strong><i class="fas fa-pause-circle"></i> Classroom Paused by Admin:</strong> The <strong>${escapeHtml(courseName)}</strong> classroom is currently stopped by the Super Administrator. Please wait for the instructor to start the class.`;
+            const sched = window.GreachDB.isClassroomInScheduledHours ? window.GreachDB.isClassroomInScheduledHours(courseKey) : null;
+            errText.innerHTML = `<strong><i class="fas fa-pause-circle"></i> Classroom Currently Offline:</strong> The <strong>${escapeHtml(courseName)}</strong> live classroom is not active at this time.<br><br><span style="font-size:0.8rem; color:#475569;"><strong>Scheduled Live Hours:</strong> ${sched ? sched.scheduleText : 'Scheduled sessions'}<br>(Current WAT Time: ${sched ? sched.currentWATTime + ', ' + sched.currentWATDay : ''})</span><br><br><span style="font-size:0.75rem; color:#64748b;">The classroom will automatically turn ON when the live class begins.</span>`;
           }
           return;
         }
@@ -1426,8 +1447,18 @@
           }).catch(() => {});
         } catch(e) {}
 
-        if (errBox) errBox.style.display = 'none';
+        const targetUrl = window.GreachDB && window.GreachDB.getCourseClassroomUrl ? window.GreachDB.getCourseClassroomUrl(courseKey) : 'Excel_Master_Course_Hub.html';
+        if (errBox && errText) {
+          errBox.style.display = 'block';
+          errBox.style.background = '#dcfce7';
+          errBox.style.color = '#15803d';
+          errBox.style.borderLeftColor = '#22c55e';
+          errText.innerHTML = `<strong><i class="fas fa-check-circle"></i> Access Verified!</strong> Launching <strong>${escapeHtml(courseName)}</strong> Classroom Hub...`;
+        }
         checkAccessSecurity();
+        setTimeout(() => {
+          window.location.href = targetUrl;
+        }, 550);
         return;
       } else if (verifyRes && verifyRes.isPendingPayment) {
         if (errBox && errText) {

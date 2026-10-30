@@ -935,41 +935,96 @@ Greach Impact Automated Registration Engine`);
       return pass;
     },
 
+    isCodeRevoked: function(code) {
+      if (!code) return false;
+      const clean = String(code).trim().toUpperCase();
+      try {
+        const revoked = JSON.parse(localStorage.getItem('greach_revoked_codes_v1') || '[]');
+        if (revoked.includes(clean)) return true;
+        const passes = this.getAllSessionPasses ? this.getAllSessionPasses() : [];
+        const match = passes.find(p => p.code && p.code.toUpperCase() === clean);
+        if (match && match.isActive === false) return true;
+        if (this.isSessionTerminated && (this.isSessionTerminated(clean) || this.isSessionTerminated('PASS-' + clean))) return true;
+      } catch(e) {}
+      return false;
+    },
+
     expireSessionPass: function(code, adminUser) {
+      if (!code) return { success: false, error: 'No pass code provided.' };
       const clean = code.trim().toUpperCase();
+      const now = new Date().toISOString();
+
+      // 1. Maintain local revoked blacklist in localStorage
+      try {
+        const revoked = JSON.parse(localStorage.getItem('greach_revoked_codes_v1') || '[]');
+        if (!revoked.includes(clean)) revoked.push(clean);
+        localStorage.setItem('greach_revoked_codes_v1', JSON.stringify(revoked));
+      } catch(e) {}
+
+      // 2. Update local session passes cache
       const passes = this.getAllSessionPasses();
-      const match = passes.find(p => p.code.toUpperCase() === clean);
+      let match = passes.find(p => p.code && p.code.toUpperCase() === clean);
       if (match) {
         match.isActive = false;
-        match.expiredAt = new Date().toISOString();
-        localStorage.setItem(SESSION_PASSES_KEY, JSON.stringify(passes));
-        this.logAudit(adminUser || 'Super Admin', 'Session Pass Expired', `Revoked session pass ${clean}`);
-
-        // Update in Supabase
-        callSupabase(`live_session_passes?pass_code=eq.${encodeURIComponent(clean)}`, {
-          method: 'PATCH',
-          body: JSON.stringify({ is_active: false })
-        }).catch(() => {});
-        callSupabase(`access_codes?code=eq.${encodeURIComponent(clean)}`, {
-          method: 'PATCH',
-          body: JSON.stringify({ is_active: false })
-        }).catch(() => {});
-
-        return { success: true, pass: match };
+        match.expiredAt = now;
+      } else {
+        match = { id: 'PAS-' + clean, code: clean, isActive: false, expiredAt: now };
+        passes.unshift(match);
       }
-      return { success: false, error: 'Pass code not found.' };
+      localStorage.setItem(SESSION_PASSES_KEY, JSON.stringify(passes));
+
+      // 3. Mark terminated flags for all session variants
+      this.forceLogoutStudent(clean, adminUser || 'Super Admin');
+      this.forceLogoutStudent('PASS-' + clean, adminUser || 'Super Admin');
+      this.forceLogoutStudent('PAS-' + clean, adminUser || 'Super Admin');
+
+      // 4. Wipe active browser session if current user is logged in with this pass
+      try {
+        const curSess = JSON.parse(localStorage.getItem('greach_student_session') || localStorage.getItem(ACTIVE_SESSION_KEY) || 'null');
+        if (curSess) {
+          const sId = String(curSess.id || '').toUpperCase();
+          const sCode = String(curSess.accessCode || curSess.code || '').toUpperCase();
+          if (sId.includes(clean) || sCode === clean) {
+            localStorage.removeItem('greach_student_session');
+            localStorage.removeItem(ACTIVE_SESSION_KEY);
+            localStorage.removeItem('greach_active_user_session_v2');
+          }
+        }
+      } catch(e) {}
+
+      // 5. Update Supabase access_codes, live_session_passes & student_presence
+      callSupabase(`access_codes?code=ilike.${encodeURIComponent(clean)}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ is_active: false })
+      }).catch(() => {});
+
+      callSupabase(`live_session_passes?pass_code=ilike.${encodeURIComponent(clean)}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ is_active: false })
+      }).catch(() => {});
+
+      callSupabase(`student_presence?student_id=ilike.PASS-${encodeURIComponent(clean)}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'revoked' })
+      }).catch(() => {});
+
+      this.logAudit(adminUser || 'Super Admin', 'Session Pass Revoked', `Revoked session pass ${clean}`);
+      return { success: true, pass: match };
     },
 
     deleteSessionPass: function(code, adminUser) {
+      if (!code) return { success: false };
       const clean = code.trim().toUpperCase();
+      this.expireSessionPass(clean, adminUser);
+
       let passes = this.getAllSessionPasses();
-      passes = passes.filter(p => p.code.toUpperCase() !== clean);
+      passes = passes.filter(p => p.code && p.code.toUpperCase() !== clean);
       localStorage.setItem(SESSION_PASSES_KEY, JSON.stringify(passes));
       this.logAudit(adminUser || 'Super Admin', 'Session Pass Deleted', `Deleted session pass ${clean}`);
 
       // Delete from Supabase
-      callSupabase(`live_session_passes?pass_code=eq.${encodeURIComponent(clean)}`, { method: 'DELETE' }).catch(() => {});
-      callSupabase(`access_codes?code=eq.${encodeURIComponent(clean)}`, { method: 'DELETE' }).catch(() => {});
+      callSupabase(`live_session_passes?pass_code=ilike.${encodeURIComponent(clean)}`, { method: 'DELETE' }).catch(() => {});
+      callSupabase(`access_codes?code=ilike.${encodeURIComponent(clean)}`, { method: 'DELETE' }).catch(() => {});
 
       return { success: true };
     },
@@ -1495,6 +1550,16 @@ Greach Impact Automated Registration Engine`);
       if (!code) return { success: false, error: 'Please enter your unique access code.' };
       const clean = code.trim();
 
+      // Check if code has been revoked by admin
+      if (this.isCodeRevoked && this.isCodeRevoked(clean)) {
+        return {
+          success: false,
+          valid: false,
+          isExpired: true,
+          error: 'Session pass "' + clean + '" has been revoked by the instructor.'
+        };
+      }
+
       // Check universal super admin master password entry
       const superAdmin = this.getSuperAdmin();
       if (
@@ -1613,6 +1678,16 @@ Greach Impact Automated Registration Engine`);
     verifyStudentByCodeCloud: async function(code) {
       if (!code) return { success: false, valid: false, error: 'Please enter your unique access code.' };
       const clean = code.trim().toUpperCase();
+
+      // Check if code has been revoked by admin
+      if (this.isCodeRevoked && this.isCodeRevoked(clean)) {
+        return {
+          success: false,
+          valid: false,
+          isExpired: true,
+          error: 'Session pass "' + clean + '" has been revoked by the instructor.'
+        };
+      }
 
       // 0. Instant 0ms Local & Master Admin Passcode Verification First!
       const localCheck = this.verifyStudentByCode(code);
@@ -2086,21 +2161,37 @@ Greach Impact Automated Registration Engine`);
     forceLogoutStudent: function(studentId, adminUser = 'Greachimpact') {
       if (!studentId) return { success: false, error: 'No student specified.' };
       try {
+        const clean = String(studentId).trim();
         const activeSessions = this.getActiveStudentSessionsRaw();
-        const match = activeSessions.find(s => s.studentId === studentId);
+        const match = activeSessions.find(s => s.studentId === clean || s.studentId === 'PASS-' + clean);
 
         // Mark termination flag for client immediate kick
-        localStorage.setItem('greach_terminated_' + studentId, String(Date.now()));
+        localStorage.setItem('greach_terminated_' + clean, String(Date.now()));
+        if (clean.startsWith('PASS-')) {
+          localStorage.setItem('greach_terminated_' + clean.replace(/^PASS-/, ''), String(Date.now()));
+        } else {
+          localStorage.setItem('greach_terminated_PASS-' + clean, String(Date.now()));
+        }
 
-        this.recordStudentLogout(studentId, `Terminated by Admin (${adminUser})`);
+        this.recordStudentLogout(clean, `Terminated by Admin (${adminUser})`);
+
+        // Update in Supabase
+        callSupabase(`student_presence?student_id=ilike.${encodeURIComponent(clean)}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status: 'terminated' })
+        }).catch(() => {});
+        callSupabase(`student_presence?student_id=ilike.PASS-${encodeURIComponent(clean.replace(/^PASS-/, ''))}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status: 'terminated' })
+        }).catch(() => {});
 
         this.logAudit(
           adminUser,
           'Force Student Logout',
-          `Terminated live session for student ${match ? match.name : studentId} (${studentId})`
+          `Terminated live session for student ${match ? match.name : clean} (${clean})`
         );
 
-        return { success: true, message: `Student session for ${studentId} terminated.` };
+        return { success: true, message: `Student session for ${clean} terminated.` };
       } catch(e) {
         return { success: false, error: e.message };
       }
@@ -2109,10 +2200,45 @@ Greach Impact Automated Registration Engine`);
     isSessionTerminated: function(studentId) {
       if (!studentId) return false;
       try {
-        return !!localStorage.getItem('greach_terminated_' + studentId);
-      } catch(e) {
-        return false;
-      }
+        const clean = String(studentId).trim();
+        if (localStorage.getItem('greach_terminated_' + clean)) return true;
+        if (clean.startsWith('PASS-') && localStorage.getItem('greach_terminated_' + clean.replace(/^PASS-/, ''))) return true;
+        if (!clean.startsWith('PASS-') && localStorage.getItem('greach_terminated_PASS-' + clean)) return true;
+        if (this.isCodeRevoked && this.isCodeRevoked(clean.replace(/^PASS-/, ''))) return true;
+      } catch(e) {}
+      return false;
+    },
+
+    fetchActiveStudentSessionsCloud: async function() {
+      try {
+        const res = await callSupabase('student_presence?order=last_heartbeat.desc&limit=60');
+        if (res && res.ok) {
+          const rows = await res.json();
+          if (Array.isArray(rows)) {
+            const now = Date.now();
+            const TIMEOUT_MS = 10 * 60 * 1000;
+            return rows.map(r => {
+              const hbTime = r.last_heartbeat || r.login_time || new Date().toISOString();
+              const isRecent = (now - new Date(hbTime).getTime()) < TIMEOUT_MS;
+              const cleanCode = r.student_id ? r.student_id.replace(/^PASS-/, '') : '';
+              const isRevoked = r.status === 'revoked' || (this.isCodeRevoked && this.isCodeRevoked(cleanCode));
+              return {
+                sessionId: r.session_id,
+                studentId: r.student_id,
+                name: r.student_name,
+                email: r.student_email,
+                course: r.course_name,
+                courseKey: this.normalizeCourseKey(r.course_name),
+                status: isRevoked ? 'revoked' : (isRecent && r.status === 'online' ? 'online' : 'offline'),
+                device: r.device_info || 'Desktop Browser',
+                loginTime: r.login_time || hbTime,
+                lastHeartbeat: hbTime
+              };
+            });
+          }
+        }
+      } catch(e) {}
+      return [];
     },
 
     addStudentActivityLog: function(entry) {
@@ -2254,16 +2380,17 @@ Greach Impact Automated Registration Engine`);
       let updated = false;
       const catalog = this.getClassroomCatalog();
       catalog.forEach(cls => {
-        if (!states[cls.key]) {
-          const startedAt = new Date(Date.now() - (cls.defaultStartOffsetMins * 60 * 1000)).toISOString();
+        if (!states[cls.key] || !states[cls.key].mode) {
+          const sched = this.isClassroomInScheduledHours ? this.isClassroomInScheduledHours(cls.key) : { isLiveNow: false };
           states[cls.key] = {
             key: cls.key,
             id: cls.id,
-            isLive: true,
-            startedAt: startedAt,
+            mode: 'auto',
+            isLive: sched.isLiveNow,
+            startedAt: null,
             stoppedAt: null,
-            updatedBy: 'Greachimpact (Super Admin)',
-            updatedAt: startedAt
+            updatedBy: 'Automated Timetable (WAT)',
+            updatedAt: new Date().toISOString()
           };
           updated = true;
         }
@@ -2277,6 +2404,72 @@ Greach Impact Automated Registration Engine`);
       return states;
     },
 
+    isClassroomInScheduledHours: function(courseKey) {
+      const norm = this.normalizeCourseKey(courseKey);
+      const now = new Date();
+      // Nigeria / West Africa Time (WAT) is UTC+1 (3600000ms offset from UTC)
+      const utcMillis = now.getTime() + (now.getTimezoneOffset() * 60000);
+      const watDate = new Date(utcMillis + 3600000);
+      const day = watDate.getDay(); // 0: Sun, 1: Mon, 2: Tue, 3: Wed, 4: Thu, 5: Fri, 6: Sat
+      const currentMinutes = watDate.getHours() * 60 + watDate.getMinutes();
+
+      let scheduledDays = [];
+      let startMin = 0;
+      let endMin = 0;
+      let scheduleText = '';
+
+      switch(norm) {
+        case 'excel_beginners':
+          scheduledDays = [0, 6]; // Sat, Sun
+          startMin = 10 * 60; // 10:00 AM
+          endMin = 12 * 60 + 30; // 12:30 PM
+          scheduleText = 'Saturdays & Sundays, 10:00 AM – 12:30 PM WAT';
+          break;
+        case 'excel_advanced':
+          scheduledDays = [0, 6]; // Sat, Sun
+          startMin = 14 * 60; // 02:00 PM
+          endMin = 16 * 60 + 30; // 04:30 PM
+          scheduleText = 'Saturdays & Sundays, 02:00 PM – 04:30 PM WAT';
+          break;
+        case 'excel_dashboard':
+          scheduledDays = [6]; // Saturday
+          startMin = 11 * 60; // 11:00 AM
+          endMin = 14 * 60; // 02:00 PM
+          scheduleText = 'Saturdays, 11:00 AM – 02:00 PM WAT';
+          break;
+        case 'sql_beginners':
+          scheduledDays = [1, 3]; // Mon, Wed
+          startMin = 19 * 60; // 07:00 PM
+          endMin = 21 * 60; // 09:00 PM
+          scheduleText = 'Mondays & Wednesdays, 07:00 PM – 09:00 PM WAT';
+          break;
+        case 'power_bi':
+          scheduledDays = [2, 4]; // Tue, Thu
+          startMin = 19 * 60; // 07:00 PM
+          endMin = 21 * 60; // 09:00 PM
+          scheduleText = 'Tuesdays & Thursdays, 07:00 PM – 09:00 PM WAT';
+          break;
+        case 'complete_package':
+        default:
+          scheduledDays = [0, 6]; // Sat, Sun
+          startMin = 10 * 60;
+          endMin = 16 * 60 + 30;
+          scheduleText = 'Saturdays & Sundays, 10:00 AM – 04:30 PM WAT';
+          break;
+      }
+
+      const isDayMatch = scheduledDays.includes(day);
+      const isTimeMatch = currentMinutes >= startMin && currentMinutes <= endMin;
+      const isLiveNow = isDayMatch && isTimeMatch;
+
+      return {
+        isLiveNow: isLiveNow,
+        scheduleText: scheduleText,
+        currentWATTime: watDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        currentWATDay: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][day]
+      };
+    },
+
     getAllClassrooms: function() {
       const catalog = this.getClassroomCatalog();
       const states = this.getClassroomStatesRaw();
@@ -2284,10 +2477,25 @@ Greach Impact Automated Registration Engine`);
       const now = Date.now();
 
       return catalog.map(cls => {
-        const st = states[cls.key] || { isLive: true, startedAt: new Date().toISOString() };
-        const isLive = st.isLive !== false;
+        const st = states[cls.key] || {};
+        const sched = this.isClassroomInScheduledHours(cls.key);
+
+        // Determine mode: 'auto' (default schedule), 'force_on' (manual ON), 'force_off' (manual OFF)
+        let mode = st.mode || 'auto';
+
+        let isLive = false;
+        if (mode === 'force_on') isLive = true;
+        else if (mode === 'force_off') isLive = false;
+        else isLive = sched.isLiveNow;
+
         const startTs = st.startedAt ? new Date(st.startedAt).getTime() : now;
         const uptimeMs = isLive ? Math.max(0, now - startTs) : 0;
+
+        let statusText = '';
+        if (mode === 'force_on') statusText = '🟢 FORCED ON (Admin Override)';
+        else if (mode === 'force_off') statusText = '🔴 STOPPED (Admin Override)';
+        else if (isLive) statusText = '🟢 LIVE NOW (Scheduled In-Session)';
+        else statusText = '⚪ OFFLINE (Scheduled)';
 
         // Match participants currently inside this classroom
         const participants = activeSessions.filter(s => {
@@ -2305,13 +2513,15 @@ Greach Impact Automated Registration Engine`);
 
         return {
           ...cls,
+          mode: mode,
+          scheduleText: sched.scheduleText,
           isLive: isLive,
-          statusText: isLive ? 'LIVE / ON' : 'STOPPED / OFF',
+          statusText: statusText,
           startedAt: st.startedAt,
           stoppedAt: st.stoppedAt || null,
           updatedBy: st.updatedBy || 'Greachimpact',
           uptimeMs: uptimeMs,
-          uptimeFormatted: isLive ? this.formatDuration(uptimeMs) : 'Stopped',
+          uptimeFormatted: isLive ? this.formatDuration(uptimeMs) : 'Offline',
           participantsCount: participants.length,
           participants: participants
         };
@@ -2325,11 +2535,12 @@ Greach Impact Automated Registration Engine`);
     },
 
     isClassroomOpen: function(courseKey) {
-      const st = this.getClassroomState(courseKey);
-      return st ? st.isLive !== false : true;
+      const norm = this.normalizeCourseKey(courseKey);
+      const st = this.getClassroomState(norm);
+      return st ? !!st.isLive : false;
     },
 
-    setClassroomState: function(courseKey, isLive, adminUser = 'Greachimpact') {
+    setClassroomState: function(courseKey, isLiveOrMode, adminUser = 'Greachimpact') {
       const KEY = 'greach_classroom_states_v2';
       const norm = this.normalizeCourseKey(courseKey);
       const states = this.getClassroomStatesRaw();
@@ -2337,11 +2548,30 @@ Greach Impact Automated Registration Engine`);
       const clsInfo = catalog.find(c => c.key === norm) || { key: norm, id: 'CLS-GEN', label: courseKey };
       const now = new Date().toISOString();
 
+      let mode = 'auto';
+      let isLive = false;
+      const sched = this.isClassroomInScheduledHours(norm);
+
+      if (isLiveOrMode === 'auto') {
+        mode = 'auto';
+        isLive = sched.isLiveNow;
+      } else if (isLiveOrMode === true || isLiveOrMode === 'force_on') {
+        mode = 'force_on';
+        isLive = true;
+      } else if (isLiveOrMode === false || isLiveOrMode === 'force_off') {
+        mode = 'force_off';
+        isLive = false;
+      } else {
+        mode = 'auto';
+        isLive = sched.isLiveNow;
+      }
+
       const prev = states[norm] || {};
       states[norm] = {
         key: norm,
         id: clsInfo.id,
-        isLive: !!isLive,
+        mode: mode,
+        isLive: isLive,
         startedAt: isLive ? (prev.isLive && prev.startedAt ? prev.startedAt : now) : prev.startedAt,
         stoppedAt: isLive ? null : now,
         updatedBy: adminUser,
@@ -2350,14 +2580,14 @@ Greach Impact Automated Registration Engine`);
 
       localStorage.setItem(KEY, JSON.stringify(states));
 
-      // If Superuser stops the classroom, log out non-admin participants in that classroom
+      // If classroom is set to OFF, disconnect non-admin participants
       let disconnectedCount = 0;
       if (!isLive) {
         const active = this.getActiveStudentSessionsRaw();
         active.forEach(s => {
           const sKey = this.normalizeCourseKey(s.classroomKey || s.courseKey || s.course);
           if (sKey === norm && s.studentId !== 'SUPER-ADMIN') {
-            this.recordStudentLogout(s.studentId, `Classroom Stopped by Superuser (${adminUser})`);
+            this.recordStudentLogout(s.studentId, `Classroom Stopped (${mode}) by ${adminUser}`);
             disconnectedCount++;
           }
         });
@@ -2365,19 +2595,19 @@ Greach Impact Automated Registration Engine`);
 
       this.logAudit(
         adminUser,
-        isLive ? 'Classroom Started / Kept Live' : 'Classroom Stopped',
-        `${isLive ? 'Set LIVE (ON)' : 'STOPPED (OFF)'} classroom "${clsInfo.label}" (${clsInfo.id})${!isLive && disconnectedCount > 0 ? ` — disconnected ${disconnectedCount} active student(s)` : ''}`
+        'Classroom State Changed',
+        `Classroom "${clsInfo.label}" mode set to ${mode.toUpperCase()} (${isLive ? 'LIVE' : 'OFFLINE'}) by ${adminUser}`
       );
 
       return this.getClassroomState(norm);
     },
 
     startClassroom: function(courseKey, adminUser = 'Greachimpact') {
-      return this.setClassroomState(courseKey, true, adminUser);
+      return this.setClassroomState(courseKey, 'force_on', adminUser);
     },
 
     stopClassroom: function(courseKey, adminUser = 'Greachimpact') {
-      return this.setClassroomState(courseKey, false, adminUser);
+      return this.setClassroomState(courseKey, 'force_off', adminUser);
     },
 
     resetClassroomTimer: function(courseKey, adminUser = 'Greachimpact') {

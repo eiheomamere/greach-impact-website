@@ -1353,15 +1353,23 @@
       const tick = () => {
         const session = JSON.parse(localStorage.getItem('greach_student_session') || localStorage.getItem('greach_active_user_session_v2') || '{}');
         if (window.GreachDB && session && session.id) {
-          if (window.GreachDB.isSessionTerminated && window.GreachDB.isSessionTerminated(session.id)) {
+          const dCode = session.accessCode || (session.id && String(session.id).replace(/^PASS-/, ''));
+          if (window.GreachDB && window.GreachDB.isCodeRevoked && (window.GreachDB.isCodeRevoked(dCode) || window.GreachDB.isCodeRevoked(session.id))) {
+            localStorage.removeItem('greach_student_session');
+            localStorage.removeItem('greach_active_user_session_v2');
+            showGateModal('<strong><i class="fas fa-ban"></i> Access Revoked:</strong> Your classroom pass has been revoked by the instructor.');
+            return;
+          }
+          if (window.GreachDB && window.GreachDB.isSessionTerminated && (window.GreachDB.isSessionTerminated(session.id) || window.GreachDB.isSessionTerminated(dCode))) {
             localStorage.removeItem('greach_student_session');
             localStorage.removeItem('greach_active_user_session_v2');
             showGateModal('Your live classroom session was terminated by the Super Administrator.');
             return;
           }
-          const isLead = (localStorage.getItem('greach_instructor_login') === 'true' || localStorage.getItem('excel_instructor_session_active_v1') === 'true' || session.role === 'instructor');
-          if (!isLead && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen('excel_dashboard')) {
-            showGateModal('🛑 <strong>Classroom Stopped by Superuser:</strong> The Executive Dashboard Studio has been stopped by the Super Administrator.');
+          const isLead = (localStorage.getItem('greach_instructor_login') === 'true' || localStorage.getItem('excel_instructor_session_active_v1') === 'true' || session.role === 'instructor' || session.isSuperAdmin);
+          if (!isLead && window.GreachDB && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen('excel_dashboard')) {
+            const sched = window.GreachDB.isClassroomInScheduledHours ? window.GreachDB.isClassroomInScheduledHours('excel_dashboard') : null;
+            showGateModal('🛑 <strong>Classroom Currently Offline:</strong> Live session is not active at this time.<br><small style="color:#64748b;">Scheduled: ' + (sched ? sched.scheduleText : 'Saturdays, 11:00 AM – 02:00 PM WAT') + '</small>');
             return;
           }
           if (window.GreachDB.updateStudentHeartbeat) {

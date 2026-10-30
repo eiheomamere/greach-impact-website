@@ -3819,21 +3819,34 @@ Automated Direct Link: ${s.magicLink}`;
           const classroomKey = getActiveExcelClassroomKey();
           const isSuperUser = session.role === 'instructor' || session.role === 'superadmin' || session.role === 'admin' || session.isAdmin;
 
-          // Check if classroom has been stopped by Superadmin
-          if (!isSuperUser && window.GreachDB && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen(classroomKey)) {
-            const st = window.GreachDB.getClassroomState(classroomKey);
-            alert(st.announcement || 'This classroom session is currently paused/stopped by the Superadmin. Please wait for the instructor to open the class.');
+          // Check if session pass or code has been revoked by instructor
+          const passCode = session.accessCode || (session.id && String(session.id).replace(/^PASS-/, ''));
+          if (window.GreachDB && window.GreachDB.isCodeRevoked && (window.GreachDB.isCodeRevoked(passCode) || window.GreachDB.isCodeRevoked(session.id))) {
+            alert('Your classroom access pass has been revoked by the instructor.');
+            localStorage.removeItem(ACTIVE_SESSION_KEY);
+            localStorage.removeItem('greach_student_session');
+            localStorage.removeItem('greach_active_user_session_v2');
             document.getElementById('securityGateOverlay').classList.remove('unlocked');
+            location.reload();
             return;
           }
 
           // Check if session has been forcefully terminated by admin
-          if (session.id && window.GreachDB && window.GreachDB.isSessionTerminated && window.GreachDB.isSessionTerminated(session.id)) {
+          if (session.id && window.GreachDB && window.GreachDB.isSessionTerminated && (window.GreachDB.isSessionTerminated(session.id) || window.GreachDB.isSessionTerminated(passCode))) {
             alert('Your active session has been terminated by the administrator.');
             localStorage.removeItem(ACTIVE_SESSION_KEY);
             localStorage.removeItem('greach_student_session');
+            localStorage.removeItem('greach_active_user_session_v2');
             document.getElementById('securityGateOverlay').classList.remove('unlocked');
             location.reload();
+            return;
+          }
+
+          // Check if classroom is offline (scheduled hours or forced stop)
+          if (!isSuperUser && window.GreachDB && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen(classroomKey)) {
+            const sched = window.GreachDB.isClassroomInScheduledHours ? window.GreachDB.isClassroomInScheduledHours(classroomKey) : null;
+            alert('Classroom Currently Offline:\n\nThis classroom is not in session at this time.\n\nScheduled Live Hours:\n' + (sched ? sched.scheduleText : 'Weekly live sessions') + '\n(Current WAT Time: ' + (sched ? sched.currentWATTime + ', ' + sched.currentWATDay : '') + ')\n\nClassroom will automatically open when live session begins.');
+            document.getElementById('securityGateOverlay').classList.remove('unlocked');
             return;
           }
 
