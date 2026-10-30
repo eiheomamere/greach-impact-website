@@ -1054,7 +1054,7 @@ SUMX (
       </button>
 
       <button type="button" onclick="enterPbiAsAdmin()" style="width:100%; background:#fef3c7; border:1.5px solid #fde68a; color:#92400e; padding:0.65rem; border-radius:8px; font-weight:800; font-size:0.86rem; cursor:pointer; margin-bottom:0.8rem;">
-        👑 Enter as Admin / Instructor (No Password Needed) &rarr;
+        👑 Enter as Admin / Instructor (Password Required) &rarr;
       </button>
 
       <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
@@ -1505,15 +1505,21 @@ SUMX (
     });
 
     function enterPbiAsAdmin() {
-      if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
-        window.GreachDB.activateAdminClassroomSession('Greachimpact');
+      const pwd = prompt('Enter Universal Super Admin Password (Evana_Oluebube123890):');
+      if (!pwd) return;
+      if (pwd.trim() === 'Evana_Oluebube123890') {
+        if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
+          window.GreachDB.activateAdminClassroomSession('Greachimpact');
+        } else {
+          localStorage.setItem('excel_instructor_session_active_v1', 'true');
+          localStorage.setItem('greach_instructor_login', 'true');
+        }
+        const modal = document.getElementById('securityGateModal');
+        if (modal) modal.classList.remove('active');
+        checkPbiAccessAuth();
       } else {
-        localStorage.setItem('excel_instructor_session_active_v1', 'true');
-        localStorage.setItem('greach_instructor_login', 'true');
+        alert('Access Denied: Incorrect Super Admin password.');
       }
-      const modal = document.getElementById('securityGateModal');
-      if (modal) modal.classList.remove('active');
-      checkPbiAccessAuth();
     }
 
     function checkPbiAccessAuth() {

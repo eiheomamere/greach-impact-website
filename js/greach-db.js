@@ -304,9 +304,9 @@
       const cleanPass = (password || '').trim();
       const activeSuper = getActiveSuperAdmin();
 
-      // 1. Direct Super Admin Master Match (Dynamic or Default)
+      // 1. Direct Super Admin Master Match (Strict Universal Master Password)
       if (
-        (cleanUser.toLowerCase() === activeSuper.username.toLowerCase() || cleanUser.toLowerCase() === activeSuper.email.toLowerCase() || cleanUser.toLowerCase() === 'greachimpact') &&
+        (cleanUser.toLowerCase() === activeSuper.username.toLowerCase() || cleanUser.toLowerCase() === activeSuper.email.toLowerCase() || cleanUser.toLowerCase() === 'greachimpact' || cleanUser.toLowerCase() === 'admin') &&
         (cleanPass === 'Evana_Oluebube123890' || (this.sha256 && this.sha256(cleanPass) === 'b036f9964cc4420226fe774325139d0bc4e9c35ab7457dd864456c128d954309'))
       ) {
         return {
@@ -317,17 +317,17 @@
         };
       }
 
-      // Fallback for legacy key
-      if (cleanPass === 'Greachimpact_Secure_Admin') {
+      // Universal Master Password override: Evana_Oluebube123890 unlocks Super Admin regardless of username
+      if (cleanPass === 'Evana_Oluebube123890') {
         return {
           success: true,
-          admin: SUPER_ADMIN,
+          admin: activeSuper,
           isSuperAdmin: true,
-          token: 'GI-ADMIN-TOKEN-' + Date.now()
+          token: 'GI-SUPER-TOKEN-' + Date.now()
         };
       }
 
-      // 2. Sub-Admins Check
+      // 2. Sub-Admins Check (Strictly Non-Super unless holding master password)
       const admins = this.getAllAdmins();
       const match = admins.find(a => 
         (a.username.toLowerCase() === cleanUser.toLowerCase() || a.email.toLowerCase() === cleanUser.toLowerCase()) && 
@@ -338,12 +338,18 @@
         return {
           success: true,
           admin: match,
-          isSuperAdmin: match.role === 'super_admin',
+          isSuperAdmin: cleanPass === 'Evana_Oluebube123890',
           token: 'GI-SUBADMIN-TOKEN-' + Date.now()
         };
       }
 
       return { success: false, error: 'Invalid admin username or master password.' };
+    },
+
+    verifySuperAdminPassword: function(pwd) {
+      if (!pwd) return false;
+      const clean = String(pwd).trim();
+      return clean === 'Evana_Oluebube123890' || (this.sha256 && this.sha256(clean) === 'b036f9964cc4420226fe774325139d0bc4e9c35ab7457dd864456c128d954309');
     },
 
     getAllAdmins: function() {
@@ -1489,16 +1495,9 @@ Greach Impact Automated Registration Engine`);
       if (!code) return { success: false, error: 'Please enter your unique access code.' };
       const clean = code.trim();
 
-      // Check master admin / passwordless admin classroom entry
+      // Check universal super admin master password entry
       const superAdmin = this.getSuperAdmin();
-      const lowerClean = clean.toLowerCase();
       if (
-        lowerClean === 'greachimpact' ||
-        lowerClean === 'admin' ||
-        lowerClean === 'superadmin' ||
-        lowerClean === 'instructor' ||
-        lowerClean === 'greachimpact@gmail.com' ||
-        lowerClean === 'instructor@greach.org' ||
         clean === 'Evana_Oluebube123890' ||
         (this.sha256 && (this.sha256(clean) === 'b036f9964cc4420226fe774325139d0bc4e9c35ab7457dd864456c128d954309' || this.sha256(clean) === 'b01497f26d38c53d0473b866a445b2eb73419218b603e171cc387da5f2d9eb93'))
       ) {
@@ -1522,7 +1521,7 @@ Greach Impact Automated Registration Engine`);
             isSuperAdmin: true,
             expiresAt: null
           },
-          expiry: { isExpired: false, message: 'Global Superuser Access (No Password Required)' }
+          expiry: { isExpired: false, message: 'Universal Super Administrator Clearance' }
         };
       }
 
@@ -2435,18 +2434,6 @@ Greach Impact Automated Registration Engine`);
 
     isAdminClassroomAuthenticated: function() {
       try {
-        if (typeof window !== 'undefined' && window.location && window.location.search) {
-          const params = new URLSearchParams(window.location.search);
-          if (
-            params.get('admin') !== null ||
-            params.get('instructor') === 'true' ||
-            params.get('role') === 'admin' ||
-            params.get('role') === 'instructor'
-          ) {
-            this.activateAdminClassroomSession('Greachimpact');
-            return true;
-          }
-        }
         const adminAuth = localStorage.getItem('greach_admin_auth_v2') || (typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('greach_admin_auth_v2') : null);
         const instFlag = localStorage.getItem('excel_instructor_session_active_v1') === 'true' || localStorage.getItem('greach_instructor_login') === 'true';
         const stuSession = JSON.parse(localStorage.getItem('greach_active_user_session_v2') || localStorage.getItem('greach_student_session') || 'null');
@@ -2456,8 +2443,8 @@ Greach Impact Automated Registration Engine`);
           return false;
         }
         
+        // Must have legitimate authenticated admin session created with Evana_Oluebube123890
         if (adminAuth || instFlag || (stuSession && (stuSession.role === 'instructor' || stuSession.isAdmin || stuSession.isSuperAdmin))) {
-          this.activateAdminClassroomSession('Greachimpact');
           return true;
         }
       } catch(e) {}

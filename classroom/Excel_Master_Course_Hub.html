@@ -985,34 +985,37 @@
 
         <div style="margin-top:1rem; text-align:center;">
           <button type="button" onclick="autoFillInstructorKey()" style="background:#fef3c7; border:1px solid #fde68a; color:#92400e; padding:0.45rem 0.9rem; border-radius:8px; font-size:0.82rem; font-weight:800; cursor:pointer; width:100%;">
-            👑 Admin / Lead Instructor? Click Here to Enter Classroom (No Password Needed) &rarr;
+            👑 Admin / Lead Instructor Access (Password Required) &rarr;
           </button>
         </div>
       </form>
 
-      <!-- Instructor Sign-in Form (Passwordless Entry) -->
+      <!-- Instructor Sign-in Form (Universal Master Password Required) -->
       <form id="instructorGateForm" onsubmit="handleInstructorLogin(event)" style="display:none;">
-        <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:10px; padding:0.9rem 1rem; margin-bottom:1rem; text-align:left; color:#14532d; font-size:0.84rem;">
-          <strong><i class="fas fa-crown" style="color:#d97706;"></i> Admin &amp; Lead Instructor Direct Entry:</strong><br>
-          No password is required for Admin/Instructor classroom access. Click below to unlock all 64 lessons and live broadcast controls immediately.
+        <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:10px; padding:0.9rem 1rem; margin-bottom:1rem; text-align:left; color:#1e40af; font-size:0.84rem;">
+          <strong><i class="fas fa-crown" style="color:#d97706;"></i> Super Admin &amp; Instructor Verification:</strong><br>
+          Super Admin and Lead Instructor access strictly requires the universal master password.
         </div>
         <div style="margin-bottom: 0.9rem; text-align: left;">
           <label class="gate-label" style="display:block; font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.35rem;"><i class="fas fa-user-tie"></i> Admin / Instructor Account:</label>
-          <input type="text" id="gateInstructorEmail" class="gate-input" placeholder="Greachimpact" value="Greachimpact" style="width:100%; padding:0.75rem 1rem; border:1.5px solid #cbd5e1; border-radius:10px; font-size:0.92rem; outline:none;" />
-          <input type="hidden" id="gateInstructorPasscode" value="" />
+          <input type="text" id="gateInstructorEmail" class="gate-input" placeholder="Greachimpact" value="Greachimpact" style="width:100%; padding:0.75rem 1rem; border:1.5px solid #cbd5e1; border-radius:10px; font-size:0.92rem; outline:none;" required />
+        </div>
+        <div style="margin-bottom: 0.9rem; text-align: left;">
+          <label class="gate-label" style="display:block; font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.35rem;"><i class="fas fa-key"></i> Universal Super Admin Password:</label>
+          <div style="position:relative;">
+            <input type="password" id="gateInstructorPasscode" class="gate-input" placeholder="Enter universal master password..." style="width:100%; padding:0.75rem 2.8rem 0.75rem 1rem; border:1.5px solid #cbd5e1; border-radius:10px; font-size:0.92rem; outline:none;" required />
+            <button type="button" onclick="const p = document.getElementById('gateInstructorPasscode'); if(p){ p.type = p.type==='password'?'text':'password'; this.querySelector('i').className = p.type==='password'?'fas fa-eye':'fas fa-eye-slash'; }" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:#64748b; cursor:pointer; font-size:1rem; padding:4px;" title="Show/Hide Password">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
         </div>
 
         <div id="gateInstErrorBox" style="display:none; background:#fef2f2; border-left:4px solid #ef4444; color:#991b1b; padding:0.65rem 0.9rem; border-radius:6px; font-size:0.82rem; margin-bottom:1rem; text-align:left;">
-          <i class="fas fa-exclamation-circle"></i> <span id="gateInstErrorText">Invalid Instructor Master Key.</span>
+          <i class="fas fa-exclamation-circle"></i> <span id="gateInstErrorText">Invalid Super Admin Password.</span>
         </div>
 
-        <!-- 1-Click Fast Authenticate Button -->
-        <button type="button" onclick="autoFillInstructorKey()" style="width:100%; background:linear-gradient(135deg, #107c41, #065f46); color:white; padding:0.85rem; border-radius:10px; font-weight:800; font-size:0.98rem; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem; margin-bottom:0.65rem;">
-          <i class="fas fa-crown"></i> 👑 Enter Classroom as Admin / Instructor (No Password)
-        </button>
-
-        <button type="submit" class="c-btn" style="width:100%; background:#1e293b; color:white; justify-content:center; padding:0.85rem; font-size:1rem; border:none; border-radius:10px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.5rem;">
-          <i class="fas fa-user-shield"></i> Authenticate as Lead Instructor
+        <button type="submit" class="c-btn" style="width:100%; background:linear-gradient(135deg, #0A0A5E, #112641); color:white; justify-content:center; padding:0.85rem; font-size:1rem; border:none; border-radius:10px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.5rem; box-shadow:0 4px 6px -1px rgba(10,10,94,0.25);">
+          <i class="fas fa-shield-alt"></i> Authenticate Super Admin
         </button>
 
         <div style="margin-top:1rem; text-align:center;">
@@ -3598,17 +3601,11 @@ Automated Direct Link: ${s.magicLink}`;
         link.click();
       };
 
-      // 1-Click Fast Instructor Authentication
+      // Fast Instructor Authentication Switcher
       window.autoFillInstructorKey = function() {
-        const emailInp = document.getElementById('gateInstructorEmail');
-        const passInp = document.getElementById('gateInstructorPasscode');
-        if (emailInp) emailInp.value = 'Greachimpact';
-        if (passInp) passInp.value = 'Evana_Oluebube123890';
         window.switchGateRole('instructor');
-        const form = document.getElementById('instructorGateForm');
-        if (form) {
-          window.handleInstructorLogin(new Event('submit'));
-        }
+        const passInp = document.getElementById('gateInstructorPasscode');
+        if (passInp) passInp.focus();
       };
 
       // Self-Service Auto-Sign In / Retrieve Access
@@ -3818,7 +3815,6 @@ Automated Direct Link: ${s.magicLink}`;
           return;
         }
 
-        const session = JSON.parse(localStorage.getItem(ACTIVE_SESSION_KEY) || localStorage.getItem('greach_student_session') || 'null');
         if (session && session.verified) {
           const classroomKey = getActiveExcelClassroomKey();
           const isSuperUser = session.role === 'instructor' || session.role === 'superadmin' || session.role === 'admin' || session.isAdmin;
@@ -4048,21 +4044,41 @@ Automated Direct Link: ${s.magicLink}`;
 
 
 
-      // Instructor / Super Admin Login Handler (Passwordless Entry for Admin)
+      // Instructor / Super Admin Login Handler (Strict Master Password Required)
       window.handleInstructorLogin = function(e) {
         if (e && e.preventDefault) e.preventDefault();
         const emailInp = document.getElementById('gateInstructorEmail');
-        const userOrEmail = (emailInp && emailInp.value ? emailInp.value.trim() : '') || 'Greachimpact';
+        const passInp = document.getElementById('gateInstructorPasscode');
         const errBox = document.getElementById('gateInstErrorBox');
+        const errText = document.getElementById('gateInstErrorText');
+
+        const userOrEmail = (emailInp && emailInp.value ? emailInp.value.trim() : '') || 'Greachimpact';
+        let pass = passInp && passInp.value ? passInp.value.trim() : '';
+
+        if (!pass) {
+          pass = prompt('Enter Universal Super Admin Password (Evana_Oluebube123890):') || '';
+        }
+
+        if (pass !== 'Evana_Oluebube123890') {
+          if (errBox && errText) {
+            errText.textContent = '❌ Access Denied: Incorrect Super Admin password. Evana_Oluebube123890 required.';
+            errBox.style.display = 'block';
+          } else {
+            alert('Access Denied: Incorrect Super Admin password.');
+          }
+          return;
+        }
 
         if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
           window.GreachDB.activateAdminClassroomSession(userOrEmail);
         } else {
           localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
+          localStorage.setItem('greach_instructor_login', 'true');
+          localStorage.setItem('excel_instructor_session_active_v1', 'true');
           const session = {
             role: 'instructor',
             id: 'INST-ADMIN',
-            name: 'Super Admin Greachimpact',
+            name: 'Super Admin ' + userOrEmail,
             email: 'instructor@greach.org',
             verified: true,
             isAdmin: true,
@@ -4070,10 +4086,12 @@ Automated Direct Link: ${s.magicLink}`;
             loginTime: new Date().toISOString()
           };
           localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
+          localStorage.setItem('greach_student_session', JSON.stringify(session));
         }
         if (errBox) errBox.style.display = 'none';
         document.getElementById('securityGateOverlay').classList.add('unlocked');
         updateUserIdentityHeader(true);
+        checkActiveSession();
       };
 
       window.logoutActiveSession = function() {

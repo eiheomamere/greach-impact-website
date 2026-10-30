@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Greach Impact Academy — Super Admin Control Center</title>
+  <title>Greach Impact Academy â€” Super Admin Control Center</title>
   <link rel="icon" type="image/jpeg" href="images/Greach Impact Logo (2).jpg" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -505,7 +505,7 @@
 </head>
 <body>
 
-  <!-- 🔒 SUPER ADMIN LOGIN OVERLAY -->
+  <!-- ðŸ”’ SUPER ADMIN LOGIN OVERLAY -->
   <div class="auth-overlay" id="adminAuthOverlay">
     <div class="auth-box">
       <div style="width:64px; height:64px; background:linear-gradient(135deg, #0a192f, #0284c7); border-radius:18px; margin:0 auto 1.2rem; display:flex; align-items:center; justify-content:center; color:white; font-size:1.8rem; border:2px solid var(--gold-400);">
@@ -547,7 +547,7 @@
     </div>
   </div>
 
-  <!-- 🌐 TOP APPLICATION BAR -->
+  <!-- ðŸŒ TOP APPLICATION BAR -->
   <header class="admin-topbar">
     <div class="brand-group">
       <img src="images/Greach Impact Logo (2).jpg" alt="Logo" class="brand-logo" onerror="this.style.display='none'" />
@@ -570,23 +570,23 @@
         </button>
         <div id="adminClassroomDropdown" style="display:none; position:absolute; top:calc(100% + 6px); right:0; background:#ffffff; min-width:275px; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,0.2); border:1.5px solid #cbd5e1; z-index:9999; padding:0.5rem; text-align:left;">
           <div style="font-size:0.72rem; font-weight:800; color:#64748b; text-transform:uppercase; padding:0.4rem 0.75rem; letter-spacing:0.04em;">Universal Admin Clearance</div>
-          <a href="classroom/index.html?admin=true" target="_blank" onclick="enterAdminHub()" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#0f172a; font-weight:700; font-size:0.85rem;">
+          <a href="classroom/index.html?admin=true" target="_blank" onclick="return enterAdminHub('classroom/index.html?admin=true', event)" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#0f172a; font-weight:700; font-size:0.85rem;">
             <i class="fas fa-th-large" style="color:#0A0A5E; width:16px;"></i> All Classrooms Portal
           </a>
-          <a href="classroom/Excel_Master_Course_Hub.html?admin=true" target="_blank" onclick="enterAdminHub()" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#15803d; font-weight:700; font-size:0.85rem;">
+          <a href="classroom/Excel_Master_Course_Hub.html?admin=true" target="_blank" onclick="return enterAdminHub('classroom/Excel_Master_Course_Hub.html?admin=true', event)" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#15803d; font-weight:700; font-size:0.85rem;">
             <i class="fas fa-file-excel" style="color:#107c41; width:16px;"></i> Microsoft Excel Masterclass
           </a>
-          <a href="classroom/Excel_Dashboard_Hub.html?admin=true" target="_blank" onclick="enterAdminHub()" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#3730a3; font-weight:700; font-size:0.85rem;">
+          <a href="classroom/Excel_Dashboard_Hub.html?admin=true" target="_blank" onclick="return enterAdminHub('classroom/Excel_Dashboard_Hub.html?admin=true', event)" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#3730a3; font-weight:700; font-size:0.85rem;">
             <i class="fas fa-tachometer-alt" style="color:#4f46e5; width:16px;"></i> Executive Dashboard Studio
           </a>
-          <a href="classroom/SQL_Master_Course_Hub.html?admin=true" target="_blank" onclick="enterAdminHub()" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#c2410c; font-weight:700; font-size:0.85rem;">
+          <a href="classroom/SQL_Master_Course_Hub.html?admin=true" target="_blank" onclick="return enterAdminHub('classroom/SQL_Master_Course_Hub.html?admin=true', event)" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#c2410c; font-weight:700; font-size:0.85rem;">
             <i class="fas fa-database" style="color:#ea580c; width:16px;"></i> SQL Analytics Studio
           </a>
-          <a href="classroom/PowerBI_Master_Course_Hub.html?admin=true" target="_blank" onclick="enterAdminHub()" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#b45309; font-weight:700; font-size:0.85rem;">
+          <a href="classroom/PowerBI_Master_Course_Hub.html?admin=true" target="_blank" onclick="return enterAdminHub('classroom/PowerBI_Master_Course_Hub.html?admin=true', event)" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#b45309; font-weight:700; font-size:0.85rem;">
             <i class="fas fa-chart-pie" style="color:#d97706; width:16px;"></i> Power BI Business Intelligence
           </a>
           <div style="border-top:1px solid #f1f5f9; margin:4px 0;"></div>
-          <a href="classroom/Excel_Master_Course_Hub.html?track=all&admin=true" target="_blank" onclick="enterAdminHub()" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#0A0A5E; font-weight:800; font-size:0.85rem; background:#f8fafc;">
+          <a href="classroom/Excel_Master_Course_Hub.html?track=all&admin=true" target="_blank" onclick="return enterAdminHub('classroom/Excel_Master_Course_Hub.html?track=all&admin=true', event)" class="admin-drop-link" style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; border-radius:8px; text-decoration:none; color:#0A0A5E; font-weight:800; font-size:0.85rem; background:#f8fafc;">
             <i class="fas fa-crown" style="color:#facc15; width:16px;"></i> Complete Analytics Suite (VIP)
           </a>
         </div>
@@ -595,7 +595,7 @@
     </div>
   </header>
 
-  <!-- 📊 MAIN WORKSPACE -->
+  <!-- ðŸ“Š MAIN WORKSPACE -->
   <main class="admin-container">
 
     <!-- KPI Metric Cards -->
@@ -623,7 +623,7 @@
       <div class="stat-card gold">
         <div class="stat-title"><span>Course Orders</span> <i class="fas fa-shopping-cart" style="color:var(--gold-500);"></i></div>
         <div class="stat-val" id="statTotalOrders">0</div>
-        <div class="stat-sub" id="statRevenueText">₦0 verified revenue</div>
+        <div class="stat-sub" id="statRevenueText">â‚¦0 verified revenue</div>
       </div>
       <div class="stat-card teal">
         <div class="stat-title"><span>Brevo Dispatches</span> <i class="fas fa-paper-plane" style="color:var(--accent-teal);"></i></div>
@@ -650,12 +650,12 @@
     <!-- Navigation Tabs -->
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchAdminTab('students')"><i class="fas fa-user-graduate"></i> Student Roster &amp; Bank</button>
-      <button class="tab-btn" onclick="switchAdminTab('classrooms')"><i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i> 🏫 Live Classrooms Control (6)</button>
+      <button class="tab-btn" onclick="switchAdminTab('classrooms')"><i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i> ðŸ« Live Classrooms Control (6)</button>
       <button class="tab-btn" onclick="switchAdminTab('activity')"><i class="fas fa-satellite-dish" style="color:#22c55e;"></i> Live Student Logins &amp; Presence</button>
       <button class="tab-btn" onclick="switchAdminTab('orders')"><i class="fas fa-shopping-cart"></i> Orders &amp; Pipeline</button>
       <button class="tab-btn" onclick="switchAdminTab('session_passes')"><i class="fas fa-stopwatch"></i> Temporary Session Passes</button>
       <button class="tab-btn" onclick="switchAdminTab('blog')"><i class="fas fa-newspaper" style="color:#0284c7;"></i> Blog Articles &amp; Content</button>
-      <button class="tab-btn" onclick="switchAdminTab('supabase')"><i class="fas fa-database" style="color:#22c55e;"></i> ⚡ Supabase Cloud DB</button>
+      <button class="tab-btn" onclick="switchAdminTab('supabase')"><i class="fas fa-database" style="color:#22c55e;"></i> âš¡ Supabase Cloud DB</button>
       <button class="tab-btn" onclick="switchAdminTab('prices')"><i class="fas fa-tags"></i> Course Pricing &amp; Discounts</button>
       <button class="tab-btn" onclick="switchAdminTab('schedules')"><i class="fas fa-calendar-alt"></i> Dates &amp; Self-Paced Modes</button>
       <button class="tab-btn" onclick="switchAdminTab('brevo')"><i class="fas fa-paper-plane"></i> Brevo &amp; Automation Hub</button>
@@ -712,7 +712,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; flex-wrap:wrap; gap:0.5rem;">
           <h3 style="font-size:1.08rem; color:var(--navy-900); display:flex; align-items:center; gap:8px;">
             <i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i>
-            All 6 Course Classrooms — Live Status, Uptime &amp; Superuser Controls
+            All 6 Course Classrooms â€” Live Status, Uptime &amp; Superuser Controls
           </h3>
           <div style="display:flex; gap:0.5rem;">
             <button class="btn-action" style="background:#ecfdf5; color:#065f46; border-color:#a7f3d0; font-weight:700;" onclick="handleSetAllClassrooms(true)"><i class="fas fa-play"></i> Turn All ON</button>
@@ -798,7 +798,7 @@
       </div>
 
       <div class="controls-strip">
-        <input type="text" id="filterSearch" class="search-input" placeholder="🔍 Search by student name, ID, or email..." oninput="renderStudentsTable()" />
+        <input type="text" id="filterSearch" class="search-input" placeholder="ðŸ” Search by student name, ID, or email..." oninput="renderStudentsTable()" />
         <select id="filterStatus" class="filter-select" onchange="renderStudentsTable()">
           <option value="all">All Students (Unlimited)</option>
           <option value="active">Active Access Only</option>
@@ -857,7 +857,7 @@
       </div>
 
       <div class="controls-strip">
-        <input type="text" id="orderSearchInput" class="search-input" placeholder="🔍 Search orders by Student Name, Order ID, Email, or Course..." oninput="renderOrdersTable()" />
+        <input type="text" id="orderSearchInput" class="search-input" placeholder="ðŸ” Search orders by Student Name, Order ID, Email, or Course..." oninput="renderOrdersTable()" />
         <select id="orderStatusFilter" class="filter-select" onchange="renderOrdersTable()">
           <option value="all">All Payment Statuses</option>
           <option value="Pending Verification">Pending Verification</option>
@@ -874,7 +874,7 @@
               <th>Order Details</th>
               <th>Student Info</th>
               <th>Course Programme</th>
-              <th>Amount (₦)</th>
+              <th>Amount (â‚¦)</th>
               <th>Payment Method</th>
               <th>Payment Status</th>
               <th>Access Code</th>
@@ -1165,7 +1165,7 @@
       </div>
 
       <div class="controls-strip">
-        <input type="text" id="certSearchInput" class="search-input" placeholder="🔍 Search issued certificates by Serial ID, student name, or email..." oninput="renderCertsTable()" />
+        <input type="text" id="certSearchInput" class="search-input" placeholder="ðŸ” Search issued certificates by Serial ID, student name, or email..." oninput="renderCertsTable()" />
       </div>
 
       <div class="table-responsive">
@@ -1246,7 +1246,7 @@
         <div>
           <h2><i class="fas fa-calendar-alt" style="color:var(--accent-teal);"></i> Course Dates, Schedules &amp; Class Times</h2>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
-            Update course start dates, end dates, and daily class times (e.g. 10:00 AM – 12:30 PM WAT). Changes reflect across all website pages and student portals instantly.
+            Update course start dates, end dates, and daily class times (e.g. 10:00 AM â€“ 12:30 PM WAT). Changes reflect across all website pages and student portals instantly.
           </p>
         </div>
         <button class="btn-primary" onclick="resetDefaultSchedules()"><i class="fas fa-undo"></i> Reset to Default Schedules</button>
@@ -1374,7 +1374,7 @@
       </div>
 
       <div class="controls-strip">
-        <input type="text" id="filterBlogSearch" class="search-input" placeholder="🔍 Search articles by title, keyword, or excerpt..." oninput="renderBlogTable()" />
+        <input type="text" id="filterBlogSearch" class="search-input" placeholder="ðŸ” Search articles by title, keyword, or excerpt..." oninput="renderBlogTable()" />
         <select id="filterBlogCategory" class="filter-select" onchange="renderBlogTable()">
           <option value="all">All Categories</option>
           <option value="Excel & Data">Excel & Data</option>
@@ -1558,8 +1558,8 @@
           <label>Access Grant Type:</label>
           <select id="modalStuAccessType" class="form-control">
             <option value="paid">Standard Paid (Expires 1 Month After Class)</option>
-            <option value="free_grant">🎁 Free Access Pass (Expires 1 Month After Class)</option>
-            <option value="free_lifetime">👑 Admin Free Lifetime Access (Never Expires)</option>
+            <option value="free_grant">ðŸŽ Free Access Pass (Expires 1 Month After Class)</option>
+            <option value="free_lifetime">ðŸ‘‘ Admin Free Lifetime Access (Never Expires)</option>
           </select>
         </div>
         <div class="form-group">
@@ -1626,12 +1626,12 @@
         <div class="form-group">
           <label>Course Programme:</label>
           <select id="moCourse" class="form-control" onchange="updateManualOrderAmount(this.value)">
-            <option value="Microsoft Excel for Beginners|3000">Microsoft Excel for Beginners (₦3,000)</option>
-            <option value="Microsoft Excel Advanced & Analytics|4000">Microsoft Excel Advanced & Analytics (₦4,000)</option>
-            <option value="SQL for Data Analytics & Databases|5000">SQL for Data Analytics & Databases (₦5,000)</option>
-            <option value="Complete Analytics Suite (Excel + SQL + Power BI)|10000">Complete Analytics Suite (₦10,000)</option>
-            <option value="Power BI for Business Intelligence|22500">Power BI for Business Intelligence (₦22,500)</option>
-            <option value="Executive Interactive Dashboard Design|40000">Executive Interactive Dashboard Design (₦40,000)</option>
+            <option value="Microsoft Excel for Beginners|3000">Microsoft Excel for Beginners (â‚¦3,000)</option>
+            <option value="Microsoft Excel Advanced & Analytics|4000">Microsoft Excel Advanced & Analytics (â‚¦4,000)</option>
+            <option value="SQL for Data Analytics & Databases|5000">SQL for Data Analytics & Databases (â‚¦5,000)</option>
+            <option value="Complete Analytics Suite (Excel + SQL + Power BI)|10000">Complete Analytics Suite (â‚¦10,000)</option>
+            <option value="Power BI for Business Intelligence|22500">Power BI for Business Intelligence (â‚¦22,500)</option>
+            <option value="Executive Interactive Dashboard Design|40000">Executive Interactive Dashboard Design (â‚¦40,000)</option>
           </select>
         </div>
         <div class="form-group">
@@ -1643,7 +1643,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Amount (₦):</label>
+          <label>Amount (â‚¦):</label>
           <input type="number" id="moAmount" class="form-control" value="3000" required />
         </div>
         <div style="display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.5rem;">
@@ -1749,9 +1749,9 @@
         <div class="form-group">
           <label><i class="fas fa-sliders-h"></i> Access Code Type:</label>
           <select id="ucType" class="form-control" onchange="handleCodeTypeChange()">
-            <option value="student_course">🎓 Student Course Enrollment Code (Permanent / 30-Day)</option>
-            <option value="session_pass">⏱️ Temporary Live Session Pass (Single Class / Workshop)</option>
-            <option value="vip_suite">👑 Complete Suite VIP Pass (Unlocks All 5 Modules)</option>
+            <option value="student_course">ðŸŽ“ Student Course Enrollment Code (Permanent / 30-Day)</option>
+            <option value="session_pass">â±ï¸ Temporary Live Session Pass (Single Class / Workshop)</option>
+            <option value="vip_suite">ðŸ‘‘ Complete Suite VIP Pass (Unlocks All 5 Modules)</option>
           </select>
         </div>
 
@@ -1827,7 +1827,7 @@
         <div style="text-align:center; padding:1rem; background:white; border-radius:8px; border:1px solid #bbf7d0; margin-bottom:1rem;">
           <div style="font-size:0.8rem; color:#64748b; text-transform:uppercase; font-weight:700; letter-spacing:1px; margin-bottom:4px;">Unique Access Code</div>
           <div id="ucGeneratedCodeDisplay" style="font-family:monospace; font-size:1.8rem; font-weight:800; color:#0A0A5E; letter-spacing:2px;">GRC-2026-XXXX</div>
-          <div id="ucGeneratedDetails" style="font-size:0.82rem; color:#475569; margin-top:6px;">Course: Microsoft Excel for Beginners • Valid for: 30 Days</div>
+          <div id="ucGeneratedDetails" style="font-size:0.82rem; color:#475569; margin-top:6px;">Course: Microsoft Excel for Beginners â€¢ Valid for: 30 Days</div>
         </div>
 
         <!-- 1-Click Action Buttons -->
@@ -1960,6 +1960,74 @@
     </div>
   </div>
 
+  <!-- ðŸ‘‘ MANDATORY SUPER ADMIN AUTHORIZATION MODAL -->
+  <div class="modal-overlay" id="superAdminConfirmModal" style="z-index: 100000;">
+    <div class="modal-card" style="max-width:480px; width:92%; border-top: 5px solid #dc2626; box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.45); border-radius:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3 style="margin:0; font-size:1.25rem; color:#0f172a; display:flex; align-items:center; gap:0.6rem;">
+          <span style="display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; background:#fee2e2; color:#dc2626; font-size:1.1rem;">
+            <i class="fas fa-shield-alt"></i>
+          </span>
+          Super Admin Authorization
+        </h3>
+        <button type="button" onclick="closeSuperAdminConfirmModal()" style="background:none; border:none; font-size:1.6rem; cursor:pointer; color:#64748b; line-height:1;">&times;</button>
+      </div>
+
+      <div style="background:#fef2f2; border:1.5px solid #fecaca; border-radius:10px; padding:0.9rem 1.1rem; margin-bottom:1.1rem;">
+        <div style="font-size:0.75rem; font-weight:800; color:#991b1b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.3rem;">
+          <i class="fas fa-lock"></i> Protected Super Admin Action
+        </div>
+        <div id="superAdminConfirmActionDesc" style="font-size:0.9rem; color:#7f1d1d; font-weight:700; word-break:break-word; line-height:1.4;">
+          Implement administrative modification
+        </div>
+      </div>
+
+      <p style="font-size:0.86rem; color:#475569; margin-bottom:1.1rem; line-height:1.5;">
+        You must confirm the universal master password to authorize this action and implement changes across the academy.
+      </p>
+
+      <form id="superAdminConfirmForm" onsubmit="handleSuperAdminConfirmSubmit(event)">
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label style="display:block; font-size:0.82rem; font-weight:700; color:#1e293b; margin-bottom:0.4rem;">
+            Super Admin Password:
+          </label>
+          <div style="position:relative; display:flex; align-items:center;">
+            <input 
+              type="password" 
+              id="superAdminConfirmInput" 
+              class="form-control" 
+              required 
+              placeholder="Enter Super Admin Password..." 
+              autocomplete="current-password"
+              style="padding-right:2.8rem; font-size:0.95rem;"
+            />
+            <button 
+              type="button" 
+              id="superAdminEyeToggle"
+              onclick="toggleSuperAdminConfirmEye()" 
+              title="Show / Hide Password"
+              style="position:absolute; right:10px; background:none; border:none; color:#64748b; cursor:pointer; font-size:1.1rem; padding:4px;"
+            >
+              <i class="fas fa-eye" id="superAdminEyeIcon"></i>
+            </button>
+          </div>
+          <div id="superAdminConfirmError" style="display:none; color:#dc2626; font-size:0.82rem; font-weight:700; margin-top:0.4rem; padding:0.4rem 0.6rem; background:#fee2e2; border-radius:6px;">
+            <i class="fas fa-exclamation-circle"></i> Incorrect Super Admin password.
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.25rem;">
+          <button type="button" onclick="closeSuperAdminConfirmModal()" class="btn-action" style="padding:0.65rem 1.25rem; cursor:pointer; font-weight:600;">
+            Cancel
+          </button>
+          <button type="submit" id="superAdminConfirmSubmitBtn" class="btn-primary" style="background:#dc2626; border-color:#b91c1c; padding:0.65rem 1.5rem; cursor:pointer; font-weight:700;">
+            <i class="fas fa-unlock-alt"></i> Authorize &amp; Apply
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Greach DB Layer -->
   <script src="classroom/js/greach-db.js"></script>
   <script src="classroom/js/greach-brevo.js"></script>
@@ -2030,6 +2098,106 @@
       }
     }
   
+    // ==========================================
+    // MANDATORY SUPER ADMIN AUTHORIZATION ENGINE
+    // Universal Password: Evana_Oluebube123890
+    // ==========================================
+    let pendingSuperAdminAction = null;
+
+    function requireSuperAdminAuth(actionDescription, onConfirmed) {
+      if (typeof onConfirmed !== 'function') return;
+
+      pendingSuperAdminAction = {
+        desc: actionDescription || 'Implement Administrative Change',
+        callback: onConfirmed
+      };
+
+      const modal = document.getElementById('superAdminConfirmModal');
+      const descEl = document.getElementById('superAdminConfirmActionDesc');
+      const inputEl = document.getElementById('superAdminConfirmInput');
+      const errEl = document.getElementById('superAdminConfirmError');
+
+      if (descEl) descEl.textContent = actionDescription || 'Implement Administrative Change';
+      if (inputEl) {
+        inputEl.value = '';
+        inputEl.type = 'password';
+      }
+      const eyeIcon = document.getElementById('superAdminEyeIcon');
+      if (eyeIcon) eyeIcon.className = 'fas fa-eye';
+      if (errEl) errEl.style.display = 'none';
+
+      if (modal) {
+        modal.classList.add('open');
+        modal.classList.add('active');
+        setTimeout(() => { if (inputEl) inputEl.focus(); }, 120);
+      } else {
+        const pass = prompt(`[SUPER ADMIN AUTHORIZATION REQUIRED]\nAction: ${actionDescription}\n\nEnter Universal Super Admin Password:`);
+        if (pass && ((window.GreachDB && window.GreachDB.verifySuperAdminPassword && window.GreachDB.verifySuperAdminPassword(pass)) || pass.trim() === 'Evana_Oluebube123890')) {
+          onConfirmed();
+        } else {
+          alert('Action Cancelled: Incorrect Super Admin password.');
+        }
+      }
+    }
+
+    function closeSuperAdminConfirmModal() {
+      const modal = document.getElementById('superAdminConfirmModal');
+      if (modal) {
+        modal.classList.remove('open');
+        modal.classList.remove('active');
+      }
+      pendingSuperAdminAction = null;
+    }
+
+    function toggleSuperAdminConfirmEye() {
+      const inputEl = document.getElementById('superAdminConfirmInput');
+      const eyeIcon = document.getElementById('superAdminEyeIcon');
+      if (!inputEl) return;
+      if (inputEl.type === 'password') {
+        inputEl.type = 'text';
+        if (eyeIcon) eyeIcon.className = 'fas fa-eye-slash';
+      } else {
+        inputEl.type = 'password';
+        if (eyeIcon) eyeIcon.className = 'fas fa-eye';
+      }
+    }
+
+    function handleSuperAdminConfirmSubmit(e) {
+      if (e) e.preventDefault();
+      const inputEl = document.getElementById('superAdminConfirmInput');
+      const errEl = document.getElementById('superAdminConfirmError');
+      const enteredPass = inputEl ? inputEl.value.trim() : '';
+
+      const isVerified = (window.GreachDB && window.GreachDB.verifySuperAdminPassword)
+        ? window.GreachDB.verifySuperAdminPassword(enteredPass)
+        : (enteredPass === 'Evana_Oluebube123890');
+
+      if (!isVerified) {
+        if (errEl) {
+          errEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Incorrect Super Admin password. Access denied.';
+          errEl.style.display = 'block';
+        }
+        if (inputEl) {
+          inputEl.focus();
+          inputEl.select();
+        }
+        return;
+      }
+
+      // Validated! Run pending callback
+      const targetAction = pendingSuperAdminAction ? pendingSuperAdminAction.callback : null;
+      closeSuperAdminConfirmModal();
+
+      if (typeof targetAction === 'function') {
+        try {
+          targetAction();
+        } catch(err) {
+          console.error('[SuperAdminAuth] Authorized action execution error:', err);
+          showToast('Execution Error', err.message || 'Action encountered an error.', 'error');
+        }
+      }
+    }
+  
     const SUPER_ADMIN_USER = 'Greachimpact';
     // Master credentials secured via serverless API and SHA-256 HMAC tokens
     const MASTER_HASH = 'b036f9964cc4420226fe774325139d0bc4e9c35ab7457dd864456c128d954309';
@@ -2092,9 +2260,18 @@
       }
     }
 
-    async function handleGenerateUniversalCode(e) {
+    function handleGenerateUniversalCode(e) {
       if (e) e.preventDefault();
-      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const formEl = e && e.target ? e.target : document.getElementById('universalCodeForm');
+      const type = document.getElementById('ucType') ? document.getElementById('ucType').value : 'student_course';
+      const desc = type === 'session_pass' ? 'Generate Quick Live Session Pass in Database' : 'Generate Student Course Access Code in Database';
+      requireSuperAdminAuth(desc, () => {
+        executeGenerateUniversalCode(formEl);
+      });
+    }
+
+    async function executeGenerateUniversalCode(formEl) {
+      const submitBtn = formEl && formEl.querySelector ? formEl.querySelector('button[type="submit"]') : null;
       setButtonLoading(submitBtn, true, 'Generating in Cloud...');
 
       const type = document.getElementById('ucType').value;
@@ -2237,7 +2414,7 @@
       };
 
       document.getElementById('ucGeneratedCodeDisplay').textContent = code;
-      document.getElementById('ucGeneratedDetails').textContent = `Course: ${course} • Valid for: ${expText}` + (studentName ? ` • Student: ${studentName}` : '');
+      document.getElementById('ucGeneratedDetails').textContent = `Course: ${course} â€¢ Valid for: ${expText}` + (studentName ? ` â€¢ Student: ${studentName}` : '');
       document.getElementById('ucResultBox').style.display = 'block';
 
       setButtonLoading(submitBtn, false);
@@ -2270,7 +2447,7 @@
       const origin = window.location.origin;
       const link = `${origin}/classroom/index.html?code=${encodeURIComponent(lastGeneratedCodeData.code)}`;
       const msg = encodeURIComponent(
-        `Hello ${lastGeneratedCodeData.studentName || 'Student'}!\n\nHere is your official access code for Greach Impact Academy:\n\n🔑 Code: ${lastGeneratedCodeData.code}\n📚 Course: ${lastGeneratedCodeData.course}\n⏱️ Validity: ${lastGeneratedCodeData.expiresText}\n\n👉 Click to enter your classroom directly: ${link}\n\nWelcome to class!`
+        `Hello ${lastGeneratedCodeData.studentName || 'Student'}!\n\nHere is your official access code for Greach Impact Academy:\n\nðŸ”‘ Code: ${lastGeneratedCodeData.code}\nðŸ“š Course: ${lastGeneratedCodeData.course}\nâ±ï¸ Validity: ${lastGeneratedCodeData.expiresText}\n\nðŸ‘‰ Click to enter your classroom directly: ${link}\n\nWelcome to class!`
       );
       const phoneClean = (lastGeneratedCodeData.phone || '').replace(/[^0-9]/g, '');
       const waUrl = phoneClean ? `https://wa.me/${phoneClean}?text=${msg}` : `https://api.whatsapp.com/send?text=${msg}`;
@@ -2307,7 +2484,7 @@
         document.getElementById('sbAnonKey').value = cfg.key;
         if (dot) dot.style.background = '#22c55e';
         if (text) text.innerHTML = '<span style="color:#166534;">Supabase Status: Connected to Cloud PostgreSQL</span>';
-        if (sub) sub.textContent = `Project Endpoint: ${cfg.url} • Active & Ready for Universal Real-Time Sync`;
+        if (sub) sub.textContent = `Project Endpoint: ${cfg.url} â€¢ Active & Ready for Universal Real-Time Sync`;
       } else {
         if (dot) dot.style.background = '#94a3b8';
         if (text) text.textContent = 'Supabase Status: Not Configured (Using LocalStorage & Serverless Sync)';
@@ -2317,6 +2494,12 @@
 
     function handleSaveSupabaseConfig(e) {
       if (e) e.preventDefault();
+      requireSuperAdminAuth('Save Supabase Cloud Database Configuration', () => {
+        executeSaveSupabaseConfig(e);
+      });
+    }
+
+    function executeSaveSupabaseConfig(e) {
       const url = document.getElementById('sbProjectUrl').value.trim().replace(/\/$/, '');
       const key = document.getElementById('sbAnonKey').value.trim();
       const alertBox = document.getElementById('sbAlertBox');
@@ -2394,7 +2577,13 @@
       }
     }
 
-    async function syncAllToSupabase() {
+    function syncAllToSupabase() {
+      requireSuperAdminAuth('Upload All Local Data to Supabase PostgreSQL Cloud Database', () => {
+        executeSyncAllToSupabase();
+      });
+    }
+
+    async function executeSyncAllToSupabase() {
       const cfg = getSupabaseConfig();
       if (!cfg || !cfg.url || !cfg.key) {
         alert('Please save and test your Supabase Project URL and Anon Key before syncing.');
@@ -2527,6 +2716,15 @@
         greet.textContent = `Logged in as: ${currentAdminSession.username} • ${currentAdminSession.isSuper ? 'Global Superuser Access' : 'Delegated Admin'}`;
         localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(currentAdminSession));
       }
+      if (badge) {
+        badge.style.cursor = 'pointer';
+        badge.title = 'Super Admin Status (Click to Verify Universal Password)';
+        badge.onclick = function() {
+          requireSuperAdminAuth('Verify Super Admin Universal Master Password', () => {
+            showToast('Super Admin Verified', 'Master Super Admin universal clearance is active.', 'success');
+          });
+        };
+      }
       if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
         window.GreachDB.activateAdminClassroomSession(currentAdminSession ? currentAdminSession.username : 'Greachimpact');
       }
@@ -2570,10 +2768,20 @@
       }
     }
 
-    window.enterAdminHub = function() {
-      if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
-        window.GreachDB.activateAdminClassroomSession('Greachimpact');
+    window.enterAdminHub = function(url, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
       }
+      requireSuperAdminAuth('Classroom Super Admin Clearance Entry', () => {
+        if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
+          window.GreachDB.activateAdminClassroomSession(currentAdminSession ? currentAdminSession.username : 'Greachimpact');
+        }
+        if (url) {
+          window.open(url, '_blank');
+        }
+      });
+      return false;
     };
 
     window.toggleAdminClassroomMenu = function(e) {
@@ -2637,7 +2845,25 @@
       } else if (tabKey === 'activity') {
         if (typeof renderStudentActivity === 'function') renderStudentActivity();
       } else if (tabKey === 'superuser') {
-        if (typeof populateSuperUserForm === 'function') populateSuperUserForm();
+        if (!currentAdminSession || !currentAdminSession.isSuper) {
+          requireSuperAdminAuth('Access Super Administrator Security Settings', () => {
+            currentAdminSession = currentAdminSession || { username: 'Greachimpact', isSuper: true };
+            currentAdminSession.isSuper = true;
+            if (typeof populateSuperUserForm === 'function') populateSuperUserForm();
+          });
+        } else {
+          if (typeof populateSuperUserForm === 'function') populateSuperUserForm();
+        }
+      } else if (tabKey === 'admins') {
+        if (!currentAdminSession || !currentAdminSession.isSuper) {
+          requireSuperAdminAuth('Manage Sub-Administrators & Roles', () => {
+            currentAdminSession = currentAdminSession || { username: 'Greachimpact', isSuper: true };
+            currentAdminSession.isSuper = true;
+            if (typeof renderSubAdminsTable === 'function') renderSubAdminsTable();
+          });
+        } else {
+          if (typeof renderSubAdminsTable === 'function') renderSubAdminsTable();
+        }
       } else if (tabKey === 'schedules') {
         if (typeof renderScheduleCards === 'function') renderScheduleCards();
       } else if (tabKey === 'orders') {
@@ -2649,13 +2875,15 @@
         if (typeof renderDispatchLogsTable === 'function') renderDispatchLogsTable();
         if (typeof checkBrevoApiStatus === 'function') checkBrevoApiStatus();
       }
-
-      if (tabKey === 'admins' && currentAdminSession && !currentAdminSession.isSuper) {
-        alert('Super Admin privilege required to manage sub-administrators.');
-      }
     }
 
-    async function syncSiteDataToCloud() {
+    function syncSiteDataToCloud() {
+      requireSuperAdminAuth('Publish Live Updates & Sync All Data to Supabase Cloud', () => {
+        executeSyncSiteDataToCloud();
+      });
+    }
+
+    async function executeSyncSiteDataToCloud() {
       if (window.GreachLoader) window.GreachLoader.show('Publishing Live Updates to Supabase Cloud...');
       try {
         if (typeof syncLocalToSupabase === 'function') {
@@ -2709,7 +2937,7 @@
       const statOrdersEl = document.getElementById('statTotalOrders');
       if (statOrdersEl) statOrdersEl.textContent = orders.length.toLocaleString();
       const statRevEl = document.getElementById('statRevenueText');
-      if (statRevEl) statRevEl.textContent = '₦' + totalRevenue.toLocaleString() + ' verified revenue';
+      if (statRevEl) statRevEl.textContent = 'â‚¦' + totalRevenue.toLocaleString() + ' verified revenue';
       const statDispEl = document.getElementById('statTotalDispatches');
       if (statDispEl) statDispEl.textContent = dispatches.length.toLocaleString();
       const now = new Date();
@@ -2778,7 +3006,7 @@
               </div>
               <span style="background:${statusBg}; color:${statusColor}; border:1px solid ${statusBorder}; padding:3px 10px; border-radius:20px; font-size:0.74rem; font-weight:800; display:inline-flex; align-items:center; gap:6px;">
                 <span style="width:8px; height:8px; border-radius:50%; background:${dotColor}; display:inline-block;"></span>
-                ${cls.isLive ? '🟢 CLASS ON / LIVE' : '🔴 STOPPED / OFF'}
+                ${cls.isLive ? 'ðŸŸ¢ CLASS ON / LIVE' : 'ðŸ”´ STOPPED / OFF'}
               </span>
             </div>
 
@@ -2828,8 +3056,8 @@
             <button class="btn-action" style="background:#f1f5f9; color:#334155; border-color:#cbd5e1; font-weight:700; padding:7px 10px;" onclick="handleResetClassroomTimer('${cls.key}', this)" title="Reset elapsed class timer to 00m 00s">
               <i class="fas fa-redo-alt"></i>
             </button>
-            <a href="classroom/${cls.hubUrl}${cls.hubUrl.includes('?') ? '&' : '?'}admin=true" target="_blank" onclick="if(window.GreachDB&&window.GreachDB.activateAdminClassroomSession)window.GreachDB.activateAdminClassroomSession('Greachimpact');" class="btn-action" style="background:#0A0A5E; color:#ffffff; border-color:#0A0A5E; font-weight:700; text-decoration:none; padding:7px 10px;" title="Enter this classroom directly as Admin (No password required)">
-              <i class="fas fa-external-link-alt"></i> Enter (Admin)
+            <a href="classroom/${cls.hubUrl}${cls.hubUrl.includes('?') ? '&' : '?'}admin=true" target="_blank" onclick="return enterAdminHub('classroom/${cls.hubUrl}${cls.hubUrl.includes('?') ? '&' : '?'}admin=true', event);" class="btn-action" style="background:#0A0A5E; color:#ffffff; border-color:#0A0A5E; font-weight:700; text-decoration:none; padding:7px 10px;" title="Enter this classroom as Super Admin (Password Required)">
+              <i class="fas fa-lock"></i> Enter (Admin)
             </a>
           </div>
         </div>
@@ -2857,6 +3085,14 @@
 
     function handleSetClassroomState(courseKey, isLive, btn) {
       if (!window.GreachDB) return;
+      const cls = window.GreachDB.getClassroomState(courseKey);
+      const actionDesc = isLive ? `Turn Classroom ON (Live): "${cls.label}"` : `Stop Classroom (Turn OFF): "${cls.label}"`;
+      requireSuperAdminAuth(actionDesc, () => {
+        executeSetClassroomState(courseKey, isLive, btn);
+      });
+    }
+
+    function executeSetClassroomState(courseKey, isLive, btn) {
       const adminUser = currentAdminSession ? currentAdminSession.username : 'Greachimpact';
       const cls = window.GreachDB.getClassroomState(courseKey);
       if (!isLive) {
@@ -2881,6 +3117,13 @@
 
     function handleResetClassroomTimer(courseKey, btn) {
       if (!window.GreachDB) return;
+      const cls = window.GreachDB.getClassroomState(courseKey);
+      requireSuperAdminAuth(`Reset Classroom Elapsed Timer for "${cls.label}"`, () => {
+        executeResetClassroomTimer(courseKey, btn);
+      });
+    }
+
+    function executeResetClassroomTimer(courseKey, btn) {
       const adminUser = currentAdminSession ? currentAdminSession.username : 'Greachimpact';
       const updated = window.GreachDB.resetClassroomTimer(courseKey, adminUser);
       renderClassroomsControlCenter();
@@ -2889,6 +3132,13 @@
 
     function handleSetAllClassrooms(isLive) {
       if (!window.GreachDB) return;
+      const actionDesc = isLive ? 'Turn ALL 6 Course Classrooms ON (Live)' : 'Stop ALL 6 Course Classrooms (Turn OFF)';
+      requireSuperAdminAuth(actionDesc, () => {
+        executeSetAllClassrooms(isLive);
+      });
+    }
+
+    function executeSetAllClassrooms(isLive) {
       const adminUser = currentAdminSession ? currentAdminSession.username : 'Greachimpact';
       if (!isLive && !confirm('Are you sure you want to STOP all 6 course classrooms?')) return;
       if (window.GreachLoader) {
@@ -3016,7 +3266,7 @@
                     <i class="fas ${icon}"></i> ${l.type}
                   </span>
                 </td>
-                <td style="font-size:0.82rem; font-weight:600; color:#334155;">${escapeHtml(l.duration || '—')}</td>
+                <td style="font-size:0.82rem; font-weight:600; color:#334155;">${escapeHtml(l.duration || 'â€”')}</td>
                 <td style="font-size:0.8rem; color:#64748b;">${escapeHtml(l.reason || 'Normal Session')}</td>
                 <td style="font-size:0.8rem; color:#475569;">${escapeHtml(l.details || '')}</td>
               </tr>
@@ -3027,6 +3277,12 @@
     }
 
     function handleForceLogout(studentId) {
+      requireSuperAdminAuth(`Terminate Live Classroom Session for Student ${studentId}`, () => {
+        executeForceLogout(studentId);
+      });
+    }
+
+    function executeForceLogout(studentId) {
       if (!confirm(`Are you sure you want to terminate live classroom session for student ${studentId}?`)) return;
       const res = window.GreachDB.forceLogoutStudent(studentId, currentAdminSession ? currentAdminSession.username : 'Greachimpact');
       if (res.success) {
@@ -3038,9 +3294,16 @@
     }
 
     function clearActivityHistory() {
+      requireSuperAdminAuth('Clear Student Login/Logout Activity Logs', () => {
+        executeClearActivityHistory();
+      });
+    }
+
+    function executeClearActivityHistory() {
       if (!confirm('Clear all student login/logout activity logs? Active online sessions will remain untouched.')) return;
       window.GreachDB.clearStudentActivityLogs();
       renderStudentActivity();
+      showToast('Activity Cleared', 'Student login/logout history cleared.', 'info');
     }
   
 
@@ -3124,7 +3387,7 @@
           <td><span style="font-size:0.8rem; color:#64748b;">${s.classEndDate || '2026-06-30'}</span></td>
           <td>
             <strong style="color:${isExpired ? '#dc2626' : '#16a34a'}; font-size:0.82rem;">
-              ${isLifetime ? '∞ Lifetime' : (s.expiresAt || 'Active')}
+              ${isLifetime ? 'âˆž Lifetime' : (s.expiresAt || 'Active')}
             </strong>
           </td>
           <td>${statusBadge}</td>
@@ -3157,7 +3420,7 @@
 
     // 4. Quick Actions
     function grantFreeAccessClick(studentId) {
-      const choice = confirm(`Grant Free Access to student (${studentId})?\n\n• Click OK for Free 1-Month Extension\n• Click Cancel to abort`);
+      const choice = confirm(`Grant Free Access to student (${studentId})?\n\nâ€¢ Click OK for Free 1-Month Extension\nâ€¢ Click Cancel to abort`);
       if (choice) {
         window.GreachDB.grantFreeAccess(studentId, false);
         alert('Free 30-Day Access pass successfully granted!');
@@ -3200,7 +3463,13 @@
     }
 
     function handleEnrollStudentSubmit(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
+      requireSuperAdminAuth('Enroll New Student & Issue Secret Access Password', () => {
+        executeEnrollStudentSubmit(e);
+      });
+    }
+
+    function executeEnrollStudentSubmit(e) {
       const name = document.getElementById('modalStuName').value.trim();
       const email = document.getElementById('modalStuEmail').value.trim();
       const cohort = document.getElementById('modalStuCohort').value;
@@ -3225,6 +3494,86 @@
       openEmailModal(student.id);
     }
 
+    function openPastStudentModal() {
+      const m = document.getElementById('pastStudentModal');
+      if (m) { m.classList.add('open'); m.classList.add('active'); }
+    }
+    function closePastStudentModal() {
+      const m = document.getElementById('pastStudentModal');
+      if (m) { m.classList.remove('open'); m.classList.remove('active'); }
+    }
+
+    function handlePastStudentSubmit(e) {
+      if (e) e.preventDefault();
+      requireSuperAdminAuth('Add Past Student Record to Database', () => {
+        executePastStudentSubmit(e);
+      });
+    }
+
+    function executePastStudentSubmit(e) {
+      const name = document.getElementById('pastName').value.trim();
+      const email = document.getElementById('pastEmail').value.trim();
+      const phone = (document.getElementById('pastPhone').value || '').trim();
+      const course = document.getElementById('pastCourse').value;
+      const cohort = document.getElementById('pastCohort').value.trim();
+      const certClaimed = document.getElementById('pastCertClaimed').checked;
+
+      const student = window.GreachDB.registerStudent({
+        name,
+        email,
+        phone,
+        course,
+        cohort,
+        certificateClaimed: certClaimed,
+        isFree: true,
+        isLifetime: true
+      });
+
+      alert(`Past Student Added Successfully!\n\nID: ${student.id}\nName: ${student.name}\nCourse: ${student.course}`);
+      closePastStudentModal();
+      refreshAllData();
+    }
+
+    function openBulkAlumniModal() {
+      const m = document.getElementById('bulkAlumniModal');
+      if (m) { m.classList.add('open'); m.classList.add('active'); }
+    }
+    function closeBulkAlumniModal() {
+      const m = document.getElementById('bulkAlumniModal');
+      if (m) { m.classList.remove('open'); m.classList.remove('active'); }
+    }
+
+    function handleBulkAlumniSubmit(e) {
+      if (e) e.preventDefault();
+      requireSuperAdminAuth('Bulk Import Past Students to Database', () => {
+        executeBulkAlumniSubmit(e);
+      });
+    }
+
+    function executeBulkAlumniSubmit(e) {
+      const text = document.getElementById('bulkAlumniText').value.trim();
+      if (!text) return;
+      const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+      let count = 0;
+      lines.forEach(line => {
+        const parts = line.split(/,|\t/).map(p => p.trim());
+        if (parts.length >= 2) {
+          const name = parts[0];
+          const email = parts[1];
+          const phone = parts[2] || '';
+          const course = parts[3] || 'Microsoft Excel for Beginners';
+          const cohort = parts[4] || 'Alumni Bank';
+          window.GreachDB.registerStudent({
+            name, email, phone, course, cohort, isFree: true, isLifetime: true, certificateClaimed: true
+          });
+          count++;
+        }
+      });
+      alert(`Imported ${count} past student records successfully!`);
+      closeBulkAlumniModal();
+      refreshAllData();
+    }
+
     // 6. Email Modal
     function openEmailModal(studentId) {
       const student = window.GreachDB.findStudent(studentId);
@@ -3242,11 +3591,11 @@ Here are your official login credentials and access details:
 
 YOUR UNIQUE CREDENTIALS:
 ------------------------
-• Student ID: ${student.id}
-• Registered Email: ${student.email}
-• Secret Access Password: ${student.password}
-• Cohort: ${student.cohort || 'Batch 2: 2026 Masterclass'}
-• Access Expiry Date: ${student.expiresAt || 'Lifetime Access'} (1 month after class ends)
+â€¢ Student ID: ${student.id}
+â€¢ Registered Email: ${student.email}
+â€¢ Secret Access Password: ${student.password}
+â€¢ Cohort: ${student.cohort || 'Batch 2: 2026 Masterclass'}
+â€¢ Access Expiry Date: ${student.expiresAt || 'Lifetime Access'} (1 month after class ends)
 
 INSTANT 1-CLICK CLASSROOM ACCESS:
 https://greachimpact.com/classroom/index.html?id=${student.id}&key=${encodeURIComponent(student.password)}
@@ -3309,7 +3658,14 @@ greachimpact@gmail.com`;
     }
 
     function handleCreateSubAdmin(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
+      const username = document.getElementById('newAdminUser').value.trim();
+      requireSuperAdminAuth(`Create Sub-Admin Account @${username}`, () => {
+        executeCreateSubAdmin(e);
+      });
+    }
+
+    function executeCreateSubAdmin(e) {
       const name = document.getElementById('newAdminName').value.trim();
       const username = document.getElementById('newAdminUser').value.trim();
       const password = document.getElementById('newAdminPass').value.trim();
@@ -3327,6 +3683,12 @@ greachimpact@gmail.com`;
     }
 
     function handleDeleteSubAdmin(username) {
+      requireSuperAdminAuth(`Permanently Delete Sub-Admin @${username}`, () => {
+        executeDeleteSubAdmin(username);
+      });
+    }
+
+    function executeDeleteSubAdmin(username) {
       if (confirm(`Remove sub-admin @${username}?`)) {
         window.GreachDB.deleteSubAdmin(username);
         renderSubAdminsTable();
@@ -3379,12 +3741,12 @@ greachimpact@gmail.com`;
               <span>${escapeHtml(crs.label)}</span>
             </div>
             <div style="display:flex; align-items:baseline; margin:0.8rem 0; gap:8px;">
-              <span class="pricing-slashed" style="color:#94a3b8; text-decoration:line-through; font-size:0.95rem;">₦${Number(item.regular).toLocaleString()}</span>
-              <span class="pricing-current" style="color:#0A0A5E; font-size:1.6rem; font-weight:800;">₦${Number(item.current).toLocaleString()}</span>
+              <span class="pricing-slashed" style="color:#94a3b8; text-decoration:line-through; font-size:0.95rem;">â‚¦${Number(item.regular).toLocaleString()}</span>
+              <span class="pricing-current" style="color:#0A0A5E; font-size:1.6rem; font-weight:800;">â‚¦${Number(item.current).toLocaleString()}</span>
             </div>
             <div style="display:flex; gap:0.5rem; margin-top:1rem; align-items:center;">
               <div style="position:relative; flex:1;">
-                <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#64748b; font-weight:700;">₦</span>
+                <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#64748b; font-weight:700;">â‚¦</span>
                 <input type="number" id="inputPrice_${crs.key}" value="${item.current}" class="form-control" style="padding-left:26px; font-weight:700;" placeholder="New Price" />
               </div>
               <button id="btnSavePrice_${crs.key}" onclick="saveCoursePrice('${crs.key}', this)" class="btn-primary" style="padding:0.6rem 1.1rem; font-size:0.85rem; font-weight:700; white-space:nowrap;">
@@ -3397,13 +3759,22 @@ greachimpact@gmail.com`;
       }
     }
 
-    async function saveCoursePrice(courseKey, btn) {
+    function saveCoursePrice(courseKey, btn) {
       const inp = document.getElementById(`inputPrice_${courseKey}`);
       const val = inp ? inp.value.trim() : '';
       if (!val || Number(val) <= 0) {
         showToast('Invalid Price', 'Please enter a valid price greater than ₦0.', 'error');
         return;
       }
+      const courseDef = CANONICAL_COURSES.find(c => c.key === courseKey) || { label: courseKey };
+      requireSuperAdminAuth(`Update course fee for "${courseDef.label}" to ₦${Number(val).toLocaleString()}`, () => {
+        executeSaveCoursePrice(courseKey, btn);
+      });
+    }
+
+    async function executeSaveCoursePrice(courseKey, btn) {
+      const inp = document.getElementById(`inputPrice_${courseKey}`);
+      const val = inp ? inp.value.trim() : '';
       const courseDef = CANONICAL_COURSES.find(c => c.key === courseKey) || { label: courseKey };
       const buttonEl = btn || document.getElementById(`btnSavePrice_${courseKey}`);
       setButtonLoading(buttonEl, true, 'Saving...');
@@ -3426,9 +3797,16 @@ greachimpact@gmail.com`;
     }
 
     function resetDefaultPrices() {
+      requireSuperAdminAuth('Reset All Course Prices to Factory Defaults', () => {
+        executeResetDefaultPrices();
+      });
+    }
+
+    function executeResetDefaultPrices() {
       if (confirm('Reset all course prices to standard discounted pricing?')) {
         localStorage.removeItem('greach_course_prices_v2');
         renderPricingCards();
+        showToast('Prices Reset', 'All course prices reset to default.', 'info');
       }
     }
 
@@ -3473,7 +3851,13 @@ greachimpact@gmail.com`;
 
     // 10. Live Stream & Announcement Handlers
     function handleSaveLiveStream(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
+      requireSuperAdminAuth('Update Live Stream & Virtual Class Settings', () => {
+        executeSaveLiveStream(e);
+      });
+    }
+
+    function executeSaveLiveStream(e) {
       const url = document.getElementById('inputLiveUrl').value.trim();
       const schedule = document.getElementById('inputLiveSchedule').value.trim();
       localStorage.setItem('greach_live_stream_config', JSON.stringify({ url, schedule, updatedAt: new Date().toISOString() }));
@@ -3481,7 +3865,13 @@ greachimpact@gmail.com`;
     }
 
     function handleSaveAnnouncement(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
+      requireSuperAdminAuth('Broadcast Classroom Announcement to All Portals', () => {
+        executeSaveAnnouncement(e);
+      });
+    }
+
+    function executeSaveAnnouncement(e) {
       const msg = document.getElementById('inputAnnouncement').value.trim();
       localStorage.setItem('greach_classroom_announcement', JSON.stringify({ message: msg, active: true, updatedAt: new Date().toISOString() }));
       alert('Classroom Announcement published successfully!');
@@ -3576,6 +3966,12 @@ greachimpact@gmail.com`;
     }
 
     function saveCourseSchedule(key) {
+      requireSuperAdminAuth(`Save Course Schedule for ${key}`, () => {
+        executeSaveCourseSchedule(key);
+      });
+    }
+
+    function executeSaveCourseSchedule(key) {
       const cohort = document.getElementById(`sch_cohort_${key}`).value.trim();
       const startDate = document.getElementById(`sch_start_${key}`).value;
       const endDate = document.getElementById(`sch_end_${key}`).value;
@@ -3595,9 +3991,16 @@ greachimpact@gmail.com`;
     }
 
     function resetDefaultSchedules() {
+      requireSuperAdminAuth('Reset All Course Schedules to Standard Dates', () => {
+        executeResetDefaultSchedules();
+      });
+    }
+
+    function executeResetDefaultSchedules() {
       if (confirm('Reset all course schedules to standard upcoming dates?')) {
         localStorage.removeItem('greach_course_schedules_v2');
         renderScheduleCards();
+        showToast('Schedules Reset', 'All course schedules reset to standard dates.', 'info');
       }
     }
 
@@ -3614,7 +4017,13 @@ greachimpact@gmail.com`;
     }
 
     function handleUpdateSuperUser(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
+      requireSuperAdminAuth('Update Superuser Master Credentials', () => {
+        executeUpdateSuperUser(e);
+      });
+    }
+
+    function executeUpdateSuperUser(e) {
       const name = document.getElementById('suFullName').value.trim();
       const email = document.getElementById('suEmail').value.trim();
       const username = document.getElementById('suUsername').value.trim();
@@ -3714,7 +4123,7 @@ greachimpact@gmail.com`;
             <div style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(o.cohort || 'Batch 2')}</div>
           </td>
           <td>
-            <strong style="color:var(--green-600); font-size:1.05rem;">₦${Number(o.amount || 0).toLocaleString()}</strong>
+            <strong style="color:var(--green-600); font-size:1.05rem;">â‚¦${Number(o.amount || 0).toLocaleString()}</strong>
           </td>
           <td>
             <span style="font-size:0.8rem; background:#f1f5f9; padding:2px 8px; border-radius:4px;">${escapeHtml(o.paymentMethod || 'Bank Transfer')}</span>
@@ -3823,8 +4232,14 @@ greachimpact@gmail.com`;
       }
     }
 
-    async function handleManualOrderSubmit(e) {
-      e.preventDefault();
+    function handleManualOrderSubmit(e) {
+      if (e) e.preventDefault();
+      requireSuperAdminAuth('Record Manual Order & Issue Student Credentials', () => {
+        executeManualOrderSubmit(e);
+      });
+    }
+
+    async function executeManualOrderSubmit(e) {
       const name = document.getElementById('moName').value.trim();
       const email = document.getElementById('moEmail').value.trim();
       const phone = document.getElementById('moPhone').value.trim();
@@ -3894,7 +4309,13 @@ greachimpact@gmail.com`;
     }
 
     function handleSaveBrevoConfig(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
+      requireSuperAdminAuth('Update Brevo Email Automation Configuration', () => {
+        executeSaveBrevoConfig(e);
+      });
+    }
+
+    function executeSaveBrevoConfig(e) {
       const apiKey = document.getElementById('brevoApiKeyInput').value.trim();
       const senderName = document.getElementById('brevoSenderName').value.trim();
       const senderEmail = document.getElementById('brevoSenderEmail').value.trim();
@@ -4044,9 +4465,15 @@ greachimpact@gmail.com`;
       document.getElementById('sessionPassModal').classList.remove('open');
     }
 
-    async function handleCreateSessionPass(e) {
+    function handleCreateSessionPass(e) {
       if (e) e.preventDefault();
-      const submitBtn = e.target.querySelector('button[type="submit"]');
+      requireSuperAdminAuth('Generate Quick Live Session Pass in Database', () => {
+        executeCreateSessionPass(e);
+      });
+    }
+
+    async function executeCreateSessionPass(e) {
+      const submitBtn = e && e.target && e.target.querySelector ? e.target.querySelector('button[type="submit"]') : null;
       setButtonLoading(submitBtn, true, 'Generating in Cloud...');
 
       const label = document.getElementById('spLabel').value.trim();
@@ -4141,7 +4568,13 @@ greachimpact@gmail.com`;
       });
     }
 
-    async function handleExpireSessionPass(code, btn) {
+    function handleExpireSessionPass(code, btn) {
+      requireSuperAdminAuth(`Revoke Access for Session Pass "${code}"`, () => {
+        executeExpireSessionPass(code, btn);
+      });
+    }
+
+    async function executeExpireSessionPass(code, btn) {
       if (!confirm(`Revoke access for session pass ${code}?`)) return;
       if (btn) setButtonLoading(btn, true, '');
       const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
@@ -4150,7 +4583,13 @@ greachimpact@gmail.com`;
       await renderSessionPassesTable();
     }
 
-    async function handleDeleteSessionPass(code, btn) {
+    function handleDeleteSessionPass(code, btn) {
+      requireSuperAdminAuth(`Permanently Delete Session Pass "${code}" from Cloud Database`, () => {
+        executeDeleteSessionPass(code, btn);
+      });
+    }
+
+    async function executeDeleteSessionPass(code, btn) {
       if (!confirm(`Permanently delete session pass ${code} from Supabase Cloud Database?`)) return;
       if (btn) setButtonLoading(btn, true, '');
       const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
@@ -4237,9 +4676,18 @@ greachimpact@gmail.com`;
       if (modal) modal.classList.remove('open');
     }
 
-    async function handleSaveBlogPost(e) {
+    function handleSaveBlogPost(e) {
       if (e) e.preventDefault();
-      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const id = document.getElementById('blogPostId') ? document.getElementById('blogPostId').value : '';
+      const title = document.getElementById('blogPostTitle') ? document.getElementById('blogPostTitle').value.trim() : 'Article';
+      const actionDesc = id ? `Update Blog Article "${title}" in Supabase Cloud` : `Publish New Blog Article "${title}" to Supabase Cloud`;
+      requireSuperAdminAuth(actionDesc, () => {
+        executeSaveBlogPost(e);
+      });
+    }
+
+    async function executeSaveBlogPost(e) {
+      const submitBtn = e && e.target && e.target.querySelector ? e.target.querySelector('button[type="submit"]') : null;
       setButtonLoading(submitBtn, true, 'Saving to Cloud...');
 
       const id = document.getElementById('blogPostId').value;
@@ -4346,7 +4794,13 @@ greachimpact@gmail.com`;
       }
     }
 
-    async function handleDeleteBlogPost(id, btn) {
+    function handleDeleteBlogPost(id, btn) {
+      requireSuperAdminAuth(`Delete Blog Article #${id} from Supabase Cloud`, () => {
+        executeDeleteBlogPost(id, btn);
+      });
+    }
+
+    async function executeDeleteBlogPost(id, btn) {
       if (!confirm(`Are you sure you want to permanently delete article #${id}? This will remove it from Supabase cloud database.`)) return;
       if (btn) setButtonLoading(btn, true, '');
       const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
