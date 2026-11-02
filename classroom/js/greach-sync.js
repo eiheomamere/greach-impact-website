@@ -415,12 +415,13 @@
       const SUPABASE_URL = 'https://fkltvxhqizqrbvogodxv.supabase.co';
       const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
 
-      // 0. Proactively hydrate live prices from Supabase Cloud PostgreSQL with fast timeout
+      let cloudPricesSynced = false;
+      // 0. Proactively hydrate live prices from Supabase Cloud PostgreSQL with fast non-blocking timeout
       try {
         const prRes = await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/course_prices?select=*`, {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-        }, 2200);
-        if (prRes.ok) {
+        }, 1800);
+        if (prRes && prRes.ok) {
           const rows = await prRes.json();
           if (Array.isArray(rows) && rows.length > 0) {
             const currentPrices = (window.GreachDB && window.GreachDB.getPrices) ? window.GreachDB.getPrices() : {};
@@ -435,36 +436,45 @@
                   discount: r.discount_label || (r.discount_pct ? `${r.discount_pct}% OFF` : 'Special Offer')
                 };
                 currentPrices[normKey] = item;
+                // Keep aliases synchronized
+                if (normKey === 'excel_dashboard') currentPrices.dashboard = item;
+                if (normKey === 'sql') currentPrices.sql_beginners = item;
+                if (normKey === 'complete_course') currentPrices.complete_package = item;
               }
             });
             localStorage.setItem('greach_course_prices_v2', JSON.stringify(currentPrices));
+            cloudPricesSynced = true;
             syncAll();
           }
         }
       } catch(e) {}
 
-      let res = null;
-      try {
-        res = await fetchWithTimeout('site-data.json', {}, 1500);
-      } catch (e) {
+      // ONLY fetch static site-data.json as a fallback if Supabase is offline AND localStorage is empty
+      const hasLocalPrices = !!localStorage.getItem('greach_course_prices_v2');
+      if (!cloudPricesSynced && !hasLocalPrices) {
+        let res = null;
         try {
-          res = await fetchWithTimeout('../site-data.json', {}, 1500);
-        } catch (e2) {}
-      }
+          res = await fetchWithTimeout('site-data.json', {}, 1000);
+        } catch (e) {
+          try {
+            res = await fetchWithTimeout('../site-data.json', {}, 1000);
+          } catch (e2) {}
+        }
 
-      if (res && res.ok) {
-        const json = await res.json();
-        const data = json.data || json;
-        if (data.prices) {
-          localStorage.setItem('greach_course_prices_v2', JSON.stringify(data.prices));
+        if (res && res.ok) {
+          const json = await res.json();
+          const data = json.data || json;
+          if (data.prices && !localStorage.getItem('greach_course_prices_v2')) {
+            localStorage.setItem('greach_course_prices_v2', JSON.stringify(data.prices));
+          }
+          if (data.schedules && !localStorage.getItem('greach_course_schedules_v2')) {
+            localStorage.setItem('greach_course_schedules_v2', JSON.stringify(data.schedules));
+          }
+          if (data.blogPosts && Array.isArray(data.blogPosts) && !localStorage.getItem('greach_blog_posts_v2')) {
+            localStorage.setItem('greach_blog_posts_v2', JSON.stringify(data.blogPosts));
+          }
+          syncAll();
         }
-        if (data.schedules) {
-          localStorage.setItem('greach_course_schedules_v2', JSON.stringify(data.schedules));
-        }
-        if (data.blogPosts && Array.isArray(data.blogPosts)) {
-          localStorage.setItem('greach_blog_posts_v2', JSON.stringify(data.blogPosts));
-        }
-        syncAll();
       }
     } catch (err) {
       console.warn('[GreachSync] Cloud hydration fallback to local defaults:', err);

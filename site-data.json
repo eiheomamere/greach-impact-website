@@ -13,15 +13,15 @@
       "label": "Microsoft Excel Advanced & Analytics"
     },
     "dashboard": {
-      "current": 40000,
-      "regular": 80000,
-      "discount": "50% OFF",
+      "current": 4000,
+      "regular": 10000,
+      "discount": "60% OFF",
       "label": "Excel Dashboard for Beginners"
     },
     "excel_dashboard": {
-      "current": 40000,
-      "regular": 80000,
-      "discount": "50% OFF",
+      "current": 4000,
+      "regular": 10000,
+      "discount": "60% OFF",
       "label": "Excel Dashboard for Beginners"
     },
     "sql": {
@@ -37,8 +37,8 @@
       "label": "SQL for Beginners"
     },
     "power_bi": {
-      "current": 22500,
-      "regular": 45000,
+      "current": 5000,
+      "regular": 10000,
       "discount": "50% OFF",
       "label": "Power BI for Beginners"
     },
@@ -413,6 +413,6 @@
       "content": "<h3>Start with yourself</h3><p>When I was younger, I had no idea where my money was going. I would look at my bank account at the end of the month and wonder, 'Where did everything go?'</p><p>I decided to build a personal budget in Excel. I tracked every single expense—from my morning tea to my transport fare—for 3 months. The data shocked me. I was spending 30% of my income on things I didn't even remember buying. That simple spreadsheet gave me the clarity I needed to cut unnecessary expenses and start saving. It taught me that data isn't just for big corporations; it's for everyday life. And it's the reason I'm so passionate about teaching it to others.</p>"
     }
   ],
-  "lastUpdated": "2026-10-22T20:02:02.187Z",
+  "lastUpdated": "2026-11-02T11:35:59.678Z",
   "updatedBy": "Greachimpact"
 }

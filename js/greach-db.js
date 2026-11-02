@@ -202,9 +202,9 @@
   const DEFAULT_PRICES = {
     excel_beginners: { current: 3000, regular: 15000, discount: '80% OFF', label: 'Microsoft Excel for Beginners' },
     excel_advanced: { current: 4000, regular: 20000, discount: '80% OFF', label: 'Microsoft Excel Advanced & Analytics' },
-    excel_dashboard: { current: 40000, regular: 80000, discount: '50% OFF', label: 'Excel Dashboard for Beginners' },
+    excel_dashboard: { current: 4000, regular: 10000, discount: '60% OFF', label: 'Excel Dashboard for Beginners' },
     sql: { current: 5000, regular: 25000, discount: '80% OFF', label: 'SQL for Beginners' },
-    power_bi: { current: 22500, regular: 45000, discount: '50% OFF', label: 'Power BI for Beginners' },
+    power_bi: { current: 5000, regular: 10000, discount: '50% OFF', label: 'Power BI for Beginners' },
     complete_course: { current: 10000, regular: 60000, discount: '83% OFF', label: 'Complete Analytics Suite (Excel + SQL + Power BI)' }
   };
 
@@ -1378,29 +1378,43 @@ Greach Impact Automated Registration Engine`);
       return this.getPrices();
     },
 
+    getCanonicalPricingKey: function(rawKey) {
+      if (!rawKey) return 'excel_beginners';
+      const k = String(rawKey).toLowerCase().trim().replace(/[-\s]/g, '_');
+      if (k.includes('dash')) return 'excel_dashboard';
+      if (k.includes('adv')) return 'excel_advanced';
+      if (k.includes('sql')) return 'sql';
+      if (k.includes('power') || k.includes('bi')) return 'power_bi';
+      if (k.includes('complete') || k.includes('suite') || k.includes('package')) return 'complete_course';
+      return 'excel_beginners';
+    },
+
     updateCoursePrice: function(rawKey, newCurrent, newRegular, updatedBy) {
       const prices = this.getPrices();
-      const courseKey = this.normalizeCourseKey ? this.normalizeCourseKey(rawKey) : rawKey;
-      const targetKey = prices[rawKey] ? rawKey : (prices[courseKey] ? courseKey : null);
-      if (targetKey && prices[targetKey]) {
+      const canonicalKey = this.getCanonicalPricingKey(rawKey);
+      const targetKey = prices[canonicalKey] ? canonicalKey : (prices[rawKey] ? rawKey : 'excel_beginners');
+      
+      if (prices[targetKey]) {
         const oldVal = prices[targetKey].current;
         prices[targetKey].current = Number(newCurrent);
         if (newRegular) prices[targetKey].regular = Number(newRegular);
         const discountPct = Math.round((1 - (prices[targetKey].current / prices[targetKey].regular)) * 100);
         prices[targetKey].discount = `${discountPct}% OFF`;
-        // Sync alias keys
-        if (targetKey === 'dashboard') prices.excel_dashboard = prices.dashboard;
-        if (targetKey === 'excel_dashboard') prices.dashboard = prices.excel_dashboard;
-        if (targetKey === 'sql') prices.sql_beginners = prices.sql;
-        if (targetKey === 'sql_beginners') prices.sql = prices.sql_beginners;
-        if (targetKey === 'complete_course') prices.complete_package = prices.complete_course;
-        if (targetKey === 'complete_package') prices.complete_course = prices.complete_package;
+        
+        // Always mirror to alias keys for backward compatibility
+        prices.excel_dashboard = prices[targetKey].current ? { ...prices[targetKey] } : prices.excel_dashboard;
+        prices.dashboard = { ...prices.excel_dashboard };
+        prices.sql = prices[targetKey].current && canonicalKey === 'sql' ? { ...prices[targetKey] } : prices.sql;
+        prices.sql_beginners = { ...prices.sql };
+        prices.complete_course = prices[targetKey].current && canonicalKey === 'complete_course' ? { ...prices[targetKey] } : prices.complete_course;
+        prices.complete_package = { ...prices.complete_course };
+        
         localStorage.setItem(PRICES_KEY, JSON.stringify(prices));
 
-        // Immediately persist to Supabase Cloud PostgreSQL
-        const normKey = this.normalizeCourseKey ? this.normalizeCourseKey(targetKey) : targetKey;
-        callSupabase(`course_prices?course_id=eq.${encodeURIComponent(normKey)}`, {
+        // Immediately persist to Supabase Cloud PostgreSQL with the exact canonical ID
+        callSupabase(`course_prices?course_id=eq.${encodeURIComponent(canonicalKey)}`, {
           method: 'PATCH',
+          headers: { 'Prefer': 'return=representation' },
           body: JSON.stringify({
             promo_price: Number(newCurrent),
             original_price: Number(prices[targetKey].regular),
@@ -1409,14 +1423,14 @@ Greach Impact Automated Registration Engine`);
             updated_by: updatedBy || 'Super Admin'
           })
         }).then(res => {
-          if (res && res.ok) console.log(`[Cloud DB] Price for ${normKey} synced to Supabase.`);
+          if (res && res.ok) console.log(`[Cloud DB] Price for ${canonicalKey} synced to Supabase.`);
         }).catch(err => console.warn('[Cloud DB] Price update network warning:', err));
 
         if (this.logAudit) {
           this.logAudit(
             updatedBy || 'Super Admin',
             'Price Update',
-            `Updated ${prices[courseKey].label} fee: was ₦${oldVal.toLocaleString()} → now ₦${prices[courseKey].current.toLocaleString()} (${prices[courseKey].discount})`
+            `Updated ${prices[targetKey].label} fee: was ₦${oldVal.toLocaleString()} → now ₦${prices[targetKey].current.toLocaleString()} (${prices[targetKey].discount})`
           );
         }
 
@@ -1429,17 +1443,24 @@ Greach Impact Automated Registration Engine`);
     },
 
     updateCoursePriceAsync: async function(rawKey, newCurrent, newRegular, updatedBy) {
-      const ok = this.updateCoursePrice(rawKey, newCurrent, newRegular, updatedBy);
-      const normKey = this.normalizeCourseKey ? this.normalizeCourseKey(rawKey) : rawKey;
+      const canonicalKey = this.getCanonicalPricingKey(rawKey);
       const prices = this.getPrices();
-      const item = prices[normKey] || prices[rawKey] || {};
-      const discountPct = Math.round((1 - (Number(newCurrent) / (Number(newRegular || item.regular || 10000)))) * 100);
+      const item = prices[canonicalKey] || prices[rawKey] || {};
+      const reg = Number(newRegular || item.regular || 10000);
+      const cur = Number(newCurrent);
+      const discountPct = Math.round((1 - (cur / reg)) * 100);
+
+      // 1. Update local DB
+      this.updateCoursePrice(rawKey, cur, reg, updatedBy);
+
+      // 2. Await cloud synchronization directly
       try {
-        const res = await callSupabase(`course_prices?course_id=eq.${encodeURIComponent(normKey)}`, {
+        const res = await callSupabase(`course_prices?course_id=eq.${encodeURIComponent(canonicalKey)}`, {
           method: 'PATCH',
+          headers: { 'Prefer': 'return=representation' },
           body: JSON.stringify({
-            promo_price: Number(newCurrent),
-            original_price: Number(newRegular || item.regular || 10000),
+            promo_price: cur,
+            original_price: reg,
             discount_pct: discountPct,
             updated_at: new Date().toISOString(),
             updated_by: updatedBy || 'Super Admin'

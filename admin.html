@@ -2614,17 +2614,23 @@
           'Prefer': 'resolution=merge-duplicates'
         };
 
-        // 1. Sync Prices
-        const prices = window.GreachDB.getPrices ? window.GreachDB.getPrices() : [];
-        if (prices.length > 0) {
-          const priceRows = prices.map(p => ({
-            course_id: p.id,
-            course_name: p.name,
-            original_price: Number(p.originalPrice) || 0,
-            promo_price: Number(p.promoPrice) || 0,
-            discount_pct: Number(p.discountPct) || 0,
-            updated_by: 'Greachimpact'
-          }));
+        // 1. Sync Prices (Correctly maps canonical course keys from GreachDB)
+        const pricesObj = window.GreachDB.getPrices ? window.GreachDB.getPrices() : {};
+        const canonicalKeys = ['excel_beginners', 'excel_advanced', 'excel_dashboard', 'sql', 'power_bi', 'complete_course'];
+        const priceRows = canonicalKeys.filter(k => pricesObj[k]).map(k => {
+          const item = pricesObj[k];
+          const discountPct = Math.round((1 - (Number(item.current) / Number(item.regular || 10000))) * 100);
+          return {
+            course_id: k,
+            course_name: item.label || k,
+            original_price: Number(item.regular) || 10000,
+            promo_price: Number(item.current) || 3000,
+            discount_pct: isNaN(discountPct) ? 0 : discountPct,
+            updated_by: 'Super Admin',
+            updated_at: new Date().toISOString()
+          };
+        });
+        if (priceRows.length > 0) {
           const pRes = await fetch(`${cfg.url}/rest/v1/course_prices`, {
             method: 'POST',
             headers,
