@@ -503,6 +503,16 @@
     @keyframes slideInRight { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
   
   </style>
+  <script>
+    try {
+      if (sessionStorage.getItem('greach_admin_auth_v2') || localStorage.getItem('greach_admin_auth_v2')) {
+        document.documentElement.classList.add('admin-pre-authed');
+      }
+    } catch(e) {}
+  </script>
+  <style>
+    .admin-pre-authed #adminAuthOverlay { display: none !important; }
+  </style>
 </head>
 <body>
 
@@ -2034,7 +2044,6 @@
   <!-- Greach DB Layer -->
   <script src="classroom/js/greach-db.js"></script>
   <script src="classroom/js/greach-brevo.js"></script>
-  <script src="classroom/js/greach-sync.js"></script>
 
   <script>
 
@@ -2077,27 +2086,21 @@
     }
 
     function setButtonLoading(btn, isLoading, loadingText = 'Processing...') {
-      if (window.GreachLoader) {
-        if (btn) window.GreachLoader.setButton(btn, isLoading, loadingText || 'GREACH IMPACT');
-        if (isLoading) {
-          window.GreachLoader.show(loadingText || 'Processing Request...');
-        } else {
-          window.GreachLoader.hide();
-        }
-        return;
-      }
       if (!btn) return;
       if (isLoading) {
-        btn.dataset.prevHtml = btn.innerHTML;
+        if (!btn.dataset.prevHtml) btn.dataset.prevHtml = btn.innerHTML;
         btn.disabled = true;
         btn.style.opacity = '0.75';
-        btn.style.cursor = 'not-allowed';
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loadingText}`;
+        btn.style.cursor = 'wait';
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loadingText || 'Loading...'}`;
       } else {
         btn.disabled = false;
         btn.style.opacity = '1';
         btn.style.cursor = 'pointer';
-        if (btn.dataset.prevHtml) btn.innerHTML = btn.dataset.prevHtml;
+        if (btn.dataset.prevHtml) {
+          btn.innerHTML = btn.dataset.prevHtml;
+          delete btn.dataset.prevHtml;
+        }
       }
     }
   
@@ -2909,41 +2912,10 @@
       }
     }
 
-    // Refresh All Data (Optimized: Instant visible paint + Non-blocking background hydration)
+    // Refresh All Data (Ultra-Lite: Instant visible paint, zero background thread-lock)
     function refreshAllData() {
-      // 1. Paint primary KPIs and active student roster instantly (<15ms)
       renderStats();
       if (typeof renderStudentsTable === 'function') renderStudentsTable();
-
-      // 2. Hydrate hidden background tabs progressively without blocking the main thread
-      const backgroundTasks = [
-        () => { if (typeof renderClassroomsControlCenter === 'function') renderClassroomsControlCenter(); },
-        () => { if (typeof renderSubAdminsTable === 'function') renderSubAdminsTable(); },
-        () => { if (typeof renderPricingCards === 'function') renderPricingCards(); },
-        () => { if (typeof renderCertsTable === 'function') renderCertsTable(); },
-        () => { if (typeof renderOrdersTable === 'function') renderOrdersTable(); },
-        () => { if (typeof loadBrevoConfig === 'function') loadBrevoConfig(); },
-        () => { if (typeof renderStudentActivity === 'function') renderStudentActivity(); }
-      ];
-
-      let taskIdx = 0;
-      function stepBackgroundTask() {
-        if (taskIdx < backgroundTasks.length) {
-          try { backgroundTasks[taskIdx](); } catch(err) {}
-          taskIdx++;
-          if (typeof window.requestIdleCallback === 'function') {
-            window.requestIdleCallback(stepBackgroundTask, { timeout: 300 });
-          } else {
-            setTimeout(stepBackgroundTask, 35);
-          }
-        }
-      }
-
-      if (typeof window.requestIdleCallback === 'function') {
-        window.requestIdleCallback(stepBackgroundTask, { timeout: 250 });
-      } else {
-        setTimeout(stepBackgroundTask, 40);
-      }
     }
 
     // 2. Render KPI Stats
@@ -3192,9 +3164,13 @@
       );
     }
 
-    // Live 1-Second Ticker for Classroom Uptime & Student In-Class Duration
+    // Live 1-Second Ticker for Classroom Uptime & Student In-Class Duration (Only runs when visible!)
     setInterval(() => {
       if (!window.GreachDB || !window.GreachDB.formatDuration) return;
+      const clsTab = document.getElementById('tabClassrooms');
+      const actTab = document.getElementById('tabActivity');
+      const isVisible = (clsTab && clsTab.style.display !== 'none') || (actTab && actTab.style.display !== 'none');
+      if (!isVisible) return;
       const now = Date.now();
       document.querySelectorAll('[data-classroom-start-ts]').forEach(el => {
         const ts = el.getAttribute('data-classroom-start-ts');
@@ -3402,8 +3378,7 @@
       }
       emptyState.style.display = 'none';
 
-      filtered.forEach(s => {
-        const tr = document.createElement('tr');
+      const rowsHtml = filtered.map(s => {
         const isLifetime = s.isLifetime || s.accessType === 'free_lifetime';
         const exp = s.expiresAt ? new Date(s.expiresAt) : null;
         const isExpired = !isLifetime && exp && now > exp;
@@ -3421,55 +3396,57 @@
           ? `<span class="badge-status badge-cert" title="Serial: ${s.certificateId || 'Accredited'}"><i class="fas fa-award"></i> Claimed</span>`
           : '<span style="color:#94a3b8; font-size:0.75rem;">Unclaimed</span>';
 
-        tr.innerHTML = `
-          <td>
-            <strong style="color:var(--navy-900);">${escapeHtml(s.name)}</strong>
-            <div style="font-family:monospace; font-size:0.78rem; color:#64748b;">${escapeHtml(s.id)}</div>
-          </td>
-          <td>
-            <a href="mailto:${escapeHtml(s.email)}" style="color:var(--accent-blue); text-decoration:none;">${escapeHtml(s.email)}</a>
-          </td>
-          <td>
-            <div style="display:flex; align-items:center; gap:0.4rem;">
-              <code style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700;">${escapeHtml(s.password)}</code>
-              <button onclick="navigator.clipboard.writeText('${escapeHtml(s.password)}'); alert('Password copied: ${escapeHtml(s.password)}');" class="btn-action" title="Copy Password" style="padding:2px 6px;">
-                <i class="fas fa-copy"></i>
-              </button>
-            </div>
-          </td>
-          <td><span style="font-size:0.8rem; color:#475569;">${escapeHtml(s.cohort || 'Batch 2')}</span></td>
-          <td><span style="font-size:0.8rem; color:#64748b;">${s.classEndDate || '2026-06-30'}</span></td>
-          <td>
-            <strong style="color:${isExpired ? '#dc2626' : '#16a34a'}; font-size:0.82rem;">
-              ${isLifetime ? 'âˆž Lifetime' : (s.expiresAt || 'Active')}
-            </strong>
-          </td>
-          <td>${statusBadge}</td>
-          <td>${certBadge}</td>
-          <td style="text-align:right;">
-            <div class="action-group" style="justify-content:flex-end;">
-              <button onclick="grantFreeAccessClick('${s.id}')" class="btn-action free" title="Grant 1-Click Free Access">
-                <i class="fas fa-gift"></i> Free
-              </button>
-              <button onclick="extendAccessClick('${s.id}')" class="btn-action extend" title="Add 30 Days Expiry">
-                <i class="fas fa-calendar-plus"></i> +30d
-              </button>
-              <button onclick="resetPasswordClick('${s.id}')" class="btn-action" title="Generate New Password">
-                <i class="fas fa-key"></i>
-              </button>
-              <button onclick="openEmailModal('${s.id}')" class="btn-action mail" title="View / Email Credentials">
-                <i class="fas fa-envelope"></i>
-              </button>
-              ${s.certificateClaimed ? `
-                <button onclick="unlockCertClick('${s.id}')" class="btn-action" style="background:#fed7aa; color:#9a3412;" title="Authorize Certificate Re-Issue">
-                  <i class="fas fa-unlock"></i>
+        return `
+          <tr>
+            <td>
+              <strong style="color:var(--navy-900);">${escapeHtml(s.name)}</strong>
+              <div style="font-family:monospace; font-size:0.78rem; color:#64748b;">${escapeHtml(s.id)}</div>
+            </td>
+            <td>
+              <a href="mailto:${escapeHtml(s.email)}" style="color:var(--accent-blue); text-decoration:none;">${escapeHtml(s.email)}</a>
+            </td>
+            <td>
+              <div style="display:flex; align-items:center; gap:0.4rem;">
+                <code style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700;">${escapeHtml(s.password)}</code>
+                <button onclick="navigator.clipboard.writeText('${escapeHtml(s.password)}'); alert('Password copied: ${escapeHtml(s.password)}');" class="btn-action" title="Copy Password" style="padding:2px 6px;">
+                  <i class="fas fa-copy"></i>
                 </button>
-              ` : ''}
-            </div>
-          </td>
+              </div>
+            </td>
+            <td><span style="font-size:0.8rem; color:#475569;">${escapeHtml(s.cohort || 'Batch 2')}</span></td>
+            <td><span style="font-size:0.8rem; color:#64748b;">${s.classEndDate || '2026-06-30'}</span></td>
+            <td>
+              <strong style="color:${isExpired ? '#dc2626' : '#16a34a'}; font-size:0.82rem;">
+                ${isLifetime ? '∞ Lifetime' : (s.expiresAt || 'Active')}
+              </strong>
+            </td>
+            <td>${statusBadge}</td>
+            <td>${certBadge}</td>
+            <td style="text-align:right;">
+              <div class="action-group" style="justify-content:flex-end;">
+                <button onclick="grantFreeAccessClick('${s.id}')" class="btn-action free" title="Grant 1-Click Free Access">
+                  <i class="fas fa-gift"></i> Free
+                </button>
+                <button onclick="extendAccessClick('${s.id}')" class="btn-action extend" title="Add 30 Days Expiry">
+                  <i class="fas fa-calendar-plus"></i> +30d
+                </button>
+                <button onclick="resetPasswordClick('${s.id}')" class="btn-action" title="Generate New Password">
+                  <i class="fas fa-key"></i>
+                </button>
+                <button onclick="openEmailModal('${s.id}')" class="btn-action mail" title="View / Email Credentials">
+                  <i class="fas fa-envelope"></i>
+                </button>
+                ${s.certificateClaimed ? `
+                  <button onclick="unlockCertClick('${s.id}')" class="btn-action" style="background:#fed7aa; color:#9a3412;" title="Authorize Certificate Re-Issue">
+                    <i class="fas fa-unlock"></i>
+                  </button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>
         `;
-        tbody.appendChild(tr);
-      });
+      }).join('');
+      tbody.innerHTML = rowsHtml;
     }
 
     // 4. Quick Actions
@@ -4651,12 +4628,16 @@ greachimpact@gmail.com`;
 
     async function executeExpireSessionPass(code, btn) {
       if (!confirm(`Revoke access for session pass ${code}?\n\nThis will revoke access in Supabase Cloud, add the pass to the blacklist, and terminate any active browser session using it.`)) return;
-      if (btn) setButtonLoading(btn, true, '');
+      if (btn) setButtonLoading(btn, true, 'Revoking...');
       const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
-      window.GreachDB.expireSessionPass(code, currentUser);
-      showToast('Pass Revoked', `Pass ${code} is now revoked across all classrooms and Cloud DB.`, 'warning');
-      await renderSessionPassesTable();
-      if (typeof renderStudentActivity === 'function') renderStudentActivity();
+      try {
+        window.GreachDB.expireSessionPass(code, currentUser);
+        showToast('Pass Revoked', `Pass ${code} is now revoked across all classrooms and Cloud DB.`, 'warning');
+        await renderSessionPassesTable();
+        if (typeof renderStudentActivity === 'function') renderStudentActivity();
+      } finally {
+        if (btn) setButtonLoading(btn, false);
+      }
     }
 
     function handleDeleteSessionPass(code, btn) {
@@ -4667,11 +4648,15 @@ greachimpact@gmail.com`;
 
     async function executeDeleteSessionPass(code, btn) {
       if (!confirm(`Permanently delete session pass ${code} from Supabase Cloud Database?`)) return;
-      if (btn) setButtonLoading(btn, true, '');
+      if (btn) setButtonLoading(btn, true, 'Deleting...');
       const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
-      window.GreachDB.deleteSessionPass(code, currentUser);
-      showToast('Pass Deleted', `Pass ${code} removed from database.`, 'info');
-      await renderSessionPassesTable();
+      try {
+        window.GreachDB.deleteSessionPass(code, currentUser);
+        showToast('Pass Deleted', `Pass ${code} removed from database.`, 'info');
+        await renderSessionPassesTable();
+      } finally {
+        if (btn) setButtonLoading(btn, false);
+      }
     }
 
     function renderAuditTable() {
@@ -4878,7 +4863,7 @@ greachimpact@gmail.com`;
 
     async function executeDeleteBlogPost(id, btn) {
       if (!confirm(`Are you sure you want to permanently delete article #${id}? This will remove it from Supabase cloud database.`)) return;
-      if (btn) setButtonLoading(btn, true, '');
+      if (btn) setButtonLoading(btn, true, 'Deleting...');
       const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
       try {
         window.GreachDB.deleteBlogPost(id, currentUser);
@@ -4886,6 +4871,8 @@ greachimpact@gmail.com`;
         await renderBlogTable();
       } catch(err) {
         showToast('Delete Error', err.message, 'error');
+      } finally {
+        if (btn) setButtonLoading(btn, false);
       }
     }
 
