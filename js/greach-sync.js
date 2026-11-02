@@ -665,34 +665,12 @@ function syncAll() {
     if (typeof document === 'undefined' || window.__greachNavLoaderBound) return;
     window.__greachNavLoaderBound = true;
 
+    // Ensure loader automatically hides if browser navigates back/forward
     window.addEventListener('pageshow', () => {
       if (window.GreachLoader) window.GreachLoader.hide();
     });
-
-    document.addEventListener('click', (e) => {
-      const link = e.target.closest('a[href]');
-      if (!link) return;
-      if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      const href = link.getAttribute('href') || '';
-      const target = link.getAttribute('target') || '';
-      if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:') || link.hasAttribute('download') || target === '_blank') {
-        return;
-      }
-      if (href.includes('.html') || href.startsWith('/')) {
-        let label = 'Loading Greach Impact Portal...';
-        const lower = href.toLowerCase();
-        if (lower.includes('sql_master')) label = 'Launching SQL Analytics Classroom...';
-        else if (lower.includes('powerbi_master')) label = 'Launching Power BI Classroom...';
-        else if (lower.includes('excel_dashboard')) label = 'Launching Executive Dashboard Classroom...';
-        else if (lower.includes('excel_master') && lower.includes('advanced')) label = 'Launching Excel Advanced Classroom...';
-        else if (lower.includes('excel_master') && lower.includes('all')) label = 'Launching Complete Suite VIP Classroom...';
-        else if (lower.includes('excel_master')) label = 'Launching Excel Masterclass Classroom...';
-        else if (lower.includes('classroom')) label = 'Opening Greach Impact Classroom Hub...';
-        else if (lower.includes('admin')) label = 'Opening Super Admin Control Center...';
-        else if (lower.includes('registration')) label = 'Opening Course Registration...';
-        if (window.GreachLoader) window.GreachLoader.show(label, 5000);
-      }
-    });
+    // Note: Global artificial link interception removed so plain link navigation is instantaneous (<200ms)
+    // GreachLoader remains fully available for explicit asynchronous operations (code verification, DB calls)
   }
 
   // Execute on load if in browser
