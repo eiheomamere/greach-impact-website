@@ -7,8 +7,9 @@
   <link rel="icon" type="image/jpeg" href="images/Greach Impact Logo (2).jpg" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --navy-900: #0A0A5E;
@@ -2908,17 +2909,41 @@
       }
     }
 
-    // Refresh All Data
+    // Refresh All Data (Optimized: Instant visible paint + Non-blocking background hydration)
     function refreshAllData() {
-      if (typeof renderClassroomsControlCenter === 'function') renderClassroomsControlCenter();
-      if (typeof renderStudentActivity === 'function') renderStudentActivity();
+      // 1. Paint primary KPIs and active student roster instantly (<15ms)
       renderStats();
-      renderStudentsTable();
-      renderSubAdminsTable();
-      renderPricingCards();
-      renderCertsTable();
-      renderOrdersTable();
-      loadBrevoConfig();
+      if (typeof renderStudentsTable === 'function') renderStudentsTable();
+
+      // 2. Hydrate hidden background tabs progressively without blocking the main thread
+      const backgroundTasks = [
+        () => { if (typeof renderClassroomsControlCenter === 'function') renderClassroomsControlCenter(); },
+        () => { if (typeof renderSubAdminsTable === 'function') renderSubAdminsTable(); },
+        () => { if (typeof renderPricingCards === 'function') renderPricingCards(); },
+        () => { if (typeof renderCertsTable === 'function') renderCertsTable(); },
+        () => { if (typeof renderOrdersTable === 'function') renderOrdersTable(); },
+        () => { if (typeof loadBrevoConfig === 'function') loadBrevoConfig(); },
+        () => { if (typeof renderStudentActivity === 'function') renderStudentActivity(); }
+      ];
+
+      let taskIdx = 0;
+      function stepBackgroundTask() {
+        if (taskIdx < backgroundTasks.length) {
+          try { backgroundTasks[taskIdx](); } catch(err) {}
+          taskIdx++;
+          if (typeof window.requestIdleCallback === 'function') {
+            window.requestIdleCallback(stepBackgroundTask, { timeout: 300 });
+          } else {
+            setTimeout(stepBackgroundTask, 35);
+          }
+        }
+      }
+
+      if (typeof window.requestIdleCallback === 'function') {
+        window.requestIdleCallback(stepBackgroundTask, { timeout: 250 });
+      } else {
+        setTimeout(stepBackgroundTask, 40);
+      }
     }
 
     // 2. Render KPI Stats

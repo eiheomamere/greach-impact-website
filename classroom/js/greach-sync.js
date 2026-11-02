@@ -411,6 +411,7 @@
 
   let syncRetryCount = 0;
   async function hydrateFromCloud() {
+    if (typeof window !== "undefined" && window.location.pathname.toLowerCase().includes("admin.html")) return;
     try {
       const SUPABASE_URL = 'https://fkltvxhqizqrbvogodxv.supabase.co';
       const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
@@ -482,6 +483,7 @@
   }
 
 function syncAll() {
+    if (typeof window !== "undefined" && window.location.pathname.toLowerCase().includes("admin.html")) return;
     let prices = null;
     let schedules = null;
 
