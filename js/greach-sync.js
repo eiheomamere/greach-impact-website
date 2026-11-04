@@ -45,7 +45,8 @@
   ];
 
   function injectTypographyAndBrandColors() {
-    if (!document.getElementById('greach-typography-link')) {
+    const hasFonts = document.querySelector('link[href*="Plus+Jakarta+Sans"]') || document.getElementById('greach-typography-link');
+    if (!hasFonts) {
       const link = document.createElement('link');
       link.id = 'greach-typography-link';
       link.rel = 'stylesheet';
@@ -82,9 +83,10 @@
         }
 
         /* Complex Layout Containment for Snappy INP Responsiveness */
-        .admin-card, .dl-card, .course-card, .program-card, .table-responsive {
+        .admin-card, .dl-card, .course-card, .program-card, .table-responsive,
+        .journey-step, .impact-card, .testimonial-card, .faq-item, footer {
           content-visibility: auto;
-          contain-intrinsic-size: auto 320px;
+          contain-intrinsic-size: auto 240px;
         }
         @supports not (content-visibility: auto) {
           .admin-card, .dl-card, .course-card, .program-card, .table-responsive {
