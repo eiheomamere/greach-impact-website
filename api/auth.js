@@ -34,6 +34,32 @@ function isAllowedOrigin(origin) {
   }
 }
 
+// Robust Client IP Extraction (Defeats Header Spoofing)
+function getClientIp(req) {
+  // 1. Trusted Vercel Edge proxy headers
+  const vercelIp = req.headers['x-vercel-ip'] || req.headers['x-real-ip'];
+  if (vercelIp && typeof vercelIp === 'string') {
+    return vercelIp.trim();
+  }
+
+  // 2. Multi-proxy fallback: take right-most IP added by closest edge reverse proxy
+  const xForwarded = req.headers['x-forwarded-for'];
+  if (xForwarded && typeof xForwarded === 'string') {
+    const parts = xForwarded.split(',').map(s => s.trim()).filter(Boolean);
+    if (parts.length > 0) {
+      return parts[parts.length - 1];
+    }
+  }
+
+  // 3. Direct socket address
+  if (req.socket?.remoteAddress) {
+    return req.socket.remoteAddress;
+  }
+
+  // 4. Shared strict bucket for callers with missing or stripped IP headers
+  return 'unknown-caller-bucket';
+}
+
 // Cookie Parser Helper
 function parseCookies(cookieHeader) {
   const list = {};
@@ -200,7 +226,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'Method not allowed. Use POST.' });
   }
 
-  const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown-ip';
+  const clientIp = getClientIp(req);
   const cookies = parseCookies(req.headers.cookie);
   const cookieSession = cookies['gi_session'];
   const bearerToken = req.headers.authorization?.replace(/^Bearer\s+/i, '');
