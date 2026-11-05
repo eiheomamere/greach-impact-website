@@ -1428,22 +1428,18 @@
           window.GreachDB.recordStudentLogin(s, { classroomKey: courseKey });
         }
 
-        // Fire-and-forget presence to Supabase Cloud
+        // Trusted Presence Heartbeat to Backend (validates session, entitlement & anti-replay)
         try {
-          const SUPABASE_URL = 'https://fkltvxhqizqrbvogodxv.supabase.co';
-          const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
-          fetch(`${SUPABASE_URL}/rest/v1/student_presence`, {
+          const sessId = 'SESS-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+          fetch('/api/auth', {
             method: 'POST',
-            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify([{
-              session_id: 'SESS-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
-              student_id: session.id,
-              student_name: session.name,
-              student_email: session.email,
-              course_name: session.course,
-              status: 'online',
-              device_info: navigator.userAgent
-            }])
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'heartbeat',
+              sessionId: sessId,
+              courseName: session.course,
+              deviceInfo: navigator.userAgent
+            })
           }).catch(() => {});
         } catch(e) {}
 

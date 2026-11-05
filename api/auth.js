@@ -8,7 +8,8 @@ import crypto from 'crypto';
 const memoryRateLimits = new Map();
 const consumedMfaTickets = new Set();
 const MAX_ATTEMPTS = 5;
-const LOCKOUT_MS = 10 * 60 * 1000; // 10 minutes lockout
+const FAILURE_WINDOW_MS = 10 * 60 * 1000; // 10 minutes failure window
+const LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes lockout
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://fkltvxhqizqrbvogodxv.supabase.co';
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
@@ -35,15 +36,20 @@ function isAllowedOrigin(origin) {
   }
 }
 
-// Robust Client IP Extraction (Defeats Header Spoofing)
+// Client IP Extraction
+// Note on Trust Assumptions:
+// - On Vercel Edge: req.headers['x-vercel-ip'] is attached by Vercel edge reverse proxy
+//   and strips any client-provided x-vercel-ip. It is authoritative.
+// - On Cloudflare: cf-connecting-ip is set by Cloudflare edge.
+// - Multi-proxy x-forwarded-for: selects the right-most IP (appended by closest reverse proxy).
+// - If no IP headers exist, returns null so rate limiting can key per user/session rather
+//   than creating a shared-bucket denial-of-service vulnerability.
 function getClientIp(req) {
-  // 1. Trusted Cloudflare / Vercel Edge proxy headers
   const edgeIp = req.headers['cf-connecting-ip'] || req.headers['x-vercel-ip'] || req.headers['x-real-ip'];
   if (edgeIp && typeof edgeIp === 'string') {
     return edgeIp.trim();
   }
 
-  // 2. Multi-proxy fallback: take right-most IP added by closest edge reverse proxy
   const xForwarded = req.headers['x-forwarded-for'];
   if (xForwarded && typeof xForwarded === 'string') {
     const parts = xForwarded.split(',').map(s => s.trim()).filter(Boolean);
@@ -52,13 +58,11 @@ function getClientIp(req) {
     }
   }
 
-  // 3. Direct socket address
   if (req.socket?.remoteAddress) {
     return req.socket.remoteAddress;
   }
 
-  // 4. Shared strict bucket for callers with missing or stripped IP headers (never bypasses rate limits)
-  return 'unknown-caller-bucket';
+  return null;
 }
 
 // Cookie Parser Helper
@@ -113,18 +117,31 @@ async function callSupabaseAuth(endpoint, options = {}) {
 
 // ==============================================================
 // MULTI-INSTANCE PERSISTENT RATE LIMITING (Supabase L2 + Memory L1)
+// Enforces 10-minute sliding failure window and 15-minute lockout at 5 failures
 // ==============================================================
-async function checkRateLimit(ip) {
+async function checkRateLimit(key) {
   const now = Date.now();
+
   // 1. L1 check in local container memory
-  const mem = memoryRateLimits.get(ip);
-  if (mem && mem.locked_until && now < mem.locked_until) {
-    return { blocked: true, remainingMin: Math.ceil((mem.locked_until - now) / 60000) };
+  const mem = memoryRateLimits.get(key);
+  if (mem) {
+    if (mem.locked_until && now < mem.locked_until) {
+      return { blocked: true, remainingMin: Math.ceil((mem.locked_until - now) / 60000) };
+    }
+    // Lockout expired: reset
+    if (mem.locked_until && now >= mem.locked_until) {
+      mem.locked_until = null;
+      mem.count = 0;
+    }
+    // Window expired: reset count
+    if (mem.lastAttempt && now - mem.lastAttempt > FAILURE_WINDOW_MS) {
+      mem.count = 0;
+    }
   }
 
   // 2. L2 Persistent check across Vercel serverless instances
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/auth_rate_limits?ip=eq.${encodeURIComponent(ip)}&select=*`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/auth_rate_limits?ip=eq.${encodeURIComponent(key)}&select=*`, {
       headers: { 'apikey': SUPABASE_SERVICE_ROLE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` },
       signal: AbortSignal.timeout(3000)
     });
@@ -133,8 +150,10 @@ async function checkRateLimit(ip) {
       if (Array.isArray(records) && records.length > 0) {
         const rec = records[0];
         const lockedUntil = rec.locked_until ? new Date(rec.locked_until).getTime() : null;
+        const lastFailedAt = rec.last_failed_at ? new Date(rec.last_failed_at).getTime() : 0;
+
         if (lockedUntil && now < lockedUntil) {
-          memoryRateLimits.set(ip, { count: rec.failed_attempts, locked_until: lockedUntil });
+          memoryRateLimits.set(key, { count: rec.failed_attempts, locked_until: lockedUntil, lastAttempt: lastFailedAt });
           return { blocked: true, remainingMin: Math.ceil((lockedUntil - now) / 60000) };
         }
       }
@@ -146,15 +165,22 @@ async function checkRateLimit(ip) {
   return { blocked: false };
 }
 
-async function recordFailedAttempt(ip) {
+async function recordFailedAttempt(key) {
   const now = Date.now();
-  const mem = memoryRateLimits.get(ip) || { count: 0, lastAttempt: now };
-  mem.count += 1;
+  const mem = memoryRateLimits.get(key) || { count: 0, lastAttempt: now };
+
+  // If previous attempt was outside the sliding window (10 minutes), reset count to 1
+  if (mem.lastAttempt && now - mem.lastAttempt > FAILURE_WINDOW_MS) {
+    mem.count = 1;
+  } else {
+    mem.count += 1;
+  }
   mem.lastAttempt = now;
+
   if (mem.count >= MAX_ATTEMPTS) {
     mem.locked_until = now + LOCKOUT_MS;
   }
-  memoryRateLimits.set(ip, mem);
+  memoryRateLimits.set(key, mem);
 
   // Sync to persistent store in Supabase
   try {
@@ -168,7 +194,7 @@ async function recordFailedAttempt(ip) {
         'Prefer': 'resolution=merge-duplicates'
       },
       body: JSON.stringify({
-        ip: ip,
+        ip: key,
         failed_attempts: mem.count,
         last_failed_at: new Date(now).toISOString(),
         locked_until: lockedUntilIso
@@ -179,10 +205,10 @@ async function recordFailedAttempt(ip) {
   return mem;
 }
 
-async function clearRateLimit(ip) {
-  memoryRateLimits.delete(ip);
+async function clearRateLimit(key) {
+  memoryRateLimits.delete(key);
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/auth_rate_limits?ip=eq.${encodeURIComponent(ip)}`, {
+    await fetch(`${SUPABASE_URL}/rest/v1/auth_rate_limits?ip=eq.${encodeURIComponent(key)}`, {
       method: 'DELETE',
       headers: { 'apikey': SUPABASE_SERVICE_ROLE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` }
     });
@@ -348,8 +374,16 @@ export default async function handler(req, res) {
     // ACTION: LOGIN VIA SUPABASE AUTH
     // ==============================================================
     if (action === 'login') {
+      const rawUser = (email || identifier || username || '').trim();
+      const rawPass = (password || '').trim();
+
+      // Resolve Rate Limit Key:
+      // Uses verified proxy IP when present. When IP is unavailable, keys by normalized
+      // user identifier or session nonce, eliminating the shared-bucket denial-of-service risk.
+      const rateLimitKey = clientIp || (rawUser ? `user:${rawUser.toLowerCase()}` : `sess:${req.headers['user-agent'] ? crypto.createHash('sha256').update(req.headers['user-agent']).digest('hex').substring(0, 16) : 'anonymous'}`);
+
       // Rate limit check before credential inspection
-      const rateLimitStatus = await checkRateLimit(clientIp);
+      const rateLimitStatus = await checkRateLimit(rateLimitKey);
       if (rateLimitStatus.blocked) {
         return res.status(429).json({
           success: false,
@@ -368,9 +402,6 @@ export default async function handler(req, res) {
         }
         consumedMfaTickets.add(parsedTicket.jti);
       }
-
-      const rawUser = (email || identifier || username || '').trim();
-      const rawPass = (password || '').trim();
 
       if (!rawUser || !rawPass) {
         return res.status(400).json({
@@ -504,7 +535,7 @@ export default async function handler(req, res) {
         }
 
         // Authentication succeeded: clear rate limits
-        await clearRateLimit(clientIp);
+        await clearRateLimit(rateLimitKey);
 
         const expTime = Date.now() + 8 * 60 * 60 * 1000;
         const csrfToken = crypto.randomBytes(24).toString('hex');
@@ -544,11 +575,11 @@ export default async function handler(req, res) {
       }
 
       // Record failed attempt
-      const memRecord = await recordFailedAttempt(clientIp);
+      const memRecord = await recordFailedAttempt(rateLimitKey);
       const remaining = MAX_ATTEMPTS - memRecord.count;
       const warnMsg = remaining > 0
         ? `Invalid credentials. ${remaining} attempt(s) remaining before security lockout.`
-        : 'Invalid credentials. Security lockout initiated for 10 minutes.';
+        : 'Invalid credentials. Security lockout initiated for 15 minutes.';
 
       return res.status(401).json({ success: false, error: warnMsg });
     }
@@ -674,6 +705,125 @@ export default async function handler(req, res) {
       }
 
       return res.status(200).json({ success: true, message: 'MFA activated successfully.' });
+    }
+
+    // ==============================================================
+    // ACTION: TRUSTED ATTENDANCE HEARTBEAT (Classroom Telemetry)
+    // Validates: 1) Authenticated session, 2) Student profile ownership,
+    // 3) Active course entitlement, 4) Session termination, 5) Frequency throttling
+    // ==============================================================
+    if (action === 'heartbeat') {
+      const payload = verifyToken(activeToken, AUTH_SECRET);
+      if (!payload || !payload.sub) {
+        return res.status(401).json({ success: false, error: 'Authentication required for attendance heartbeat.' });
+      }
+
+      const { sessionId, courseName, deviceInfo } = req.body || {};
+      const cleanSession = (sessionId || '').trim();
+
+      if (!cleanSession || cleanSession.length < 5 || cleanSession.length > 100) {
+        return res.status(400).json({ success: false, error: 'Invalid or missing sessionId.' });
+      }
+
+      // 1. Validate Student Profile Ownership
+      let student = null;
+      try {
+        const stuRes = await fetch(`${SUPABASE_URL}/rest/v1/students?user_id=eq.${encodeURIComponent(payload.sub)}&select=*`, {
+          headers: { 'apikey': SUPABASE_SERVICE_ROLE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` }
+        });
+        if (stuRes.ok) {
+          const rows = await stuRes.json();
+          if (Array.isArray(rows) && rows.length > 0) {
+            student = rows[0];
+          }
+        }
+      } catch (e) {}
+
+      if (!student) {
+        return res.status(403).json({ success: false, error: 'Student profile not found.' });
+      }
+
+      // 2. Validate Active Course Entitlement
+      const isStudentActive = (student.status || 'Active') === 'Active';
+      const isCourseExpired = student.expires_at && new Date(student.expires_at).getTime() < Date.now();
+      if (!isStudentActive || isCourseExpired) {
+        return res.status(403).json({ success: false, error: 'Active course enrollment required for attendance.' });
+      }
+
+      if (courseName && student.enrolled_course && courseName.trim().toLowerCase() !== student.enrolled_course.trim().toLowerCase()) {
+        return res.status(403).json({ success: false, error: 'Student is not enrolled in the requested course.' });
+      }
+
+      // 3. Session Termination Check (Administrative Kill-Switch)
+      try {
+        const presRes = await fetch(`${SUPABASE_URL}/rest/v1/student_presence?session_id=eq.${encodeURIComponent(cleanSession)}&select=*`, {
+          headers: { 'apikey': SUPABASE_SERVICE_ROLE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` }
+        });
+        if (presRes.ok) {
+          const presRows = await presRes.json();
+          if (Array.isArray(presRows) && presRows.length > 0) {
+            const existingPres = presRows[0];
+            if (existingPres.status === 'terminated') {
+              return res.status(403).json({
+                success: false,
+                terminated: true,
+                error: 'Session has been terminated by administrator.'
+              });
+            }
+
+            // 4. Frequency Limiting & Replay Protection (minimum 10 seconds between updates)
+            const lastBeat = existingPres.last_heartbeat ? new Date(existingPres.last_heartbeat).getTime() : 0;
+            if (Date.now() - lastBeat < 10000) {
+              return res.status(200).json({
+                success: true,
+                status: 'throttled',
+                message: 'Heartbeat acknowledged (frequency throttle active).'
+              });
+            }
+
+            // Update heartbeat
+            await fetch(`${SUPABASE_URL}/rest/v1/student_presence?session_id=eq.${encodeURIComponent(cleanSession)}`, {
+              method: 'PATCH',
+              headers: {
+                'apikey': SUPABASE_SERVICE_ROLE_KEY,
+                'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                last_heartbeat: new Date().toISOString(),
+                status: 'online',
+                device_info: deviceInfo || existingPres.device_info
+              })
+            });
+
+            return res.status(200).json({ success: true, status: 'online' });
+          }
+        }
+
+        // First heartbeat for session: Insert new record
+        await fetch(`${SUPABASE_URL}/rest/v1/student_presence`, {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_SERVICE_ROLE_KEY,
+            'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            session_id: cleanSession,
+            student_id: student.id,
+            student_name: student.full_name,
+            student_email: student.registered_email,
+            course_name: student.enrolled_course,
+            status: 'online',
+            last_heartbeat: new Date().toISOString(),
+            device_info: deviceInfo || 'Web Browser'
+          })
+        });
+
+        return res.status(200).json({ success: true, status: 'online' });
+      } catch (e) {
+        return res.status(500).json({ success: false, error: 'Failed to record attendance heartbeat: ' + e.message });
+      }
     }
 
     return res.status(400).json({ success: false, error: 'Unknown action requested.' });
