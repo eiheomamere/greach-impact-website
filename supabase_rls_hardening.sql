@@ -129,9 +129,11 @@ CREATE POLICY "Admin Manage Access Codes V1B" ON access_codes
   WITH CHECK (public.is_admin());
 
 -- Secure, Concurrency-Safe RPC Verification & Redemption Function
+-- Direct Supabase RPC calls enforce abuse protection, student binding & zero info leakage
 CREATE OR REPLACE FUNCTION public.verify_access_code(
   p_code text,
-  p_redeem boolean DEFAULT false
+  p_redeem boolean DEFAULT false,
+  p_student_id text DEFAULT NULL
 )
 RETURNS jsonb
 LANGUAGE plpgsql
@@ -142,47 +144,67 @@ DECLARE
   v_rec record;
   v_now timestamptz := clock_timestamp();
   v_clean_code text := trim(p_code);
+  v_client_ip text;
+  v_locked_until timestamptz;
 BEGIN
-  -- Input length validation to prevent abuse/dos
-  IF v_clean_code IS NULL OR length(v_clean_code) < 4 OR length(v_clean_code) > 100 THEN
-    RETURN jsonb_build_object('valid', false, 'error', 'Invalid code format.');
+  -- 1. Abuse Protection: Extract caller IP from PostgREST request headers
+  BEGIN
+    v_client_ip := coalesce(nullif(split_part(current_setting('request.headers', true)::json->>'x-forwarded-for', ',', 1), ''), 'unknown-caller');
+  EXCEPTION WHEN OTHERS THEN
+    v_client_ip := 'unknown-caller';
+  END;
+
+  -- Check if client IP is currently locked out in auth_rate_limits
+  IF v_client_ip != 'unknown-caller' THEN
+    SELECT locked_until INTO v_locked_until
+    FROM public.auth_rate_limits
+    WHERE ip = v_client_ip;
+
+    IF v_locked_until IS NOT NULL AND v_locked_until > v_now THEN
+      RETURN jsonb_build_object('valid', false, 'error', 'Too many failed verification attempts. Temporary lockout active.');
+    END IF;
   END IF;
 
-  -- Concurrency-safe lookup with row locking if redeeming
+  -- 2. Input validation
+  IF v_clean_code IS NULL OR length(v_clean_code) < 4 OR length(v_clean_code) > 100 THEN
+    RETURN jsonb_build_object('valid', false, 'error', 'Invalid or expired access pass.');
+  END IF;
+
+  -- 3. Concurrency-safe lookup with row locking (FOR UPDATE) if redeeming
   IF p_redeem THEN
-    SELECT code, is_active, expires_at, max_uses, times_used, course_name
+    SELECT code, is_active, expires_at, max_uses, times_used, course_name, student_id
     INTO v_rec
     FROM public.access_codes
     WHERE code = v_clean_code
     FOR UPDATE;
   ELSE
-    SELECT code, is_active, expires_at, max_uses, times_used, course_name
+    SELECT code, is_active, expires_at, max_uses, times_used, course_name, student_id
     INTO v_rec
     FROM public.access_codes
     WHERE code = v_clean_code;
   END IF;
 
-  -- Validate existence
-  IF NOT FOUND THEN
-    RETURN jsonb_build_object('valid', false, 'error', 'Access pass not found.');
+  -- 4. Validate existence & status with UNIFORM non-disclosing error response
+  IF NOT FOUND OR NOT coalesce(v_rec.is_active, true) OR (v_rec.expires_at IS NOT NULL AND v_rec.expires_at < v_now) OR (v_rec.max_uses IS NOT NULL AND v_rec.times_used >= v_rec.max_uses) THEN
+    -- Increment failure count for abuse protection
+    IF v_client_ip != 'unknown-caller' THEN
+      INSERT INTO public.auth_rate_limits (ip, failed_attempts, last_failed_at, locked_until)
+      VALUES (v_client_ip, 1, v_now, NULL)
+      ON CONFLICT (ip) DO UPDATE
+      SET failed_attempts = auth_rate_limits.failed_attempts + 1,
+          last_failed_at = v_now,
+          locked_until = CASE WHEN auth_rate_limits.failed_attempts + 1 >= 5 THEN v_now + INTERVAL '5 minutes' ELSE auth_rate_limits.locked_until END;
+    END IF;
+    -- Uniform generic response: does not disclose whether code exists, is deactivated, or expired
+    RETURN jsonb_build_object('valid', false, 'error', 'Invalid or expired access pass.');
   END IF;
 
-  -- Validate active status
-  IF NOT coalesce(v_rec.is_active, true) THEN
-    RETURN jsonb_build_object('valid', false, 'error', 'This access pass has been deactivated.');
+  -- 5. Validate student entitlement binding if pass is assigned to a specific student
+  IF v_rec.student_id IS NOT NULL AND p_student_id IS NOT NULL AND v_rec.student_id != p_student_id THEN
+    RETURN jsonb_build_object('valid', false, 'error', 'Access pass is designated for another student profile.');
   END IF;
 
-  -- Validate expiration date
-  IF v_rec.expires_at IS NOT NULL AND v_rec.expires_at < v_now THEN
-    RETURN jsonb_build_object('valid', false, 'error', 'This access pass has expired.');
-  END IF;
-
-  -- Validate redemption limits
-  IF v_rec.max_uses IS NOT NULL AND v_rec.times_used >= v_rec.max_uses THEN
-    RETURN jsonb_build_object('valid', false, 'error', 'Maximum redemption limit reached.');
-  END IF;
-
-  -- Atomic redemption execution
+  -- 6. Atomic redemption execution
   IF p_redeem THEN
     UPDATE public.access_codes
     SET times_used = times_used + 1,
@@ -190,7 +212,7 @@ BEGIN
     WHERE code = v_clean_code;
   END IF;
 
-  -- Return safe verification object (zero sensitive database columns exposed)
+  -- 7. Return safe minimal verification object (zero sensitive columns leaked)
   RETURN jsonb_build_object(
     'valid', true,
     'course_name', v_rec.course_name
@@ -199,8 +221,8 @@ END;
 $$;
 
 -- Restrict execution privileges
-REVOKE ALL ON FUNCTION public.verify_access_code(text, boolean) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.verify_access_code(text, boolean) TO anon, authenticated, service_role;
+REVOKE ALL ON FUNCTION public.verify_access_code(text, boolean, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.verify_access_code(text, boolean, text) TO anon, authenticated, service_role;
 
 
 -- --------------------------------------------------------------
