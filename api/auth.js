@@ -12,6 +12,7 @@ const LOCKOUT_MS = 10 * 60 * 1000; // 10 minutes lockout
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://fkltvxhqizqrbvogodxv.supabase.co';
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
 
 const SUPER_ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'greachimpact@gmail.com').toLowerCase().trim();
 const SUPER_ADMIN_USERNAME = (process.env.ADMIN_USER || 'Greachimpact').trim();
@@ -36,10 +37,10 @@ function isAllowedOrigin(origin) {
 
 // Robust Client IP Extraction (Defeats Header Spoofing)
 function getClientIp(req) {
-  // 1. Trusted Vercel Edge proxy headers
-  const vercelIp = req.headers['x-vercel-ip'] || req.headers['x-real-ip'];
-  if (vercelIp && typeof vercelIp === 'string') {
-    return vercelIp.trim();
+  // 1. Trusted Cloudflare / Vercel Edge proxy headers
+  const edgeIp = req.headers['cf-connecting-ip'] || req.headers['x-vercel-ip'] || req.headers['x-real-ip'];
+  if (edgeIp && typeof edgeIp === 'string') {
+    return edgeIp.trim();
   }
 
   // 2. Multi-proxy fallback: take right-most IP added by closest edge reverse proxy
@@ -56,7 +57,7 @@ function getClientIp(req) {
     return req.socket.remoteAddress;
   }
 
-  // 4. Shared strict bucket for callers with missing or stripped IP headers
+  // 4. Shared strict bucket for callers with missing or stripped IP headers (never bypasses rate limits)
   return 'unknown-caller-bucket';
 }
 
@@ -124,7 +125,7 @@ async function checkRateLimit(ip) {
   // 2. L2 Persistent check across Vercel serverless instances
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/auth_rate_limits?ip=eq.${encodeURIComponent(ip)}&select=*`, {
-      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+      headers: { 'apikey': SUPABASE_SERVICE_ROLE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` },
       signal: AbortSignal.timeout(3000)
     });
     if (res.ok) {
@@ -161,8 +162,8 @@ async function recordFailedAttempt(ip) {
     await fetch(`${SUPABASE_URL}/rest/v1/auth_rate_limits`, {
       method: 'POST',
       headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'apikey': SUPABASE_SERVICE_ROLE_KEY,
+        'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
         'Content-Type': 'application/json',
         'Prefer': 'resolution=merge-duplicates'
       },
@@ -183,7 +184,7 @@ async function clearRateLimit(ip) {
   try {
     await fetch(`${SUPABASE_URL}/rest/v1/auth_rate_limits?ip=eq.${encodeURIComponent(ip)}`, {
       method: 'DELETE',
-      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+      headers: { 'apikey': SUPABASE_SERVICE_ROLE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` }
     });
   } catch (e) {}
 }
