@@ -997,7 +997,7 @@
         </div>
         <div style="margin-bottom: 1.1rem; text-align: left;">
           <label class="gate-label" style="display:block; font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.35rem;"><i class="fas fa-shield-alt"></i> Lead Instructor Master Passcode:</label>
-          <input type="password" id="gateInstructorPasscode" class="gate-input" placeholder="Enter master password (Evana_Oluebube123890)..." style="width:100%; padding:0.75rem 1rem; border:1.5px solid #cbd5e1; border-radius:10px; font-size:0.92rem; outline:none;" required />
+          <input type="password" id="gateInstructorPasscode" class="gate-input" placeholder="Enter master password ..." style="width:100%; padding:0.75rem 1rem; border:1.5px solid #cbd5e1; border-radius:10px; font-size:0.92rem; outline:none;" required />
         </div>
 
         <div id="gateInstErrorBox" style="display:none; background:#fef2f2; border-left:4px solid #ef4444; color:#991b1b; padding:0.65rem 0.9rem; border-radius:6px; font-size:0.82rem; margin-bottom:1rem; text-align:left;">
@@ -3575,7 +3575,7 @@ Automated Direct Link: ${s.magicLink}`;
         const emailInp = document.getElementById('gateInstructorEmail');
         const passInp = document.getElementById('gateInstructorPasscode');
         if (emailInp) emailInp.value = 'Greachimpact';
-        if (passInp) passInp.value = 'Evana_Oluebube123890';
+        if (passInp) passInp.value = '';
         window.switchGateRole('instructor');
         const form = document.getElementById('instructorGateForm');
         if (form) {
@@ -3909,7 +3909,7 @@ Automated Direct Link: ${s.magicLink}`;
             };
           }
         } else if (
-          (userOrEmail.toLowerCase() === 'greachimpact' && pass === 'Evana_Oluebube123890') ||
+          (userOrEmail.toLowerCase() === 'greachimpact' && false) ||
           pass === 'GREACH-ADMIN-2026'
         ) {
           isSuccess = true;

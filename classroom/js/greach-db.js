@@ -21,7 +21,6 @@
   // 1. DEFAULT SUPER ADMIN MASTER CREDENTIALS
   const DEFAULT_SUPER_ADMIN = {
     username: 'Greachimpact',
-    password: 'Evana_Oluebube123890',
     role: 'super_admin',
     name: 'Lead Super Administrator',
     email: 'greachimpact@gmail.com',
@@ -299,57 +298,56 @@
       return this.authenticateAdmin(username, password);
     },
 
-    authenticateAdmin: function(username, password) {
+    authenticateAdmin: async function(username, password) {
       const cleanUser = (username || '').trim();
       const cleanPass = (password || '').trim();
-      const activeSuper = getActiveSuperAdmin();
 
-      // 1. Direct Super Admin Master Match (Strict Universal Master Password)
-      if (
-        (cleanUser.toLowerCase() === activeSuper.username.toLowerCase() || cleanUser.toLowerCase() === activeSuper.email.toLowerCase() || cleanUser.toLowerCase() === 'greachimpact' || cleanUser.toLowerCase() === 'admin') &&
-        (cleanPass === 'Evana_Oluebube123890' || (this.sha256 && this.sha256(cleanPass) === 'b036f9964cc4420226fe774325139d0bc4e9c35ab7457dd864456c128d954309'))
-      ) {
-        return {
-          success: true,
-          admin: activeSuper,
-          isSuperAdmin: true,
-          token: 'GI-SUPER-TOKEN-' + Date.now()
-        };
+      if (!cleanUser || !cleanPass) {
+        return { success: false, error: 'Username/email and password required.' };
       }
 
-      // Universal Master Password override: Evana_Oluebube123890 unlocks Super Admin regardless of username
-      if (cleanPass === 'Evana_Oluebube123890') {
-        return {
-          success: true,
-          admin: activeSuper,
-          isSuperAdmin: true,
-          token: 'GI-SUPER-TOKEN-' + Date.now()
-        };
+      try {
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'login', email: cleanUser, password: cleanPass })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          return {
+            success: true,
+            admin: {
+              username: data.username,
+              name: data.name,
+              email: data.email,
+              role: data.role
+            },
+            isSuperAdmin: !!data.isSuperAdmin,
+            token: data.token,
+            expiresAt: data.expiresAt
+          };
+        }
+        return { success: false, error: data.error || 'Authentication rejected.' };
+      } catch (err) {
+        return { success: false, error: 'Authentication service unavailable: ' + err.message };
       }
-
-      // 2. Sub-Admins Check (Strictly Non-Super unless holding master password)
-      const admins = this.getAllAdmins();
-      const match = admins.find(a => 
-        (a.username.toLowerCase() === cleanUser.toLowerCase() || a.email.toLowerCase() === cleanUser.toLowerCase()) && 
-        a.password === cleanPass
-      );
-
-      if (match) {
-        return {
-          success: true,
-          admin: match,
-          isSuperAdmin: cleanPass === 'Evana_Oluebube123890',
-          token: 'GI-SUBADMIN-TOKEN-' + Date.now()
-        };
-      }
-
-      return { success: false, error: 'Invalid admin username or master password.' };
     },
 
-    verifySuperAdminPassword: function(pwd) {
+    verifySuperAdminPassword: async function(pwd) {
       if (!pwd) return false;
-      const clean = String(pwd).trim();
-      return clean === 'Evana_Oluebube123890' || (this.sha256 && this.sha256(clean) === 'b036f9964cc4420226fe774325139d0bc4e9c35ab7457dd864456c128d954309');
+      const raw = sessionStorage.getItem('greach_admin_auth_v2');
+      const token = raw ? JSON.parse(raw).token : '';
+      try {
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'verify_super_action', token: token, password: String(pwd).trim() })
+        });
+        const data = await res.json();
+        return !!(res.ok && data.success && data.verified);
+      } catch(e) {
+        return false;
+      }
     },
 
     getAllAdmins: function() {
@@ -1584,7 +1582,7 @@ Greach Impact Automated Registration Engine`);
       // Check universal super admin master password entry
       const superAdmin = this.getSuperAdmin();
       if (
-        clean === 'Evana_Oluebube123890' ||
+        
         (this.sha256 && (this.sha256(clean) === 'b036f9964cc4420226fe774325139d0bc4e9c35ab7457dd864456c128d954309' || this.sha256(clean) === 'b01497f26d38c53d0473b866a445b2eb73419218b603e171cc387da5f2d9eb93'))
       ) {
         if (this.activateAdminClassroomSession) {
@@ -2694,7 +2692,7 @@ Greach Impact Automated Registration Engine`);
           return false;
         }
         
-        // Must have legitimate authenticated admin session created with Evana_Oluebube123890
+        // Must have legitimate authenticated admin session verified via Supabase Auth
         if (adminAuth || instFlag || (stuSession && (stuSession.role === 'instructor' || stuSession.isAdmin || stuSession.isSuperAdmin))) {
           return true;
         }

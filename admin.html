@@ -1304,7 +1304,7 @@
               <input type="password" id="suPassword" class="form-control" placeholder="Enter new secret password..." required />
               <button type="button" onclick="togglePasswordVisibility('suPassword', this)" class="btn-action" style="padding:0.7rem;"><i class="fas fa-eye"></i></button>
             </div>
-            <small style="color:var(--text-muted); font-size:0.75rem;">Choose a strong master password (e.g. Evana_Oluebube123890).</small>
+            <small style="color:var(--text-muted); font-size:0.75rem;">Managed securely via Supabase Auth & Multi-Factor Authentication (MFA).</small>
           </div>
 
           <div id="suAlertBox" style="display:none; padding:0.85rem; border-radius:8px; margin-bottom:1.2rem; font-size:0.85rem;"></div>
@@ -2106,7 +2106,7 @@
   
     // ==========================================
     // MANDATORY SUPER ADMIN AUTHORIZATION ENGINE
-    // Universal Password: Evana_Oluebube123890
+    // Authenticated via Supabase Auth
     // ==========================================
     let pendingSuperAdminAction = null;
 
@@ -2136,13 +2136,6 @@
         modal.classList.add('open');
         modal.classList.add('active');
         setTimeout(() => { if (inputEl) inputEl.focus(); }, 120);
-      } else {
-        const pass = prompt(`[SUPER ADMIN AUTHORIZATION REQUIRED]\nAction: ${actionDescription}\n\nEnter Universal Super Admin Password:`);
-        if (pass && ((window.GreachDB && window.GreachDB.verifySuperAdminPassword && window.GreachDB.verifySuperAdminPassword(pass)) || pass.trim() === 'Evana_Oluebube123890')) {
-          onConfirmed();
-        } else {
-          alert('Action Cancelled: Incorrect Super Admin password.');
-        }
       }
     }
 
@@ -2168,39 +2161,58 @@
       }
     }
 
-    function handleSuperAdminConfirmSubmit(e) {
+    async function handleSuperAdminConfirmSubmit(e) {
       if (e) e.preventDefault();
       const inputEl = document.getElementById('superAdminConfirmInput');
       const errEl = document.getElementById('superAdminConfirmError');
+      const btn = e.target.querySelector('button[type="submit"]');
       const enteredPass = inputEl ? inputEl.value.trim() : '';
 
-      const isVerified = (window.GreachDB && window.GreachDB.verifySuperAdminPassword)
-        ? window.GreachDB.verifySuperAdminPassword(enteredPass)
-        : (enteredPass === 'Evana_Oluebube123890');
-
-      if (!isVerified) {
+      if (!enteredPass) {
         if (errEl) {
-          errEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Incorrect Super Admin password. Access denied.';
+          errEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Password confirmation is required.';
           errEl.style.display = 'block';
-        }
-        if (inputEl) {
-          inputEl.focus();
-          inputEl.select();
         }
         return;
       }
 
-      // Validated! Run pending callback
-      const targetAction = pendingSuperAdminAction ? pendingSuperAdminAction.callback : null;
-      closeSuperAdminConfirmModal();
-
-      if (typeof targetAction === 'function') {
-        try {
-          targetAction();
-        } catch(err) {
-          console.error('[SuperAdminAuth] Authorized action execution error:', err);
-          showToast('Execution Error', err.message || 'Action encountered an error.', 'error');
+      setButtonLoading(btn, true, 'Verifying with Supabase Auth...');
+      try {
+        const token = currentAdminSession ? currentAdminSession.token : '';
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'verify_super_action', token: token, password: enteredPass })
+        });
+        const data = await res.json();
+        if (res.ok && data.success && data.verified) {
+          const targetAction = pendingSuperAdminAction ? pendingSuperAdminAction.callback : null;
+          closeSuperAdminConfirmModal();
+          if (typeof targetAction === 'function') {
+            try {
+              targetAction();
+            } catch(err) {
+              console.error('[Super Admin Action Error]:', err);
+              showToast('Action Failed', err.message, 'error');
+            }
+          }
+        } else {
+          if (errEl) {
+            errEl.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${data.error || 'Incorrect Super Admin password. Access denied.'}`;
+            errEl.style.display = 'block';
+          }
+          if (inputEl) {
+            inputEl.focus();
+            inputEl.select();
+          }
         }
+      } catch (err) {
+        if (errEl) {
+          errEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Verification service error: ' + err.message;
+          errEl.style.display = 'block';
+        }
+      } finally {
+        setButtonLoading(btn, false);
       }
     }
   
@@ -2706,17 +2718,51 @@
 
 
     // 1. Check Authentication on Load
-    function checkAdminAuth() {
+    async function checkAdminAuth() {
       const stored = sessionStorage.getItem(ADMIN_SESSION_KEY) || localStorage.getItem(ADMIN_SESSION_KEY);
-      if (stored) {
-        try {
-          currentAdminSession = JSON.parse(stored);
-          unlockAdminConsole();
-          return;
-        } catch(e) {}
+      if (!stored) {
+        document.getElementById('adminAuthOverlay').classList.remove('unlocked');
+        const overlay = document.getElementById('adminAuthOverlay');
+        if (overlay) overlay.style.display = 'flex';
+        return;
       }
-      // Show auth overlay
+
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.token) {
+          const res = await fetch('/api/auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'verify', token: parsed.token })
+          });
+          const verified = await res.json();
+          if (res.ok && verified.success && verified.valid) {
+            currentAdminSession = {
+              username: verified.user,
+              name: verified.name,
+              email: verified.email,
+              role: verified.role,
+              isSuper: !!verified.isSuper,
+              token: parsed.token,
+              expiresAt: verified.expiresAt
+            };
+            sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(currentAdminSession));
+            localStorage.removeItem(ADMIN_SESSION_KEY);
+            unlockAdminConsole();
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('[AdminAuth] Server session validation failed:', e.message);
+      }
+
+      // If token verification fails, lock console and purge stored data
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      localStorage.removeItem(ADMIN_SESSION_KEY);
+      currentAdminSession = null;
       document.getElementById('adminAuthOverlay').classList.remove('unlocked');
+      const overlay = document.getElementById('adminAuthOverlay');
+      if (overlay) overlay.style.display = 'flex';
     }
 
     function unlockAdminConsole() {
@@ -2726,14 +2772,13 @@
       if (currentAdminSession) {
         badge.innerHTML = currentAdminSession.isSuper ? '<i class="fas fa-crown"></i> Super Admin' : '<i class="fas fa-user-shield"></i> Sub-Admin';
         greet.textContent = `Logged in as: ${currentAdminSession.username} • ${currentAdminSession.isSuper ? 'Global Superuser Access' : 'Delegated Admin'}`;
-        localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(currentAdminSession));
       }
       if (badge) {
         badge.style.cursor = 'pointer';
-        badge.title = 'Super Admin Status (Click to Verify Universal Password)';
+        badge.title = 'Super Admin Status (Click to Verify Session)';
         badge.onclick = function() {
-          requireSuperAdminAuth('Verify Super Admin Universal Master Password', () => {
-            showToast('Super Admin Verified', 'Master Super Admin universal clearance is active.', 'success');
+          requireSuperAdminAuth('Verify Super Admin Elevation', () => {
+            showToast('Super Admin Verified', 'Master Super Admin elevation verified via Supabase Auth.', 'success');
           });
         };
       }
@@ -2743,39 +2788,92 @@
       refreshAllData();
     }
 
-    function handleSuperAdminLogin(e) {
+    async function handleSuperAdminLogin(e) {
       if (e) e.preventDefault();
       const user = document.getElementById('adminInputUser').value.trim();
       const pass = document.getElementById('adminInputPass').value.trim();
       const errBox = document.getElementById('authErrorMsg');
       const errText = document.getElementById('authErrorText');
+      const btn = e.target.querySelector('button[type="submit"]');
 
-      const res = window.GreachDB.adminLogin(user, pass);
-      if (res && res.success) {
-        currentAdminSession = {
-          username: res.admin.username,
-          name: res.admin.name,
-          role: res.admin.role,
-          isSuper: !!res.isSuperAdmin,
-          token: res.token
-        };
-        sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(currentAdminSession));
-        localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(currentAdminSession));
-        if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
-          window.GreachDB.activateAdminClassroomSession(currentAdminSession.username);
+      if (!user || !pass) {
+        if (errBox) errBox.style.display = 'block';
+        if (errText) errText.textContent = 'Please enter your username/email and password.';
+        return;
+      }
+
+      setButtonLoading(btn, true, 'Authenticating with Supabase...');
+      try {
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'login', email: user, password: pass })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          if (data.mfaRequired) {
+            const mfaCode = prompt('Two-Factor Authentication Required.\nEnter 6-digit authenticator code:');
+            if (!mfaCode) {
+              setButtonLoading(btn, false);
+              return;
+            }
+            const mfaRes = await fetch('/api/auth', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'login', email: user, password: pass, mfaCode: mfaCode.trim() })
+            });
+            const mfaData = await mfaRes.json();
+            if (!mfaRes.ok || !mfaData.success) {
+              if (errBox) errBox.style.display = 'block';
+              if (errText) errText.textContent = mfaData.error || 'Invalid 2FA code.';
+              setButtonLoading(btn, false);
+              return;
+            }
+            Object.assign(data, mfaData);
+          }
+
+          currentAdminSession = {
+            username: data.username,
+            name: data.name,
+            email: data.email,
+            role: data.role,
+            isSuper: !!data.isSuperAdmin,
+            token: data.token,
+            expiresAt: data.expiresAt
+          };
+          sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(currentAdminSession));
+          localStorage.removeItem(ADMIN_SESSION_KEY);
+          unlockAdminConsole();
+          showToast('Login Successful', `Authenticated as ${data.name} (${data.role})`, 'success');
+        } else {
+          if (errBox) errBox.style.display = 'block';
+          if (errText) errText.textContent = data.error || 'Invalid credentials. Access restricted.';
+          showToast('Access Denied', data.error || 'Authentication failed.', 'error');
         }
-        errBox.style.display = 'none';
-        unlockAdminConsole();
-      } else {
-        errText.textContent = res ? res.error : 'Invalid master credentials.';
-        errBox.style.display = 'block';
+      } catch (err) {
+        if (errBox) errBox.style.display = 'block';
+        if (errText) errText.textContent = 'Authentication service error: ' + err.message;
+        showToast('Error', 'Could not reach authentication server.', 'error');
+      } finally {
+        setButtonLoading(btn, false);
       }
     }
 
-    function handleAdminLogout() {
-      if (confirm('Log out of Super Admin Console?')) {
+    async function handleAdminLogout() {
+      if (confirm('Log out of Admin Console?')) {
+        const session = currentAdminSession;
+        if (session && session.token) {
+          try {
+            await fetch('/api/auth', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'logout', token: session.token })
+            });
+          } catch (e) {}
+        }
         sessionStorage.removeItem(ADMIN_SESSION_KEY);
         localStorage.removeItem(ADMIN_SESSION_KEY);
+        currentAdminSession = null;
         window.location.reload();
       }
     }
@@ -4044,7 +4142,7 @@ greachimpact@gmail.com`;
       document.getElementById('suFullName').value = su.name || 'Lead Super Administrator';
       document.getElementById('suEmail').value = su.email || 'greachimpact@gmail.com';
       document.getElementById('suUsername').value = su.username || 'Greachimpact';
-      document.getElementById('suPassword').value = su.password || 'Evana_Oluebube123890';
+      document.getElementById('suPassword').value = ''; document.getElementById('suPassword').placeholder = 'Managed via Supabase Auth';
     }
 
     function handleUpdateSuperUser(e) {

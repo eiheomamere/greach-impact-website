@@ -1561,16 +1561,18 @@
       let pass = passInp && passInp.value ? passInp.value.trim() : '';
 
       if (!pass) {
-        pass = prompt('Enter Universal Super Admin Password (Evana_Oluebube123890):') || '';
+        pass = prompt('Enter Administrator Password:') || '';
       }
 
-      if (pass !== 'Evana_Oluebube123890') {
+      if (!window.GreachDB || !window.GreachDB.isAdminClassroomAuthenticated || !window.GreachDB.isAdminClassroomAuthenticated()) {
         if (errBox && errText) {
-          errText.textContent = '❌ Access Denied: Incorrect Super Admin password. Evana_Oluebube123890 required.';
+          errText.textContent = '❌ Access Denied: Administrator clearance required. Sign in via Admin Console.';
           errBox.style.display = 'block';
         } else {
-          alert('Access Denied: Incorrect Super Admin password.');
+          alert('Access Denied: Administrator clearance required.');
         }
+        return;
+      }
         return;
       }
 
