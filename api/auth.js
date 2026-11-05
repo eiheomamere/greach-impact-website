@@ -1,11 +1,12 @@
 // Vercel Serverless API: /api/auth
-// Authoritative Supabase Auth & Multi-Role Enterprise Authentication Engine (Phase 1A Hardened)
-// Supports Super Admin, Sub-Admin & Student sessions with HMAC-SHA256 tokens, HttpOnly Cookies, CSRF, Compulsory MFA & Multi-Instance Rate Limiting
+// Authoritative Supabase Auth & Multi-Role Enterprise Authentication Engine (Phase 1B Hardened)
+// Enforces HttpOnly SameSite Cookies, CSRF Double-Submit, Compulsory MFA, Real-Time Role Revocation & Multi-Instance Rate Limiting
 
 import crypto from 'crypto';
 
-// In-memory rate limit cache (L1 fast check per container)
+// In-memory caches for fast local checking (L1)
 const memoryRateLimits = new Map();
+const consumedMfaTickets = new Set();
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_MS = 10 * 60 * 1000; // 10 minutes lockout
 
@@ -14,6 +15,24 @@ const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIs
 
 const SUPER_ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'greachimpact@gmail.com').toLowerCase().trim();
 const SUPER_ADMIN_USERNAME = (process.env.ADMIN_USER || 'Greachimpact').trim();
+
+// Origin Whitelist Validator for CORS & CSRF
+function isAllowedOrigin(origin) {
+  if (!origin) return true; // Direct same-origin or server-to-server request
+  try {
+    const url = new URL(origin);
+    const host = url.hostname.toLowerCase();
+    return (
+      host === 'localhost' ||
+      host === '127.0.0.1' ||
+      host === 'greachimpact.com' ||
+      host.endsWith('.greachimpact.com') ||
+      host.endsWith('.vercel.app')
+    );
+  } catch (e) {
+    return false;
+  }
+}
 
 // Cookie Parser Helper
 function parseCookies(cookieHeader) {
@@ -61,15 +80,16 @@ async function callSupabaseAuth(endpoint, options = {}) {
     'Content-Type': 'application/json',
     ...(options.headers || {})
   };
-  return await fetch(url, { ...options, headers });
+  const signal = options.signal || AbortSignal.timeout(5000);
+  return await fetch(url, { ...options, headers, signal });
 }
 
 // ==============================================================
-// PERSISTENT MULTI-INSTANCE RATE LIMITING (Supabase L2 + Memory L1)
+// MULTI-INSTANCE PERSISTENT RATE LIMITING (Supabase L2 + Memory L1)
 // ==============================================================
 async function checkRateLimit(ip) {
   const now = Date.now();
-  // 1. Fast L1 check in local container memory
+  // 1. L1 check in local container memory
   const mem = memoryRateLimits.get(ip);
   if (mem && mem.locked_until && now < mem.locked_until) {
     return { blocked: true, remainingMin: Math.ceil((mem.locked_until - now) / 60000) };
@@ -78,7 +98,8 @@ async function checkRateLimit(ip) {
   // 2. L2 Persistent check across Vercel serverless instances
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/auth_rate_limits?ip=eq.${encodeURIComponent(ip)}&select=*`, {
-      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+      signal: AbortSignal.timeout(3000)
     });
     if (res.ok) {
       const records = await res.json();
@@ -92,7 +113,7 @@ async function checkRateLimit(ip) {
       }
     }
   } catch (e) {
-    // If external store network is unavailable, rely on L1 memory check
+    // Graceful fallback to L1 cache
   }
 
   return { blocked: false };
@@ -147,7 +168,6 @@ async function clearRateLimit(ip) {
 // ==============================================================
 export default async function handler(req, res) {
   // 1. FAIL SECURELY WHEN REQUIRED SECRET IS MISSING
-  // Strict requirement: No hardcoded fallback secret!
   const AUTH_SECRET = process.env.JWT_SECRET;
   if (!AUTH_SECRET) {
     console.error('[API Auth Security Failure] Mandatory JWT_SECRET environment variable is missing.');
@@ -157,8 +177,18 @@ export default async function handler(req, res) {
     });
   }
 
-  // 2. CORS configuration
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // 2. CORS & ORIGIN SECURITY
+  const origin = req.headers.origin;
+  if (origin && isAllowedOrigin(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else if (!origin) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  } else {
+    // Untrusted origin: reject
+    return res.status(403).json({ success: false, error: 'Cross-origin request rejected.' });
+  }
+
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-CSRF-Token');
 
@@ -176,7 +206,6 @@ export default async function handler(req, res) {
   const bearerToken = req.headers.authorization?.replace(/^Bearer\s+/i, '');
   const bodyToken = req.body?.token;
 
-  // Determine active token and whether authentication comes from a cookie
   const activeToken = cookieSession || bearerToken || bodyToken;
   const isCookieAuth = Boolean(cookieSession && !bearerToken && !bodyToken);
 
@@ -187,9 +216,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ success: false, error: 'Action parameter is required.' });
     }
 
-    // ==============================================================
     // 3. CSRF PROTECTION FOR COOKIE-BASED AUTHENTICATION
-    // ==============================================================
     if (isCookieAuth && ['verify_super_action', 'logout', 'mfa_enroll', 'mfa_activate'].includes(action)) {
       const clientCsrf = req.headers['x-csrf-token'] || req.headers['x-xsrf-token'];
       const cookieCsrf = cookies['gi_csrf'];
@@ -203,7 +230,7 @@ export default async function handler(req, res) {
     }
 
     // ==============================================================
-    // ACTION: VERIFY SESSION TOKEN
+    // ACTION: VERIFY SESSION TOKEN & ENFORCE REAL-TIME ROLE REVOCATION
     // ==============================================================
     if (action === 'verify') {
       const payload = verifyToken(activeToken, AUTH_SECRET);
@@ -216,7 +243,7 @@ export default async function handler(req, res) {
         });
       }
 
-      // If payload includes a Supabase access token, verify with Supabase Auth that session is not revoked
+      // Check live state in Supabase Auth to detect immediate role revocation or account bans
       if (payload.sbToken) {
         try {
           const userRes = await callSupabaseAuth('user', {
@@ -229,8 +256,24 @@ export default async function handler(req, res) {
               error: 'Supabase session has been revoked or expired.'
             });
           }
+
+          const liveUser = await userRes.json();
+          const liveAppRole = liveUser.app_metadata?.role;
+          const isSuperAdminEmail = (liveUser.email || '').toLowerCase() === SUPER_ADMIN_EMAIL;
+
+          // Check if administrator privileges were removed or altered in Supabase
+          const liveIsSuper = isSuperAdminEmail || liveAppRole === 'super_admin';
+          const liveRole = liveIsSuper ? 'super_admin' : (liveAppRole === 'sub_admin' ? 'sub_admin' : 'student');
+
+          if (liveRole !== payload.role && !isSuperAdminEmail) {
+            return res.status(403).json({
+              success: false,
+              valid: false,
+              error: 'Administrator role has changed or privileges were revoked. Session terminated.'
+            });
+          }
         } catch (e) {
-          // Network timeout allows HMAC check if Supabase is temporarily unreachable
+          // Fall back to cryptographic HMAC check if Supabase is temporarily unreachable
         }
       }
 
@@ -242,6 +285,7 @@ export default async function handler(req, res) {
         name: payload.name,
         role: payload.role,
         isSuper: !!payload.isSuper,
+        csrfToken: payload.csrf || '',
         expiresAt: new Date(payload.exp).toISOString()
       });
     }
@@ -277,13 +321,25 @@ export default async function handler(req, res) {
     // ACTION: LOGIN VIA SUPABASE AUTH
     // ==============================================================
     if (action === 'login') {
-      // 4. CHECK PERSISTENT MULTI-INSTANCE RATE LIMITING
+      // Rate limit check before credential inspection
       const rateLimitStatus = await checkRateLimit(clientIp);
       if (rateLimitStatus.blocked) {
         return res.status(429).json({
           success: false,
           error: `Too many failed attempts. Security lockout active for ${rateLimitStatus.remainingMin} minute(s).`
         });
+      }
+
+      // Check MFA Challenge Ticket Replay & Validity if provided
+      if (ticket) {
+        const parsedTicket = verifyToken(ticket, AUTH_SECRET);
+        if (!parsedTicket || parsedTicket.purpose !== 'mfa_challenge') {
+          return res.status(401).json({ success: false, error: 'Invalid or expired MFA challenge ticket.' });
+        }
+        if (consumedMfaTickets.has(parsedTicket.jti)) {
+          return res.status(401).json({ success: false, error: 'MFA challenge ticket has already been used. Please log in again.' });
+        }
+        consumedMfaTickets.add(parsedTicket.jti);
       }
 
       const rawUser = (email || identifier || username || '').trim();
@@ -296,13 +352,11 @@ export default async function handler(req, res) {
         });
       }
 
-      // Resolve username alias to canonical email
       let targetEmail = rawUser;
       if (rawUser.toLowerCase() === SUPER_ADMIN_USERNAME.toLowerCase() || rawUser.toLowerCase() === 'admin') {
         targetEmail = SUPER_ADMIN_EMAIL;
       }
 
-      // Authenticate against Supabase Auth
       let sbRes;
       try {
         sbRes = await callSupabaseAuth('token?grant_type=password', {
@@ -316,17 +370,12 @@ export default async function handler(req, res) {
         });
       }
 
-      // Check if user authenticated successfully
       if (sbRes.ok) {
         const authData = await sbRes.json();
         const sbUser = authData.user || {};
         const userEmail = (sbUser.email || targetEmail).toLowerCase();
 
-        // ==============================================================
-        // 5. AUTHORITATIVE ROLE VERIFICATION (NEVER TRUST USER_METADATA)
-        // User-editable user_metadata is completely ignored.
-        // We only check server-controlled app_metadata or server config.
-        // ==============================================================
+        // 4. ROLE VERIFICATION - USER_METADATA STRICTLY IGNORED
         const appRole = sbUser.app_metadata?.role;
         const isSuperAdminEmail = userEmail === SUPER_ADMIN_EMAIL;
 
@@ -347,20 +396,18 @@ export default async function handler(req, res) {
         const displayName = sbUser.user_metadata?.name || (isSuper ? 'Lead Super Administrator' : (role === 'sub_admin' ? 'Administrator' : 'Student'));
         const displayUser = isSuper ? SUPER_ADMIN_USERNAME : (userEmail.split('@')[0]);
 
-        // ==============================================================
-        // 6. COMPULSORY MFA FOR SUPER ADMIN
-        // Super Admin accounts MUST have verified TOTP factor active.
-        // ==============================================================
+        // 5. COMPULSORY MFA FOR SUPER ADMIN
         const factors = authData.user?.factors || [];
         const verifiedTotp = factors.find(f => f.factor_type === 'totp' && f.status === 'verified');
 
         if (isSuper && !verifiedTotp) {
-          // Super Admin has not yet configured MFA - Enforce Compulsory Setup
+          // Super Admin must set up MFA before session can be granted
           const setupTicket = signToken({
             sub: sbUser.id,
             email: userEmail,
             sbToken: authData.access_token,
             purpose: 'mfa_compulsory_setup',
+            jti: crypto.randomBytes(16).toString('hex'),
             exp: Date.now() + 15 * 60 * 1000
           }, AUTH_SECRET);
 
@@ -373,13 +420,15 @@ export default async function handler(req, res) {
         }
 
         if (verifiedTotp && !mfaCode) {
-          // MFA TOTP Challenge Required
+          // Generate non-replayable MFA Challenge Ticket
+          const ticketJti = crypto.randomBytes(16).toString('hex');
           const challengeTicket = signToken({
             sub: sbUser.id,
             factorId: verifiedTotp.id,
             email: userEmail,
             sbToken: authData.access_token,
             purpose: 'mfa_challenge',
+            jti: ticketJti,
             exp: Date.now() + 5 * 60 * 1000
           }, AUTH_SECRET);
 
@@ -393,6 +442,18 @@ export default async function handler(req, res) {
         }
 
         if (verifiedTotp && mfaCode) {
+          // Check ticket replay
+          if (ticket) {
+            const parsedTicket = verifyToken(ticket, AUTH_SECRET);
+            if (!parsedTicket || parsedTicket.purpose !== 'mfa_challenge') {
+              return res.status(401).json({ success: false, error: 'Invalid or expired MFA challenge ticket.' });
+            }
+            if (consumedMfaTickets.has(parsedTicket.jti)) {
+              return res.status(401).json({ success: false, error: 'MFA challenge ticket has already been used. Please log in again.' });
+            }
+            consumedMfaTickets.add(parsedTicket.jti);
+          }
+
           try {
             const challengeRes = await callSupabaseAuth(`factors/${verifiedTotp.id}/challenge`, {
               method: 'POST',
@@ -415,14 +476,12 @@ export default async function handler(req, res) {
           }
         }
 
-        // Clear failed attempts across all instances
+        // Authentication succeeded: clear rate limits
         await clearRateLimit(clientIp);
 
-        // Issue 8-Hour Authenticated Session
         const expTime = Date.now() + 8 * 60 * 60 * 1000;
         const csrfToken = crypto.randomBytes(24).toString('hex');
 
-        // Session payload keeps Supabase token internal; NOT exposed in client body
         const sessionPayload = {
           sub: sbUser.id,
           user: displayUser,
@@ -438,15 +497,12 @@ export default async function handler(req, res) {
 
         const serverToken = signToken(sessionPayload, AUTH_SECRET);
 
-        // ==============================================================
-        // 7. SET SECURE, HTTPONLY & SAMESITE COOKIES
-        // ==============================================================
+        // 6. ISSUE HTTPONLY, SECURE, SAMESITE COOKIES
         const isHttps = req.headers['x-forwarded-proto'] === 'https' || process.env.NODE_ENV === 'production';
         const sessionCookie = `gi_session=${serverToken}; HttpOnly; Path=/; Max-Age=${8 * 3600}; SameSite=Lax${isHttps ? '; Secure' : ''}`;
         const csrfCookie = `gi_csrf=${csrfToken}; Path=/; Max-Age=${8 * 3600}; SameSite=Lax${isHttps ? '; Secure' : ''}`;
         res.setHeader('Set-Cookie', [sessionCookie, csrfCookie]);
 
-        // Client response: zero exposed Supabase tokens
         return res.status(200).json({
           success: true,
           role: role,
@@ -455,12 +511,12 @@ export default async function handler(req, res) {
           email: userEmail,
           isSuperAdmin: isSuper,
           csrfToken: csrfToken,
-          token: serverToken, // Provided for API/CLI clients while browser uses HttpOnly cookie
+          token: serverToken,
           expiresAt: new Date(expTime).toISOString()
         });
       }
 
-      // If credentials failed: record failed attempt in persistent store
+      // Record failed attempt
       const memRecord = await recordFailedAttempt(clientIp);
       const remaining = MAX_ATTEMPTS - memRecord.count;
       const warnMsg = remaining > 0
@@ -476,7 +532,6 @@ export default async function handler(req, res) {
     if (action === 'verify_super_action') {
       const payload = verifyToken(activeToken, AUTH_SECRET);
 
-      // Enforce: only genuine Super Admin
       if (!payload || !payload.isSuper || payload.role !== 'super_admin') {
         return res.status(403).json({
           success: false,
@@ -489,7 +544,6 @@ export default async function handler(req, res) {
         return res.status(400).json({ success: false, error: 'Password confirmation required.' });
       }
 
-      // Verify password against Supabase Auth
       try {
         const verifyRes = await callSupabaseAuth('token?grant_type=password', {
           method: 'POST',
@@ -509,7 +563,6 @@ export default async function handler(req, res) {
     if (action === 'mfa_enroll') {
       let sbTokenToUse = null;
 
-      // Allow enrollment via active session or temporary setup ticket
       if (ticket) {
         const ticketPayload = verifyToken(ticket, AUTH_SECRET);
         if (ticketPayload && ticketPayload.sbToken && ticketPayload.purpose === 'mfa_compulsory_setup') {
