@@ -633,6 +633,7 @@ DECLARE
   v_clean_session text := trim(p_session_id);
   v_clean_course text := trim(p_course_name);
   v_has_live_pass boolean := false;
+  v_rows integer := 0;
 BEGIN
   -- 1. Validate Authenticated Context
   IF auth.uid() IS NULL OR auth.role() != 'authenticated' THEN
@@ -729,9 +730,14 @@ BEGIN
     device_info = coalesce(EXCLUDED.device_info, student_presence.device_info)
   WHERE student_presence.status != 'terminated';
 
-  -- Verify update was not blocked by concurrent termination
-  IF FOUND AND v_existing.status = 'terminated' THEN
-    RETURN jsonb_build_object('success', false, 'error', 'Session has been terminated by administrator.', 'terminated', true);
+  -- Verify guarded upsert was not blocked by administrative termination (zero rows updated)
+  GET DIAGNOSTICS v_rows = ROW_COUNT;
+  IF v_rows = 0 OR (FOUND AND v_existing.status = 'terminated') THEN
+    RETURN jsonb_build_object(
+      'success', false,
+      'error', 'Session has been terminated by administrator.',
+      'terminated', true
+    );
   END IF;
 
   RETURN jsonb_build_object(

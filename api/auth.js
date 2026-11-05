@@ -85,14 +85,16 @@ function signToken(payload, secret) {
   return `${dataStr}.${signature}`;
 }
 
-// Cryptographically verify session token
+// Cryptographically verify session token using timing-safe comparison
 function verifyToken(token, secret) {
   if (!token || typeof token !== 'string') return null;
   const parts = token.split('.');
   if (parts.length !== 2) return null;
   const [dataStr, signature] = parts;
   const expectedSig = crypto.createHmac('sha256', secret).update(dataStr).digest('base64url');
-  if (signature !== expectedSig) return null;
+  const sigBuf = Buffer.from(signature, 'utf8');
+  const expBuf = Buffer.from(expectedSig, 'utf8');
+  if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) return null;
 
   try {
     const payload = JSON.parse(Buffer.from(dataStr, 'base64url').toString('utf8'));
@@ -103,21 +105,24 @@ function verifyToken(token, secret) {
   }
 }
 
-// Cryptographically generate and sign a server-issued session ID bound to student
+// Cryptographically generate and sign a server-issued session ID bound to student (128-bit HMAC)
 function generateServerSessionId(studentId, secret) {
-  const nonce = crypto.randomBytes(16).toString('hex');
-  const sig = crypto.createHmac('sha256', secret).update(`${studentId}:${nonce}`).digest('hex').substring(0, 16);
+  const nonce = crypto.randomBytes(16).toString('hex'); // 128-bit random nonce (32 hex characters)
+  const sig = crypto.createHmac('sha256', secret).update(`${studentId}:${nonce}`).digest('hex').substring(0, 32); // 128-bit HMAC signature (32 hex characters)
   return `sess_${nonce}_${sig}`;
 }
 
-// Cryptographically verify server-issued session ID
+// Cryptographically verify server-issued session ID using timing-safe comparison
 function verifyServerSessionId(sessionId, studentId, secret) {
   if (!sessionId || typeof sessionId !== 'string') return false;
-  const match = sessionId.match(/^sess_([a-f0-9]{32})_([a-f0-9]{16})$/);
+  const match = sessionId.match(/^sess_([a-f0-9]{32})_([a-f0-9]{32})$/);
   if (!match) return false;
   const [_, nonce, sig] = match;
-  const expectedSig = crypto.createHmac('sha256', secret).update(`${studentId}:${nonce}`).digest('hex').substring(0, 16);
-  return sig === expectedSig;
+  const expectedSig = crypto.createHmac('sha256', secret).update(`${studentId}:${nonce}`).digest('hex').substring(0, 32);
+  const sigBuf = Buffer.from(sig, 'utf8');
+  const expectedBuf = Buffer.from(expectedSig, 'utf8');
+  if (sigBuf.length !== expectedBuf.length) return false;
+  return crypto.timingSafeEqual(sigBuf, expectedBuf);
 }
 
 // Helper: Call Supabase Auth endpoint
@@ -238,9 +243,10 @@ async function clearRateLimit(key) {
 // ==============================================================
 export default async function handler(req, res) {
   // 1. FAIL SECURELY WHEN REQUIRED SECRET IS MISSING
-  const AUTH_SECRET = process.env.JWT_SECRET;
+  // Ensures consistent configuration across Vercel serverless instances
+  const AUTH_SECRET = process.env.AUTH_SECRET || process.env.JWT_SECRET;
   if (!AUTH_SECRET) {
-    console.error('[API Auth Security Failure] Mandatory JWT_SECRET environment variable is missing.');
+    console.error('[API Auth Security Failure] Mandatory AUTH_SECRET or JWT_SECRET environment variable is missing.');
     return res.status(500).json({
       success: false,
       error: 'Server security configuration error. Service unavailable.'
@@ -763,9 +769,17 @@ export default async function handler(req, res) {
 
       // Secure Server-Issued Session ID Enforcement:
       // Cryptographically verify server-issued signature bound to this student profile.
-      // Arbitrary or client-chosen session IDs are rejected and assigned genuine server-signed IDs.
+      // - Generate a session ID only when the client has not supplied one.
+      // - Reject an invalid client-supplied session ID instead of silently replacing it.
       let finalSessionId = (sessionId || '').trim();
-      if (!verifyServerSessionId(finalSessionId, student.id, AUTH_SECRET)) {
+      if (finalSessionId) {
+        if (!verifyServerSessionId(finalSessionId, student.id, AUTH_SECRET)) {
+          return res.status(400).json({
+            success: false,
+            error: 'Invalid, forged, or unauthenticated session identifier.'
+          });
+        }
+      } else {
         finalSessionId = generateServerSessionId(student.id, AUTH_SECRET);
       }
 
@@ -809,13 +823,13 @@ export default async function handler(req, res) {
       // If administrator terminated any session for this student within the last 1 hour, reject
       try {
         const termRes = await fetch(
-          `${SUPABASE_URL}/rest/v1/student_presence?student_id=eq.${encodeURIComponent(student.id)}&status=eq.terminated&select=session_id,last_heartbeat&order=last_heartbeat.desc&limit=1`,
+          `${SUPABASE_URL}/rest/v1/student_presence?student_id=eq.${encodeURIComponent(student.id)}&status=eq.terminated&select=session_id,last_heartbeat,terminated_at&order=last_heartbeat.desc&limit=1`,
           { headers: { 'apikey': SUPABASE_SERVICE_ROLE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
         );
         if (termRes.ok) {
           const termRows = await termRes.json();
           if (Array.isArray(termRows) && termRows.length > 0) {
-            const termTime = new Date(termRows[0].last_heartbeat).getTime();
+            const termTime = new Date(termRows[0].terminated_at || termRows[0].last_heartbeat).getTime();
             if (Date.now() - termTime < 60 * 60 * 1000) {
               return res.status(403).json({
                 success: false,
@@ -918,23 +932,32 @@ export default async function handler(req, res) {
         return res.status(401).json({ success: false, error: 'Authentication required for administrative operations.' });
       }
 
-      // Live Role Verification against auth.users
+      // Live Role Verification against auth.users (Never trust unverified payload/request body)
       let isSuper = false;
       try {
-        const uRes = await callSupabaseAuth('user', {
-          headers: { 'Authorization': `Bearer ${payload.sbToken || SUPABASE_SERVICE_ROLE_KEY}` }
-        });
-        if (uRes.ok) {
+        let uRes = null;
+        if (payload.sbToken) {
+          uRes = await callSupabaseAuth('user', {
+            headers: { 'Authorization': `Bearer ${payload.sbToken}` }
+          });
+        }
+        if (!uRes || !uRes.ok) {
+          uRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(payload.sub)}`, {
+            headers: {
+              'apikey': SUPABASE_SERVICE_ROLE_KEY,
+              'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
+            }
+          });
+        }
+        if (uRes && uRes.ok) {
           const uData = await uRes.json();
-          if (uData.app_metadata && uData.app_metadata.role === 'super_admin') {
+          const liveRole = uData.app_metadata?.role;
+          const liveEmail = (uData.email || '').toLowerCase();
+          if (liveRole === 'super_admin' || liveEmail === SUPER_ADMIN_EMAIL) {
             isSuper = true;
           }
         }
       } catch (e) {}
-
-      if (!isSuper && payload.role === 'super_admin') {
-        isSuper = true;
-      }
 
       if (!isSuper) {
         return res.status(403).json({
@@ -1103,7 +1126,7 @@ export default async function handler(req, res) {
 
     // ==============================================================
     // ACTION: RATE LIMIT SCHEDULED CLEANUP (Cron / Service Role)
-    // Can be invoked by Vercel Cron (CRON_SECRET) or Super Admin
+    // Can be invoked by Vercel Cron (CRON_SECRET) or verified Super Admin session
     // ==============================================================
     if (action === 'cleanup_rate_limits') {
       const authHeader = req.headers['authorization'] || '';
@@ -1114,8 +1137,31 @@ export default async function handler(req, res) {
         authorized = true;
       } else {
         const payload = verifyToken(activeToken, AUTH_SECRET);
-        if (payload && payload.role === 'super_admin') {
-          authorized = true;
+        if (payload && payload.sub) {
+          try {
+            let uRes = null;
+            if (payload.sbToken) {
+              uRes = await callSupabaseAuth('user', {
+                headers: { 'Authorization': `Bearer ${payload.sbToken}` }
+              });
+            }
+            if (!uRes || !uRes.ok) {
+              uRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(payload.sub)}`, {
+                headers: {
+                  'apikey': SUPABASE_SERVICE_ROLE_KEY,
+                  'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
+                }
+              });
+            }
+            if (uRes && uRes.ok) {
+              const uData = await uRes.json();
+              const liveRole = uData.app_metadata?.role;
+              const liveEmail = (uData.email || '').toLowerCase();
+              if (liveRole === 'super_admin' || liveEmail === SUPER_ADMIN_EMAIL) {
+                authorized = true;
+              }
+            }
+          } catch (e) {}
         }
       }
 
