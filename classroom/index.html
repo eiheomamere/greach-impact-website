@@ -1430,7 +1430,7 @@
 
         // Trusted Presence Heartbeat to Backend (validates session, entitlement & anti-replay)
         try {
-          const sessId = 'SESS-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+          let sessId = sessionStorage.getItem('greach_active_session_id') || ('sess_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10));
           fetch('/api/auth', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1440,6 +1440,12 @@
               courseName: session.course,
               deviceInfo: navigator.userAgent
             })
+          }).then(r => r.json()).then(data => {
+            if (data && data.sessionId) sessionStorage.setItem('greach_active_session_id', data.sessionId);
+            if (data && data.terminated) {
+              alert('Your classroom session has been terminated by an administrator.');
+              window.location.href = 'index.html';
+            }
           }).catch(() => {});
         } catch(e) {}
 

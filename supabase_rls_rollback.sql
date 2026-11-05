@@ -295,33 +295,70 @@ CREATE POLICY "Secure Admin Manage Rate Limits Rollback" ON auth_rate_limits
 
 
 -- ==============================================================
--- PROCEDURE 2: FULL DATABASE RESTORATION (Complete Clean Reversal)
--- Use this sequence ONLY if reverting the entire database to the pre-Phase-1
--- baseline state using verified backup dumps.
+-- PROCEDURE 2: FULL DATABASE RESTORATION & COMPLETE REVERSAL (RUNBOOK & DDL)
 --
--- DDL TO REVERSE ALL SCHEMA ADDITIONS:
+-- USE CASE:
+-- Use this procedure ONLY if a catastrophic failure necessitates completely
+-- rolling back the database to the exact pre-Phase-1 baseline state, removing
+-- all Phase 1 schema extensions and restoring from verified pre-Phase-1 dumps.
+--
+-- DISTINCTION FROM PROCEDURE 1:
+-- - Procedure 1 (Emergency Recovery) is immediate and non-destructive: it preserves
+--   new tables, columns, constraints, rate limits, and audit history while resetting
+--   policies to a secure read-only state.
+-- - Procedure 2 (Full Restoration) is destructive to Phase 1 structures: it drops all
+--   added tables, columns, constraints, triggers, scheduled jobs and functions, and
+--   re-applies the pre-Phase-1 schema and data backup dump.
 -- ==============================================================
 
-/*
--- STEP 1: DROP NEW PROCEDURES & FUNCTIONS
+-- --------------------------------------------------------------
+-- STEP 1: UNSCHEDULE AUTOMATED JOBS (pg_cron)
+-- --------------------------------------------------------------
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
+    PERFORM cron.unschedule('cleanup-expired-rate-limits-hourly');
+  END IF;
+EXCEPTION WHEN OTHERS THEN
+  NULL;
+END $$;
+
+-- --------------------------------------------------------------
+-- STEP 2: DROP ALL ADDED PROCEDURES & SECURITY DEFINER FUNCTIONS
+-- --------------------------------------------------------------
 DROP FUNCTION IF EXISTS public.record_student_presence_heartbeat(text, text, text);
 DROP FUNCTION IF EXISTS public.record_student_presence_heartbeat(text, text);
 DROP FUNCTION IF EXISTS public.cleanup_expired_rate_limits();
 DROP FUNCTION IF EXISTS public.verify_access_code(text, boolean);
+DROP FUNCTION IF EXISTS public.verify_access_code(text, boolean, text);
 DROP FUNCTION IF EXISTS public.verify_access_code(text);
+DROP FUNCTION IF EXISTS public.is_super_admin();
+DROP FUNCTION IF EXISTS public.is_admin();
 
--- STEP 2: DROP NEW TABLES
+-- --------------------------------------------------------------
+-- STEP 3: DROP CHECK & UNIQUE CONSTRAINTS ADDED IN PHASE 1
+-- --------------------------------------------------------------
+ALTER TABLE IF EXISTS public.access_codes DROP CONSTRAINT IF EXISTS check_access_codes_times_used;
+ALTER TABLE IF EXISTS public.access_codes DROP CONSTRAINT IF EXISTS check_access_codes_max_uses;
+ALTER TABLE IF EXISTS public.student_presence DROP CONSTRAINT IF EXISTS student_presence_session_id_key;
+
+-- --------------------------------------------------------------
+-- STEP 4: DROP NEW TABLES CREATED IN PHASE 1
+-- --------------------------------------------------------------
 DROP TABLE IF EXISTS public.access_code_redemptions CASCADE;
 DROP TABLE IF EXISTS public.auth_rate_limits CASCADE;
 
--- STEP 3: DROP CHECK CONSTRAINTS
-ALTER TABLE IF EXISTS public.access_codes DROP CONSTRAINT IF EXISTS check_access_codes_times_used;
-ALTER TABLE IF EXISTS public.access_codes DROP CONSTRAINT IF EXISTS check_access_codes_max_uses;
+-- --------------------------------------------------------------
+-- STEP 5: DROP NEW COLUMNS ADDED TO EXISTING TABLES
+-- --------------------------------------------------------------
+ALTER TABLE IF EXISTS public.access_codes DROP COLUMN IF EXISTS max_uses;
+ALTER TABLE IF EXISTS public.access_codes DROP COLUMN IF EXISTS times_used;
+ALTER TABLE IF EXISTS public.access_codes DROP COLUMN IF EXISTS is_session_pass;
+ALTER TABLE IF EXISTS public.students DROP COLUMN IF EXISTS user_id;
 
--- STEP 4: REVERT NOT NULL ON COLUMNS IF NEEDED
-ALTER TABLE IF EXISTS public.access_codes ALTER COLUMN max_uses DROP NOT NULL;
-ALTER TABLE IF EXISTS public.access_codes ALTER COLUMN times_used DROP NOT NULL;
-
--- STEP 5: RESTORE DATA DUMP
+-- --------------------------------------------------------------
+-- STEP 6: RESTORE ORIGINAL BASELINE DATA & POLICIES FROM DUMP
+-- Execute via psql from the verified backup directory:
+-- psql -h <staging_host> -U postgres -d postgres -f backup_pre_phase1_schema.sql
 -- psql -h <staging_host> -U postgres -d postgres -f backup_pre_phase1_data.sql
-*/
+-- --------------------------------------------------------------

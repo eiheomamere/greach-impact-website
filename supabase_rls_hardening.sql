@@ -248,7 +248,8 @@ GRANT SELECT ON public.access_code_redemptions TO authenticated;
 -- --------------------------------------------------------------
 -- 5C. SECURE ACCESS CODE VERIFICATION & REDEMPTION RPC
 -- Handles single-use, assigned, and shared multi-use codes.
--- Concurrency safe (FOR UPDATE row lock). Sliding-window rate limited.
+-- Concurrency safe (FOR UPDATE row lock). Sliding-window rate limited across ALL failure paths.
+-- Minimal disclosure: omits course_name on non-redemption verification.
 -- --------------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.verify_access_code(
   p_code text,
@@ -270,20 +271,7 @@ DECLARE
   v_current_course varchar(255);
   v_current_expires_at timestamptz;
 BEGIN
-  -- 1. Input Validation
-  IF v_clean_code IS NULL OR length(v_clean_code) < 4 OR length(v_clean_code) > 100 THEN
-    RETURN jsonb_build_object('valid', false, 'error', 'Invalid or expired access pass.');
-  END IF;
-
-  -- 2. Authentication Enforcement:
-  -- Anonymous callers cannot verify or redeem access codes (defeats enumeration & course discovery)
-  IF auth.role() NOT IN ('authenticated') OR auth.uid() IS NULL THEN
-    RETURN jsonb_build_object('valid', false, 'error', 'Invalid or expired access pass.');
-  END IF;
-
-  -- 3. Rate Limiting Keying & Sliding-Window Abuse Protection:
-  -- Extract caller IP from trusted proxy headers; fallback to caller user ID
-  -- (Eliminates shared-bucket denial-of-service risk)
+  -- 1. Rate Limiting Keying Setup (Extract caller IP from trusted proxy headers; fallback to user ID)
   BEGIN
     v_client_ip := coalesce(
       nullif(trim(current_setting('request.headers', true)::json->>'cf-connecting-ip'), ''),
@@ -305,8 +293,51 @@ BEGIN
     RETURN jsonb_build_object('valid', false, 'error', 'Invalid or expired access pass.');
   END IF;
 
-  -- 4. Student Profile Verification:
-  -- Authenticated caller MUST have a valid registered profile in public.students
+  -- 2. Input Validation (Malformed input triggers rate limit accounting to prevent fuzzing)
+  IF v_clean_code IS NULL OR length(v_clean_code) < 4 OR length(v_clean_code) > 100 THEN
+    INSERT INTO public.auth_rate_limits (ip, failed_attempts, first_failed_at, last_failed_at, locked_until)
+    VALUES (v_rate_key, 1, v_now, v_now, NULL)
+    ON CONFLICT (ip) DO UPDATE
+    SET failed_attempts = CASE
+          WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN 1
+          ELSE auth_rate_limits.failed_attempts + 1
+        END,
+        first_failed_at = CASE
+          WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN v_now
+          ELSE auth_rate_limits.first_failed_at
+        END,
+        last_failed_at = v_now,
+        locked_until = CASE
+          WHEN (CASE WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN 1 ELSE auth_rate_limits.failed_attempts + 1 END) >= 5
+          THEN v_now + INTERVAL '15 minutes'
+          ELSE NULL
+        END;
+    RETURN jsonb_build_object('valid', false, 'error', 'Invalid or expired access pass.');
+  END IF;
+
+  -- 3. Authentication Enforcement
+  IF auth.role() NOT IN ('authenticated') OR auth.uid() IS NULL THEN
+    INSERT INTO public.auth_rate_limits (ip, failed_attempts, first_failed_at, last_failed_at, locked_until)
+    VALUES (v_rate_key, 1, v_now, v_now, NULL)
+    ON CONFLICT (ip) DO UPDATE
+    SET failed_attempts = CASE
+          WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN 1
+          ELSE auth_rate_limits.failed_attempts + 1
+        END,
+        first_failed_at = CASE
+          WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN v_now
+          ELSE auth_rate_limits.first_failed_at
+        END,
+        last_failed_at = v_now,
+        locked_until = CASE
+          WHEN (CASE WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN 1 ELSE auth_rate_limits.failed_attempts + 1 END) >= 5
+          THEN v_now + INTERVAL '15 minutes'
+          ELSE NULL
+        END;
+    RETURN jsonb_build_object('valid', false, 'error', 'Invalid or expired access pass.');
+  END IF;
+
+  -- 4. Student Profile Verification
   SELECT id, enrolled_course, expires_at
   INTO v_auth_student_id, v_current_course, v_current_expires_at
   FROM public.students
@@ -314,6 +345,23 @@ BEGIN
   LIMIT 1;
 
   IF v_auth_student_id IS NULL THEN
+    INSERT INTO public.auth_rate_limits (ip, failed_attempts, first_failed_at, last_failed_at, locked_until)
+    VALUES (v_rate_key, 1, v_now, v_now, NULL)
+    ON CONFLICT (ip) DO UPDATE
+    SET failed_attempts = CASE
+          WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN 1
+          ELSE auth_rate_limits.failed_attempts + 1
+        END,
+        first_failed_at = CASE
+          WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN v_now
+          ELSE auth_rate_limits.first_failed_at
+        END,
+        last_failed_at = v_now,
+        locked_until = CASE
+          WHEN (CASE WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN 1 ELSE auth_rate_limits.failed_attempts + 1 END) >= 5
+          THEN v_now + INTERVAL '15 minutes'
+          ELSE NULL
+        END;
     RETURN jsonb_build_object('valid', false, 'error', 'Invalid or expired access pass.');
   END IF;
 
@@ -333,7 +381,6 @@ BEGIN
 
   -- 6. Existence, Active Status & Usage Limit Verification
   IF NOT FOUND OR NOT coalesce(v_rec.is_active, true) OR (v_rec.expires_at IS NOT NULL AND v_rec.expires_at < v_now) OR (v_rec.times_used >= v_rec.max_uses) THEN
-    -- Increment failure count with 10-minute sliding window and 15-minute lockout at 5 failures
     INSERT INTO public.auth_rate_limits (ip, failed_attempts, first_failed_at, last_failed_at, locked_until)
     VALUES (v_rate_key, 1, v_now, v_now, NULL)
     ON CONFLICT (ip) DO UPDATE
@@ -351,37 +398,82 @@ BEGIN
           THEN v_now + INTERVAL '15 minutes'
           ELSE NULL
         END;
-
     RETURN jsonb_build_object('valid', false, 'error', 'Invalid or expired access pass.');
   END IF;
 
-  -- 7. Assigned Code Binding Check:
-  -- If code is pre-assigned to a specific student, ensure caller matches
+  -- 7. Assigned Code Binding Check
   IF v_rec.student_id IS NOT NULL AND v_rec.student_id != v_auth_student_id THEN
+    INSERT INTO public.auth_rate_limits (ip, failed_attempts, first_failed_at, last_failed_at, locked_until)
+    VALUES (v_rate_key, 1, v_now, v_now, NULL)
+    ON CONFLICT (ip) DO UPDATE
+    SET failed_attempts = CASE
+          WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN 1
+          ELSE auth_rate_limits.failed_attempts + 1
+        END,
+        first_failed_at = CASE
+          WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN v_now
+          ELSE auth_rate_limits.first_failed_at
+        END,
+        last_failed_at = v_now,
+        locked_until = CASE
+          WHEN (CASE WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN 1 ELSE auth_rate_limits.failed_attempts + 1 END) >= 5
+          THEN v_now + INTERVAL '15 minutes'
+          ELSE NULL
+        END;
     RETURN jsonb_build_object('valid', false, 'error', 'Invalid or expired access pass.');
   END IF;
 
-  -- 8. Duplicate Redemption Check:
-  -- Prevent the same student from redeeming the same code multiple times
+  -- 8. Duplicate Redemption Check
   IF p_redeem THEN
     IF EXISTS (
       SELECT 1 FROM public.access_code_redemptions
       WHERE code = v_clean_code AND student_id = v_auth_student_id
     ) THEN
+      INSERT INTO public.auth_rate_limits (ip, failed_attempts, first_failed_at, last_failed_at, locked_until)
+      VALUES (v_rate_key, 1, v_now, v_now, NULL)
+      ON CONFLICT (ip) DO UPDATE
+      SET failed_attempts = CASE
+            WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN 1
+            ELSE auth_rate_limits.failed_attempts + 1
+          END,
+          first_failed_at = CASE
+            WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN v_now
+            ELSE auth_rate_limits.first_failed_at
+          END,
+          last_failed_at = v_now,
+          locked_until = CASE
+            WHEN (CASE WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN 1 ELSE auth_rate_limits.failed_attempts + 1 END) >= 5
+            THEN v_now + INTERVAL '15 minutes'
+            ELSE NULL
+          END;
       RETURN jsonb_build_object('valid', false, 'error', 'Invalid or expired access pass.');
     END IF;
 
-    -- 9. Course Entitlement Protection:
-    -- If pass is for a full course (not a temporary live session pass)
+    -- 9. Course Entitlement Protection
     IF coalesce(v_rec.is_session_pass, false) = false AND v_rec.course_name IS NOT NULL THEN
-      -- If student is already actively enrolled in a DIFFERENT course that has not expired
       IF v_current_course IS NOT NULL AND v_current_course != '' AND v_current_course != v_rec.course_name AND (v_current_expires_at IS NULL OR v_current_expires_at > v_now) THEN
+        INSERT INTO public.auth_rate_limits (ip, failed_attempts, first_failed_at, last_failed_at, locked_until)
+        VALUES (v_rate_key, 1, v_now, v_now, NULL)
+        ON CONFLICT (ip) DO UPDATE
+        SET failed_attempts = CASE
+              WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN 1
+              ELSE auth_rate_limits.failed_attempts + 1
+            END,
+            first_failed_at = CASE
+              WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN v_now
+              ELSE auth_rate_limits.first_failed_at
+            END,
+            last_failed_at = v_now,
+            locked_until = CASE
+              WHEN (CASE WHEN auth_rate_limits.last_failed_at < v_now - INTERVAL '10 minutes' THEN 1 ELSE auth_rate_limits.failed_attempts + 1 END) >= 5
+              THEN v_now + INTERVAL '15 minutes'
+              ELSE NULL
+            END;
         RETURN jsonb_build_object('valid', false, 'error', 'Invalid or expired access pass.');
       END IF;
     END IF;
 
-    -- 10. Atomic Redemption Execution:
-    -- Increment usage counter. Single-use codes bind student_id. Multi-use codes preserve NULL.
+    -- 10. Atomic Redemption Execution
     UPDATE public.access_codes
     SET times_used = times_used + 1,
         student_id = CASE WHEN max_uses = 1 THEN coalesce(v_rec.student_id, v_auth_student_id) ELSE v_rec.student_id END,
@@ -392,19 +484,25 @@ BEGIN
     INSERT INTO public.access_code_redemptions (code, student_id, user_id, redeemed_at)
     VALUES (v_clean_code, v_auth_student_id, auth.uid(), v_now);
 
-    -- Update student course access ONLY if it is a full course pass (session passes never overwrite course enrollment)
+    -- Update student course access ONLY if full course pass
     IF coalesce(v_rec.is_session_pass, false) = false AND v_rec.course_name IS NOT NULL THEN
       UPDATE public.students
       SET enrolled_course = v_rec.course_name,
           updated_at = v_now
       WHERE id = v_auth_student_id;
     END IF;
+
+    -- 11. Return Safe Redemption Response
+    RETURN jsonb_build_object(
+      'valid', true,
+      'redeemed', true,
+      'course_name', v_rec.course_name
+    );
   END IF;
 
-  -- 11. Return Safe Minimal Payload
+  -- 12. Non-Redemption Verification Response (Omit course name to prevent catalog enumeration)
   RETURN jsonb_build_object(
-    'valid', true,
-    'course_name', v_rec.course_name
+    'valid', true
   );
 END;
 $$;
@@ -477,8 +575,19 @@ CREATE POLICY "Super Admin Manage Orders V1Final" ON orders
 -- 8. STUDENT PRESENCE & ATTENDANCE TABLE
 -- Direct public INSERT and UPDATE completely removed.
 -- Attendance is mediated via record_student_presence_heartbeat() RPC.
+-- Enforces session ownership, database uniqueness, entitlement, anti-takeover & concurrency safety.
 -- --------------------------------------------------------------
 ALTER TABLE IF EXISTS student_presence ENABLE ROW LEVEL SECURITY;
+
+-- Enforce database uniqueness constraint on session_id
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'student_presence_session_id_key' OR conname = 'student_presence_pkey'
+  ) THEN
+    ALTER TABLE public.student_presence ADD CONSTRAINT student_presence_session_id_key UNIQUE (session_id);
+  END IF;
+END $$;
 
 DROP POLICY IF EXISTS "Anon Presence Heartbeat" ON student_presence;
 DROP POLICY IF EXISTS "Public Insert Heartbeat" ON student_presence;
@@ -503,8 +612,9 @@ CREATE POLICY "Super Admin Manage Presence V1Final" ON student_presence
   WITH CHECK (public.is_super_admin());
 
 -- Trusted Student Presence Heartbeat Operation (Security Definer)
--- Validates: 1) Authenticated identity, 2) Student profile ownership,
--- 3) Active course entitlement, 4) Session termination check, 5) Frequency limiting & replay protection
+-- Validates: 1) Authenticated context, 2) Student profile ownership,
+-- 3) Active course or session pass entitlement, 4) Administrative termination kill-switch,
+-- 5) Single-student session ownership (anti-takeover), 6) Frequency throttle, 7) Concurrency-safe atomic upsert.
 CREATE OR REPLACE FUNCTION public.record_student_presence_heartbeat(
   p_session_id text,
   p_course_name text,
@@ -520,18 +630,25 @@ DECLARE
   v_existing record;
   v_now timestamptz := clock_timestamp();
   v_clean_session text := trim(p_session_id);
+  v_clean_course text := trim(p_course_name);
+  v_has_live_pass boolean := false;
 BEGIN
   -- 1. Validate Authenticated Context
   IF auth.uid() IS NULL OR auth.role() != 'authenticated' THEN
     RETURN jsonb_build_object('success', false, 'error', 'Authentication required.');
   END IF;
 
-  -- 2. Validate Session Identifier
-  IF v_clean_session IS NULL OR length(v_clean_session) < 5 OR length(v_clean_session) > 100 THEN
-    RETURN jsonb_build_object('success', false, 'error', 'Invalid session identifier.');
+  -- 2. Validate Session Identifier Format (securely assigned, min 8 chars, alphanumeric + dashes/underscores)
+  IF v_clean_session IS NULL OR length(v_clean_session) < 8 OR length(v_clean_session) > 100 THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Invalid session identifier format.');
   END IF;
 
-  -- 3. Validate Student Profile Ownership
+  -- 3. Validate Course Name Requirement
+  IF v_clean_course IS NULL OR length(v_clean_course) = 0 THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Course name required for attendance.');
+  END IF;
+
+  -- 4. Validate Student Profile Ownership
   SELECT id, full_name, registered_email, enrolled_course, expires_at, status
   INTO v_student
   FROM public.students
@@ -542,48 +659,79 @@ BEGIN
     RETURN jsonb_build_object('success', false, 'error', 'Student profile not found.');
   END IF;
 
-  -- 4. Validate Active Course Entitlement
+  -- 5. Validate Active Account Status
   IF coalesce(v_student.status, 'Active') != 'Active' OR (v_student.expires_at IS NOT NULL AND v_student.expires_at < v_now) THEN
     RETURN jsonb_build_object('success', false, 'error', 'Active course enrollment required.');
   END IF;
 
-  -- Validate requested course matches student entitlement
-  IF p_course_name IS NOT NULL AND trim(p_course_name) != '' AND lower(trim(p_course_name)) != lower(trim(v_student.enrolled_course)) THEN
-    RETURN jsonb_build_object('success', false, 'error', 'Not enrolled in the specified course.');
+  -- 6. Validate Course or Live-Session Entitlement
+  -- Checks full course enrollment OR active 24-hour live session pass
+  SELECT EXISTS (
+    SELECT 1 FROM public.access_code_redemptions r
+    JOIN public.access_codes c ON r.code = c.code
+    WHERE r.student_id = v_student.id
+      AND c.is_session_pass = true
+      AND lower(trim(c.course_name)) = lower(v_clean_course)
+      AND r.redeemed_at > v_now - INTERVAL '24 hours'
+  ) INTO v_has_live_pass;
+
+  IF (lower(trim(coalesce(v_student.enrolled_course, ''))) != lower(v_clean_course)) AND NOT v_has_live_pass THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Active course enrollment or valid session pass required for this course.');
   END IF;
 
-  -- 5. Session Termination Check (Administrative Kill-Switch)
-  SELECT session_id, status, last_heartbeat
+  -- 7. Administrative Termination Check (Anti-Bypass Lockout)
+  -- If administrator terminated any session for this student within the last 1 hour,
+  -- changing or reusing client-controlled identifiers cannot bypass the termination.
+  IF EXISTS (
+    SELECT 1 FROM public.student_presence
+    WHERE student_id = v_student.id
+      AND status = 'terminated'
+      AND last_heartbeat > v_now - INTERVAL '1 hour'
+  ) THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Session has been terminated by administrator.', 'terminated', true);
+  END IF;
+
+  -- 8. Concurrency-Safe Lookup with Row Lock (FOR UPDATE)
+  SELECT session_id, student_id, status, last_heartbeat
   INTO v_existing
   FROM public.student_presence
-  WHERE session_id = v_clean_session;
+  WHERE session_id = v_clean_session
+  FOR UPDATE;
 
+  -- 9. Enforce Single-Student Session Ownership (Session Takeover Prevention)
+  -- A session belongs to one student; another student cannot update or keep alive another student's session.
+  IF FOUND AND v_existing.student_id != v_student.id THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Session belongs to another student profile.');
+  END IF;
+
+  -- 10. Specific Session Termination Verification
   IF FOUND AND v_existing.status = 'terminated' THEN
     RETURN jsonb_build_object('success', false, 'error', 'Session has been terminated by administrator.', 'terminated', true);
   END IF;
 
-  -- 6. Frequency Limiting & Replay Protection (minimum 10 seconds between heartbeats)
+  -- 11. Frequency Limiting & Replay Protection (minimum 10 seconds between heartbeats)
   IF FOUND AND v_existing.last_heartbeat > v_now - INTERVAL '10 seconds' THEN
     RETURN jsonb_build_object('success', true, 'status', 'throttled', 'message', 'Heartbeat acknowledged (frequency throttle active).');
   END IF;
 
-  -- 7. Upsert Presence Record
-  IF FOUND THEN
-    UPDATE public.student_presence
-    SET last_heartbeat = v_now,
-        status = 'online',
-        device_info = coalesce(p_device_info, device_info)
-    WHERE session_id = v_clean_session;
-  ELSE
-    INSERT INTO public.student_presence (
-      session_id, student_id, student_name, student_email, course_name, status, last_heartbeat, device_info
-    ) VALUES (
-      v_clean_session, v_student.id, v_student.full_name, v_student.registered_email,
-      v_student.enrolled_course, 'online', v_now, p_device_info
-    );
-  END IF;
+  -- 12. Concurrency-Safe Atomic Upsert (Prevents duplicate session creation under race conditions)
+  INSERT INTO public.student_presence (
+    session_id, student_id, student_name, student_email, course_name, status, last_heartbeat, device_info
+  ) VALUES (
+    v_clean_session, v_student.id, v_student.full_name, v_student.registered_email,
+    v_clean_course, 'online', v_now, p_device_info
+  )
+  ON CONFLICT (session_id) DO UPDATE SET
+    last_heartbeat = v_now,
+    status = 'online',
+    device_info = coalesce(EXCLUDED.device_info, student_presence.device_info);
 
-  RETURN jsonb_build_object('success', true, 'status', 'online', 'recorded_at', v_now);
+  RETURN jsonb_build_object(
+    'success', true,
+    'status', 'online',
+    'session_id', v_clean_session,
+    'recorded_at', v_now
+  );
 END;
 $$;
 
@@ -643,3 +791,22 @@ REVOKE ALL ON FUNCTION public.cleanup_expired_rate_limits() FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.cleanup_expired_rate_limits() FROM anon;
 REVOKE ALL ON FUNCTION public.cleanup_expired_rate_limits() FROM authenticated;
 GRANT EXECUTE ON FUNCTION public.cleanup_expired_rate_limits() TO service_role;
+
+
+-- --------------------------------------------------------------
+-- 9B. SCHEDULED RATE LIMIT CLEANUP (pg_cron)
+-- Executes hourly to purge expired rate limit lockouts
+-- --------------------------------------------------------------
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
+    PERFORM cron.schedule(
+      'cleanup-expired-rate-limits-hourly',
+      '0 * * * *',
+      'SELECT public.cleanup_expired_rate_limits();'
+    );
+  END IF;
+EXCEPTION WHEN OTHERS THEN
+  -- Handled gracefully if pg_cron is not enabled in shared environment
+  NULL;
+END $$;

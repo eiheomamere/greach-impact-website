@@ -710,7 +710,8 @@ export default async function handler(req, res) {
     // ==============================================================
     // ACTION: TRUSTED ATTENDANCE HEARTBEAT (Classroom Telemetry)
     // Validates: 1) Authenticated session, 2) Student profile ownership,
-    // 3) Active course entitlement, 4) Session termination, 5) Frequency throttling
+    // 3) Active course or session pass entitlement, 4) Administrative termination kill-switch,
+    // 5) Anti-takeover single-student ownership, 6) Secure session ID generation, 7) Frequency throttling.
     // ==============================================================
     if (action === 'heartbeat') {
       const payload = verifyToken(activeToken, AUTH_SECRET);
@@ -719,10 +720,16 @@ export default async function handler(req, res) {
       }
 
       const { sessionId, courseName, deviceInfo } = req.body || {};
-      const cleanSession = (sessionId || '').trim();
+      const cleanCourse = (courseName || '').trim();
 
-      if (!cleanSession || cleanSession.length < 5 || cleanSession.length > 100) {
-        return res.status(400).json({ success: false, error: 'Invalid or missing sessionId.' });
+      if (!cleanCourse) {
+        return res.status(400).json({ success: false, error: 'Course name required for attendance.' });
+      }
+
+      // Secure Session ID assignment: if client doesn't provide valid format, server assigns cryptographically secure ID
+      let finalSessionId = (sessionId || '').trim();
+      if (!finalSessionId || finalSessionId.length < 8 || finalSessionId.length > 100) {
+        finalSessionId = `sess_${crypto.randomBytes(16).toString('hex')}`;
       }
 
       // 1. Validate Student Profile Ownership
@@ -743,26 +750,79 @@ export default async function handler(req, res) {
         return res.status(403).json({ success: false, error: 'Student profile not found.' });
       }
 
-      // 2. Validate Active Course Entitlement
+      // 2. Validate Active Account Status
       const isStudentActive = (student.status || 'Active') === 'Active';
       const isCourseExpired = student.expires_at && new Date(student.expires_at).getTime() < Date.now();
       if (!isStudentActive || isCourseExpired) {
         return res.status(403).json({ success: false, error: 'Active course enrollment required for attendance.' });
       }
 
-      if (courseName && student.enrolled_course && courseName.trim().toLowerCase() !== student.enrolled_course.trim().toLowerCase()) {
-        return res.status(403).json({ success: false, error: 'Student is not enrolled in the requested course.' });
+      // 3. Validate Course or Live-Session Entitlement
+      let hasEntitlement = false;
+      if (student.enrolled_course && cleanCourse.toLowerCase() === student.enrolled_course.trim().toLowerCase()) {
+        hasEntitlement = true;
+      } else {
+        // Check for active unexpired 24-hour live session pass
+        try {
+          const passRes = await fetch(
+            `${SUPABASE_URL}/rest/v1/access_code_redemptions?student_id=eq.${encodeURIComponent(student.id)}&select=code,redeemed_at,access_codes(is_session_pass,course_name)`,
+            { headers: { 'apikey': SUPABASE_SERVICE_ROLE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+          );
+          if (passRes.ok) {
+            const redemptions = await passRes.json();
+            const now = Date.now();
+            hasEntitlement = redemptions.some(r => {
+              const codeInfo = r.access_codes;
+              if (!codeInfo || !codeInfo.is_session_pass) return false;
+              if ((codeInfo.course_name || '').trim().toLowerCase() !== cleanCourse.toLowerCase()) return false;
+              const redeemedTime = new Date(r.redeemed_at).getTime();
+              return (now - redeemedTime) < 24 * 60 * 60 * 1000;
+            });
+          }
+        } catch (e) {}
       }
 
-      // 3. Session Termination Check (Administrative Kill-Switch)
+      if (!hasEntitlement) {
+        return res.status(403).json({ success: false, error: 'Active course enrollment or valid session pass required for this course.' });
+      }
+
+      // 4. Administrative Termination Check (Anti-Bypass Lockout)
+      // If administrator terminated any session for this student within the last 1 hour, reject
       try {
-        const presRes = await fetch(`${SUPABASE_URL}/rest/v1/student_presence?session_id=eq.${encodeURIComponent(cleanSession)}&select=*`, {
+        const termRes = await fetch(
+          `${SUPABASE_URL}/rest/v1/student_presence?student_id=eq.${encodeURIComponent(student.id)}&status=eq.terminated&select=session_id,last_heartbeat&order=last_heartbeat.desc&limit=1`,
+          { headers: { 'apikey': SUPABASE_SERVICE_ROLE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+        );
+        if (termRes.ok) {
+          const termRows = await termRes.json();
+          if (Array.isArray(termRows) && termRows.length > 0) {
+            const termTime = new Date(termRows[0].last_heartbeat).getTime();
+            if (Date.now() - termTime < 60 * 60 * 1000) {
+              return res.status(403).json({
+                success: false,
+                terminated: true,
+                error: 'Session has been terminated by administrator.'
+              });
+            }
+          }
+        }
+      } catch (e) {}
+
+      // 5. Existing Session Check (Anti-Takeover & Frequency Throttle)
+      try {
+        const presRes = await fetch(`${SUPABASE_URL}/rest/v1/student_presence?session_id=eq.${encodeURIComponent(finalSessionId)}&select=*`, {
           headers: { 'apikey': SUPABASE_SERVICE_ROLE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` }
         });
         if (presRes.ok) {
           const presRows = await presRes.json();
           if (Array.isArray(presRows) && presRows.length > 0) {
             const existingPres = presRows[0];
+
+            // Single-Student Ownership Enforcement: A student cannot take over or keep alive another student's session
+            if (existingPres.student_id !== student.id) {
+              return res.status(403).json({ success: false, error: 'Session belongs to another student profile.' });
+            }
+
             if (existingPres.status === 'terminated') {
               return res.status(403).json({
                 success: false,
@@ -771,18 +831,19 @@ export default async function handler(req, res) {
               });
             }
 
-            // 4. Frequency Limiting & Replay Protection (minimum 10 seconds between updates)
+            // Frequency Limiting & Replay Protection (minimum 10 seconds between updates)
             const lastBeat = existingPres.last_heartbeat ? new Date(existingPres.last_heartbeat).getTime() : 0;
             if (Date.now() - lastBeat < 10000) {
               return res.status(200).json({
                 success: true,
                 status: 'throttled',
+                sessionId: finalSessionId,
                 message: 'Heartbeat acknowledged (frequency throttle active).'
               });
             }
 
-            // Update heartbeat
-            await fetch(`${SUPABASE_URL}/rest/v1/student_presence?session_id=eq.${encodeURIComponent(cleanSession)}`, {
+            // Update existing presence
+            await fetch(`${SUPABASE_URL}/rest/v1/student_presence?session_id=eq.${encodeURIComponent(finalSessionId)}`, {
               method: 'PATCH',
               headers: {
                 'apikey': SUPABASE_SERVICE_ROLE_KEY,
@@ -796,33 +857,218 @@ export default async function handler(req, res) {
               })
             });
 
-            return res.status(200).json({ success: true, status: 'online' });
+            return res.status(200).json({ success: true, status: 'online', sessionId: finalSessionId });
           }
         }
 
-        // First heartbeat for session: Insert new record
+        // 6. Concurrency-Safe Insert (resolution=merge-duplicates prevents duplicate sessions)
         await fetch(`${SUPABASE_URL}/rest/v1/student_presence`, {
           method: 'POST',
           headers: {
             'apikey': SUPABASE_SERVICE_ROLE_KEY,
             'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Prefer': 'resolution=merge-duplicates'
           },
           body: JSON.stringify({
-            session_id: cleanSession,
+            session_id: finalSessionId,
             student_id: student.id,
             student_name: student.full_name,
             student_email: student.registered_email,
-            course_name: student.enrolled_course,
+            course_name: cleanCourse,
             status: 'online',
             last_heartbeat: new Date().toISOString(),
             device_info: deviceInfo || 'Web Browser'
           })
         });
 
-        return res.status(200).json({ success: true, status: 'online' });
+        return res.status(200).json({ success: true, status: 'online', sessionId: finalSessionId });
       } catch (e) {
         return res.status(500).json({ success: false, error: 'Failed to record attendance heartbeat: ' + e.message });
+      }
+    }
+
+    // ==============================================================
+    // ACTION: ADMIN OPERATION PROXY (Server-Side Isolation)
+    // Mediates all Admin Console database mutations via service_role
+    // Only verified Super Administrators are authorized.
+    // ==============================================================
+    if (action === 'admin_operation') {
+      const payload = verifyToken(activeToken, AUTH_SECRET);
+      if (!payload || !payload.sub) {
+        return res.status(401).json({ success: false, error: 'Authentication required for administrative operations.' });
+      }
+
+      // Live Role Verification against auth.users
+      let isSuper = false;
+      try {
+        const uRes = await callSupabaseAuth('user', {
+          headers: { 'Authorization': `Bearer ${payload.sbToken || SUPABASE_SERVICE_ROLE_KEY}` }
+        });
+        if (uRes.ok) {
+          const uData = await uRes.json();
+          if (uData.app_metadata && uData.app_metadata.role === 'super_admin') {
+            isSuper = true;
+          }
+        }
+      } catch (e) {}
+
+      if (!isSuper && payload.role === 'super_admin') {
+        isSuper = true;
+      }
+
+      if (!isSuper) {
+        return res.status(403).json({
+          success: false,
+          error: 'Super Administrator authorization required. Access denied.'
+        });
+      }
+
+      const { operation, data } = req.body || {};
+
+      try {
+        // OP 1: Update Course Price
+        if (operation === 'update_price') {
+          const { courseId, promoPrice, originalPrice, discountPct } = data || {};
+          const pRes = await fetch(`${SUPABASE_URL}/rest/v1/course_prices?course_id=eq.${encodeURIComponent(courseId)}`, {
+            method: 'PATCH',
+            headers: {
+              'apikey': SUPABASE_SERVICE_ROLE_KEY,
+              'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              promo_price: Number(promoPrice),
+              original_price: Number(originalPrice),
+              discount_pct: Number(discountPct),
+              updated_by: payload.email || 'Super Admin'
+            })
+          });
+          return res.status(pRes.ok ? 200 : pRes.status).json({ success: pRes.ok });
+        }
+
+        // OP 2: Update Course Schedule
+        if (operation === 'update_schedule') {
+          const { courseId, startDate, deliveryMode, timeSlot, isSelfPaced } = data || {};
+          const sRes = await fetch(`${SUPABASE_URL}/rest/v1/course_schedules?course_id=eq.${encodeURIComponent(courseId)}`, {
+            method: 'PATCH',
+            headers: {
+              'apikey': SUPABASE_SERVICE_ROLE_KEY,
+              'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              start_date: startDate,
+              delivery_mode: deliveryMode,
+              time_slot: timeSlot,
+              is_self_paced: isSelfPaced,
+              updated_by: payload.email || 'Super Admin'
+            })
+          });
+          return res.status(sRes.ok ? 200 : sRes.status).json({ success: sRes.ok });
+        }
+
+        // OP 3: Create Access Pass
+        if (operation === 'create_access_pass') {
+          const cRes = await fetch(`${SUPABASE_URL}/rest/v1/access_codes`, {
+            method: 'POST',
+            headers: {
+              'apikey': SUPABASE_SERVICE_ROLE_KEY,
+              'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+          return res.status(cRes.ok ? 200 : cRes.status).json({ success: cRes.ok });
+        }
+
+        // OP 4: Revoke Access Pass
+        if (operation === 'revoke_access_pass') {
+          const { code } = data || {};
+          const rRes = await fetch(`${SUPABASE_URL}/rest/v1/access_codes?code=eq.${encodeURIComponent(code)}`, {
+            method: 'PATCH',
+            headers: {
+              'apikey': SUPABASE_SERVICE_ROLE_KEY,
+              'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ is_active: false })
+          });
+          return res.status(rRes.ok ? 200 : rRes.status).json({ success: rRes.ok });
+        }
+
+        // OP 5: Delete Access Pass
+        if (operation === 'delete_access_pass') {
+          const { code } = data || {};
+          const dRes = await fetch(`${SUPABASE_URL}/rest/v1/access_codes?code=eq.${encodeURIComponent(code)}`, {
+            method: 'DELETE',
+            headers: {
+              'apikey': SUPABASE_SERVICE_ROLE_KEY,
+              'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
+            }
+          });
+          return res.status(dRes.ok ? 200 : dRes.status).json({ success: dRes.ok });
+        }
+
+        // OP 6: Terminate Attendance Session
+        if (operation === 'terminate_presence') {
+          const { sessionId } = data || {};
+          const tRes = await fetch(`${SUPABASE_URL}/rest/v1/student_presence?session_id=eq.${encodeURIComponent(sessionId)}`, {
+            method: 'PATCH',
+            headers: {
+              'apikey': SUPABASE_SERVICE_ROLE_KEY,
+              'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: 'terminated' })
+          });
+          return res.status(tRes.ok ? 200 : tRes.status).json({ success: tRes.ok });
+        }
+
+        return res.status(400).json({ success: false, error: 'Unknown admin operation requested.' });
+      } catch (err) {
+        return res.status(500).json({ success: false, error: 'Admin operation failed: ' + err.message });
+      }
+    }
+
+    // ==============================================================
+    // ACTION: RATE LIMIT SCHEDULED CLEANUP (Cron / Service Role)
+    // Can be invoked by Vercel Cron (CRON_SECRET) or Super Admin
+    // ==============================================================
+    if (action === 'cleanup_rate_limits') {
+      const authHeader = req.headers['authorization'] || '';
+      const cronSecret = process.env.CRON_SECRET;
+      let authorized = false;
+
+      if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
+        authorized = true;
+      } else {
+        const payload = verifyToken(activeToken, AUTH_SECRET);
+        if (payload && payload.role === 'super_admin') {
+          authorized = true;
+        }
+      }
+
+      if (!authorized) {
+        return res.status(401).json({ success: false, error: 'Unauthorized cleanup request.' });
+      }
+
+      try {
+        const rpcRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/cleanup_expired_rate_limits`, {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_SERVICE_ROLE_KEY,
+            'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        if (rpcRes.ok) {
+          const purgedCount = await rpcRes.json();
+          return res.status(200).json({ success: true, purged: purgedCount });
+        }
+        return res.status(rpcRes.status).json({ success: false, error: 'RPC execution failed' });
+      } catch (e) {
+        return res.status(500).json({ success: false, error: 'Cleanup error: ' + e.message });
       }
     }
 
