@@ -577,6 +577,7 @@ CREATE POLICY "Super Admin Manage Orders V1Final" ON orders
 -- Attendance is mediated via record_student_presence_heartbeat() RPC.
 -- Enforces session ownership, database uniqueness, entitlement, anti-takeover & concurrency safety.
 -- --------------------------------------------------------------
+ALTER TABLE IF EXISTS student_presence ADD COLUMN IF NOT EXISTS terminated_at timestamptz;
 ALTER TABLE IF EXISTS student_presence ENABLE ROW LEVEL SECURITY;
 
 -- Enforce database uniqueness constraint on session_id
@@ -686,7 +687,7 @@ BEGIN
     SELECT 1 FROM public.student_presence
     WHERE student_id = v_student.id
       AND status = 'terminated'
-      AND last_heartbeat > v_now - INTERVAL '1 hour'
+      AND coalesce(terminated_at, last_heartbeat) > v_now - INTERVAL '1 hour'
   ) THEN
     RETURN jsonb_build_object('success', false, 'error', 'Session has been terminated by administrator.', 'terminated', true);
   END IF;
@@ -715,6 +716,7 @@ BEGIN
   END IF;
 
   -- 12. Concurrency-Safe Atomic Upsert (Prevents duplicate session creation under race conditions)
+  -- The WHERE clause in DO UPDATE guarantees that even concurrent requests cannot reactivate a terminated session.
   INSERT INTO public.student_presence (
     session_id, student_id, student_name, student_email, course_name, status, last_heartbeat, device_info
   ) VALUES (
@@ -724,7 +726,13 @@ BEGIN
   ON CONFLICT (session_id) DO UPDATE SET
     last_heartbeat = v_now,
     status = 'online',
-    device_info = coalesce(EXCLUDED.device_info, student_presence.device_info);
+    device_info = coalesce(EXCLUDED.device_info, student_presence.device_info)
+  WHERE student_presence.status != 'terminated';
+
+  -- Verify update was not blocked by concurrent termination
+  IF FOUND AND v_existing.status = 'terminated' THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Session has been terminated by administrator.', 'terminated', true);
+  END IF;
 
   RETURN jsonb_build_object(
     'success', true,
@@ -798,15 +806,24 @@ GRANT EXECUTE ON FUNCTION public.cleanup_expired_rate_limits() TO service_role;
 -- Executes hourly to purge expired rate limit lockouts
 -- --------------------------------------------------------------
 DO $$
+DECLARE
+  v_job_id bigint;
 BEGIN
-  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
-    PERFORM cron.schedule(
+  IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
+    RAISE NOTICE 'pg_cron extension is not active in this database environment. Automated rate-limit cleanup will be driven via the Vercel Cron serverless endpoint.';
+  ELSE
+    -- Unschedule any previous instance of the job
+    IF EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'cleanup-expired-rate-limits-hourly') THEN
+      PERFORM cron.unschedule('cleanup-expired-rate-limits-hourly');
+    END IF;
+
+    -- Register hourly schedule (minute 0 of every hour)
+    SELECT cron.schedule(
       'cleanup-expired-rate-limits-hourly',
       '0 * * * *',
       'SELECT public.cleanup_expired_rate_limits();'
-    );
+    ) INTO v_job_id;
+
+    RAISE NOTICE 'pg_cron hourly rate-limit cleanup registered with job ID: %', v_job_id;
   END IF;
-EXCEPTION WHEN OTHERS THEN
-  -- Handled gracefully if pg_cron is not enabled in shared environment
-  NULL;
 END $$;

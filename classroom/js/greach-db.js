@@ -243,6 +243,39 @@
     supabaseKey: SUPABASE_KEY,
     callSupabase: callSupabase,
 
+    // Server-Mediated Administrative Operation Proxy (Protects service role and enforces live Super Admin authorization)
+    callAdminApi: async function(operation, data) {
+      try {
+        const storedSession = localStorage.getItem('greach_admin_session_v1b') || sessionStorage.getItem('greach_admin_session_v1b');
+        let csrfToken = '';
+        let token = '';
+        if (storedSession) {
+          try {
+            const parsed = JSON.parse(storedSession);
+            csrfToken = parsed.csrfToken || '';
+            token = parsed.token || '';
+          } catch(e) {}
+        }
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+          },
+          body: JSON.stringify({
+            action: 'admin_operation',
+            token: token,
+            operation: operation,
+            data: data
+          })
+        });
+        return await res.json();
+      } catch (err) {
+        console.warn('[GreachDB] Admin API Call Warning:', err);
+        return { success: false, error: err.message };
+      }
+    },
+
     // Initialize all tables in persistent storage
     init: function() {
       // Initialize Student Roster (Pure real enrollments, zero generic/mock data)

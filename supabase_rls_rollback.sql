@@ -355,6 +355,7 @@ ALTER TABLE IF EXISTS public.access_codes DROP COLUMN IF EXISTS max_uses;
 ALTER TABLE IF EXISTS public.access_codes DROP COLUMN IF EXISTS times_used;
 ALTER TABLE IF EXISTS public.access_codes DROP COLUMN IF EXISTS is_session_pass;
 ALTER TABLE IF EXISTS public.students DROP COLUMN IF EXISTS user_id;
+ALTER TABLE IF EXISTS public.student_presence DROP COLUMN IF EXISTS terminated_at;
 
 -- --------------------------------------------------------------
 -- STEP 6: RESTORE ORIGINAL BASELINE DATA & POLICIES FROM DUMP

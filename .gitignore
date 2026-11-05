@@ -3,5 +3,7 @@ node_modules
 .DS_Store
 Thumbs.db
 .vercel
+__pycache__/
+*.pyc
 
 images/raw_backup/

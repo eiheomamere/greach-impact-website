@@ -103,6 +103,23 @@ function verifyToken(token, secret) {
   }
 }
 
+// Cryptographically generate and sign a server-issued session ID bound to student
+function generateServerSessionId(studentId, secret) {
+  const nonce = crypto.randomBytes(16).toString('hex');
+  const sig = crypto.createHmac('sha256', secret).update(`${studentId}:${nonce}`).digest('hex').substring(0, 16);
+  return `sess_${nonce}_${sig}`;
+}
+
+// Cryptographically verify server-issued session ID
+function verifyServerSessionId(sessionId, studentId, secret) {
+  if (!sessionId || typeof sessionId !== 'string') return false;
+  const match = sessionId.match(/^sess_([a-f0-9]{32})_([a-f0-9]{16})$/);
+  if (!match) return false;
+  const [_, nonce, sig] = match;
+  const expectedSig = crypto.createHmac('sha256', secret).update(`${studentId}:${nonce}`).digest('hex').substring(0, 16);
+  return sig === expectedSig;
+}
+
 // Helper: Call Supabase Auth endpoint
 async function callSupabaseAuth(endpoint, options = {}) {
   const url = `${SUPABASE_URL}/auth/v1/${endpoint}`;
@@ -726,12 +743,6 @@ export default async function handler(req, res) {
         return res.status(400).json({ success: false, error: 'Course name required for attendance.' });
       }
 
-      // Secure Session ID assignment: if client doesn't provide valid format, server assigns cryptographically secure ID
-      let finalSessionId = (sessionId || '').trim();
-      if (!finalSessionId || finalSessionId.length < 8 || finalSessionId.length > 100) {
-        finalSessionId = `sess_${crypto.randomBytes(16).toString('hex')}`;
-      }
-
       // 1. Validate Student Profile Ownership
       let student = null;
       try {
@@ -748,6 +759,14 @@ export default async function handler(req, res) {
 
       if (!student) {
         return res.status(403).json({ success: false, error: 'Student profile not found.' });
+      }
+
+      // Secure Server-Issued Session ID Enforcement:
+      // Cryptographically verify server-issued signature bound to this student profile.
+      // Arbitrary or client-chosen session IDs are rejected and assigned genuine server-signed IDs.
+      let finalSessionId = (sessionId || '').trim();
+      if (!verifyServerSessionId(finalSessionId, student.id, AUTH_SECRET)) {
+        finalSessionId = generateServerSessionId(student.id, AUTH_SECRET);
       }
 
       // 2. Validate Active Account Status
@@ -924,12 +943,37 @@ export default async function handler(req, res) {
         });
       }
 
+      // CSRF Protection Validation
+      const csrfHeader = req.headers['x-csrf-token'];
+      const cookies = parseCookies(req.headers.cookie);
+      const csrfCookie = cookies.greach_csrf;
+      if (!csrfHeader || (csrfCookie && csrfHeader !== csrfCookie)) {
+        return res.status(403).json({ success: false, error: 'CSRF token validation failed.' });
+      }
+
       const { operation, data } = req.body || {};
+
+      // Server-Side Operation Allowlist
+      const ALLOWED_ADMIN_OPS = new Set([
+        'update_price',
+        'update_schedule',
+        'create_access_pass',
+        'revoke_access_pass',
+        'delete_access_pass',
+        'terminate_presence'
+      ]);
+
+      if (!operation || !ALLOWED_ADMIN_OPS.has(operation)) {
+        return res.status(400).json({ success: false, error: 'Unauthorized or invalid administrative operation.' });
+      }
 
       try {
         // OP 1: Update Course Price
         if (operation === 'update_price') {
           const { courseId, promoPrice, originalPrice, discountPct } = data || {};
+          if (!courseId || typeof courseId !== 'string' || isNaN(promoPrice) || isNaN(originalPrice) || Number(promoPrice) < 0 || Number(originalPrice) < 0) {
+            return res.status(400).json({ success: false, error: 'Invalid course pricing parameters.' });
+          }
           const pRes = await fetch(`${SUPABASE_URL}/rest/v1/course_prices?course_id=eq.${encodeURIComponent(courseId)}`, {
             method: 'PATCH',
             headers: {
@@ -940,7 +984,7 @@ export default async function handler(req, res) {
             body: JSON.stringify({
               promo_price: Number(promoPrice),
               original_price: Number(originalPrice),
-              discount_pct: Number(discountPct),
+              discount_pct: Number(discountPct) || 0,
               updated_by: payload.email || 'Super Admin'
             })
           });
@@ -950,6 +994,9 @@ export default async function handler(req, res) {
         // OP 2: Update Course Schedule
         if (operation === 'update_schedule') {
           const { courseId, startDate, deliveryMode, timeSlot, isSelfPaced } = data || {};
+          if (!courseId || typeof courseId !== 'string' || !startDate) {
+            return res.status(400).json({ success: false, error: 'Invalid course schedule parameters.' });
+          }
           const sRes = await fetch(`${SUPABASE_URL}/rest/v1/course_schedules?course_id=eq.${encodeURIComponent(courseId)}`, {
             method: 'PATCH',
             headers: {
@@ -961,7 +1008,7 @@ export default async function handler(req, res) {
               start_date: startDate,
               delivery_mode: deliveryMode,
               time_slot: timeSlot,
-              is_self_paced: isSelfPaced,
+              is_self_paced: !!isSelfPaced,
               updated_by: payload.email || 'Super Admin'
             })
           });
@@ -970,6 +1017,9 @@ export default async function handler(req, res) {
 
         // OP 3: Create Access Pass
         if (operation === 'create_access_pass') {
+          if (!data || !data.code || typeof data.code !== 'string' || data.code.length < 4 || (data.max_uses && Number(data.max_uses) < 1)) {
+            return res.status(400).json({ success: false, error: 'Invalid access pass parameters.' });
+          }
           const cRes = await fetch(`${SUPABASE_URL}/rest/v1/access_codes`, {
             method: 'POST',
             headers: {
@@ -977,7 +1027,15 @@ export default async function handler(req, res) {
               'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify({
+              code: data.code.trim().toUpperCase(),
+              label: data.label || 'Access Pass',
+              course_name: data.course_name,
+              max_uses: Number(data.max_uses) || 1,
+              times_used: 0,
+              is_session_pass: !!data.is_session_pass,
+              is_active: true
+            })
           });
           return res.status(cRes.ok ? 200 : cRes.status).json({ success: cRes.ok });
         }
@@ -985,6 +1043,9 @@ export default async function handler(req, res) {
         // OP 4: Revoke Access Pass
         if (operation === 'revoke_access_pass') {
           const { code } = data || {};
+          if (!code || typeof code !== 'string' || code.length < 4) {
+            return res.status(400).json({ success: false, error: 'Invalid access pass code.' });
+          }
           const rRes = await fetch(`${SUPABASE_URL}/rest/v1/access_codes?code=eq.${encodeURIComponent(code)}`, {
             method: 'PATCH',
             headers: {
@@ -1000,6 +1061,9 @@ export default async function handler(req, res) {
         // OP 5: Delete Access Pass
         if (operation === 'delete_access_pass') {
           const { code } = data || {};
+          if (!code || typeof code !== 'string' || code.length < 4) {
+            return res.status(400).json({ success: false, error: 'Invalid access pass code.' });
+          }
           const dRes = await fetch(`${SUPABASE_URL}/rest/v1/access_codes?code=eq.${encodeURIComponent(code)}`, {
             method: 'DELETE',
             headers: {
@@ -1010,9 +1074,12 @@ export default async function handler(req, res) {
           return res.status(dRes.ok ? 200 : dRes.status).json({ success: dRes.ok });
         }
 
-        // OP 6: Terminate Attendance Session
+        // OP 6: Terminate Attendance Session (Reliable Timestamp Setting)
         if (operation === 'terminate_presence') {
           const { sessionId } = data || {};
+          if (!sessionId || typeof sessionId !== 'string' || sessionId.length < 8) {
+            return res.status(400).json({ success: false, error: 'Invalid session identifier.' });
+          }
           const tRes = await fetch(`${SUPABASE_URL}/rest/v1/student_presence?session_id=eq.${encodeURIComponent(sessionId)}`, {
             method: 'PATCH',
             headers: {
@@ -1020,7 +1087,10 @@ export default async function handler(req, res) {
               'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ status: 'terminated' })
+            body: JSON.stringify({
+              status: 'terminated',
+              terminated_at: new Date().toISOString()
+            })
           });
           return res.status(tRes.ok ? 200 : tRes.status).json({ success: tRes.ok });
         }
