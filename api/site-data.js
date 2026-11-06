@@ -4,10 +4,40 @@
 
 import crypto from 'crypto';
 
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://fkltvxhqizqrbvogodxv.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_KEY;
-const AUTH_SECRET = process.env.JWT_SECRET;
+// Strict Environment-Driven Supabase Configuration (Zero Staging-to-Production Fallback)
+const isStaging = process.env.APP_ENV === 'staging' || process.env.STAGING === 'true';
+
+let SUPABASE_URL;
+let SUPABASE_KEY;
+let SUPABASE_SERVICE_ROLE_KEY;
+let AUTH_SECRET;
+
+if (isStaging) {
+  const missingStaging = [];
+  if (!process.env.STAGING_SUPABASE_URL) missingStaging.push('STAGING_SUPABASE_URL');
+  if (!process.env.STAGING_SUPABASE_ANON_KEY) missingStaging.push('STAGING_SUPABASE_ANON_KEY');
+  if (!process.env.STAGING_SUPABASE_SERVICE_ROLE_KEY) missingStaging.push('STAGING_SUPABASE_SERVICE_ROLE_KEY');
+  if (!process.env.STAGING_AUTH_SECRET) missingStaging.push('STAGING_AUTH_SECRET');
+
+  if (missingStaging.length > 0) {
+    throw new Error(`[STAGING CONFIGURATION FAILURE] Missing required staging variables in api/site-data.js: ${missingStaging.join(', ')}. Fail closed.`);
+  }
+
+  // Safety Assertion: Staging URL must never point to production project
+  if (process.env.STAGING_SUPABASE_URL.includes('fkltvxhqizqrbvogodxv')) {
+    throw new Error('[STAGING CONFIGURATION VIOLATION] STAGING_SUPABASE_URL points to production project fkltvxhqizqrbvogodxv in api/site-data.js. Execution aborted.');
+  }
+
+  SUPABASE_URL = process.env.STAGING_SUPABASE_URL;
+  SUPABASE_KEY = process.env.STAGING_SUPABASE_ANON_KEY;
+  SUPABASE_SERVICE_ROLE_KEY = process.env.STAGING_SUPABASE_SERVICE_ROLE_KEY;
+  AUTH_SECRET = process.env.STAGING_AUTH_SECRET;
+} else {
+  SUPABASE_URL = process.env.SUPABASE_URL || 'https://fkltvxhqizqrbvogodxv.supabase.co';
+  SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
+  SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_KEY;
+  AUTH_SECRET = process.env.AUTH_SECRET || process.env.JWT_SECRET;
+}
 
 let inMemorySiteData = null;
 

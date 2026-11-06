@@ -11,9 +11,36 @@ const MAX_ATTEMPTS = 5;
 const FAILURE_WINDOW_MS = 10 * 60 * 1000; // 10 minutes failure window
 const LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes lockout
 
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://fkltvxhqizqrbvogodxv.supabase.co';
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
+// Strict Environment-Driven Supabase Configuration (Zero Staging-to-Production Fallback)
+const isStaging = process.env.APP_ENV === 'staging' || process.env.STAGING === 'true';
+
+let SUPABASE_URL;
+let SUPABASE_ANON_KEY;
+let SUPABASE_SERVICE_ROLE_KEY;
+
+if (isStaging) {
+  const missingStaging = [];
+  if (!process.env.STAGING_SUPABASE_URL) missingStaging.push('STAGING_SUPABASE_URL');
+  if (!process.env.STAGING_SUPABASE_ANON_KEY) missingStaging.push('STAGING_SUPABASE_ANON_KEY');
+  if (!process.env.STAGING_SUPABASE_SERVICE_ROLE_KEY) missingStaging.push('STAGING_SUPABASE_SERVICE_ROLE_KEY');
+
+  if (missingStaging.length > 0) {
+    throw new Error(`[STAGING CONFIGURATION FAILURE] Missing required staging variables: ${missingStaging.join(', ')}. Fail closed.`);
+  }
+
+  // Safety Assertion: Staging URL must never point to production project
+  if (process.env.STAGING_SUPABASE_URL.includes('fkltvxhqizqrbvogodxv')) {
+    throw new Error('[STAGING CONFIGURATION VIOLATION] STAGING_SUPABASE_URL points to production project fkltvxhqizqrbvogodxv. Execution aborted.');
+  }
+
+  SUPABASE_URL = process.env.STAGING_SUPABASE_URL;
+  SUPABASE_ANON_KEY = process.env.STAGING_SUPABASE_ANON_KEY;
+  SUPABASE_SERVICE_ROLE_KEY = process.env.STAGING_SUPABASE_SERVICE_ROLE_KEY;
+} else {
+  SUPABASE_URL = process.env.SUPABASE_URL || 'https://fkltvxhqizqrbvogodxv.supabase.co';
+  SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
+  SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
+}
 
 const SUPER_ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'greachimpact@gmail.com').toLowerCase().trim();
 const SUPER_ADMIN_USERNAME = (process.env.ADMIN_USER || 'Greachimpact').trim();
@@ -242,15 +269,31 @@ async function clearRateLimit(key) {
 // MAIN API HANDLER
 // ==============================================================
 export default async function handler(req, res) {
-  // 1. FAIL SECURELY WHEN REQUIRED SECRET IS MISSING
-  // Ensures consistent configuration across Vercel serverless instances
-  const AUTH_SECRET = process.env.AUTH_SECRET || process.env.JWT_SECRET;
-  if (!AUTH_SECRET) {
-    console.error('[API Auth Security Failure] Mandatory AUTH_SECRET or JWT_SECRET environment variable is missing.');
-    return res.status(500).json({
-      success: false,
-      error: 'Server security configuration error. Service unavailable.'
-    });
+  // 1. FAIL SECURELY WHEN REQUIRED SECRET IS MISSING (Zero Staging-to-Production Fallback)
+  let AUTH_SECRET;
+  let CRON_SECRET;
+
+  if (isStaging) {
+    if (!process.env.STAGING_AUTH_SECRET) {
+      console.error('[API Auth Staging Failure] Mandatory STAGING_AUTH_SECRET environment variable is missing.');
+      return res.status(500).json({ success: false, error: 'Staging configuration error. STAGING_AUTH_SECRET missing.' });
+    }
+    if (!process.env.STAGING_CRON_SECRET) {
+      console.error('[API Auth Staging Failure] Mandatory STAGING_CRON_SECRET environment variable is missing.');
+      return res.status(500).json({ success: false, error: 'Staging configuration error. STAGING_CRON_SECRET missing.' });
+    }
+    AUTH_SECRET = process.env.STAGING_AUTH_SECRET;
+    CRON_SECRET = process.env.STAGING_CRON_SECRET;
+  } else {
+    AUTH_SECRET = process.env.AUTH_SECRET || process.env.JWT_SECRET;
+    CRON_SECRET = process.env.CRON_SECRET;
+    if (!AUTH_SECRET) {
+      console.error('[API Auth Security Failure] Mandatory AUTH_SECRET or JWT_SECRET environment variable is missing.');
+      return res.status(500).json({
+        success: false,
+        error: 'Server security configuration error. Service unavailable.'
+      });
+    }
   }
 
   // 2. CORS & ORIGIN SECURITY
@@ -1130,7 +1173,7 @@ export default async function handler(req, res) {
     // ==============================================================
     if (action === 'cleanup_rate_limits') {
       const authHeader = req.headers['authorization'] || '';
-      const cronSecret = process.env.CRON_SECRET;
+      const cronSecret = CRON_SECRET;
       let authorized = false;
 
       if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
