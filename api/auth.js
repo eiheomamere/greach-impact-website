@@ -12,17 +12,27 @@ const FAILURE_WINDOW_MS = 10 * 60 * 1000; // 10 minutes failure window
 const LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes lockout
 
 // Strict Environment-Driven Supabase Configuration (Zero Staging-to-Production Fallback)
-const isStaging = process.env.APP_ENV === 'staging' || process.env.STAGING === 'true';
+// Detects ambiguous or mixed configurations and enforces fail-closed execution
+const hasStagingVars = Object.keys(process.env).some(k => k.startsWith('STAGING_'));
+const isExplicitStaging = process.env.APP_ENV === 'staging' || process.env.STAGING === 'true';
+
+if (hasStagingVars && !isExplicitStaging) {
+  throw new Error('[CONFIGURATION AMBIGUITY] STAGING_* environment variables are present, but explicit staging mode (APP_ENV=staging or STAGING=true) is not set. Ambiguous environment mode. Fail closed.');
+}
+
+if (isExplicitStaging && process.env.APP_ENV && process.env.APP_ENV !== 'staging') {
+  throw new Error(`[CONFIGURATION AMBIGUITY] Conflicting environment flags detected: APP_ENV='${process.env.APP_ENV}' combined with STAGING=true. Fail closed.`);
+}
 
 let SUPABASE_URL;
 let SUPABASE_ANON_KEY;
 let SUPABASE_SERVICE_ROLE_KEY;
 
-if (isStaging) {
+if (isExplicitStaging) {
   const missingStaging = [];
-  if (!process.env.STAGING_SUPABASE_URL) missingStaging.push('STAGING_SUPABASE_URL');
-  if (!process.env.STAGING_SUPABASE_ANON_KEY) missingStaging.push('STAGING_SUPABASE_ANON_KEY');
-  if (!process.env.STAGING_SUPABASE_SERVICE_ROLE_KEY) missingStaging.push('STAGING_SUPABASE_SERVICE_ROLE_KEY');
+  if (!process.env.STAGING_SUPABASE_URL || !process.env.STAGING_SUPABASE_URL.trim()) missingStaging.push('STAGING_SUPABASE_URL');
+  if (!process.env.STAGING_SUPABASE_ANON_KEY || !process.env.STAGING_SUPABASE_ANON_KEY.trim()) missingStaging.push('STAGING_SUPABASE_ANON_KEY');
+  if (!process.env.STAGING_SUPABASE_SERVICE_ROLE_KEY || !process.env.STAGING_SUPABASE_SERVICE_ROLE_KEY.trim()) missingStaging.push('STAGING_SUPABASE_SERVICE_ROLE_KEY');
 
   if (missingStaging.length > 0) {
     throw new Error(`[STAGING CONFIGURATION FAILURE] Missing required staging variables: ${missingStaging.join(', ')}. Fail closed.`);
@@ -33,9 +43,9 @@ if (isStaging) {
     throw new Error('[STAGING CONFIGURATION VIOLATION] STAGING_SUPABASE_URL points to production project fkltvxhqizqrbvogodxv. Execution aborted.');
   }
 
-  SUPABASE_URL = process.env.STAGING_SUPABASE_URL;
-  SUPABASE_ANON_KEY = process.env.STAGING_SUPABASE_ANON_KEY;
-  SUPABASE_SERVICE_ROLE_KEY = process.env.STAGING_SUPABASE_SERVICE_ROLE_KEY;
+  SUPABASE_URL = process.env.STAGING_SUPABASE_URL.trim();
+  SUPABASE_ANON_KEY = process.env.STAGING_SUPABASE_ANON_KEY.trim();
+  SUPABASE_SERVICE_ROLE_KEY = process.env.STAGING_SUPABASE_SERVICE_ROLE_KEY.trim();
 } else {
   SUPABASE_URL = process.env.SUPABASE_URL || 'https://fkltvxhqizqrbvogodxv.supabase.co';
   SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
@@ -273,17 +283,17 @@ export default async function handler(req, res) {
   let AUTH_SECRET;
   let CRON_SECRET;
 
-  if (isStaging) {
-    if (!process.env.STAGING_AUTH_SECRET) {
+  if (isExplicitStaging) {
+    if (!process.env.STAGING_AUTH_SECRET || !process.env.STAGING_AUTH_SECRET.trim()) {
       console.error('[API Auth Staging Failure] Mandatory STAGING_AUTH_SECRET environment variable is missing.');
       return res.status(500).json({ success: false, error: 'Staging configuration error. STAGING_AUTH_SECRET missing.' });
     }
-    if (!process.env.STAGING_CRON_SECRET) {
+    if (!process.env.STAGING_CRON_SECRET || !process.env.STAGING_CRON_SECRET.trim()) {
       console.error('[API Auth Staging Failure] Mandatory STAGING_CRON_SECRET environment variable is missing.');
       return res.status(500).json({ success: false, error: 'Staging configuration error. STAGING_CRON_SECRET missing.' });
     }
-    AUTH_SECRET = process.env.STAGING_AUTH_SECRET;
-    CRON_SECRET = process.env.STAGING_CRON_SECRET;
+    AUTH_SECRET = process.env.STAGING_AUTH_SECRET.trim();
+    CRON_SECRET = process.env.STAGING_CRON_SECRET.trim();
   } else {
     AUTH_SECRET = process.env.AUTH_SECRET || process.env.JWT_SECRET;
     CRON_SECRET = process.env.CRON_SECRET;
