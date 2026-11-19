@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Greach Impact Academy â€” Super Admin Control Center</title>
+  <title>Greach Impact Academy Ã¢â‚¬â€ Super Admin Control Center</title>
   <link rel="icon" type="image/jpeg" href="images/Greach Impact Logo (2).jpg" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -516,7 +516,7 @@
 </head>
 <body>
 
-  <!-- ðŸ”’ SUPER ADMIN LOGIN OVERLAY -->
+  <!-- Ã°Å¸â€â€™ SUPER ADMIN LOGIN OVERLAY -->
   <div class="auth-overlay" id="adminAuthOverlay">
     <div class="auth-box">
       <div style="width:64px; height:64px; background:linear-gradient(135deg, #0a192f, #0284c7); border-radius:18px; margin:0 auto 1.2rem; display:flex; align-items:center; justify-content:center; color:white; font-size:1.8rem; border:2px solid var(--gold-400);">
@@ -550,15 +550,86 @@
           <i class="fas fa-shield-alt"></i> Authenticate &amp; Enter Console
         </button>
 
-        <div style="margin-top:1.5rem; padding-top:1rem; border-top:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; font-size:0.8rem;">
+        <div style="margin-top:1rem; text-align:center;">
+          <button type="button" onclick="toggleAdminResetRequestForm()" style="background:none; border:none; color:#0284c7; font-size:0.84rem; font-weight:600; cursor:pointer; text-decoration:underline;">
+            <i class="fas fa-unlock-alt"></i> Forgot / Reset Password?
+          </button>
+        </div>
+
+        <div style="margin-top:1.2rem; padding-top:1rem; border-top:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; font-size:0.8rem;">
           <a href="index.html" style="color:#64748b; text-decoration:none;"><i class="fas fa-arrow-left"></i> Return to Site</a>
           <span style="color:#94a3b8; font-size:0.75rem;">Superuser: Greachimpact</span>
+        </div>
+      </form>
+
+      <!-- Password Reset Request Form -->
+      <form id="adminResetRequestForm" onsubmit="handleAdminResetRequest(event)" style="display:none; text-align:left;">
+        <p style="font-size:0.84rem; color:#475569; margin-bottom:1rem;">Enter your administrator email or username to receive a secure password reset link.</p>
+        <div class="form-group">
+          <label><i class="fas fa-envelope"></i> Admin Email or Username:</label>
+          <input type="text" id="adminResetEmailInput" class="form-control" placeholder="greachimpact@gmail.com" required />
+        </div>
+        <div id="adminResetRequestMsg" style="display:none; padding:0.65rem; border-radius:6px; font-size:0.82rem; margin-bottom:1rem;"></div>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.8rem;">
+          <i class="fas fa-paper-plane"></i> Send Reset Link
+        </button>
+        <div style="margin-top:0.9rem; text-align:center;">
+          <button type="button" onclick="toggleAdminResetRequestForm(false)" style="background:none; border:none; color:#64748b; font-size:0.82rem; cursor:pointer;">&larr; Back to Sign In</button>
+        </div>
+      </form>
+
+      <!-- Complete Password Recovery Form (Triggered by Supabase Email Link) -->
+      <form id="adminRecoveryCompleteForm" onsubmit="handleAdminRecoveryComplete(event)" style="display:none; text-align:left;">
+        <p style="font-size:0.84rem; color:#065f46; background:#ecfdf5; padding:0.65rem; border-radius:8px; margin-bottom:1rem;">
+          <i class="fas fa-shield-alt"></i> Recovery link verified. Set a strong new Super Admin password (12+ characters, uppercase, lowercase, number, and symbol).
+        </p>
+        <div class="form-group">
+          <label><i class="fas fa-lock"></i> New Strong Password:</label>
+          <input type="password" id="adminRecoveryNewPass" class="form-control" minlength="12" placeholder="Minimum 12 characters..." required />
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-check-double"></i> Confirm New Password:</label>
+          <input type="password" id="adminRecoveryConfirmPass" class="form-control" minlength="12" placeholder="Re-enter new password..." required />
+        </div>
+        <div id="adminRecoveryCompleteMsg" style="display:none; padding:0.65rem; border-radius:6px; font-size:0.82rem; margin-bottom:1rem;"></div>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.8rem; background:#059669;">
+          <i class="fas fa-save"></i> Save New Password
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Authenticated Super Admin Change Password Modal -->
+  <div id="changeAdminPasswordModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.72); z-index:10050; align-items:center; justify-content:center; padding:1rem;">
+    <div style="background:#ffffff; border-radius:16px; max-width:440px; width:100%; padding:1.75rem; box-shadow:0 20px 50px rgba(0,0,0,0.35);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3 style="margin:0; color:#0a192f; font-size:1.15rem;"><i class="fas fa-lock" style="color:#0284c7;"></i> Change Super Admin Password</h3>
+        <button type="button" onclick="closeChangeAdminPasswordModal()" style="background:none; border:none; font-size:1.25rem; cursor:pointer; color:#64748b;">&times;</button>
+      </div>
+      <p style="font-size:0.82rem; color:#475569; margin-bottom:1rem;">Use a unique password of at least 12 characters with uppercase, lowercase, a number, and a symbol.</p>
+      <form id="changeAdminPasswordForm" onsubmit="handleChangeAdminPassword(event)">
+        <div class="form-group">
+          <label>Current Password:</label>
+          <input type="password" id="changePassCurrent" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label>New Strong Password:</label>
+          <input type="password" id="changePassNew" class="form-control" minlength="12" required />
+        </div>
+        <div class="form-group">
+          <label>Confirm New Password:</label>
+          <input type="password" id="changePassConfirm" class="form-control" minlength="12" required />
+        </div>
+        <div id="changePassMsg" style="display:none; padding:0.65rem; border-radius:6px; font-size:0.82rem; margin-bottom:1rem;"></div>
+        <div style="display:flex; gap:0.6rem; justify-content:flex-end;">
+          <button type="button" onclick="closeChangeAdminPasswordModal()" class="btn-nav" style="color:#334155; border-color:#cbd5e1;">Cancel</button>
+          <button type="submit" class="btn-primary" style="background:#059669;"><i class="fas fa-save"></i> Update Password</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ðŸŒ TOP APPLICATION BAR -->
+  <!-- Ã°Å¸Å’Â TOP APPLICATION BAR -->
   <header class="admin-topbar">
     <div class="brand-group">
       <img src="images/Greach Impact Logo (2).jpg" alt="Logo" class="brand-logo" onerror="this.style.display='none'" />
@@ -571,6 +642,7 @@
       </div>
     </div>
     <div class="admin-actions">
+      <a href="classroom/certificate-review.html" class="btn-nav" style="background:#075985; border-color:#075985; font-weight:700;"><i class="fas fa-certificate"></i> Certificate Review</a>
       <button onclick="openUniversalCodeModal()" class="btn-nav" style="background:#107C41; border-color:#107C41; font-weight:700;"><i class="fas fa-key"></i> + Generate Access Code</button>
       <button onclick="syncSiteDataToCloud()" class="btn-nav" style="background:var(--accent-teal); color:#0A0A5E; border-color:var(--accent-teal); font-weight:700;"><i class="fas fa-cloud-upload-alt"></i> Publish Live Updates</button>
       <a href="index.html" class="btn-nav" target="_blank"><i class="fas fa-globe"></i> View Website</a>
@@ -602,11 +674,12 @@
           </a>
         </div>
       </div>
+      <button onclick="openChangeAdminPasswordModal()" class="btn-nav" style="background:#1e293b; border-color:#475569;"><i class="fas fa-lock"></i> Change Password</button>
       <button onclick="handleAdminLogout()" class="btn-nav" style="background:#ef4444; border-color:#ef4444;"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
   </header>
 
-  <!-- ðŸ“Š MAIN WORKSPACE -->
+  <!-- Ã°Å¸â€œÅ  MAIN WORKSPACE -->
   <main class="admin-container">
 
     <!-- KPI Metric Cards -->
@@ -634,7 +707,7 @@
       <div class="stat-card gold">
         <div class="stat-title"><span>Course Orders</span> <i class="fas fa-shopping-cart" style="color:var(--gold-500);"></i></div>
         <div class="stat-val" id="statTotalOrders">0</div>
-        <div class="stat-sub" id="statRevenueText">â‚¦0 verified revenue</div>
+        <div class="stat-sub" id="statRevenueText">Ã¢â€šÂ¦0 verified revenue</div>
       </div>
       <div class="stat-card teal">
         <div class="stat-title"><span>Brevo Dispatches</span> <i class="fas fa-paper-plane" style="color:var(--accent-teal);"></i></div>
@@ -661,12 +734,12 @@
     <!-- Navigation Tabs -->
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchAdminTab('students')"><i class="fas fa-user-graduate"></i> Student Roster &amp; Bank</button>
-      <button class="tab-btn" onclick="switchAdminTab('classrooms')"><i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i> ðŸ« Live Classrooms Control (6)</button>
+      <button class="tab-btn" onclick="switchAdminTab('classrooms')"><i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i> Ã°Å¸ÂÂ« Live Classrooms Control (6)</button>
       <button class="tab-btn" onclick="switchAdminTab('activity')"><i class="fas fa-satellite-dish" style="color:#22c55e;"></i> Live Student Logins &amp; Presence</button>
       <button class="tab-btn" onclick="switchAdminTab('orders')"><i class="fas fa-shopping-cart"></i> Orders &amp; Pipeline</button>
       <button class="tab-btn" onclick="switchAdminTab('session_passes')"><i class="fas fa-stopwatch"></i> Temporary Session Passes</button>
       <button class="tab-btn" onclick="switchAdminTab('blog')"><i class="fas fa-newspaper" style="color:#0284c7;"></i> Blog Articles &amp; Content</button>
-      <button class="tab-btn" onclick="switchAdminTab('supabase')"><i class="fas fa-database" style="color:#22c55e;"></i> âš¡ Supabase Cloud DB</button>
+      <button class="tab-btn" onclick="switchAdminTab('supabase')"><i class="fas fa-database" style="color:#22c55e;"></i> Ã¢Å¡Â¡ Supabase Cloud DB</button>
       <button class="tab-btn" onclick="switchAdminTab('prices')"><i class="fas fa-tags"></i> Course Pricing &amp; Discounts</button>
       <button class="tab-btn" onclick="switchAdminTab('schedules')"><i class="fas fa-calendar-alt"></i> Dates &amp; Self-Paced Modes</button>
       <button class="tab-btn" onclick="switchAdminTab('brevo')"><i class="fas fa-paper-plane"></i> Brevo &amp; Automation Hub</button>
@@ -724,7 +797,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; flex-wrap:wrap; gap:0.5rem;">
           <h3 style="font-size:1.08rem; color:var(--navy-900); display:flex; align-items:center; gap:8px;">
             <i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i>
-            All 6 Course Classrooms â€” Live Status, Uptime &amp; Superuser Controls
+            All 6 Course Classrooms Ã¢â‚¬â€ Live Status, Uptime &amp; Superuser Controls
           </h3>
           <div style="display:flex; gap:0.5rem;">
             <button class="btn-action" style="background:#e0f2fe; color:#0369a1; border-color:#38bdf8; font-weight:700;" onclick="handleSetAllClassrooms('auto')"><i class="fas fa-clock"></i> Auto-Schedule</button>
@@ -810,14 +883,37 @@
         </div>
       </div>
 
+      <!-- Multi-Currency Revenue Pools & Consolidated NGN Summary Banner -->
+      <div id="currencyRevenuePoolsBanner" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap:12px; margin: 1rem 0;">
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; text-align:center;">
+          <div style="font-size:0.75rem; color:#64748b; font-weight:700;">NGN REVENUE POOL</div>
+          <div style="font-size:1.2rem; font-weight:800; color:#0A0A5E;" id="poolNgnDisplay">â‚¦0</div>
+        </div>
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; text-align:center;">
+          <div style="font-size:0.75rem; color:#64748b; font-weight:700;">GBP REVENUE POOL</div>
+          <div style="font-size:1.2rem; font-weight:800; color:#0284c7;" id="poolGbpDisplay">Â£0.00</div>
+        </div>
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; text-align:center;">
+          <div style="font-size:0.75rem; color:#64748b; font-weight:700;">USD REVENUE POOL</div>
+          <div style="font-size:1.2rem; font-weight:800; color:#16a34a;" id="poolUsdDisplay">$0.00</div>
+        </div>
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; text-align:center;">
+          <div style="font-size:0.75rem; color:#64748b; font-weight:700;">EUR REVENUE POOL</div>
+          <div style="font-size:1.2rem; font-weight:800; color:#ea580c;" id="poolEurDisplay">â‚¬0.00</div>
+        </div>
+        <div style="background:#ecfdf5; border:1.5px solid #10b981; border-radius:8px; padding:12px; text-align:center;">
+          <div style="font-size:0.75rem; color:#065f46; font-weight:800;">CONSOLIDATED NGN REVENUE</div>
+          <div style="font-size:1.25rem; font-weight:800; color:#047857;" id="consolidatedNgnDisplay">â‚¦0</div>
+        </div>
+      </div>
+
       <div class="controls-strip">
-        <input type="text" id="filterSearch" class="search-input" placeholder="ðŸ” Search by student name, ID, or email..." oninput="renderStudentsTable()" />
+        <input type="text" id="filterSearch" class="search-input" placeholder="Ã°Å¸â€Â Search by student name, ID, or email..." oninput="renderStudentsTable()" />
         <select id="filterStatus" class="filter-select" onchange="renderStudentsTable()">
           <option value="all">All Students (Unlimited)</option>
           <option value="active">Active Access Only</option>
           <option value="expired">Expired Access (Past 1 Month)</option>
           <option value="free">Free Access Granted</option>
-          <option value="cert">Certificates Claimed</option>
         </select>
         <select id="filterCohort" class="filter-select" onchange="renderStudentsTable()">
           <option value="all">All Cohorts / Batches</option>
@@ -870,14 +966,21 @@
       </div>
 
       <div class="controls-strip">
-        <input type="text" id="orderSearchInput" class="search-input" placeholder="ðŸ” Search orders by Student Name, Order ID, Email, or Course..." oninput="renderOrdersTable()" />
+        <input type="text" id="orderSearchInput" class="search-input" placeholder="Search orders by Student Name, Reference, Email, or Course..." oninput="renderOrdersTable()" />
         <select id="orderStatusFilter" class="filter-select" onchange="renderOrdersTable()">
           <option value="all">All Payment Statuses</option>
-          <option value="Pending Verification">Pending Verification</option>
-          <option value="Verified & Paid">Verified &amp; Paid</option>
-          <option value="Sponsored / Free">Sponsored / Free</option>
+          <option value="pending_verification">Pending Verification</option>
+          <option value="confirmed">Confirmed &amp; Paid</option>
+          <option value="rejected">Rejected</option>
         </select>
-        <button class="btn-action" onclick="renderOrdersTable()"><i class="fas fa-sync-alt"></i> Refresh Orders</button>
+        <select id="orderCurrencyFilter" class="filter-select" onchange="renderOrdersTable()">
+          <option value="all">All Currencies</option>
+          <option value="NGN">NGN (â‚¦ - Nigeria)</option>
+          <option value="GBP">GBP (Â£ - Zenith Bank)</option>
+          <option value="USD">USD ($ - Zenith Bank)</option>
+          <option value="EUR">EUR (â‚¬ - Zenith Bank)</option>
+        </select>
+        <button class="btn-action" onclick="loadAndRenderOrders()"><i class="fas fa-sync-alt"></i> Refresh Orders</button>
       </div>
 
       <div class="table-responsive">
@@ -887,7 +990,7 @@
               <th>Order Details</th>
               <th>Student Info</th>
               <th>Course Programme</th>
-              <th>Amount (â‚¦)</th>
+              <th>Amount &amp; Currency</th>
               <th>Payment Method</th>
               <th>Payment Status</th>
               <th>Access Code</th>
@@ -913,7 +1016,7 @@
         <div>
           <h2><i class="fas fa-paper-plane" style="color:var(--accent-teal);"></i> Brevo (Sendinblue) &amp; Email Automation Hub</h2>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
-            Direct integration with Brevo API v3. Send transactional welcome emails, live class reminders, capstone project notices, and monitor audit dispatch logs.
+            Server-side Brevo integration. API credentials remain in server environment settings; send transactional welcome emails, reminders, and monitor dispatch logs.
           </p>
         </div>
         <div>
@@ -926,30 +1029,12 @@
         <!-- Configuration Card -->
         <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:14px; padding:1.5rem;">
           <h3 style="color:var(--navy-900); font-size:1.05rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
-            <i class="fas fa-key" style="color:var(--gold-500);"></i> Brevo API Credentials &amp; Sender Info
+            <i class="fas fa-lock" style="color:var(--gold-500);"></i> Server-managed Email Configuration
           </h3>
           <form id="brevoConfigForm" onsubmit="handleSaveBrevoConfig(event)">
-            <div class="form-group">
-              <label>Brevo API Key (v3):</label>
-              <div style="display:flex; gap:0.5rem;">
-                <input type="password" id="brevoApiKeyInput" class="form-control" placeholder="xkeysib-..." />
-                <button type="button" onclick="togglePasswordVisibility('brevoApiKeyInput', this)" class="btn-action" style="padding:0.7rem;"><i class="fas fa-eye"></i></button>
-              </div>
-              <small style="color:var(--text-muted); font-size:0.75rem;">Obtain from Brevo Dashboard &rarr; SMTP &amp; API Keys.</small>
-            </div>
-            <div class="form-group">
-              <label>Sender Name:</label>
-              <input type="text" id="brevoSenderName" class="form-control" value="Emmanuel from Greach Impact Academy" required />
-            </div>
-            <div class="form-group">
-              <label>Sender Email:</label>
-              <input type="email" id="brevoSenderEmail" class="form-control" value="greachimpact@gmail.com" required />
-            </div>
-            <div class="form-group">
-              <label>Admin Alert Notification Email:</label>
-              <input type="email" id="brevoAdminEmail" class="form-control" value="greachimpact@gmail.com" required />
-              <small style="color:var(--text-muted); font-size:0.75rem;">Every new registration &amp; order alert is sent here.</small>
-            </div>
+            <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+              Brevo credentials, sender identity, and administrator recipient are configured on the server and are never stored in browser storage.
+            </p>
             <div style="margin:1rem 0;">
               <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer;">
                 <input type="checkbox" id="brevoAutoWelcome" checked style="accent-color:var(--navy-900);">
@@ -961,7 +1046,7 @@
               </label>
             </div>
             <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">
-              <i class="fas fa-save"></i> Save Brevo Configuration
+              <i class="fas fa-save"></i> Save Local Email Preferences
             </button>
           </form>
         </div>
@@ -973,14 +1058,14 @@
               <i class="fas fa-satellite-dish" style="color:var(--green-600);"></i> Live Connection Test
             </h3>
             <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:1rem;">
-              Verify that your Brevo API credentials can connect and dispatch emails cleanly. Enter an email address below to send a live test message.
+              Send a test message through the server-configured Brevo integration. This action requires a verified Super Admin session.
             </p>
             <div class="form-group">
               <label>Test Recipient Email:</label>
               <input type="email" id="brevoTestEmail" class="form-control" placeholder="greachimpact@gmail.com" />
             </div>
             <button type="button" class="btn-gold" style="width:100%; justify-content:center;" onclick="runBrevoTest()">
-              <i class="fas fa-paper-plane"></i> Send Live Test Email via Brevo API
+              <i class="fas fa-paper-plane"></i> Send Server-side Test Email
             </button>
           </div>
           <div id="brevoTestResultBox" style="margin-top:1rem; display:none; padding:1rem; border-radius:10px; font-size:0.85rem;">
@@ -1080,67 +1165,8 @@
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns:1fr 1.6fr; gap:2rem;">
-        <!-- Create Admin Form -->
-        <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:14px; padding:1.5rem;">
-          <h3 style="font-size:1.1rem; color:var(--navy-900); margin-bottom:1rem; font-weight:800;">
-            <i class="fas fa-user-plus"></i> Create New Sub-Admin
-          </h3>
-          <form id="createSubAdminForm" onsubmit="handleCreateSubAdmin(event)">
-            <div class="form-group">
-              <label>Full Name:</label>
-              <input type="text" id="newAdminName" class="form-control" placeholder="e.g. Dr. Jane Smith" required />
-            </div>
-            <div class="form-group">
-              <label>Login Username:</label>
-              <input type="text" id="newAdminUser" class="form-control" placeholder="e.g. janesmith_admin" required />
-            </div>
-            <div class="form-group">
-              <label>Temporary Password:</label>
-              <div style="display:flex; gap:0.5rem;">
-                <input type="password" id="newAdminPass" class="form-control" placeholder="e.g. Pass@123456" required />
-                <button type="button" onclick="togglePasswordVisibility('newAdminPass', this)" class="btn-action" style="padding:0.7rem;"><i class="fas fa-eye"></i></button>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Official Email:</label>
-              <input type="email" id="newAdminEmail" class="form-control" placeholder="admin@greach.org" required />
-            </div>
-            <div class="form-group">
-              <label>Administrative Role:</label>
-              <select id="newAdminRole" class="form-control">
-                <option value="assistant_admin">Assistant Administrator (Roster &amp; Submissions)</option>
-                <option value="course_instructor">Course Instructor (Classroom &amp; Live Streams)</option>
-              </select>
-            </div>
-            <button type="submit" class="btn-primary" style="width:100%; justify-content:center; margin-top:0.5rem;">
-              <i class="fas fa-shield-alt"></i> Authorize &amp; Save Sub-Admin
-            </button>
-          </form>
-        </div>
-
-        <!-- Sub-Admins List -->
-        <div>
-          <h3 style="font-size:1.1rem; color:var(--navy-900); margin-bottom:1rem; font-weight:800;">
-            <i class="fas fa-id-badge"></i> Active Administrative Accounts
-          </h3>
-          <div class="table-responsive">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Username / Name</th>
-                  <th>Role</th>
-                  <th>Email</th>
-                  <th>Created Date</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="subAdminsTableBody">
-                <!-- Dynamically populated -->
-              </tbody>
-            </table>
-          </div>
-        </div>
+      <div role="status" style="max-width:760px; padding:1.25rem; background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; color:#7c2d12;">
+        Administrative accounts cannot be created or managed in browser storage. Use the approved server-side Supabase Auth workflow after separate authorization; no local administrator credentials or roles are saved here.
       </div>
     </section>
 
@@ -1158,6 +1184,25 @@
         <button class="btn-primary" onclick="resetDefaultPrices()"><i class="fas fa-undo"></i> Reset to Default</button>
       </div>
 
+      <!-- Live Server Exchange Rates Banner -->
+      <div id="adminRatesBanner" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1.5px solid #38bdf8; border-radius: 10px; padding: 14px 18px; margin: 1.2rem 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; color: #f8fafc;">
+        <div>
+          <div style="font-weight: 800; font-size: 0.95rem; color: #38bdf8; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-coins"></i> Dynamic Multi-Currency Conversion Active (NGN Master)
+          </div>
+          <div style="font-size: 0.82rem; color: #cbd5e1; margin-top: 4px;">
+            <strong>Live Rates:</strong>
+            <span style="background: rgba(56,189,248,0.2); padding: 2px 6px; border-radius: 4px;">Â£1 = â‚¦<span id="adminRateGbpDisplay">1,795.00</span></span> â€¢
+            <span style="background: rgba(56,189,248,0.2); padding: 2px 6px; border-radius: 4px;">$1 = â‚¦<span id="adminRateUsdDisplay">1,345.00</span></span> â€¢
+            <span style="background: rgba(56,189,248,0.2); padding: 2px 6px; border-radius: 4px;">â‚¬1 = â‚¦<span id="adminRateEurDisplay">1,499.00</span></span>
+            <span style="margin-left: 8px; color: #94a3b8;">(<span id="adminRateProviderText">ExchangeRate-API</span>, Updated: <span id="adminRateUpdatedText">Live</span>)</span>
+          </div>
+        </div>
+        <button type="button" class="btn-secondary" onclick="refreshAdminLiveRates()" style="padding: 6px 14px; font-size: 0.8rem; background: #0284c7; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; font-weight: 700;">
+          <i class="fas fa-sync-alt" id="refreshRatesIcon"></i> Refresh Rates
+        </button>
+      </div>
+
       <div class="pricing-grid" id="pricingCardsContainer">
         <!-- Dynamically rendered -->
       </div>
@@ -1169,16 +1214,16 @@
     <section id="tabCertificates" class="admin-card" style="display:none;">
       <div class="card-head">
         <div>
-          <h2><i class="fas fa-award" style="color:var(--gold-500);"></i> Certificate Registry &amp; One-Off Policy Control</h2>
+          <h2><i class="fas fa-award" style="color:var(--gold-500);"></i> Central Certificate Registry</h2>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
-            Official certificates are strictly <strong>single-issue (one-off)</strong>. If a student communicates with you requesting a name change or reissue, unlock it below for their email.
+            Registry results are loaded from the server. Review submissions, revoke, and reissue only through the signed Super Admin and TOTP protected workflow.
           </p>
         </div>
-        <a href="classroom/claim-certificate.html" target="_blank" class="btn-primary"><i class="fas fa-external-link-alt"></i> Open Certificate Portal</a>
+        <a href="classroom/certificate-review.html" class="btn-primary"><i class="fas fa-external-link-alt"></i> Open Certificate Review</a>
       </div>
 
       <div class="controls-strip">
-        <input type="text" id="certSearchInput" class="search-input" placeholder="ðŸ” Search issued certificates by Serial ID, student name, or email..." oninput="renderCertsTable()" />
+        <input type="text" id="certSearchInput" class="search-input" placeholder="Search registry by reference, student, course, or statusâ€¦" oninput="renderCertsTable()" />
       </div>
 
       <div class="table-responsive">
@@ -1187,8 +1232,7 @@
             <tr>
               <th>Serial Number</th>
               <th>Student Name</th>
-              <th>Registered Email</th>
-              <th>Course Accredited</th>
+              <th>Course</th>
               <th>Issue Date</th>
               <th>Status</th>
               <th style="text-align:right;">Admin Actions</th>
@@ -1259,7 +1303,7 @@
         <div>
           <h2><i class="fas fa-calendar-alt" style="color:var(--accent-teal);"></i> Course Dates, Schedules &amp; Class Times</h2>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
-            Update course start dates, end dates, and daily class times (e.g. 10:00 AM â€“ 12:30 PM WAT). Changes reflect across all website pages and student portals instantly.
+            Update course start dates, end dates, and daily class times (e.g. 10:00 AM Ã¢â‚¬â€œ 12:30 PM WAT). Changes reflect across all website pages and student portals instantly.
           </p>
         </div>
         <button class="btn-primary" onclick="resetDefaultSchedules()"><i class="fas fa-undo"></i> Reset to Default Schedules</button>
@@ -1283,36 +1327,8 @@
         </div>
       </div>
 
-      <div style="max-width:650px; background:#f8fafc; border:1px solid var(--card-border); border-radius:16px; padding:2rem;">
-        <form id="updateSuperUserForm" onsubmit="handleUpdateSuperUser(event)">
-          <div class="form-group">
-            <label><i class="fas fa-id-badge"></i> Full Administrator Name:</label>
-            <input type="text" id="suFullName" class="form-control" required />
-          </div>
-          <div class="form-group">
-            <label><i class="fas fa-envelope"></i> Official Admin Email:</label>
-            <input type="email" id="suEmail" class="form-control" required />
-          </div>
-          <div class="form-group">
-            <label><i class="fas fa-user-circle"></i> Master Superuser Username:</label>
-            <input type="text" id="suUsername" class="form-control" placeholder="e.g. Greachimpact" required />
-            <small style="color:var(--text-muted); font-size:0.75rem;">This is the username used to log into the Super Admin console and the classroom.</small>
-          </div>
-          <div class="form-group">
-            <label><i class="fas fa-key"></i> New Master Secret Password:</label>
-            <div style="display:flex; gap:0.5rem;">
-              <input type="password" id="suPassword" class="form-control" placeholder="Enter new secret password..." required />
-              <button type="button" onclick="togglePasswordVisibility('suPassword', this)" class="btn-action" style="padding:0.7rem;"><i class="fas fa-eye"></i></button>
-            </div>
-            <small style="color:var(--text-muted); font-size:0.75rem;">Managed securely via Supabase Auth & Multi-Factor Authentication (MFA).</small>
-          </div>
-
-          <div id="suAlertBox" style="display:none; padding:0.85rem; border-radius:8px; margin-bottom:1.2rem; font-size:0.85rem;"></div>
-
-          <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.85rem; font-size:0.95rem; background:linear-gradient(135deg, #0A0A5E, #112641);">
-            <i class="fas fa-save"></i> Save &amp; Update Superuser Credentials
-          </button>
-        </form>
+      <div role="status" style="max-width:650px; padding:1.25rem; background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; color:#1e3a8a;">
+        Super Admin credentials are managed only by Supabase Auth. This browser interface does not read, save, or change administrator passwords.
       </div>
     </section>
   
@@ -1387,7 +1403,7 @@
       </div>
 
       <div class="controls-strip">
-        <input type="text" id="filterBlogSearch" class="search-input" placeholder="ðŸ” Search articles by title, keyword, or excerpt..." oninput="renderBlogTable()" />
+        <input type="text" id="filterBlogSearch" class="search-input" placeholder="Ã°Å¸â€Â Search articles by title, keyword, or excerpt..." oninput="renderBlogTable()" />
         <select id="filterBlogCategory" class="filter-select" onchange="renderBlogTable()">
           <option value="all">All Categories</option>
           <option value="Excel & Data">Excel & Data</option>
@@ -1571,8 +1587,8 @@
           <label>Access Grant Type:</label>
           <select id="modalStuAccessType" class="form-control">
             <option value="paid">Standard Paid (Expires 1 Month After Class)</option>
-            <option value="free_grant">ðŸŽ Free Access Pass (Expires 1 Month After Class)</option>
-            <option value="free_lifetime">ðŸ‘‘ Admin Free Lifetime Access (Never Expires)</option>
+            <option value="free_grant">Ã°Å¸Å½Â Free Access Pass (Expires 1 Month After Class)</option>
+            <option value="free_lifetime">Ã°Å¸â€˜â€˜ Admin Free Lifetime Access (Never Expires)</option>
           </select>
         </div>
         <div class="form-group">
@@ -1639,12 +1655,12 @@
         <div class="form-group">
           <label>Course Programme:</label>
           <select id="moCourse" class="form-control" onchange="updateManualOrderAmount(this.value)">
-            <option value="Microsoft Excel for Beginners|3000">Microsoft Excel for Beginners (â‚¦3,000)</option>
-            <option value="Microsoft Excel Advanced & Analytics|4000">Microsoft Excel Advanced & Analytics (â‚¦4,000)</option>
-            <option value="SQL for Data Analytics & Databases|5000">SQL for Data Analytics & Databases (â‚¦5,000)</option>
-            <option value="Complete Analytics Suite (Excel + SQL + Power BI)|10000">Complete Analytics Suite (â‚¦10,000)</option>
-            <option value="Power BI for Business Intelligence|22500">Power BI for Business Intelligence (â‚¦22,500)</option>
-            <option value="Executive Interactive Dashboard Design|40000">Executive Interactive Dashboard Design (â‚¦40,000)</option>
+            <option value="Microsoft Excel for Beginners|3000">Microsoft Excel for Beginners (Ã¢â€šÂ¦3,000)</option>
+            <option value="Microsoft Excel Advanced & Analytics|4000">Microsoft Excel Advanced & Analytics (Ã¢â€šÂ¦4,000)</option>
+            <option value="SQL for Data Analytics & Databases|5000">SQL for Data Analytics & Databases (Ã¢â€šÂ¦5,000)</option>
+            <option value="Complete Analytics Suite (Excel + SQL + Power BI)|10000">Complete Analytics Suite (Ã¢â€šÂ¦10,000)</option>
+            <option value="Power BI for Business Intelligence|22500">Power BI for Business Intelligence (Ã¢â€šÂ¦22,500)</option>
+            <option value="Executive Interactive Dashboard Design|40000">Executive Interactive Dashboard Design (Ã¢â€šÂ¦40,000)</option>
           </select>
         </div>
         <div class="form-group">
@@ -1656,7 +1672,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Amount (â‚¦):</label>
+          <label>Amount (Ã¢â€šÂ¦):</label>
           <input type="number" id="moAmount" class="form-control" value="3000" required />
         </div>
         <div style="display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.5rem;">
@@ -1706,7 +1722,7 @@
         <div class="form-group">
           <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
             <input type="checkbox" id="pastCertClaimed" checked style="accent-color:var(--navy-900);">
-            Has Completed Course & Eligible for Certificate
+            Historical browser claim only; not verified course completion
           </label>
         </div>
         <div style="display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.5rem;">
@@ -1762,9 +1778,9 @@
         <div class="form-group">
           <label><i class="fas fa-sliders-h"></i> Access Code Type:</label>
           <select id="ucType" class="form-control" onchange="handleCodeTypeChange()">
-            <option value="student_course">ðŸŽ“ Student Course Enrollment Code (Permanent / 30-Day)</option>
-            <option value="session_pass">â±ï¸ Temporary Live Session Pass (Single Class / Workshop)</option>
-            <option value="vip_suite">ðŸ‘‘ Complete Suite VIP Pass (Unlocks All 5 Modules)</option>
+            <option value="student_course">Ã°Å¸Å½â€œ Student Course Enrollment Code (Permanent / 30-Day)</option>
+            <option value="session_pass">Ã¢ÂÂ±Ã¯Â¸Â Temporary Live Session Pass (Single Class / Workshop)</option>
+            <option value="vip_suite">Ã°Å¸â€˜â€˜ Complete Suite VIP Pass (Unlocks All 5 Modules)</option>
           </select>
         </div>
 
@@ -1840,7 +1856,7 @@
         <div style="text-align:center; padding:1rem; background:white; border-radius:8px; border:1px solid #bbf7d0; margin-bottom:1rem;">
           <div style="font-size:0.8rem; color:#64748b; text-transform:uppercase; font-weight:700; letter-spacing:1px; margin-bottom:4px;">Unique Access Code</div>
           <div id="ucGeneratedCodeDisplay" style="font-family:monospace; font-size:1.8rem; font-weight:800; color:#0A0A5E; letter-spacing:2px;">GRC-2026-XXXX</div>
-          <div id="ucGeneratedDetails" style="font-size:0.82rem; color:#475569; margin-top:6px;">Course: Microsoft Excel for Beginners â€¢ Valid for: 30 Days</div>
+          <div id="ucGeneratedDetails" style="font-size:0.82rem; color:#475569; margin-top:6px;">Course: Microsoft Excel for Beginners Ã¢â‚¬Â¢ Valid for: 30 Days</div>
         </div>
 
         <!-- 1-Click Action Buttons -->
@@ -1973,7 +1989,7 @@
     </div>
   </div>
 
-  <!-- ðŸ‘‘ MANDATORY SUPER ADMIN AUTHORIZATION MODAL -->
+  <!-- Ã°Å¸â€˜â€˜ MANDATORY SUPER ADMIN AUTHORIZATION MODAL -->
   <div class="modal-overlay" id="superAdminConfirmModal" style="z-index: 100000;">
     <div class="modal-card" style="max-width:480px; width:92%; border-top: 5px solid #dc2626; box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.45); border-radius:16px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
@@ -2183,9 +2199,10 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token,
             'X-CSRF-Token': currentAdminSession ? (currentAdminSession.csrfToken || '') : ''
           },
-          body: JSON.stringify({ action: 'verify_super_action', token: token, password: enteredPass })
+          body: JSON.stringify({ action: 'verify_super_action', password: enteredPass })
         });
         const data = await res.json();
         if (res.ok && data.success && data.verified) {
@@ -2435,7 +2452,7 @@
       };
 
       document.getElementById('ucGeneratedCodeDisplay').textContent = code;
-      document.getElementById('ucGeneratedDetails').textContent = `Course: ${course} â€¢ Valid for: ${expText}` + (studentName ? ` â€¢ Student: ${studentName}` : '');
+      document.getElementById('ucGeneratedDetails').textContent = `Course: ${course} Ã¢â‚¬Â¢ Valid for: ${expText}` + (studentName ? ` Ã¢â‚¬Â¢ Student: ${studentName}` : '');
       document.getElementById('ucResultBox').style.display = 'block';
 
       setButtonLoading(submitBtn, false);
@@ -2468,7 +2485,7 @@
       const origin = window.location.origin;
       const link = `${origin}/classroom/index.html?code=${encodeURIComponent(lastGeneratedCodeData.code)}`;
       const msg = encodeURIComponent(
-        `Hello ${lastGeneratedCodeData.studentName || 'Student'}!\n\nHere is your official access code for Greach Impact Academy:\n\nðŸ”‘ Code: ${lastGeneratedCodeData.code}\nðŸ“š Course: ${lastGeneratedCodeData.course}\nâ±ï¸ Validity: ${lastGeneratedCodeData.expiresText}\n\nðŸ‘‰ Click to enter your classroom directly: ${link}\n\nWelcome to class!`
+        `Hello ${lastGeneratedCodeData.studentName || 'Student'}!\n\nHere is your official access code for Greach Impact Academy:\n\nÃ°Å¸â€â€˜ Code: ${lastGeneratedCodeData.code}\nÃ°Å¸â€œÅ¡ Course: ${lastGeneratedCodeData.course}\nÃ¢ÂÂ±Ã¯Â¸Â Validity: ${lastGeneratedCodeData.expiresText}\n\nÃ°Å¸â€˜â€° Click to enter your classroom directly: ${link}\n\nWelcome to class!`
       );
       const phoneClean = (lastGeneratedCodeData.phone || '').replace(/[^0-9]/g, '');
       const waUrl = phoneClean ? `https://wa.me/${phoneClean}?text=${msg}` : `https://api.whatsapp.com/send?text=${msg}`;
@@ -2505,7 +2522,7 @@
         document.getElementById('sbAnonKey').value = cfg.key;
         if (dot) dot.style.background = '#22c55e';
         if (text) text.innerHTML = '<span style="color:#166534;">Supabase Status: Connected to Cloud PostgreSQL</span>';
-        if (sub) sub.textContent = `Project Endpoint: ${cfg.url} â€¢ Active & Ready for Universal Real-Time Sync`;
+        if (sub) sub.textContent = `Project Endpoint: ${cfg.url} Ã¢â‚¬Â¢ Active & Ready for Universal Real-Time Sync`;
       } else {
         if (dot) dot.style.background = '#94a3b8';
         if (text) text.textContent = 'Supabase Status: Not Configured (Using LocalStorage & Serverless Sync)';
@@ -2735,8 +2752,11 @@
         if (parsed && parsed.token) {
           const res = await fetch('/api/auth', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'verify', token: parsed.token })
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + parsed.token
+            },
+            body: JSON.stringify({ action: 'verify' })
           });
           const verified = await res.json();
           if (res.ok && verified.success && verified.valid) {
@@ -2775,7 +2795,7 @@
       const greet = document.getElementById('adminUserGreeting');
       if (currentAdminSession) {
         badge.innerHTML = currentAdminSession.isSuper ? '<i class="fas fa-crown"></i> Super Admin' : '<i class="fas fa-user-shield"></i> Sub-Admin';
-        greet.textContent = `Logged in as: ${currentAdminSession.username} • ${currentAdminSession.isSuper ? 'Global Superuser Access' : 'Delegated Admin'}`;
+        greet.textContent = `Logged in as: ${currentAdminSession.username} â€¢ ${currentAdminSession.isSuper ? 'Global Superuser Access' : 'Delegated Admin'}`;
       }
       if (badge) {
         badge.style.cursor = 'pointer';
@@ -2873,9 +2893,10 @@
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + session.token,
                 'X-CSRF-Token': session.csrfToken || ''
               },
-              body: JSON.stringify({ action: 'logout', token: session.token })
+              body: JSON.stringify({ action: 'logout' })
             });
           } catch (e) {}
         }
@@ -2883,6 +2904,167 @@
         localStorage.removeItem(ADMIN_SESSION_KEY);
         currentAdminSession = null;
         window.location.reload();
+      }
+    }
+
+    let pendingRecoveryAccessToken = '';
+
+    (function detectSupabasePasswordRecoveryHash() {
+      try {
+        const rawHash = (window.location.hash || '').replace(/^#/, '');
+        if (!rawHash) return;
+        const params = new URLSearchParams(rawHash);
+        const type = params.get('type');
+        const accessToken = params.get('access_token');
+        if (type === 'recovery' && accessToken) {
+          pendingRecoveryAccessToken = accessToken;
+          if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
+          }
+          const overlay = document.getElementById('adminAuthOverlay');
+          const loginForm = document.getElementById('superAdminLoginForm');
+          const reqForm = document.getElementById('adminResetRequestForm');
+          const recForm = document.getElementById('adminRecoveryCompleteForm');
+          if (overlay) overlay.style.display = 'flex';
+          if (loginForm) loginForm.style.display = 'none';
+          if (reqForm) reqForm.style.display = 'none';
+          if (recForm) recForm.style.display = 'block';
+        }
+      } catch (e) {}
+    })();
+
+    function toggleAdminResetRequestForm(show = true) {
+      const loginForm = document.getElementById('superAdminLoginForm');
+      const reqForm = document.getElementById('adminResetRequestForm');
+      const recForm = document.getElementById('adminRecoveryCompleteForm');
+      if (recForm) recForm.style.display = 'none';
+      if (loginForm) loginForm.style.display = show ? 'none' : 'block';
+      if (reqForm) reqForm.style.display = show ? 'block' : 'none';
+    }
+
+    async function handleAdminResetRequest(e) {
+      e.preventDefault();
+      const input = document.getElementById('adminResetEmailInput');
+      const msg = document.getElementById('adminResetRequestMsg');
+      if (!input || !msg) return;
+      msg.style.display = 'block';
+      msg.style.background = '#eff6ff';
+      msg.style.color = '#1e40af';
+      msg.textContent = 'Sending password reset link...';
+      try {
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'request_password_reset', identifier: input.value.trim() })
+        });
+        const data = await res.json().catch(() => ({}));
+        msg.style.background = res.ok ? '#ecfdf5' : '#fef2f2';
+        msg.style.color = res.ok ? '#065f46' : '#991b1b';
+        msg.textContent = data.message || data.error || 'Request processed.';
+      } catch (err) {
+        msg.style.background = '#fef2f2';
+        msg.style.color = '#991b1b';
+        msg.textContent = 'Network error. Please try again.';
+      }
+    }
+
+    async function handleAdminRecoveryComplete(e) {
+      e.preventDefault();
+      const p1 = document.getElementById('adminRecoveryNewPass')?.value || '';
+      const p2 = document.getElementById('adminRecoveryConfirmPass')?.value || '';
+      const msg = document.getElementById('adminRecoveryCompleteMsg');
+      if (!msg) return;
+      msg.style.display = 'block';
+      if (p1 !== p2) {
+        msg.style.background = '#fef2f2';
+        msg.style.color = '#991b1b';
+        msg.textContent = 'Passwords do not match.';
+        return;
+      }
+      msg.style.background = '#eff6ff';
+      msg.style.color = '#1e40af';
+      msg.textContent = 'Updating password...';
+      try {
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'complete_password_recovery', recoveryToken: pendingRecoveryAccessToken, newPassword: p1 })
+        });
+        const data = await res.json().catch(() => ({}));
+        msg.style.background = res.ok ? '#ecfdf5' : '#fef2f2';
+        msg.style.color = res.ok ? '#065f46' : '#991b1b';
+        msg.textContent = data.message || data.error || 'Could not update password.';
+        if (res.ok) {
+          pendingRecoveryAccessToken = '';
+          setTimeout(() => toggleAdminResetRequestForm(false), 1800);
+        }
+      } catch (err) {
+        msg.style.background = '#fef2f2';
+        msg.style.color = '#991b1b';
+        msg.textContent = 'Network error while updating password.';
+      }
+    }
+
+    function openChangeAdminPasswordModal() {
+      const m = document.getElementById('changeAdminPasswordModal');
+      const msg = document.getElementById('changePassMsg');
+      const form = document.getElementById('changeAdminPasswordForm');
+      if (form) form.reset();
+      if (msg) { msg.style.display = 'none'; msg.textContent = ''; }
+      if (m) m.style.display = 'flex';
+    }
+
+    function closeChangeAdminPasswordModal() {
+      const m = document.getElementById('changeAdminPasswordModal');
+      if (m) m.style.display = 'none';
+    }
+
+    async function handleChangeAdminPassword(e) {
+      e.preventDefault();
+      const curr = document.getElementById('changePassCurrent')?.value || '';
+      const p1 = document.getElementById('changePassNew')?.value || '';
+      const p2 = document.getElementById('changePassConfirm')?.value || '';
+      const msg = document.getElementById('changePassMsg');
+      if (!msg) return;
+      msg.style.display = 'block';
+      if (p1 !== p2) {
+        msg.style.background = '#fef2f2';
+        msg.style.color = '#991b1b';
+        msg.textContent = 'New passwords do not match.';
+        return;
+      }
+      const session = currentAdminSession;
+      if (!session || !session.token) {
+        msg.style.background = '#fef2f2';
+        msg.style.color = '#991b1b';
+        msg.textContent = 'Verified Super Admin session required.';
+        return;
+      }
+      msg.style.background = '#eff6ff';
+      msg.style.color = '#1e40af';
+      msg.textContent = 'Updating administrator password...';
+      try {
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + session.token,
+            'X-CSRF-Token': session.csrfToken || ''
+          },
+          body: JSON.stringify({ action: 'change_password', currentPassword: curr, newPassword: p1 })
+        });
+        const data = await res.json().catch(() => ({}));
+        msg.style.background = res.ok ? '#ecfdf5' : '#fef2f2';
+        msg.style.color = res.ok ? '#065f46' : '#991b1b';
+        msg.textContent = data.message || data.error || 'Password update failed.';
+        if (res.ok) {
+          document.getElementById('changeAdminPasswordForm')?.reset();
+          setTimeout(() => closeChangeAdminPasswordModal(), 1600);
+        }
+      } catch (err) {
+        msg.style.background = '#fef2f2';
+        msg.style.color = '#991b1b';
+        msg.textContent = 'Network error. Please try again.';
       }
     }
 
@@ -2967,25 +3149,21 @@
           requireSuperAdminAuth('Access Super Administrator Security Settings', () => {
             currentAdminSession = currentAdminSession || { username: 'Greachimpact', isSuper: true };
             currentAdminSession.isSuper = true;
-            if (typeof populateSuperUserForm === 'function') populateSuperUserForm();
           });
-        } else {
-          if (typeof populateSuperUserForm === 'function') populateSuperUserForm();
         }
       } else if (tabKey === 'admins') {
         if (!currentAdminSession || !currentAdminSession.isSuper) {
-          requireSuperAdminAuth('Manage Sub-Administrators & Roles', () => {
+          requireSuperAdminAuth('Review Administrative Account Management Notice', () => {
             currentAdminSession = currentAdminSession || { username: 'Greachimpact', isSuper: true };
             currentAdminSession.isSuper = true;
-            if (typeof renderSubAdminsTable === 'function') renderSubAdminsTable();
           });
-        } else {
-          if (typeof renderSubAdminsTable === 'function') renderSubAdminsTable();
         }
       } else if (tabKey === 'schedules') {
         if (typeof renderScheduleCards === 'function') renderScheduleCards();
       } else if (tabKey === 'orders') {
         if (typeof renderOrdersTable === 'function') renderOrdersTable();
+      } else if (tabKey === 'certificates') {
+        if (typeof renderCertsTable === 'function') renderCertsTable();
       } else if (tabKey === 'audit') {
         if (typeof renderAuditTable === 'function') renderAuditTable();
       } else if (tabKey === 'brevo') {
@@ -3027,7 +3205,6 @@
     // 2. Render KPI Stats
     function renderStats() {
       const students = window.GreachDB.getAllStudents();
-      const certs = window.GreachDB.getAllCertificates();
       const orders = window.GreachBrevo ? window.GreachBrevo.getAllOrders() : [];
       const dispatches = window.GreachBrevo ? window.GreachBrevo.getDispatchLogs() : [];
 
@@ -3048,7 +3225,7 @@
       const statOrdersEl = document.getElementById('statTotalOrders');
       if (statOrdersEl) statOrdersEl.textContent = orders.length.toLocaleString();
       const statRevEl = document.getElementById('statRevenueText');
-      if (statRevEl) statRevEl.textContent = 'â‚¦' + totalRevenue.toLocaleString() + ' verified revenue';
+      if (statRevEl) statRevEl.textContent = 'Ã¢â€šÂ¦' + totalRevenue.toLocaleString() + ' verified revenue';
       const statDispEl = document.getElementById('statTotalDispatches');
       if (statDispEl) statDispEl.textContent = dispatches.length.toLocaleString();
       const now = new Date();
@@ -3073,7 +3250,8 @@
       document.getElementById('statActiveStudents').textContent = activeCount.toLocaleString();
       document.getElementById('statExpiredStudents').textContent = expiredCount.toLocaleString();
       document.getElementById('statFreeGrants').textContent = freeCount.toLocaleString();
-      document.getElementById('statCertsIssued').textContent = certs.length.toLocaleString();
+      document.getElementById('statCertsIssued').textContent = 'â€”';
+      document.getElementById('statCertsIssued').title = 'Open the Certificate Registry tab for the server-backed record list.';
     }
 
     // ==============================================================
@@ -3117,7 +3295,7 @@
               </div>
               <span style="background:${statusBg}; color:${statusColor}; border:1px solid ${statusBorder}; padding:3px 10px; border-radius:20px; font-size:0.74rem; font-weight:800; display:inline-flex; align-items:center; gap:6px;">
                 <span style="width:8px; height:8px; border-radius:50%; background:${dotColor}; display:inline-block;"></span>
-                ${cls.isLive ? 'ðŸŸ¢ CLASS ON / LIVE' : 'ðŸ”´ STOPPED / OFF'}
+                ${cls.isLive ? 'Ã°Å¸Å¸Â¢ CLASS ON / LIVE' : 'Ã°Å¸â€Â´ STOPPED / OFF'}
               </span>
             </div>
 
@@ -3154,7 +3332,7 @@
           <!-- Course Timetable & Mode Info -->
           <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:0.5rem 0.75rem; margin-bottom:0.75rem; font-size:0.76rem;">
             <div style="color:#334155; margin-bottom:2px;"><i class="fas fa-calendar-check" style="color:#0284c7;"></i> <strong>Scheduled Hours (WAT):</strong> ${escapeHtml(cls.scheduleText || 'Weekly Sessions')}</div>
-            <div style="color:#64748b;"><strong>Current Mode:</strong> <span style="font-weight:800; color:${cls.mode === 'auto' ? '#0284c7' : (cls.mode === 'force_on' ? '#15803d' : '#dc2626')};">${cls.mode === 'auto' ? '⏰ Auto-Schedule (Timetable)' : (cls.mode === 'force_on' ? '🟢 Forced ON (Admin Override)' : '🔴 Stopped (Admin Override)')}</span></div>
+            <div style="color:#64748b;"><strong>Current Mode:</strong> <span style="font-weight:800; color:${cls.mode === 'auto' ? '#0284c7' : (cls.mode === 'force_on' ? '#15803d' : '#dc2626')};">${cls.mode === 'auto' ? 'â° Auto-Schedule (Timetable)' : (cls.mode === 'force_on' ? 'ðŸŸ¢ Forced ON (Admin Override)' : 'ðŸ”´ Stopped (Admin Override)')}</span></div>
           </div>
 
           <div style="display:flex; flex-wrap:wrap; gap:5px; padding-top:0.75rem; border-top:1px solid #f1f5f9;">
@@ -3204,8 +3382,7 @@
       });
     }
 
-    function executeSetClassroomState(courseKey, modeOrLive, btn) {
-      const adminUser = currentAdminSession ? currentAdminSession.username : 'Greachimpact';
+    async function executeSetClassroomState(courseKey, modeOrLive, btn) {
       const cls = window.GreachDB.getClassroomState(courseKey);
       if (modeOrLive === false || modeOrLive === 'force_off') {
         if (!confirm(`Stop "${cls.label}" (${cls.id})?\n\nStopping this classroom will pause student access and disconnect any students currently inside it.`)) {
@@ -3214,13 +3391,17 @@
       }
       if (window.GreachLoader) {
         window.GreachLoader.show(`Updating ${cls.shortLabel || cls.label}...`);
-        setTimeout(() => window.GreachLoader.hide(), 350);
       }
-      window.GreachDB.setClassroomState(courseKey, modeOrLive, adminUser);
+      const result = await window.GreachDB.setClassroomState(courseKey, modeOrLive);
+      if (window.GreachLoader) window.GreachLoader.hide();
+      if (!result.success) {
+        showToast('Authorization Failed', result.error, 'error');
+        return;
+      }
       renderClassroomsControlCenter();
       renderStudentActivity();
       renderStats();
-      const updated = window.GreachDB.getClassroomState(courseKey);
+      const updated = result.classroom;
       showToast(
         'Classroom Mode Updated',
         `${cls.label} is now in ${updated.mode.toUpperCase()} mode (${updated.isLive ? 'LIVE' : 'OFFLINE'}).`,
@@ -3236,10 +3417,14 @@
       });
     }
 
-    function executeResetClassroomTimer(courseKey, btn) {
-      const adminUser = currentAdminSession ? currentAdminSession.username : 'Greachimpact';
-      const updated = window.GreachDB.resetClassroomTimer(courseKey, adminUser);
+    async function executeResetClassroomTimer(courseKey, btn) {
+      const result = await window.GreachDB.resetClassroomTimer(courseKey);
+      if (!result.success) {
+        showToast('Authorization Failed', result.error, 'error');
+        return;
+      }
       renderClassroomsControlCenter();
+      const updated = result.classroom;
       showToast('Class Timer Reset', `Uptime timer restarted for ${updated.label}.`, 'info');
     }
 
@@ -3252,14 +3437,17 @@
       });
     }
 
-    function executeSetAllClassrooms(modeOrLive) {
-      const adminUser = currentAdminSession ? currentAdminSession.username : 'Greachimpact';
+    async function executeSetAllClassrooms(modeOrLive) {
       if ((modeOrLive === false || modeOrLive === 'force_off') && !confirm('Are you sure you want to STOP all 6 course classrooms?')) return;
       if (window.GreachLoader) {
         window.GreachLoader.show(`Setting All 6 Classrooms to ${String(modeOrLive).toUpperCase()}...`);
-        setTimeout(() => window.GreachLoader.hide(), 400);
       }
-      window.GreachDB.setAllClassroomsState(modeOrLive, adminUser);
+      const result = await window.GreachDB.setAllClassroomsState(modeOrLive);
+      if (window.GreachLoader) window.GreachLoader.hide();
+      if (!result.success) {
+        showToast('Authorization Failed', result.error, 'error');
+        return;
+      }
       renderClassroomsControlCenter();
       renderStudentActivity();
       renderStats();
@@ -3402,7 +3590,7 @@
                     <i class="fas ${icon}"></i> ${l.type}
                   </span>
                 </td>
-                <td style="font-size:0.82rem; font-weight:600; color:#334155;">${escapeHtml(l.duration || 'â€”')}</td>
+                <td style="font-size:0.82rem; font-weight:600; color:#334155;">${escapeHtml(l.duration || 'Ã¢â‚¬â€')}</td>
                 <td style="font-size:0.8rem; color:#64748b;">${escapeHtml(l.reason || 'Normal Session')}</td>
                 <td style="font-size:0.8rem; color:#475569;">${escapeHtml(l.details || '')}</td>
               </tr>
@@ -3471,7 +3659,7 @@
         if (statusFilter === 'active' && isExpired) return false;
         if (statusFilter === 'expired' && !isExpired) return false;
         if (statusFilter === 'free' && !(s.accessType === 'free_grant' || isLifetime)) return false;
-        if (statusFilter === 'cert' && !s.certificateClaimed) return false;
+        if (statusFilter === 'cert') return false;
 
         return true;
       });
@@ -3498,9 +3686,7 @@
           statusBadge = '<span class="badge-status badge-expired"><i class="fas fa-times-circle"></i> Expired</span>';
         }
 
-        const certBadge = s.certificateClaimed 
-          ? `<span class="badge-status badge-cert" title="Serial: ${s.certificateId || 'Accredited'}"><i class="fas fa-award"></i> Claimed</span>`
-          : '<span style="color:#94a3b8; font-size:0.75rem;">Unclaimed</span>';
+        const certBadge = '<span style="color:#64748b; font-size:0.75rem;">Check central registry</span>';
 
         return `
           <tr>
@@ -3523,7 +3709,7 @@
             <td><span style="font-size:0.8rem; color:#64748b;">${s.classEndDate || '2026-06-30'}</span></td>
             <td>
               <strong style="color:${isExpired ? '#dc2626' : '#16a34a'}; font-size:0.82rem;">
-                ${isLifetime ? '∞ Lifetime' : (s.expiresAt || 'Active')}
+                ${isLifetime ? 'âˆž Lifetime' : (s.expiresAt || 'Active')}
               </strong>
             </td>
             <td>${statusBadge}</td>
@@ -3542,11 +3728,6 @@
                 <button onclick="openEmailModal('${s.id}')" class="btn-action mail" title="View / Email Credentials">
                   <i class="fas fa-envelope"></i>
                 </button>
-                ${s.certificateClaimed ? `
-                  <button onclick="unlockCertClick('${s.id}')" class="btn-action" style="background:#fed7aa; color:#9a3412;" title="Authorize Certificate Re-Issue">
-                    <i class="fas fa-unlock"></i>
-                  </button>
-                ` : ''}
               </div>
             </td>
           </tr>
@@ -3557,7 +3738,7 @@
 
     // 4. Quick Actions
     function grantFreeAccessClick(studentId) {
-      const choice = confirm(`Grant Free Access to student (${studentId})?\n\nâ€¢ Click OK for Free 1-Month Extension\nâ€¢ Click Cancel to abort`);
+      const choice = confirm(`Grant Free Access to student (${studentId})?\n\nÃ¢â‚¬Â¢ Click OK for Free 1-Month Extension\nÃ¢â‚¬Â¢ Click Cancel to abort`);
       if (choice) {
         window.GreachDB.grantFreeAccess(studentId, false);
         alert('Free 30-Day Access pass successfully granted!');
@@ -3580,11 +3761,7 @@
     }
 
     function unlockCertClick(studentId) {
-      if (confirm(`Authorize certificate reissue for ${studentId}?\n\nThis clears their one-off lock so the student can claim an updated certificate (e.g. name correction).`)) {
-        window.GreachDB.allowCertificateReissue(studentId);
-        alert('Certificate lock cleared. Student can now claim an updated certificate.');
-        refreshAllData();
-      }
+      alert(`Certificate lifecycle changes require the central certificate reference. Open the Certificate Review console and use its registry-backed revoke or reissue action. Student ${studentId} browser flags are not authoritative.`);
     }
 
     // 5. Enroll Student Modal Form
@@ -3728,11 +3905,11 @@ Here are your official login credentials and access details:
 
 YOUR UNIQUE CREDENTIALS:
 ------------------------
-â€¢ Student ID: ${student.id}
-â€¢ Registered Email: ${student.email}
-â€¢ Secret Access Password: ${student.password}
-â€¢ Cohort: ${student.cohort || 'Batch 2: 2026 Masterclass'}
-â€¢ Access Expiry Date: ${student.expiresAt || 'Lifetime Access'} (1 month after class ends)
+Ã¢â‚¬Â¢ Student ID: ${student.id}
+Ã¢â‚¬Â¢ Registered Email: ${student.email}
+Ã¢â‚¬Â¢ Secret Access Password: ${student.password}
+Ã¢â‚¬Â¢ Cohort: ${student.cohort || 'Batch 2: 2026 Masterclass'}
+Ã¢â‚¬Â¢ Access Expiry Date: ${student.expiresAt || 'Lifetime Access'} (1 month after class ends)
 
 INSTANT 1-CLICK CLASSROOM ACCESS:
 https://greachimpact.com/classroom/index.html?id=${student.id}&key=${encodeURIComponent(student.password)}
@@ -3762,76 +3939,6 @@ greachimpact@gmail.com`;
       alert('Email content copied to clipboard!');
     }
 
-    // 7. Sub-Admin Management
-    function renderSubAdminsTable() {
-      const admins = window.GreachDB.getAllAdmins();
-      const tbody = document.getElementById('subAdminsTableBody');
-      tbody.innerHTML = '';
-
-      admins.forEach(a => {
-        const tr = document.createElement('tr');
-        const roleBadge = a.isSuper 
-          ? '<span class="badge-status" style="background:#fef3c7; color:#b45309;"><i class="fas fa-crown"></i> Super Admin</span>'
-          : `<span class="badge-status" style="background:#e0f2fe; color:#0369a1;"><i class="fas fa-shield-alt"></i> ${a.role || 'Assistant'}</span>`;
-
-        tr.innerHTML = `
-          <td>
-            <strong style="color:var(--navy-900);">${escapeHtml(a.name || a.username)}</strong>
-            <div style="font-family:monospace; font-size:0.75rem; color:#64748b;">@${escapeHtml(a.username)}</div>
-          </td>
-          <td>${roleBadge}</td>
-          <td>${escapeHtml(a.email || 'admin@greach.org')}</td>
-          <td><span style="font-size:0.8rem; color:#64748b;">${a.createdAt ? new Date(a.createdAt).toLocaleDateString() : 'Permanent'}</span></td>
-          <td>
-            ${a.isSuper ? '<span style="font-size:0.75rem; color:#94a3b8;">Locked</span>' : `
-              <button onclick="handleDeleteSubAdmin('${escapeHtml(a.username)}')" class="btn-action" style="color:#dc2626;">
-                <i class="fas fa-trash"></i> Delete
-              </button>
-            `}
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function handleCreateSubAdmin(e) {
-      if (e) e.preventDefault();
-      const username = document.getElementById('newAdminUser').value.trim();
-      requireSuperAdminAuth(`Create Sub-Admin Account @${username}`, () => {
-        executeCreateSubAdmin(e);
-      });
-    }
-
-    function executeCreateSubAdmin(e) {
-      const name = document.getElementById('newAdminName').value.trim();
-      const username = document.getElementById('newAdminUser').value.trim();
-      const password = document.getElementById('newAdminPass').value.trim();
-      const email = document.getElementById('newAdminEmail').value.trim();
-      const role = document.getElementById('newAdminRole').value;
-
-      const res = window.GreachDB.createSubAdmin({ name, username, password, email, role });
-      if (res.success) {
-        alert(`Sub-admin @${username} created successfully!`);
-        document.getElementById('createSubAdminForm').reset();
-        renderSubAdminsTable();
-      } else {
-        alert(res.error || 'Failed to create sub-admin.');
-      }
-    }
-
-    function handleDeleteSubAdmin(username) {
-      requireSuperAdminAuth(`Permanently Delete Sub-Admin @${username}`, () => {
-        executeDeleteSubAdmin(username);
-      });
-    }
-
-    function executeDeleteSubAdmin(username) {
-      if (confirm(`Remove sub-admin @${username}?`)) {
-        window.GreachDB.deleteSubAdmin(username);
-        renderSubAdminsTable();
-      }
-    }
-
     // 8. Course Pricing Management (Deduplicated Canonical 6 Courses & Supabase Direct Sync)
     const CANONICAL_COURSES = [
       { key: 'excel_beginners', id: 'CRS-EXC-BEG', label: 'Microsoft Excel for Beginners', icon: 'fa-file-excel', color: '#107C41' },
@@ -3841,6 +3948,63 @@ greachimpact@gmail.com`;
       { key: 'power_bi', id: 'CRS-PBI-BEG', label: 'Power BI for Beginners', icon: 'fa-chart-pie', color: '#f59e0b' },
       { key: 'complete_course', id: 'CRS-DAT-SUITE', label: 'Complete Analytics Suite (Excel + SQL + Power BI)', icon: 'fa-layer-group', color: '#0A0A5E' }
     ];
+
+    let adminLiveRates = { GBP: 0.000557, USD: 0.000743, EUR: 0.000667, provider: 'ExchangeRate-API', timestamp: new Date().toISOString() };
+
+    async function refreshAdminLiveRates() {
+      const icon = document.getElementById('refreshRatesIcon');
+      if (icon) icon.classList.add('fa-spin');
+      try {
+        const res = await fetch('/api/payment?action=get_rates&force=true');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.success && data.rates) {
+            adminLiveRates = {
+              GBP: Number(data.rates.GBP),
+              USD: Number(data.rates.USD),
+              EUR: Number(data.rates.EUR),
+              provider: data.provider || 'ExchangeRate-API',
+              timestamp: data.timestamp
+            };
+            updateAdminRatesBannerUI();
+            CANONICAL_COURSES.forEach(crs => {
+              const inp = document.getElementById(`inputPrice_${crs.key}`);
+              if (inp) updateForeignEquivalents(crs.key, inp.value);
+            });
+            showToast('Rates Refreshed', 'Latest live exchange rates retrieved from server.', 'success');
+          }
+        }
+      } catch (e) {
+        showToast('Rates Refresh Failed', 'Could not refresh live rates from server.', 'error');
+      } finally {
+        if (icon) icon.classList.remove('fa-spin');
+      }
+    }
+
+    function updateAdminRatesBannerUI() {
+      const gbpDisp = document.getElementById('adminRateGbpDisplay');
+      const usdDisp = document.getElementById('adminRateUsdDisplay');
+      const eurDisp = document.getElementById('adminRateEurDisplay');
+      const provText = document.getElementById('adminRateProviderText');
+      const updText = document.getElementById('adminRateUpdatedText');
+
+      if (gbpDisp) gbpDisp.textContent = adminLiveRates.GBP ? (1 / adminLiveRates.GBP).toFixed(2) : '1,795';
+      if (usdDisp) usdDisp.textContent = adminLiveRates.USD ? (1 / adminLiveRates.USD).toFixed(2) : '1,345';
+      if (eurDisp) eurDisp.textContent = adminLiveRates.EUR ? (1 / adminLiveRates.EUR).toFixed(2) : '1,499';
+      if (provText) provText.textContent = adminLiveRates.provider;
+      if (updText) updText.textContent = new Date(adminLiveRates.timestamp).toLocaleTimeString();
+    }
+
+    function updateForeignEquivalents(courseKey, ngnVal) {
+      const val = Number(ngnVal) || 0;
+      const gbpEl = document.getElementById(`equivGbp_${courseKey}`);
+      const usdEl = document.getElementById(`equivUsd_${courseKey}`);
+      const eurEl = document.getElementById(`equivEur_${courseKey}`);
+
+      if (gbpEl) gbpEl.textContent = (val * (adminLiveRates.GBP || 0.000557)).toFixed(2);
+      if (usdEl) usdEl.textContent = (val * (adminLiveRates.USD || 0.000743)).toFixed(2);
+      if (eurEl) eurEl.textContent = (val * (adminLiveRates.EUR || 0.000667)).toFixed(2);
+    }
 
     async function renderPricingCards() {
       const container = document.getElementById('pricingCardsContainer');
@@ -3878,21 +4042,30 @@ greachimpact@gmail.com`;
               <span>${escapeHtml(crs.label)}</span>
             </div>
             <div style="display:flex; align-items:baseline; margin:0.8rem 0; gap:8px;">
-              <span class="pricing-slashed" style="color:#94a3b8; text-decoration:line-through; font-size:0.95rem;">â‚¦${Number(item.regular).toLocaleString()}</span>
-              <span class="pricing-current" style="color:#0A0A5E; font-size:1.6rem; font-weight:800;">â‚¦${Number(item.current).toLocaleString()}</span>
+              <span class="pricing-slashed" style="color:#94a3b8; text-decoration:line-through; font-size:0.95rem;">Ã¢â€šÂ¦${Number(item.regular).toLocaleString()}</span>
+              <span class="pricing-current" style="color:#0A0A5E; font-size:1.6rem; font-weight:800;">Ã¢â€šÂ¦${Number(item.current).toLocaleString()}</span>
             </div>
             <div style="display:flex; gap:0.5rem; margin-top:1rem; align-items:center;">
               <div style="position:relative; flex:1;">
-                <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#64748b; font-weight:700;">â‚¦</span>
-                <input type="number" id="inputPrice_${crs.key}" value="${item.current}" class="form-control" style="padding-left:26px; font-weight:700;" placeholder="New Price" />
+                <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#64748b; font-weight:700;">Ã¢â€šÂ¦</span>
+                <input type="number" id="inputPrice_${crs.key}" value="${item.current}" class="form-control" style="padding-left:26px; font-weight:700;" placeholder="New Price" oninput="updateForeignEquivalents('${crs.key}', this.value)" />
               </div>
               <button id="btnSavePrice_${crs.key}" onclick="saveCoursePrice('${crs.key}', this)" class="btn-primary" style="padding:0.6rem 1.1rem; font-size:0.85rem; font-weight:700; white-space:nowrap;">
                 <i class="fas fa-save"></i> Save to Cloud
               </button>
             </div>
+            <!-- Auto-Calculated Dynamic Foreign Currency Equivalents -->
+            <div id="foreignEquivContainer_${crs.key}" style="margin-top:0.6rem; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:6px 10px; font-size:0.78rem; color:#475569; display:flex; justify-content:space-between; align-items:center;">
+              <span><strong>Foreign Eqv:</strong></span>
+              <span>Â£<span id="equivGbp_${crs.key}">0.00</span></span> â€¢
+              <span>$<span id="equivUsd_${crs.key}">0.00</span></span> â€¢
+              <span>â‚¬<span id="equivEur_${crs.key}">0.00</span></span>
+            </div>
           `;
           container.appendChild(card);
+          updateForeignEquivalents(crs.key, item.current);
         });
+        updateAdminRatesBannerUI();
       }
     }
 
@@ -3900,11 +4073,11 @@ greachimpact@gmail.com`;
       const inp = document.getElementById(`inputPrice_${courseKey}`);
       const val = inp ? inp.value.trim() : '';
       if (!val || Number(val) <= 0) {
-        showToast('Invalid Price', 'Please enter a valid price greater than ₦0.', 'error');
+        showToast('Invalid Price', 'Please enter a valid price greater than â‚¦0.', 'error');
         return;
       }
       const courseDef = CANONICAL_COURSES.find(c => c.key === courseKey) || { label: courseKey };
-      requireSuperAdminAuth(`Update course fee for "${courseDef.label}" to ₦${Number(val).toLocaleString()}`, () => {
+      requireSuperAdminAuth(`Update course fee for "${courseDef.label}" to â‚¦${Number(val).toLocaleString()}`, () => {
         executeSaveCoursePrice(courseKey, btn);
       });
     }
@@ -3920,11 +4093,11 @@ greachimpact@gmail.com`;
         if (window.GreachDB && window.GreachDB.updateCoursePriceAsync) {
           await window.GreachDB.updateCoursePriceAsync(courseKey, val, null, 'Super Admin');
           setButtonLoading(buttonEl, false);
-          showToast('Price Updated Live!', `Fee for ${courseDef.label} set to ₦${Number(val).toLocaleString()} in Supabase Cloud!`, 'success');
+          showToast('Price Updated Live!', `Fee for ${courseDef.label} set to â‚¦${Number(val).toLocaleString()} in Supabase Cloud!`, 'success');
         } else if (window.GreachDB) {
           window.GreachDB.updateCoursePrice(courseKey, val);
           setButtonLoading(buttonEl, false);
-          showToast('Price Updated', `Fee for ${courseDef.label} updated to ₦${Number(val).toLocaleString()}`, 'success');
+          showToast('Price Updated', `Fee for ${courseDef.label} updated to â‚¦${Number(val).toLocaleString()}`, 'success');
         }
         renderPricingCards();
       } catch(err) {
@@ -3948,42 +4121,31 @@ greachimpact@gmail.com`;
     }
 
     // 9. Certificate Vault
-    function renderCertsTable() {
-      const certs = window.GreachDB.getAllCertificates();
-      const search = (document.getElementById('certSearchInput')?.value || '').trim().toLowerCase();
+    async function renderCertsTable() {
       const tbody = document.getElementById('certsTableBody');
       if (!tbody) return;
-
-      const filtered = certs.filter(c => {
-        if (!search) return true;
-        return (c.serialId && c.serialId.toLowerCase().includes(search)) ||
-               (c.studentName && c.studentName.toLowerCase().includes(search)) ||
-               (c.studentEmail && c.studentEmail.toLowerCase().includes(search));
-      });
-
-      tbody.innerHTML = '';
-      filtered.forEach(c => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong style="color:var(--navy-900); font-family:monospace;">${escapeHtml(c.serialId)}</strong></td>
-          <td><strong>${escapeHtml(c.studentName)}</strong></td>
-          <td>${escapeHtml(c.studentEmail)}</td>
-          <td><span style="font-size:0.8rem;">${escapeHtml(c.courseName)}</span></td>
-          <td><span style="font-size:0.8rem; color:#64748b;">${escapeHtml(c.issueDate)}</span></td>
-          <td><span class="badge-status badge-active"><i class="fas fa-check-circle"></i> Accredited</span></td>
-          <td style="text-align:right;">
-            <div class="action-group" style="justify-content:flex-end;">
-              <a href="classroom/verify-certificate.html?id=${encodeURIComponent(c.serialId)}" target="_blank" class="btn-action" title="View & Verify">
-                <i class="fas fa-eye"></i> View
-              </a>
-              <button onclick="unlockCertClick('${escapeHtml(c.studentEmail)}')" class="btn-action" style="background:#fed7aa; color:#9a3412;" title="Authorize Reissue">
-                <i class="fas fa-unlock"></i> Reissue
-              </button>
-            </div>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
+      tbody.replaceChildren();
+      const waiting = document.createElement('tr'), message = document.createElement('td');
+      message.colSpan = 6; message.textContent = 'Loading central certificate registryâ€¦'; waiting.appendChild(message); tbody.appendChild(waiting);
+      try {
+        const response = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json', ...(currentAdminSession?.token ? { Authorization: `Bearer ${currentAdminSession.token}` } : {}) }, body: JSON.stringify({ action: 'list_certificate_registry' }) });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.error || 'The central registry is unavailable.');
+        const search = (document.getElementById('certSearchInput')?.value || '').trim().toLowerCase();
+        const records = (result.certificates || []).filter(c => !search || [c.certificateId,c.studentName,c.courseName,c.status].some(v => String(v || '').toLowerCase().includes(search)));
+        tbody.replaceChildren();
+        if (!records.length) { const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=6;td.textContent='No matching central registry records.';tr.appendChild(td);tbody.appendChild(tr);return; }
+        for (const cert of records) {
+          const tr=document.createElement('tr');
+          for (const value of [cert.certificateId,cert.studentName,cert.courseName,cert.issuedDate,cert.status]) { const td=document.createElement('td');td.textContent=value || 'â€”';tr.appendChild(td); }
+          const actions=document.createElement('td'),verify=document.createElement('a'),manage=document.createElement('a');
+          verify.href=cert.verificationUrl;verify.target='_blank';verify.rel='noopener noreferrer';verify.textContent='Verify';
+          manage.href=`classroom/certificate-review.html?certificateId=${encodeURIComponent(cert.certificateId)}`;manage.textContent='Manage';manage.style.marginLeft='.75rem';
+          actions.append(verify,manage);tr.appendChild(actions);tbody.appendChild(tr);
+        }
+      } catch (error) {
+        tbody.replaceChildren();const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=6;td.textContent=error.message;tr.appendChild(td);tbody.appendChild(tr);
+      }
     }
 
     // 10. Live Stream & Announcement Handlers
@@ -4017,7 +4179,7 @@ greachimpact@gmail.com`;
     // CSV Export
     function exportStudentCSV() {
       const students = window.GreachDB.getAllStudents();
-      let csv = 'Student ID,Full Name,Email,Password,Cohort,Class End Date,Access Expiration,Access Type,Certificate Claimed\n';
+      let csv = 'Student ID,Full Name,Email,Password,Cohort,Class End Date,Access Expiration,Access Type,Legacy Browser Claim (Unverified)\n';
       students.forEach(s => {
         csv += `"${s.id}","${escapeHTML(s.name)}","${escapeHTML(s.email)}","${s.password}","${s.cohort}","${s.classEndDate}","${s.expiresAt || 'Lifetime'}","${s.accessType}","${s.certificateClaimed ? 'YES' : 'NO'}"\n`;
       });
@@ -4141,55 +4303,6 @@ greachimpact@gmail.com`;
       }
     }
 
-    // ==========================================
-    // SUPERUSER CREDENTIALS FUNCTIONS
-    // ==========================================
-    function populateSuperUserForm() {
-      if (!window.GreachDB) return;
-      const su = window.GreachDB.getSuperAdmin();
-      document.getElementById('suFullName').value = su.name || 'Lead Super Administrator';
-      document.getElementById('suEmail').value = su.email || 'greachimpact@gmail.com';
-      document.getElementById('suUsername').value = su.username || 'Greachimpact';
-      document.getElementById('suPassword').value = ''; document.getElementById('suPassword').placeholder = 'Managed via Supabase Auth';
-    }
-
-    function handleUpdateSuperUser(e) {
-      if (e) e.preventDefault();
-      requireSuperAdminAuth('Update Superuser Master Credentials', () => {
-        executeUpdateSuperUser(e);
-      });
-    }
-
-    function executeUpdateSuperUser(e) {
-      const name = document.getElementById('suFullName').value.trim();
-      const email = document.getElementById('suEmail').value.trim();
-      const username = document.getElementById('suUsername').value.trim();
-      const password = document.getElementById('suPassword').value.trim();
-      const alertBox = document.getElementById('suAlertBox');
-
-      const res = window.GreachDB.updateSuperAdminCredentials(username, password, email, name);
-      if (res && res.success) {
-        currentAdminSession.username = res.admin.username;
-        currentAdminSession.name = res.admin.name;
-        sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(currentAdminSession));
-
-        alertBox.style.display = 'block';
-        alertBox.style.background = '#ecfdf5';
-        alertBox.style.color = '#065f46';
-        alertBox.style.border = '1px solid #a7f3d0';
-        alertBox.innerHTML = `<strong><i class="fas fa-check-circle"></i> Superuser Credentials Updated!</strong><br>Your new master username is <code>${username}</code>. You can now use your updated username and password across the entire academy.`;
-
-        document.getElementById('adminUserGreeting').textContent = `Logged in as: ${username} • Global Access`;
-        alert(`Master Superuser Credentials Updated!\n\nNew Username: ${username}\nPassword: (Updated)\nEmail: ${email}`);
-      } else {
-        alertBox.style.display = 'block';
-        alertBox.style.background = '#fef2f2';
-        alertBox.style.color = '#991b1b';
-        alertBox.style.border = '1px solid #fecaca';
-        alertBox.innerHTML = res.error || 'Failed to update credentials.';
-      }
-    }
-
     function togglePasswordVisibility(fieldId, btn) {
       const inp = document.getElementById(fieldId);
       if (!inp) return;
@@ -4206,15 +4319,95 @@ greachimpact@gmail.com`;
     // ==========================================
     // ORDERS & REVENUE PIPELINE FUNCTIONS
     // ==========================================
-    function renderOrdersTable() {
-      if (!window.GreachBrevo) return;
-      const orders = window.GreachBrevo.getAllOrders();
-      const search = (document.getElementById('orderSearchInput').value || '').trim().toLowerCase();
-      const statusFilter = document.getElementById('orderStatusFilter').value;
+        // ==========================================
+    // ORDERS & REVENUE PIPELINE FUNCTIONS (Phase E Gate 2B Manual Bank Transfer)
+    // ==========================================
+    let cachedApiOrders = [];
+
+    function formatCurrencyDisplay(amount, currency) {
+      const num = Number(amount || 0).toLocaleString();
+      const curr = (currency || 'NGN').toUpperCase();
+      if (curr === 'GBP') return 'Â£' + num + ' (GBP)';
+      if (curr === 'USD') return '$' + num + ' (USD)';
+      if (curr === 'EUR') return 'â‚¬' + num + ' (EUR)';
+      return 'â‚¦' + num + ' (NGN)';
+    }
+
+    async function fetchOrdersFromBackend() {
+      try {
+        const token = localStorage.getItem('greach_admin_token') || sessionStorage.getItem('greach_admin_token');
+        const res = await fetch('/api/payment?action=list_payments', {
+          headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.success && Array.isArray(data.orders)) {
+            cachedApiOrders = data.orders.map(o => ({
+              orderId: o.order_reference,
+              studentId: o.student_id,
+              studentName: o.customer_name,
+              studentEmail: o.customer_email,
+              studentPhone: o.customer_phone,
+              courseName: o.course_name,
+              amount: o.amount_paid,
+              currency: o.currency || 'NGN',
+              originalMasterNgn: o.original_master_price_ngn,
+              exchangeRate: o.exchange_rate ?? o.exchange_rate_used,
+              rateProvider: o.rate_provider,
+              providerUpdatedAt: o.provider_updated_at || o.rate_timestamp,
+              rateRetrievedAt: o.rate_retrieved_at || o.rate_timestamp || o.provider_updated_at,
+              requiresManualReview: Boolean(o.requires_manual_review),
+              paymentMethod: o.payment_channel || 'Manual Bank Transfer',
+              paymentStatus: o.status,
+              accessCode: o.access_code || 'N/A',
+              timestamp: o.created_at,
+              evidenceFilename: o.evidence_filename || null
+            }));
+
+            // Populate Multi-Currency Revenue Pools and Consolidated NGN Total
+            if (data.revenuePools) {
+              const pNgn = document.getElementById('poolNgnDisplay');
+              const pGbp = document.getElementById('poolGbpDisplay');
+              const pUsd = document.getElementById('poolUsdDisplay');
+              const pEur = document.getElementById('poolEurDisplay');
+              const pCons = document.getElementById('consolidatedNgnDisplay');
+              if (pNgn) pNgn.textContent = 'â‚¦' + Number(data.revenuePools.NGN || 0).toLocaleString();
+              if (pGbp) pGbp.textContent = 'Â£' + Number(data.revenuePools.GBP || 0).toFixed(2);
+              if (pUsd) pUsd.textContent = '$' + Number(data.revenuePools.USD || 0).toFixed(2);
+              if (pEur) pEur.textContent = 'â‚¬' + Number(data.revenuePools.EUR || 0).toFixed(2);
+              if (pCons) pCons.textContent = 'â‚¦' + Number(data.consolidatedNgnRevenue || 0).toLocaleString();
+            }
+            return cachedApiOrders;
+          }
+        }
+      } catch (err) {
+        console.warn('[Admin Portal] Could not fetch orders from /api/payment; falling back to local store:', err);
+      }
+      return null;
+    }
+
+    async function loadAndRenderOrders() {
+      const apiOrders = await fetchOrdersFromBackend();
+      renderOrdersTable(apiOrders);
+      renderStats();
+    }
+
+    function renderOrdersTable(freshOrders) {
+      const localOrders = window.GreachBrevo ? window.GreachBrevo.getAllOrders() : [];
+      let allOrders = freshOrders || cachedApiOrders;
+      if (!allOrders || allOrders.length === 0) {
+        allOrders = localOrders;
+      }
+
+      const search = (document.getElementById('orderSearchInput')?.value || '').trim().toLowerCase();
+      const statusFilter = document.getElementById('orderStatusFilter')?.value || 'all';
+      const currencyFilter = document.getElementById('orderCurrencyFilter')?.value || 'all';
       const tbody = document.getElementById('ordersTableBody');
       const emptyState = document.getElementById('ordersEmptyState');
 
-      const filtered = orders.filter(o => {
+      if (!tbody) return;
+
+      const filtered = allOrders.filter(o => {
         const matchSearch = !search ||
           (o.orderId && o.orderId.toLowerCase().includes(search)) ||
           (o.studentName && o.studentName.toLowerCase().includes(search)) ||
@@ -4222,70 +4415,96 @@ greachimpact@gmail.com`;
           (o.courseName && o.courseName.toLowerCase().includes(search));
 
         if (!matchSearch) return false;
-        if (statusFilter !== 'all' && o.paymentStatus !== statusFilter) return false;
+
+        const oStatus = (o.paymentStatus || '').toLowerCase();
+        if (statusFilter !== 'all') {
+          if (statusFilter === 'pending_verification' && !oStatus.includes('pending')) return false;
+          if (statusFilter === 'confirmed' && !oStatus.includes('confirm') && !oStatus.includes('verified') && !oStatus.includes('paid')) return false;
+          if (statusFilter === 'rejected' && !oStatus.includes('reject')) return false;
+        }
+
+        if (currencyFilter !== 'all') {
+          const oCurr = (o.currency || 'NGN').toUpperCase();
+          if (oCurr !== currencyFilter) return false;
+        }
+
         return true;
       });
 
       tbody.innerHTML = '';
       if (filtered.length === 0) {
-        emptyState.style.display = 'block';
+        if (emptyState) emptyState.style.display = 'block';
         return;
       }
-      emptyState.style.display = 'none';
+      if (emptyState) emptyState.style.display = 'none';
 
       filtered.forEach(o => {
         const tr = document.createElement('tr');
+        const oStatus = (o.paymentStatus || '').toLowerCase();
 
-        let statusBadge = '<span class="badge-status badge-cert"><i class="fas fa-clock"></i> Pending Verification</span>';
-        if (o.paymentStatus === 'Verified & Paid') {
-          statusBadge = '<span class="badge-status badge-active"><i class="fas fa-check-circle"></i> Verified & Paid</span>';
-        } else if (o.paymentStatus === 'Sponsored / Free') {
+        let statusBadge = '<span class="badge-status badge-cert" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a;"><i class="fas fa-clock"></i> Pending Verification</span>';
+        if (oStatus.includes('confirm') || oStatus.includes('verified') || oStatus.includes('paid')) {
+          statusBadge = '<span class="badge-status badge-active"><i class="fas fa-check-circle"></i> Confirmed &amp; Paid</span>';
+        } else if (oStatus.includes('reject')) {
+          statusBadge = '<span class="badge-status" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca;"><i class="fas fa-times-circle"></i> Rejected</span>';
+        } else if (oStatus.includes('free') || oStatus.includes('sponsored')) {
           statusBadge = '<span class="badge-status badge-free"><i class="fas fa-gift"></i> Sponsored / Free</span>';
         }
 
         const dateFormatted = o.timestamp ? new Date(o.timestamp).toLocaleString() : 'N/A';
+        const formattedAmount = formatCurrencyDisplay(o.amount, o.currency);
+        const hasCode = o.accessCode && o.accessCode !== 'N/A' && o.accessCode !== 'null';
 
         tr.innerHTML = `
           <td>
-            <strong style="color:var(--navy-900); font-family:monospace;">${escapeHtml(o.orderId)}</strong>
+            <strong style="color:var(--navy-900); font-family:monospace; font-size:0.92rem;">${escapeHtml(o.orderId || 'N/A')}</strong>
             <div style="font-size:0.75rem; color:#64748b;">${escapeHtml(dateFormatted)}</div>
           </td>
           <td>
-            <strong>${escapeHtml(o.studentName)}</strong>
-            <div style="font-size:0.78rem; color:#0284c7;">${escapeHtml(o.studentEmail)}</div>
+            <strong>${escapeHtml(o.studentName || 'Student')}</strong>
+            <div style="font-size:0.78rem; color:#0284c7;">${escapeHtml(o.studentEmail || '')}</div>
             <div style="font-size:0.75rem; color:#64748b;">${escapeHtml(o.studentPhone || 'No phone')}</div>
           </td>
           <td>
-            <strong style="font-size:0.85rem;">${escapeHtml(o.courseName)}</strong>
-            <div style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(o.cohort || 'Batch 2')}</div>
+            <strong style="font-size:0.85rem;">${escapeHtml(o.courseName || '')}</strong>
+            <div style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(o.cohort || 'Batch 2: 2026')}</div>
           </td>
           <td>
-            <strong style="color:var(--green-600); font-size:1.05rem;">â‚¦${Number(o.amount || 0).toLocaleString()}</strong>
+            <strong style="color:var(--green-600); font-size:1.02rem;">${escapeHtml(formattedAmount)}</strong>
+            ${o.exchangeRate && o.currency !== 'NGN' ? `
+              <div style="font-size:0.72rem; color:#64748b; margin-top:2px;" title="Snapshot from ${escapeHtml(o.rateProvider || 'Live')}">
+                Rate: ${Number(o.exchangeRate).toFixed(6)} â€¢ Master: â‚¦${Number(o.originalMasterNgn || 0).toLocaleString()}
+              </div>` : ''}
           </td>
           <td>
-            <span style="font-size:0.8rem; background:#f1f5f9; padding:2px 8px; border-radius:4px;">${escapeHtml(o.paymentMethod || 'Bank Transfer')}</span>
+            <span style="font-size:0.78rem; background:#f1f5f9; padding:2px 8px; border-radius:4px; display:inline-block; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(o.paymentMethod || 'Manual Transfer')}</span>
           </td>
           <td>${statusBadge}</td>
           <td>
-            <div style="display:flex; align-items:center; gap:4px;">
-              <code style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700;">${escapeHtml(o.accessCode || 'N/A')}</code>
-              <button onclick="navigator.clipboard.writeText('${escapeHtml(o.accessCode)}'); alert('Access code copied: ${escapeHtml(o.accessCode)}');" class="btn-action" title="Copy Code" style="padding:2px 6px;">
-                <i class="fas fa-copy"></i>
-              </button>
-            </div>
+            ${hasCode ? `
+              <div style="display:flex; align-items:center; gap:4px;">
+                <code style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700; color:#0A0A5E;">${escapeHtml(o.accessCode)}</code>
+                <button onclick="navigator.clipboard.writeText('${escapeHtml(o.accessCode)}'); alert('Access code copied: ${escapeHtml(o.accessCode)}');" class="btn-action" title="Copy Code" style="padding:2px 6px;">
+                  <i class="fas fa-copy"></i>
+                </button>
+              </div>
+            ` : '<span style="color:#94a3b8; font-size:0.8rem;">Pending Approval</span>'}
           </td>
           <td>
-            <div class="action-group">
-              ${o.paymentStatus !== 'Verified & Paid' ? `
-                <button onclick="verifyOrderPayment('${escapeHtml(o.orderId)}')" class="btn-action" style="background:#ecfdf5; color:#065f46; border-color:#a7f3d0;" title="Verify & Mark Paid">
-                  <i class="fas fa-check"></i> Verify
+            <div class="action-group" style="display:flex; gap:4px; flex-wrap:wrap;">
+              <button onclick="viewPaymentEvidence('${escapeHtml(o.orderId)}')" class="btn-action" title="View Evidence / Details" style="background:#f8fafc; color:#0284c7;">
+                <i class="fas fa-receipt"></i> Details
+              </button>
+              ${oStatus.includes('pending') ? `
+                <button onclick="adminVerifyPayment('${escapeHtml(o.orderId)}', 'confirmed')" class="btn-action" style="background:#ecfdf5; color:#065f46; border-color:#a7f3d0; font-weight:700;" title="Confirm Payment & Activate Course Access">
+                  <i class="fas fa-check"></i> Confirm
+                </button>
+                <button onclick="adminVerifyPayment('${escapeHtml(o.orderId)}', 'rejected')" class="btn-action" style="background:#fef2f2; color:#991b1b; border-color:#fecaca;" title="Reject Payment Submission">
+                  <i class="fas fa-times"></i> Reject
                 </button>
               ` : ''}
               <button onclick="resendOrderCredentials('${escapeHtml(o.orderId)}')" class="btn-action" title="Resend Welcome Email & Code via Brevo">
                 <i class="fas fa-paper-plane"></i> Resend
-              </button>
-              <button onclick="deleteOrder('${escapeHtml(o.orderId)}')" class="btn-action" style="color:#ef4444;" title="Delete Order">
-                <i class="fas fa-trash-alt"></i>
               </button>
             </div>
           </td>
@@ -4294,45 +4513,143 @@ greachimpact@gmail.com`;
       });
     }
 
-    function verifyOrderPayment(orderId) {
-      if (!confirm('Mark Order ' + orderId + ' as Verified & Paid?')) return;
-      window.GreachBrevo.updateOrderStatus(orderId, 'Verified & Paid');
-      alert('Order ' + orderId + ' marked as Verified & Paid!');
-      renderOrdersTable();
-      renderStats();
+    async function adminVerifyPayment(orderRef, decision) {
+      let rejectionReason = null;
+      let notes = null;
+
+      if (decision === 'rejected') {
+        rejectionReason = prompt('Please enter the mandatory reason for rejecting this payment (this will be logged and dispatched to the student):');
+        if (!rejectionReason || !rejectionReason.trim()) {
+          alert('Payment rejection requires a specific reason.');
+          return;
+        }
+      } else {
+        if (!confirm('Confirm and approve manual bank transfer for Order ' + orderRef + '?\n\nThis will activate the student enrollment, generate an access code, and dispatch welcome credentials.')) {
+          return;
+        }
+        notes = prompt('Administrative verification notes (optional, e.g. "Confirmed on GTBank statement"):', 'Verified on bank statement');
+      }
+
+      try {
+        const token = localStorage.getItem('greach_admin_token') || sessionStorage.getItem('greach_admin_token');
+        const res = await fetch('/api/payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': 'Bearer ' + token } : {})
+          },
+          body: JSON.stringify({
+            action: 'verify_payment',
+            orderReference: orderRef,
+            decision: decision,
+            rejectionReason: rejectionReason,
+            notes: notes
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || 'Failed to process verification.');
+        }
+
+        alert(data.message || 'Payment status updated successfully.');
+        await loadAndRenderOrders();
+
+      } catch (err) {
+        console.error('[Admin Payment Verification Error]:', err);
+        alert('Verification error: ' + err.message);
+      }
     }
 
-    async function resendOrderCredentials(orderId) {
-      const orders = window.GreachBrevo.getAllOrders();
-      const order = orders.find(o => o.orderId === orderId);
-      if (!order) return alert('Order not found.');
+    async function viewPaymentEvidence(orderRef) {
+      const allOrders = cachedApiOrders.length ? cachedApiOrders : (window.GreachBrevo ? window.GreachBrevo.getAllOrders() : []);
+      const order = allOrders.find(o => (o.orderId || o.order_reference) === orderRef);
+      if (!order) return alert('Order details not found.');
 
-      const studentObj = {
-        name: order.studentName,
-        email: order.studentEmail,
-        id: order.studentId || 'STU-' + Math.floor(1000 + Math.random() * 9000),
-        password: order.accessCode,
-        course: order.courseName,
-        cohort: order.cohort,
-        expiresAt: '1 Month After Class'
-      };
+      const modal = document.getElementById('paymentEvidenceModal');
+      const body = document.getElementById('evidenceModalBody');
+      if (!modal || !body) return;
 
-      await window.GreachBrevo.sendEmail({
-        type: 'welcome',
-        student: studentObj
-      });
+      body.innerHTML = `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; font-size:0.88rem; margin-bottom:18px;">
+          <div><span style="color:#64748b; font-size:0.75rem; text-transform:uppercase; display:block;">Order Reference:</span><strong>${escapeHtml(order.orderId || orderRef)}</strong></div>
+          <div><span style="color:#64748b; font-size:0.75rem; text-transform:uppercase; display:block;">Payment Status:</span><strong>${escapeHtml(order.paymentStatus || 'Pending')}</strong></div>
+          <div><span style="color:#64748b; font-size:0.75rem; text-transform:uppercase; display:block;">Student Name:</span><strong>${escapeHtml(order.studentName)}</strong></div>
+          <div><span style="color:#64748b; font-size:0.75rem; text-transform:uppercase; display:block;">Email Address:</span><strong>${escapeHtml(order.studentEmail)}</strong></div>
+          <div><span style="color:#64748b; font-size:0.75rem; text-transform:uppercase; display:block;">Amount Paid:</span><strong style="color:var(--green-600);">${escapeHtml(formatCurrencyDisplay(order.amount, order.currency))}</strong></div>
+          <div><span style="color:#64748b; font-size:0.75rem; text-transform:uppercase; display:block;">Payment Channel / Bank:</span><strong>${escapeHtml(order.paymentMethod || 'Manual Transfer')}</strong></div>
+          <div style="grid-column:1 / -1;"><span style="color:#64748b; font-size:0.75rem; text-transform:uppercase; display:block;">Enrolled Programme:</span><strong>${escapeHtml(order.courseName)}</strong></div>
+          <div style="grid-column:1 / -1;"><span style="color:#64748b; font-size:0.75rem; text-transform:uppercase; display:block;">Generated Access Code:</span><code>${escapeHtml(order.accessCode || 'Pending')}</code></div>
+        </div>
 
-      alert('Credentials and classroom access code resent to ' + order.studentEmail + ' via Brevo!');
-      renderDispatchLogsTable();
-      renderStats();
+        <div style="margin-top:16px; border-top:1px solid #e2e8f0; padding-top:14px;">
+          <h4 style="margin:0 0 10px 0; font-size:0.92rem; color:#0A0A5E;"><i class="fas fa-receipt" style="color:#0284c7;"></i> Attached Proof of Transfer</h4>
+          <div id="receiptViewerContainer" style="min-height:80px; display:flex; align-items:center; justify-content:center; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0; padding:12px;">
+            <span style="color:#64748b; font-size:0.85rem;"><i class="fas fa-spinner fa-spin"></i> Loading secure receipt evidence...</span>
+          </div>
+        </div>
+
+        <div style="background:#f1f5f9; padding:12px; border-radius:8px; font-size:0.82rem; color:#475569; margin-top:16px;">
+          <i class="fas fa-shield-alt" style="color:#0A0A5E;"></i> Audit trail entry recorded with client IP and verification timestamp. Storage access is private & signed.
+        </div>
+      `;
+      modal.style.display = 'flex';
+
+      // Fetch short-lived signed URL from /api/payment?action=get_receipt
+      try {
+        const token = localStorage.getItem('greach_admin_token') || sessionStorage.getItem('greach_admin_token');
+        const res = await fetch('/api/payment?action=get_receipt&orderReference=' + encodeURIComponent(order.orderId || orderRef), {
+          headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+        });
+        const container = document.getElementById('receiptViewerContainer');
+        if (!container) return;
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.hasReceipt && data.signedUrl) {
+            const mime = data.mimeType || '';
+            if (mime.startsWith('image/')) {
+              container.innerHTML = `
+                <div style="text-align:center; width:100%;">
+                  <img src="${escapeHtml(data.signedUrl)}" alt="Payment Receipt" style="max-width:100%; max-height:360px; object-fit:contain; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:block; margin:0 auto;" />
+                  <div style="margin-top:10px;">
+                    <a href="${escapeHtml(data.signedUrl)}" target="_blank" rel="noopener noreferrer" style="font-size:0.82rem; color:#0284c7; text-decoration:none; font-weight:600;">
+                      <i class="fas fa-external-link-alt"></i> Open Full-Size Image (Signed link expires in 15m)
+                    </a>
+                  </div>
+                </div>
+              `;
+            } else if (mime === 'application/pdf') {
+              container.innerHTML = `
+                <div style="text-align:center; padding:12px; width:100%;">
+                  <i class="fas fa-file-pdf" style="font-size:2.8rem; color:#dc2626; margin-bottom:8px;"></i>
+                  <p style="margin:4px 0 10px 0; font-size:0.88rem; font-weight:600; color:#1e293b;">${escapeHtml(data.filename || 'payment_receipt.pdf')}</p>
+                  <a href="${escapeHtml(data.signedUrl)}" target="_blank" rel="noopener noreferrer" class="btn-action" style="display:inline-block; padding:8px 16px; background:#0284c7; color:#fff; text-decoration:none; border-radius:6px; font-size:0.85rem;">
+                    <i class="fas fa-download"></i> View / Download PDF Receipt
+                  </a>
+                  <p style="margin:8px 0 0 0; font-size:0.75rem; color:#64748b;">Link cryptographically signed, expires in 15 minutes.</p>
+                </div>
+              `;
+            } else {
+              container.innerHTML = `<span style="color:#64748b; font-size:0.85rem;"><i class="fas fa-info-circle"></i> Unsupported receipt preview format.</span>`;
+            }
+          } else {
+            container.innerHTML = `<span style="color:#64748b; font-size:0.85rem;"><i class="fas fa-info-circle"></i> No payment receipt file attached to this order confirmation.</span>`;
+          }
+        } else {
+          container.innerHTML = `<span style="color:#dc2626; font-size:0.85rem;"><i class="fas fa-exclamation-triangle"></i> Unable to load receipt preview (HTTP ${res.status}).</span>`;
+        }
+      } catch (err) {
+        const container = document.getElementById('receiptViewerContainer');
+        if (container) {
+          container.innerHTML = `<span style="color:#dc2626; font-size:0.85rem;"><i class="fas fa-exclamation-triangle"></i> Network error loading receipt preview.</span>`;
+        }
+      }
     }
 
-    function deleteOrder(orderId) {
-      if (!confirm('Are you sure you want to delete order ' + orderId + '?')) return;
-      const orders = window.GreachBrevo.getAllOrders().filter(o => o.orderId !== orderId);
-      localStorage.setItem('greach_course_orders_v2', JSON.stringify(orders));
-      renderOrdersTable();
-      renderStats();
+    function closeEvidenceModal() {
+      const modal = document.getElementById('paymentEvidenceModal');
+      if (modal) modal.style.display = 'none';
     }
 
     function exportOrdersToCSV() {
@@ -4423,10 +4740,6 @@ greachimpact@gmail.com`;
     function loadBrevoConfig() {
       if (!window.GreachBrevo) return;
       const cfg = window.GreachBrevo.getConfig();
-      document.getElementById('brevoApiKeyInput').value = cfg.apiKey || '';
-      document.getElementById('brevoSenderName').value = cfg.senderName || 'Emmanuel from Greach Impact Academy';
-      document.getElementById('brevoSenderEmail').value = cfg.senderEmail || 'greachimpact@gmail.com';
-      document.getElementById('brevoAdminEmail').value = cfg.adminEmail || 'greachimpact@gmail.com';
       document.getElementById('brevoAutoWelcome').checked = cfg.autoSendWelcome !== false;
       document.getElementById('brevoAutoAdminAlert').checked = cfg.autoSendAdminAlert !== false;
       checkBrevoApiStatus();
@@ -4435,14 +4748,8 @@ greachimpact@gmail.com`;
     function checkBrevoApiStatus() {
       const badge = document.getElementById('brevoApiStatusBadge');
       if (!badge || !window.GreachBrevo) return;
-      const cfg = window.GreachBrevo.getConfig();
-      if (cfg.apiKey && cfg.apiKey.trim().length > 10) {
-        badge.className = 'badge-status badge-active';
-        badge.innerHTML = '<i class="fas fa-check-circle"></i> Brevo API Key Active';
-      } else {
-        badge.className = 'badge-status badge-expired';
-        badge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Brevo API Key Not Configured';
-      }
+      badge.className = 'badge-status badge-cert';
+      badge.innerHTML = '<i class="fas fa-lock"></i> Server-managed configuration';
     }
 
     function handleSaveBrevoConfig(e) {
@@ -4453,42 +4760,32 @@ greachimpact@gmail.com`;
     }
 
     function executeSaveBrevoConfig(e) {
-      const apiKey = document.getElementById('brevoApiKeyInput').value.trim();
-      const senderName = document.getElementById('brevoSenderName').value.trim();
-      const senderEmail = document.getElementById('brevoSenderEmail').value.trim();
-      const adminEmail = document.getElementById('brevoAdminEmail').value.trim();
       const autoSendWelcome = document.getElementById('brevoAutoWelcome').checked;
       const autoSendAdminAlert = document.getElementById('brevoAutoAdminAlert').checked;
 
       window.GreachBrevo.saveConfig({
-        apiKey,
-        senderName,
-        senderEmail,
-        adminEmail,
         autoSendWelcome,
         autoSendAdminAlert
       });
 
-      alert('Brevo Automation Configuration Saved!');
+      alert('Local email preferences saved. Provider credentials and sender settings remain server-managed.');
       checkBrevoApiStatus();
     }
 
-    async function runBrevoTest() {
-      const apiKey = document.getElementById('brevoApiKeyInput').value.trim();
+    function runBrevoTest() {
+      requireSuperAdminAuth('Send a server-side Brevo test message', executeBrevoTest);
+    }
+
+    async function executeBrevoTest() {
       const testEmail = document.getElementById('brevoTestEmail').value.trim() || 'greachimpact@gmail.com';
       const resultBox = document.getElementById('brevoTestResultBox');
-
-      if (!apiKey) {
-        alert('Please enter a Brevo API Key first.');
-        return;
-      }
 
       resultBox.style.display = 'block';
       resultBox.style.background = '#f1f5f9';
       resultBox.style.color = '#334155';
-      resultBox.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Contacting Brevo REST API v3...';
+      resultBox.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Contacting the server-side email service...';
 
-      const res = await window.GreachBrevo.testConnection(apiKey, testEmail);
+      const res = await window.GreachBrevo.testConnection(testEmail, currentAdminSession?.token);
 
       if (res && res.success) {
         resultBox.style.background = '#ecfdf5';
@@ -4993,5 +5290,19 @@ greachimpact@gmail.com`;
 
 </script>
   <div id="greachToastContainer" class="toast-container"></div>
+
+  <!-- PAYMENT EVIDENCE & AUDIT MODAL -->
+  <div id="paymentEvidenceModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:14px; max-width:620px; width:92%; max-height:85vh; overflow-y:auto; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.3);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
+        <h3 style="margin:0; color:#0A0A5E;" id="evidenceModalTitle"><i class="fas fa-receipt" style="color:#0284c7;"></i> Payment Verification Evidence</h3>
+        <button onclick="closeEvidenceModal()" style="border:none; background:none; font-size:1.5rem; cursor:pointer; color:#64748b;">&times;</button>
+      </div>
+      <div id="evidenceModalBody"></div>
+      <div style="text-align:right; margin-top:20px; border-top:1px solid #e2e8f0; padding-top:14px;">
+        <button onclick="closeEvidenceModal()" class="btn-action" style="padding:8px 20px;">Close</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

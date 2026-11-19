@@ -1,0 +1,63 @@
+# Environment configuration and local credentials
+.env*
+**/.env*
+.gitignore
+
+# Database migrations, schemas, and configuration
+*.sql
+**/*.sql
+supabase_config.json
+**/supabase_config.json
+admin/config.yml
+staging_*.json
+*.staging.json
+
+# Internal scripts, tests, and engineering reports
+scripts/
+**/scripts/
+test_*.js
+**/test_*.js
+*.test.js
+**/*.test.js
+*.spec.js
+**/*.spec.js
+tests/
+**/tests/
+PHASE_E_*.md
+PHASE1_*.md
+PHASE2_*.md
+PHASE1_*.csv
+GATE_2E_*.md
+*_REGISTER.md
+*_MANIFEST.csv
+*_REPORT.md
+*_report.md
+CONCEPT_DICTIONARY.md
+SUPABASE_SETUP_GUIDE.md
+classroom/README.md
+classroom/GOOGLE_SHEETS_DATABASE_SETUP.md
+
+# Student credential rosters
+**/*Student_Login_Credentials*Roster*
+**/*student_login_credentials*roster*
+classroom/Excel_Masterclass_Complete_300_Student_Pack.zip
+/api/register.js
+
+# Backups, logs, and generated data dumps
+backups/
+**/backups/
+images/raw_backup/
+**/raw_backup/
+*.log
+**/*.log
+*.dump
+*.backup
+*.sql.gz
+*.tar.gz
+*.patch
+*.diff
+*.rej
+*.orig
+*.bak
+*.old
+*~

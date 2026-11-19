@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Power BI for Beginners Classroom | Greach Impact Academy</title>
-  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <link rel="icon" type="image/jpeg" href="../images/Greach Impact Logo (2).jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -701,7 +701,7 @@
       <a href="index.html" class="brand-logo">
         <i class="fas fa-chart-pie"></i> Greach Impact Academy
       </a>
-      <span class="course-badge"><i class="fas fa-award"></i> CRS-PBI-BEG • Power BI Intelligence</span>
+      <span class="course-badge"><i class="fas fa-award"></i> CRS-PBI-BEG â€¢ Power BI Intelligence</span>
 
       <!-- Classroom Switcher -->
       <div class="classroom-switcher">
@@ -776,7 +776,7 @@
       <!-- Lesson Header -->
       <div class="lesson-header">
         <div>
-          <div class="lesson-tag" id="lessonModuleTag">MODULE 1 • FOUNDATIONS</div>
+          <div class="lesson-tag" id="lessonModuleTag">MODULE 1 â€¢ FOUNDATIONS</div>
           <h1 class="lesson-headline" id="lessonTitle">Loading Power BI Curriculum...</h1>
         </div>
         <div class="lesson-actions">
@@ -841,7 +841,7 @@
           <div class="pbi-kpi-grid">
             <div class="kpi-card">
               <div class="kpi-title">Total Gross Revenue</div>
-              <div class="kpi-value" id="kpiRevenue">₦14,850,000</div>
+              <div class="kpi-value" id="kpiRevenue">â‚¦14,850,000</div>
               <div class="kpi-trend"><i class="fas fa-arrow-up"></i> +18.4% YoY vs 2025</div>
             </div>
             <div class="kpi-card">
@@ -851,7 +851,7 @@
             </div>
             <div class="kpi-card">
               <div class="kpi-title">Average Order Value (AOV)</div>
-              <div class="kpi-value" id="kpiAov">₦30,809</div>
+              <div class="kpi-value" id="kpiAov">â‚¦30,809</div>
               <div class="kpi-trend"><i class="fas fa-calculator"></i> DAX: [Total Rev] / [Orders]</div>
             </div>
             <div class="kpi-card">
@@ -866,7 +866,7 @@
             <div class="visual-panel">
               <div class="visual-header">
                 <span>Revenue by Course Track (Bar Chart)</span>
-                <span style="font-size:0.75rem; color:#64748b;">Values in ₦ Millions</span>
+                <span style="font-size:0.75rem; color:#64748b;">Values in â‚¦ Millions</span>
               </div>
               <div class="visual-bars-container" id="courseBarsContainer">
                 <!-- Dynamically rendered via JS -->
@@ -1048,7 +1048,7 @@ SUMX (
         <label style="display:block; font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.4rem;">
           Enter Your Unique Power BI Access Code:
         </label>
-        <input type="text" id="gatePbiAccessCode" placeholder="e.g. GRX-PBI-4821 or STU-2026-001" style="width:100%; padding:0.8rem; border:1.5px solid #cbd5e1; border-radius:8px; font-size:1rem; font-weight:700; text-transform:uppercase;">
+        <input type="text" id="gatePbiAccessCode" placeholder="e.g. GRX-PBI-4821 or your student ID" style="width:100%; padding:0.8rem; border:1.5px solid #cbd5e1; border-radius:8px; font-size:1rem; font-weight:700; text-transform:uppercase;">
       </div>
 
       <button onclick="verifyPbiCode()" style="width:100%; background:var(--accent-pbi); color:#0f172a; padding:0.8rem; border:none; border-radius:8px; font-weight:800; font-size:0.95rem; cursor:pointer; margin-bottom:0.6rem;">
@@ -1056,7 +1056,7 @@ SUMX (
       </button>
 
       <button type="button" onclick="enterPbiAsAdmin()" style="width:100%; background:#fef3c7; border:1.5px solid #fde68a; color:#92400e; padding:0.65rem; border-radius:8px; font-weight:800; font-size:0.86rem; cursor:pointer; margin-bottom:0.8rem;">
-        👑 Enter as Admin / Instructor (Password Required) &rarr;
+        ðŸ‘‘ Enter as Admin / Instructor (Password Required) &rarr;
       </button>
 
       <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
@@ -1099,9 +1099,9 @@ SUMX (
       const totalStu = filtered.reduce((acc, r) => acc + r.students, 0);
       const aov = totalStu > 0 ? Math.round(totalRev / totalStu) : 0;
 
-      document.getElementById('kpiRevenue').textContent = '₦' + totalRev.toLocaleString();
+      document.getElementById('kpiRevenue').textContent = 'â‚¦' + totalRev.toLocaleString();
       document.getElementById('kpiStudents').textContent = totalStu.toLocaleString();
-      document.getElementById('kpiAov').textContent = '₦' + aov.toLocaleString();
+      document.getElementById('kpiAov').textContent = 'â‚¦' + aov.toLocaleString();
 
       // Render Bar Chart
       const barsContainer = document.getElementById('courseBarsContainer');
@@ -1121,7 +1121,7 @@ SUMX (
           <div class="chart-bar-track">
             <div class="chart-bar-fill" style="width:${pct}%;"></div>
           </div>
-          <div class="chart-bar-val">₦${(val / 1000000).toFixed(1)}M</div>
+          <div class="chart-bar-val">â‚¦${(val / 1000000).toFixed(1)}M</div>
         `;
         barsContainer.appendChild(row);
       });
@@ -1169,12 +1169,12 @@ SUMX (
     const CURRICULUM = [
       {
         module: 'Module 1: BI Fundamentals & Power BI Architecture',
-        tag: 'MODULE 1 • FOUNDATIONS',
+        tag: 'MODULE 1 â€¢ FOUNDATIONS',
         lessons: [
           {
             id: 'PBI_L1',
             title: '1. What is Power BI & Modern BI Architecture?',
-            concept: 'Power BI is Microsoft’s premier business intelligence platform combining self-service data prep (Power Query), analytical modeling (VertiPaq engine), and interactive dashboard storytelling.',
+            concept: 'Power BI is Microsoftâ€™s premier business intelligence platform combining self-service data prep (Power Query), analytical modeling (VertiPaq engine), and interactive dashboard storytelling.',
             formula: '// Core BI Lifecycle:\n// 1. Ingest (Extract) -> 2. Model (Star Schema) -> 3. Calculate (DAX) -> 4. Visualize',
             quiz: {
               q: 'What is the internal in-memory columnar database engine that powers Power BI?',
@@ -1222,8 +1222,8 @@ SUMX (
         ]
       },
       {
-        module: 'Module 2: Power Query ETL — Ingestion & Transformation',
-        tag: 'MODULE 2 • POWER QUERY ETL',
+        module: 'Module 2: Power Query ETL â€” Ingestion & Transformation',
+        tag: 'MODULE 2 â€¢ POWER QUERY ETL',
         lessons: [
           {
             id: 'PBI_L5',
@@ -1277,7 +1277,7 @@ SUMX (
       },
       {
         module: 'Module 3: Data Modeling & Star Schema Architecture',
-        tag: 'MODULE 3 • DATA MODELING',
+        tag: 'MODULE 3 â€¢ DATA MODELING',
         lessons: [
           {
             id: 'PBI_L9',
@@ -1331,7 +1331,7 @@ SUMX (
       },
       {
         module: 'Module 4: DAX Essentials & Calculations',
-        tag: 'MODULE 4 • DAX CALCULATIONS',
+        tag: 'MODULE 4 â€¢ DAX CALCULATIONS',
         lessons: [
           {
             id: 'PBI_L13',
@@ -1385,7 +1385,7 @@ SUMX (
       },
       {
         module: 'Module 5: Interactive Visualizations & Design',
-        tag: 'MODULE 5 • REPORT DESIGN',
+        tag: 'MODULE 5 â€¢ REPORT DESIGN',
         lessons: [
           {
             id: 'PBI_L17',
@@ -1439,7 +1439,7 @@ SUMX (
       },
       {
         module: 'Module 6: Power BI Service, Workspaces & Capstone',
-        tag: 'MODULE 6 • CAPSTONE & DEPLOYMENT',
+        tag: 'MODULE 6 â€¢ CAPSTONE & DEPLOYMENT',
         lessons: [
           {
             id: 'PBI_L21',
@@ -1486,7 +1486,7 @@ SUMX (
               q: 'Congratulations! What is the final step to earn your verified Power BI Specialist Credential?',
               options: ['Submit your completed Capstone report in the project portal', 'Close browser', 'Delete workspace', 'Uninstall Desktop'],
               correctIndex: 0,
-              explanation: 'Submitting your completed Capstone project activates your verified certificate in the Greach Academy public registry.'
+              explanation: 'A trusted instructor must review the capstone and record course completion before certificate issuance.'
             }
           }
         ]
@@ -1506,82 +1506,74 @@ SUMX (
       initPresenceHeartbeat();
     });
 
-    function enterPbiAsAdmin() {
-      const pwd = prompt('Enter Administrator Password:');
-      if (!pwd) return;
-      if (window.GreachDB && window.GreachDB.isAdminClassroomAuthenticated && window.GreachDB.isAdminClassroomAuthenticated()) {
-        if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
-          window.GreachDB.activateAdminClassroomSession('Greachimpact');
-        } else {
-          localStorage.setItem('excel_instructor_session_active_v1', 'true');
-          localStorage.setItem('greach_instructor_login', 'true');
-        }
+    async function enterPbiAsAdmin() {
+      const verifiedAdmin = window.GreachDB && window.GreachDB.getVerifiedAdminClassroomSession
+        ? await window.GreachDB.getVerifiedAdminClassroomSession()
+        : null;
+      if (verifiedAdmin) {
         const modal = document.getElementById('securityGateModal');
         if (modal) modal.classList.remove('active');
         checkPbiAccessAuth();
       } else {
-        alert('Access Denied: Incorrect Super Admin password.');
+        alert('Access denied. Sign in through the Admin Console and complete TOTP MFA.');
       }
     }
 
-    function checkPbiAccessAuth() {
-      const session = JSON.parse(localStorage.getItem('greach_student_session') || localStorage.getItem('greach_active_user_session_v2') || 'null');
-      const isSessPass = session && (session.isSessionPass || (session.id && String(session.id).startsWith('PAS-')));
-      if (isSessPass) {
-        localStorage.removeItem('excel_instructor_session_active_v1');
-        localStorage.removeItem('greach_instructor_login');
-      }
-
-      const isAdminAuth = !isSessPass && window.GreachDB && window.GreachDB.isAdminClassroomAuthenticated && window.GreachDB.isAdminClassroomAuthenticated();
-      const isLead = !isSessPass && (isAdminAuth || (localStorage.getItem('greach_instructor_login') === 'true' || localStorage.getItem('excel_instructor_session_active_v1') === 'true'));
+    async function checkPbiAccessAuth() {
+      const verifiedAdmin = window.GreachDB && window.GreachDB.getVerifiedAdminClassroomSession
+        ? await window.GreachDB.getVerifiedAdminClassroomSession()
+        : null;
       const pillName = document.getElementById('studentDisplayName');
-
-      if (isLead || (session && (session.role === 'instructor' || session.isSuperAdmin))) {
+      if (verifiedAdmin) {
         const modal = document.getElementById('securityGateModal');
         if (modal) modal.classList.remove('active');
-        if (pillName) pillName.innerHTML = '👑 <strong>Lead Instructor</strong> (Admin Mode)';
-        // Seamlessly propagate admin parameter to classroom switcher
-        document.querySelectorAll('.switcher-item').forEach(el => {
-          const href = el.getAttribute('href');
-          if (href && !href.includes('admin=')) {
-            el.setAttribute('href', href + (href.includes('?') ? '&' : '?') + 'admin=true');
-          }
-        });
+        if (pillName) pillName.textContent = 'Lead Instructor (Super Admin)';
         return;
       }
 
-      if (!session || !session.verified) {
+      const verifiedStudent = window.GreachDB && window.GreachDB.getVerifiedStudentClassroomSession
+        ? await window.GreachDB.getVerifiedStudentClassroomSession()
+        : null;
+      if (!verifiedStudent || !verifiedStudent.student) {
+        localStorage.removeItem('greach_student_session');
+        localStorage.removeItem('greach_active_user_session_v2');
         showGateModal('Please enter your unique access code to unlock the Power BI Classroom.');
         return;
       }
 
-      // Check revocation
-      const pbiPassCode = session.accessCode || (session.id && String(session.id).replace(/^PASS-/, ''));
-      if (window.GreachDB && window.GreachDB.isCodeRevoked && (window.GreachDB.isCodeRevoked(pbiPassCode) || window.GreachDB.isCodeRevoked(session.id))) {
-        localStorage.removeItem('greach_student_session');
-        localStorage.removeItem('greach_active_user_session_v2');
-        showGateModal('<strong><i class="fas fa-ban"></i> Access Revoked:</strong> Your classroom session pass has been revoked by the instructor.');
-        return;
-      }
+      const student = verifiedStudent.student;
+      const session = {
+        role: 'student',
+        id: student.id,
+        name: student.name,
+        email: student.email,
+        course: student.course,
+        courseKey: student.courseKey,
+        cohort: student.cohort,
+        accessType: student.accessType,
+        expiresAt: verifiedStudent.expiresAt,
+        verified: true
+      };
+      localStorage.setItem('greach_student_session', JSON.stringify(session));
+      localStorage.setItem('greach_active_user_session_v2', JSON.stringify(session));
+      localStorage.removeItem('excel_instructor_session_active_v1');
+      localStorage.removeItem('greach_instructor_login');
 
       if (window.GreachDB && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen('power_bi')) {
         const sched = window.GreachDB.isClassroomInScheduledHours ? window.GreachDB.isClassroomInScheduledHours('power_bi') : null;
-        showGateModal('🛑 <strong>Classroom Currently Offline:</strong> The Power BI Studio is not in session at this time.<br><br><span style="font-size:0.8rem; color:#475569;"><strong>Scheduled Live Hours:</strong> ' + (sched ? sched.scheduleText : 'Tuesdays & Thursdays, 07:00 PM – 09:00 PM WAT') + '<br>(Current WAT Time: ' + (sched ? sched.currentWATTime + ', ' + sched.currentWATDay : '') + ')</span>');
+        showGateModal('Classroom is currently offline.' + (sched ? ' Scheduled hours: ' + sched.scheduleText : ''));
         return;
       }
-
       if (window.GreachDB && window.GreachDB.canAccessCourse) {
         const access = window.GreachDB.canAccessCourse(session, 'power_bi');
         if (!access.allowed) {
-          const enrolledUrl = window.GreachDB.getCourseClassroomUrl ? window.GreachDB.getCourseClassroomUrl(session.courseKey) : 'Excel_Master_Course_Hub.html';
-          showGateModal('Your current pass is enrolled for <strong>"' + escapeHtml(session.course) + '"</strong>.<br><br>This classroom is dedicated to <strong>Power BI for Beginners</strong>.<br><br><a href="' + enrolledUrl + '" style="color:#0284c7; font-weight:700; text-decoration:underline;">Click here to enter your enrolled classroom &rarr;</a>');
+          showGateModal('Your verified enrollment does not include this course.');
           return;
         }
       }
-
-      if (pillName) {
-        pillName.innerHTML = `🎓 <strong>${session.name || 'Verified Student'}</strong>`;
-      }
+      const modal = document.getElementById('securityGateModal');
+      if (modal) modal.classList.remove('active');
+      if (pillName) pillName.textContent = student.name || 'Verified Student';
     }
 
     function showGateModal(msg) {
@@ -1605,37 +1597,26 @@ SUMX (
           const res = await window.GreachDB.verifyAccessCodeAny(code);
           if (res && res.valid) {
             const s = res.student || {};
-            const isSessionPass = !!(res.isSessionPass || code.toUpperCase().startsWith('LIVE-') || code.toUpperCase().startsWith('PAS-'));
-            const isInstructor = !isSessionPass && !!res.isInstructor;
-
+            const isSessionPass = res.isSessionPass === true;
             const session = {
-              role: isInstructor ? 'instructor' : 'student',
-              isInstructor: isInstructor,
-              isAdmin: isInstructor,
-              isSuperAdmin: isInstructor,
-              isSessionPass: isSessionPass,
+              role: 'student',
+              isSessionPass,
               id: s.id || 'STU-PBI-VERIFIED',
               name: s.name || 'Verified Student',
               email: s.email || '',
               course: s.course || 'Power BI for Beginners',
               courseKey: window.GreachDB.normalizeCourseKey(s.courseKey || s.course || 'power_bi'),
-              cohort: s.cohort || 'Batch 2: 2026 Masterclass',
+              cohort: s.cohort || '',
+              accessType: s.accessType || (isSessionPass ? 'session_pass' : 'access_code'),
               verified: true,
-              authMethod: 'code',
-              accessCode: code,
               loginTime: new Date().toISOString()
             };
             localStorage.setItem('greach_student_session', JSON.stringify(session));
             localStorage.setItem('greach_active_user_session_v2', JSON.stringify(session));
-            if (isInstructor) {
-              localStorage.setItem('excel_instructor_session_active_v1', 'true');
-              localStorage.setItem('greach_instructor_login', 'true');
-            } else {
-              localStorage.removeItem('excel_instructor_session_active_v1');
-              localStorage.removeItem('greach_instructor_login');
-            }
+            localStorage.removeItem('excel_instructor_session_active_v1');
+            localStorage.removeItem('greach_instructor_login');
             if (window.GreachDB.recordStudentLogin) {
-              window.GreachDB.recordStudentLogin(session, { classroomKey: 'power_bi' });
+              window.GreachDB.recordStudentLogin(s, { classroomKey: 'power_bi' });
             }
             document.getElementById('securityGateModal').classList.remove('active');
             checkPbiAccessAuth();
@@ -1650,7 +1631,7 @@ SUMX (
     }
 
     function initPresenceHeartbeat() {
-      const tick = () => {
+      const tick = async () => {
         const session = JSON.parse(localStorage.getItem('greach_student_session') || localStorage.getItem('greach_active_user_session_v2') || '{}');
         if (window.GreachDB && session && session.id) {
           const pCode = session.accessCode || (session.id && String(session.id).replace(/^PASS-/, ''));
@@ -1666,10 +1647,12 @@ SUMX (
             showGateModal('Your live classroom session was terminated by the Super Administrator.');
             return;
           }
-          const isLead = (localStorage.getItem('greach_instructor_login') === 'true' || localStorage.getItem('excel_instructor_session_active_v1') === 'true' || session.role === 'instructor' || session.isSuperAdmin);
+          const isLead = window.GreachDB.getVerifiedAdminClassroomSession
+            ? Boolean(await window.GreachDB.getVerifiedAdminClassroomSession())
+            : false;
           if (!isLead && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen('power_bi')) {
             const sched = window.GreachDB.isClassroomInScheduledHours ? window.GreachDB.isClassroomInScheduledHours('power_bi') : null;
-            showGateModal('🛑 <strong>Classroom Currently Offline:</strong> Live session is not active at this time.<br><small style="color:#64748b;">Scheduled: ' + (sched ? sched.scheduleText : 'Scheduled hours') + '</small>');
+            showGateModal('ðŸ›‘ <strong>Classroom Currently Offline:</strong> Live session is not active at this time.<br><small style="color:#64748b;">Scheduled: ' + (sched ? sched.scheduleText : 'Scheduled hours') + '</small>');
             return;
           }
           if (window.GreachDB.updateStudentHeartbeat) {
@@ -1911,7 +1894,7 @@ CALCULATE (
         document.getElementById('btnStopRecord').style.background = '#22c55e';
         document.getElementById('btnStopRecord').style.color = 'white';
         document.getElementById('btnStopRecord').style.cursor = 'pointer';
-        document.getElementById('recorderStatusPill').textContent = '🔴 Recording Live...';
+        document.getElementById('recorderStatusPill').textContent = 'ðŸ”´ Recording Live...';
         document.getElementById('recorderStatusPill').style.background = '#991b1b';
         document.getElementById('recorderStatusPill').style.color = '#fee2e2';
       } catch (err) {
@@ -1950,6 +1933,10 @@ CALCULATE (
     function logoutClassroom() {
       if (confirm('Log out of Power BI Classroom?')) {
         localStorage.removeItem('greach_student_session');
+        localStorage.removeItem('greach_active_user_session_v2');
+        sessionStorage.removeItem('greach_student_token');
+        sessionStorage.removeItem('greach_server_session_id');
+        sessionStorage.removeItem('greach_active_session_id');
         window.location.href = 'index.html';
       }
     }

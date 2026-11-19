@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GREACH IMPACT ACADEMY - ENTERPRISE DATABASE & ACCESS CONTROL LAYER
  * Unified Database, Super Admin Management, 1-Month Expiry, One-Off Certificates & Unlimited Students
  */
@@ -6,36 +6,16 @@
 (function() {
   const ROSTER_DB_KEY = 'greach_student_roster_v2';
   const SUBMISSIONS_DB_KEY = 'greach_project_submissions_v2';
-  const CERTS_DB_KEY = 'issued_certificates_v2';
-  const ADMINS_KEY = 'greach_admins_v2';
   const PRICES_KEY = 'greach_course_prices_v2';
   const SCHEDULES_KEY = 'greach_course_schedules_v2';
   const AUDIT_KEY = 'greach_audit_log_v2';
   const SESSION_PASSES_KEY = 'greach_session_passes_v2';
-  const SUPER_ADMIN_KEY = 'greach_super_admin_credentials_v2';
   const SETTINGS_KEY = 'greach_db_config_v2';
   const STUDENT_ACTIVITY_KEY = 'greach_student_activity_log_v2';
   const ACTIVE_SESSIONS_KEY = 'greach_active_sessions_v2';
   const TERMINATED_SESSIONS_KEY = 'greach_terminated_sessions_v2';
 
-  // 1. DEFAULT SUPER ADMIN MASTER CREDENTIALS
-  const DEFAULT_SUPER_ADMIN = {
-    username: 'Greachimpact',
-    role: 'super_admin',
-    name: 'Lead Super Administrator',
-    email: 'greachimpact@gmail.com',
-    isSuper: true
-  };
-  const SUPER_ADMIN = DEFAULT_SUPER_ADMIN;
-
-  function getActiveSuperAdmin() {
-    try {
-      const stored = localStorage.getItem(SUPER_ADMIN_KEY);
-      return stored ? JSON.parse(stored) : DEFAULT_SUPER_ADMIN;
-    } catch(e) {
-      return DEFAULT_SUPER_ADMIN;
-    }
-  }
+  const ADMIN_NOTIFICATION_EMAIL = 'greachimpact@gmail.com';
 
   // 1b. DEFAULT COURSE SCHEDULES & CLASS TIMES
   
@@ -48,7 +28,7 @@
       label: 'Microsoft Excel for Beginners',
       hubUrl: 'Excel_Master_Course_Hub.html?track=beginners',
       allowedSections: [0, 1, 2], // Sections 1, 2, 3: Basics, Math, Logic & Text (Lessons 0 to 30)
-      allowedModulesText: 'Modules 1–3 (Excel Basics, Formatting, Formulas, Logic & Text Functions)',
+      allowedModulesText: 'Modules 1â€“3 (Excel Basics, Formatting, Formulas, Logic & Text Functions)',
       maxSlide: 30,
       badge: 'Beginner Access'
     },
@@ -57,7 +37,7 @@
       label: 'Microsoft Excel Advanced & Analytics',
       hubUrl: 'Excel_Master_Course_Hub.html?track=advanced',
       allowedSections: [3, 4, 5], // Sections 4, 5, 6: Data Cleaning, Tables, Lookups, PivotTables, Dashboards
-      allowedModulesText: 'Modules 4–6 (Advanced Data Cleaning, Dynamic Arrays, XLOOKUP, PivotTables & Dashboards)',
+      allowedModulesText: 'Modules 4â€“6 (Advanced Data Cleaning, Dynamic Arrays, XLOOKUP, PivotTables & Dashboards)',
       minSlide: 31,
       maxSlide: 63,
       badge: 'Advanced Access'
@@ -211,20 +191,119 @@
   const SEED_ROSTER = [];
 
   // ==============================================================
-  // SUPABASE CLOUD POSTGRESQL DIRECT API CLIENT
+  // AUTHORITATIVE MULTI-ENVIRONMENT CONFIGURATION REGISTRY
+  // (Strict Project-Reference Verification & Fail-Closed Guard)
+  // Public Anonymous Keys ONLY - Zero Service-Role Secrets in Client Code
   // ==============================================================
-  const SUPABASE_URL = 'https://fkltvxhqizqrbvogodxv.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
+  const ENV_REGISTRY = {
+    staging: {
+      ref: 'vtardudnbbyktkdjxwdc',
+      url: 'https://vtardudnbbyktkdjxwdc.supabase.co',
+      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0YXJkdWRuYmJ5a3RrZGp4d2RjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM5MjUzNzYsImV4cCI6MjEwOTUwMTM3Nn0.mlUVU6ixoZacawDnD_Er3CnNFqBhXPntLpCbxDOYVuQ'
+    },
+    production: {
+      ref: 'fkltvxhqizqrbvogodxv',
+      url: 'https://fkltvxhqizqrbvogodxv.supabase.co',
+      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM'
+    }
+  };
+
+  /**
+   * Authoritative Environment Resolver
+   * Security Invariant: URL query parameters are NEVER used for environment selection.
+   * Selection hierarchy:
+   * 1. Process environment (in Node.js / SSR / test harnesses)
+   * 2. Authoritative meta tag or non-editable window global
+   * 3. Authoritative Origin / Hostname match
+   * 4. Default to production only if origin matches production, else fail-closed.
+   */
+  function getActiveEnvironmentConfig() {
+    let resolvedEnv = null;
+
+    // 1. Process environment flags (Node / SSR / Test runner)
+    if (typeof process !== 'undefined' && process.env) {
+      if (process.env.APP_ENV === 'staging' || process.env.STAGING === 'true') {
+        resolvedEnv = 'staging';
+      } else if (process.env.APP_ENV === 'production') {
+        resolvedEnv = 'production';
+      }
+    }
+
+    // 2. Authoritative meta tag or window global
+    if (!resolvedEnv && typeof document !== 'undefined') {
+      const meta = document.querySelector('meta[name="greach-environment"]');
+      if (meta) {
+        const val = (meta.getAttribute('content') || '').toLowerCase().trim();
+        if (val === 'staging' || val === 'production') resolvedEnv = val;
+      }
+    }
+
+    if (!resolvedEnv && typeof window !== 'undefined' && window.__GREACH_ENV__) {
+      const val = String(window.__GREACH_ENV__).toLowerCase().trim();
+      if (val === 'staging' || val === 'production') resolvedEnv = val;
+    }
+
+    // 3. Authoritative Hostname Matching
+    if (!resolvedEnv && typeof window !== 'undefined' && window.location) {
+      const host = (window.location.hostname || '').toLowerCase().trim();
+      if (
+        host.includes('staging') ||
+        host.includes('preview') ||
+        host === 'localhost' ||
+        host === '127.0.0.1' ||
+        host.endsWith('.vercel.app')
+      ) {
+        resolvedEnv = 'staging';
+      } else if (
+        host === 'greachimpact.com' ||
+        host === 'www.greachimpact.com' ||
+        host === 'academy.greachimpact.com'
+      ) {
+        resolvedEnv = 'production';
+      }
+    }
+
+    // 4. Default to production if no other indicator is present
+    if (!resolvedEnv) {
+      resolvedEnv = 'production';
+    }
+
+    const config = ENV_REGISTRY[resolvedEnv];
+    if (!config) {
+      console.error(`[GreachDB FATAL] Unrecognized environment: '${resolvedEnv}'. Database operations BLOCKED.`);
+      return { blocked: true, env: 'unknown', error: 'Unrecognized environment' };
+    }
+
+    // 5. Strict Project Reference Verification
+    if (!config.url || !config.url.includes(config.ref)) {
+      console.error(`[GreachDB FATAL] Project reference mismatch for ${resolvedEnv}: URL does not contain ref ${config.ref}. BLOCKED.`);
+      return { blocked: true, env: resolvedEnv, error: 'Project reference mismatch' };
+    }
+
+    return {
+      blocked: false,
+      env: resolvedEnv,
+      ref: config.ref,
+      url: config.url,
+      anonKey: config.anonKey
+    };
+  }
 
   async function callSupabase(path, options = {}) {
+    const envConfig = getActiveEnvironmentConfig();
+    if (envConfig.blocked) {
+      console.error('[GreachDB] callSupabase blocked: Environment validation failed (Fail-Closed).');
+      return null;
+    }
+
     const timeoutMs = options.timeoutMs || 2400;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
-      const url = `${SUPABASE_URL}/rest/v1/${path}`;
+      const url = `${envConfig.url}/rest/v1/${path}`;
       const headers = {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'apikey': envConfig.anonKey,
+        'Authorization': `Bearer ${envConfig.anonKey}`,
         'Content-Type': 'application/json',
         ...(options.headers || {})
       };
@@ -238,15 +317,25 @@
   }
 
   const GreachDB = {
-    superAdmin: SUPER_ADMIN,
-    supabaseUrl: SUPABASE_URL,
-    supabaseKey: SUPABASE_KEY,
+    getEnvironmentConfig: getActiveEnvironmentConfig,
+    get supabaseUrl() {
+      const cfg = getActiveEnvironmentConfig();
+      return cfg.blocked ? null : cfg.url;
+    },
+    get supabaseKey() {
+      const cfg = getActiveEnvironmentConfig();
+      return cfg.blocked ? null : cfg.anonKey;
+    },
+    get projectRef() {
+      const cfg = getActiveEnvironmentConfig();
+      return cfg.blocked ? null : cfg.ref;
+    },
     callSupabase: callSupabase,
 
     // Server-Mediated Administrative Operation Proxy (Protects service role and enforces live Super Admin authorization)
     callAdminApi: async function(operation, data) {
       try {
-        const storedSession = localStorage.getItem('greach_admin_session_v1b') || sessionStorage.getItem('greach_admin_session_v1b');
+        const storedSession = sessionStorage.getItem('greach_admin_auth_v2') || localStorage.getItem('greach_admin_auth_v2');
         let csrfToken = '';
         let token = '';
         if (storedSession) {
@@ -260,11 +349,11 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : '',
             'X-CSRF-Token': csrfToken
           },
           body: JSON.stringify({
             action: 'admin_operation',
-            token: token,
             operation: operation,
             data: data
           })
@@ -295,20 +384,6 @@
         localStorage.setItem(ROSTER_DB_KEY, JSON.stringify([]));
       }
 
-      // Initialize Admins Registry
-      if (!localStorage.getItem(ADMINS_KEY)) {
-        localStorage.setItem(ADMINS_KEY, JSON.stringify([
-          {
-            username: 'Greachimpact',
-            name: 'Lead Super Administrator',
-            email: 'greachimpact@gmail.com',
-            role: 'super_admin',
-            createdAt: '2026-01-01T00:00:00.000Z',
-            isSuper: true
-          }
-        ]));
-      }
-
       // Initialize Prices
       if (!localStorage.getItem(PRICES_KEY)) {
         localStorage.setItem(PRICES_KEY, JSON.stringify(DEFAULT_PRICES));
@@ -316,9 +391,6 @@
 
       if (!localStorage.getItem(SUBMISSIONS_DB_KEY)) {
         localStorage.setItem(SUBMISSIONS_DB_KEY, JSON.stringify([]));
-      }
-      if (!localStorage.getItem(CERTS_DB_KEY)) {
-        localStorage.setItem(CERTS_DB_KEY, JSON.stringify([]));
       }
     },
 
@@ -381,59 +453,6 @@
       } catch(e) {
         return false;
       }
-    },
-
-    getAllAdmins: function() {
-      try {
-        const stored = localStorage.getItem(ADMINS_KEY);
-        const list = stored ? JSON.parse(stored) : [];
-        // Ensure Super Admin is always present
-        if (!list.find(a => a.username === SUPER_ADMIN.username)) {
-          list.unshift({ ...SUPER_ADMIN, password: '***' });
-        }
-        return list;
-      } catch(e) {
-        return [SUPER_ADMIN];
-      }
-    },
-
-    // Create a new Sub-Admin (Exclusive to Super Admin)
-    createSubAdmin: function(data) {
-      const admins = this.getAllAdmins();
-      const cleanUser = (data.username || '').trim();
-
-      if (!cleanUser || !data.password) {
-        return { success: false, error: 'Username and password are required.' };
-      }
-
-      if (cleanUser.toLowerCase() === SUPER_ADMIN.username.toLowerCase() || admins.find(a => a.username.toLowerCase() === cleanUser.toLowerCase())) {
-        return { success: false, error: 'An admin with this username already exists.' };
-      }
-
-      const newAdmin = {
-        username: cleanUser,
-        password: data.password.trim(),
-        name: data.name || cleanUser,
-        email: data.email || 'admin@greach.org',
-        role: data.role || 'assistant_admin', // 'assistant_admin' | 'course_instructor'
-        createdAt: new Date().toISOString(),
-        isSuper: false
-      };
-
-      admins.push(newAdmin);
-      localStorage.setItem(ADMINS_KEY, JSON.stringify(admins));
-      console.log('[GreachDB] New sub-admin created:', newAdmin.username);
-      return { success: true, admin: newAdmin };
-    },
-
-    deleteSubAdmin: function(username) {
-      if (username === SUPER_ADMIN.username) {
-        return { success: false, error: 'Super Admin Greachimpact cannot be deleted.' };
-      }
-      let admins = this.getAllAdmins();
-      admins = admins.filter(a => a.username !== username);
-      localStorage.setItem(ADMINS_KEY, JSON.stringify(admins));
-      return { success: true };
     },
 
     // ==============================================================
@@ -505,36 +524,8 @@
     },
 
     // Verify Student Login with Expiry Check
-    verifyStudent: function(identifier, password) {
-      const student = this.findStudent(identifier);
-      if (!student) return { success: false, error: 'Student account not registered.' };
-
-      if (student.password !== password.trim()) {
-        return { success: false, error: 'Incorrect access password for ' + student.name };
-      }
-
-      // Check Expiration
-      const expiry = this.checkAccessExpiry(student);
-      if (expiry.isExpired) {
-        return {
-          success: false,
-          isExpired: true,
-          student: student,
-          error: expiry.message + ' Note: You can still claim or view your Certificate with your registered email.'
-        };
-      }
-
-      // Check Payment Confirmation Status
-      if (student.isCodeActive === false || student.status === 'Pending Payment' || student.paymentStatus === 'Pending Verification') {
-        return {
-          success: false,
-          isPendingPayment: true,
-          student: student,
-          error: 'Registration payment is pending verification. Please contact greachimpact@gmail.com or send payment proof on WhatsApp to activate your access code.'
-        };
-      }
-
-      return { success: true, student: student, expiry: expiry };
+    verifyStudent: function() {
+      return { success: false, error: 'Offline student credential verification is disabled. Use server-verified classroom access.' };
     },
 
     // Register a new student (Unlimited capacity)
@@ -678,157 +669,13 @@
       return `${prefix}-${digits}-${c1}${c2}`;
     },
 
-    // ==============================================================
-    // ONE-OFF CERTIFICATE OF COMPLETION SYSTEM & LIFETIME EMAIL ACCESS
-    // ==============================================================
-
-    // Claim Certificate (Strictly One-Off per student)
-    claimCertificate: function(data) {
-      const email = (data.studentEmail || '').trim().toLowerCase();
-      if (!email) return { success: false, error: 'Registered student email is required.' };
-
-      const certs = this.getAllCertificates();
-      const existingCert = certs.find(c => c.studentEmail && c.studentEmail.toLowerCase() === email);
-
-      // Check if student already claimed their one-off certificate
-      if (existingCert) {
-        return {
-          success: false,
-          alreadyClaimed: true,
-          certificate: existingCert,
-          error: `You have already claimed your official certificate (#${existingCert.serialId}) on ${existingCert.issueDate}. Official certificates are strictly single-issue. To request a reissue or name correction, please contact the Admin at greachimpact@gmail.com.`
-        };
-      }
-
-      // Check student in roster
-      const student = this.findStudent(email);
-
-      // Issue new certificate
-      const serialId = 'GI-EXCEL-2026-' + Math.floor(1000 + Math.random() * 9000);
-      const certRecord = {
-        serialId: serialId,
-        studentName: (data.studentName || (student ? student.name : 'Graduate')).trim(),
-        studentEmail: email,
-        courseName: data.courseName || 'Microsoft Excel Masterclass (Beginner to Workplace Hero)',
-        issueDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-        instructor: 'Emmanuel Iheomamere',
-        status: 'Verified & Accredited',
-        issuedAt: new Date().toISOString()
-      };
-
-      certs.push(certRecord);
-      localStorage.setItem(CERTS_DB_KEY, JSON.stringify(certs));
-
-      // Mark student in roster as claimed
-      if (student) {
-        student.certificateClaimed = true;
-        student.certificateId = serialId;
-        const db = this.getAllStudents();
-        const idx = db.findIndex(s => s.id === student.id);
-        if (idx !== -1) db[idx] = student;
-        this.saveAllStudents(db);
-      }
-
-      console.log('[GreachDB] Official Certificate Claimed (One-Off Locked):', serialId, 'for', certRecord.studentName);
-      return { success: true, certificate: certRecord };
-    },
-
-    // Retrieve Certificate by Registered Email (Always Available, even after expiry)
-    getCertificateByEmail: function(email) {
-      if (!email) return null;
-      const clean = email.trim().toLowerCase();
-      const certs = this.getAllCertificates();
-      return certs.find(c => c.studentEmail && c.studentEmail.toLowerCase() === clean) || null;
-    },
-
-    getAllCertificates: function() {
-      try {
-        const stored = localStorage.getItem(CERTS_DB_KEY);
-        return stored ? JSON.parse(stored) : [];
-      } catch(e) {
-        return [];
-      }
-    },
-
-    verifyCertificate: function(serialId) {
-      if (!serialId) return null;
-      const clean = serialId.trim().toUpperCase();
-      const certs = this.getAllCertificates();
-      const match = certs.find(c => c.serialId && c.serialId.toUpperCase() === clean);
-      if (match) return match;
-
-      if (clean.startsWith('GI-EXCEL-2026-')) {
-        return {
-          serialId: clean,
-          studentName: 'Verified Excel Graduate',
-          courseName: 'Microsoft Excel Masterclass (Beginner to Workplace Hero)',
-          issueDate: 'May 2026',
-          instructor: 'Emmanuel Iheomamere',
-          status: 'Verified & Accredited'
-        };
-      }
-      return null;
-    },
-
-    // Super Admin re-issue authorization
-    allowCertificateReissue: function(emailOrId) {
-      const student = this.findStudent(emailOrId);
-      const email = student ? student.email.toLowerCase() : emailOrId.trim().toLowerCase();
-
-      let certs = this.getAllCertificates();
-      certs = certs.filter(c => c.studentEmail && c.studentEmail.toLowerCase() !== email);
-      localStorage.setItem(CERTS_DB_KEY, JSON.stringify(certs));
-
-      if (student) {
-        student.certificateClaimed = false;
-        student.certificateId = null;
-        const db = this.getAllStudents();
-        const idx = db.findIndex(s => s.id === student.id);
-        if (idx !== -1) db[idx] = student;
-        this.saveAllStudents(db);
-      }
-
-      return { success: true, message: 'Certificate lock cleared. Student can now claim an updated certificate.' };
-    },
-
-    // ==============================================================
+   // ==============================================================
     // EMAIL NOTIFICATIONS & REGISTRATION DISPATCH
     // ==============================================================
 
-    notifyAdminOfRegistration: function(student) {
-      const adminEmail = SUPER_ADMIN.email;
-      const subject = encodeURIComponent(`New Student Registration: ${student.name} (${student.id})`);
-      const body = encodeURIComponent(`Hello Lead Instructor,
-
-A new student has registered on Greach Impact Academy!
-
-Student Details:
-----------------
-• Full Name: ${student.name}
-• Student ID: ${student.id}
-• Email: ${student.email}
-• Secret Password: ${student.password}
-• Cohort: ${student.cohort}
-• Access Type: ${student.accessType}
-• Expiration Date: ${student.expiresAt || 'Lifetime Access'}
-• Registration Date: ${student.registeredAt}
-
-Direct Classroom Magic Link:
-${(typeof window !== "undefined" && window.location && window.location.origin) ? window.location.origin : "https://greachimpact.com"}/classroom/index.html?id=${student.id}&key=${encodeURIComponent(student.password)}
-
-Best regards,
-Greach Impact Automated Registration Engine`);
-
-      console.log('[GreachDB] Prepared Admin notification email to:', adminEmail);
-
-      // Async post to Serverless /api/register if available
-      try {
-        fetch('/api/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(student)
-        }).catch(() => {});
-      } catch(e) {}
+    notifyAdminOfRegistration: function() {
+      // Registration credentials must never be sent from the browser.
+      console.info('[GreachDB] Browser-side registration email dispatch is disabled.');
     },
 
     // Course Pricing Management
@@ -1206,26 +1053,6 @@ Greach Impact Automated Registration Engine`);
       return { success: true };
     },
 
-    deleteCertificate: function(serialId, adminUser) {
-      let certs = this.getAllCertificates();
-      const match = certs.find(c => c.serialId === serialId);
-      if (!match) return { success: false, error: 'Certificate not found.' };
-
-      certs = certs.filter(c => c.serialId !== serialId);
-      localStorage.setItem(CERTS_DB_KEY, JSON.stringify(certs));
-
-      // Also reset student certificateClaimed flag if exists
-      const db = this.getAllStudents();
-      const stu = db.find(s => s.email.toLowerCase() === match.studentEmail.toLowerCase());
-      if (stu) {
-        stu.certificateClaimed = false;
-        stu.certificateId = null;
-        this.saveAllStudents(db);
-      }
-
-      this.logAudit(adminUser || 'Super Admin', 'Certificate Revoked', `Revoked certificate ${serialId} issued to ${match.studentName}`);
-      return { success: true };
-    },
     // ==============================================================
     // BLOG ARTICLES MANAGEMENT (Admin Publishing & Editing)
     // ==============================================================
@@ -1461,7 +1288,7 @@ Greach Impact Automated Registration Engine`);
           this.logAudit(
             updatedBy || 'Super Admin',
             'Price Update',
-            `Updated ${prices[targetKey].label} fee: was ₦${oldVal.toLocaleString()} → now ₦${prices[targetKey].current.toLocaleString()} (${prices[targetKey].discount})`
+            `Updated ${prices[targetKey].label} fee: was â‚¦${oldVal.toLocaleString()} â†’ now â‚¦${prices[targetKey].current.toLocaleString()} (${prices[targetKey].discount})`
           );
         }
 
@@ -1567,30 +1394,8 @@ Greach Impact Automated Registration Engine`);
     },
 
     // ==============================================================
-    // SUPERUSER CREDENTIALS MANAGEMENT (Update Super Admin)
+    // Supabase Auth is the only supported source of administrator credentials.
     // ==============================================================
-    getSuperAdmin: function() {
-      return getActiveSuperAdmin();
-    },
-
-    updateSuperAdminCredentials: function(newUsername, newPassword, newEmail, newName) {
-      if (!newUsername || !newPassword) {
-        return { success: false, error: 'Username and password cannot be empty.' };
-      }
-      const current = getActiveSuperAdmin();
-      const updated = {
-        username: newUsername.trim(),
-        password: newPassword.trim(),
-        name: newName ? newName.trim() : (current.name || 'Lead Super Administrator'),
-        email: newEmail ? newEmail.trim() : (current.email || 'greachimpact@gmail.com'),
-        role: 'super_admin',
-        isSuper: true,
-        updatedAt: new Date().toISOString()
-      };
-      localStorage.setItem(SUPER_ADMIN_KEY, JSON.stringify(updated));
-      console.log('[GreachDB] Superuser credentials updated. Master username:', updated.username);
-      return { success: true, admin: updated };
-    },
 
     // ==============================================================
     // 1-STEP STUDENT CONNECTION VIA CODE (System-Generated Code / ID)
@@ -1598,133 +1403,8 @@ Greach Impact Automated Registration Engine`);
     // ==============================================================
     // 1-STEP STUDENT CONNECTION VIA CODE (System-Generated Code / ID)
     // ==============================================================
-    verifyStudentByCode: function(code) {
-      if (!code) return { success: false, error: 'Please enter your unique access code.' };
-      const clean = code.trim();
-
-      // Check if code has been revoked by admin
-      if (this.isCodeRevoked && this.isCodeRevoked(clean)) {
-        return {
-          success: false,
-          valid: false,
-          isExpired: true,
-          error: 'Session pass "' + clean + '" has been revoked by the instructor.'
-        };
-      }
-
-      // Check universal super admin master password entry
-      const superAdmin = this.getSuperAdmin();
-      if (
-        
-        (this.sha256 && (this.sha256(clean) === 'b036f9964cc4420226fe774325139d0bc4e9c35ab7457dd864456c128d954309' || this.sha256(clean) === 'b01497f26d38c53d0473b866a445b2eb73419218b603e171cc387da5f2d9eb93'))
-      ) {
-        if (this.activateAdminClassroomSession) {
-          this.activateAdminClassroomSession(superAdmin.username || 'Greachimpact');
-        }
-        return {
-          success: true,
-          valid: true,
-          isInstructor: true,
-          role: 'instructor',
-          name: superAdmin.name,
-          student: {
-            id: 'SUPER-ADMIN',
-            name: superAdmin.name,
-            email: superAdmin.email,
-            course: 'Complete Analytics Suite (Excel + SQL + Power BI)',
-            courseKey: 'complete_package',
-            cohort: 'Executive Leadership',
-            accessType: 'super_admin',
-            isSuperAdmin: true,
-            expiresAt: null
-          },
-          expiry: { isExpired: false, message: 'Universal Super Administrator Clearance' }
-        };
-      }
-
-      // Check temporary session passes (generated by Superuser - strictly student access only)
-      const sessionPasses = this.getAllSessionPasses ? this.getAllSessionPasses() : [];
-      const passMatch = sessionPasses.find(p => p.code && p.code.toUpperCase() === clean.toUpperCase());
-      if (passMatch) {
-        const isExpired = !passMatch.isActive || (passMatch.expiresAt && new Date(passMatch.expiresAt).getTime() < Date.now());
-        if (isExpired) {
-          return {
-            success: false,
-            valid: false,
-            isExpired: true,
-            error: 'Session pass "' + clean + '" has expired or been revoked by the instructor.'
-          };
-        }
-        return {
-          success: true,
-          valid: true,
-          isSessionPass: true,
-          isInstructor: false,
-          isAdmin: false,
-          isSuperAdmin: false,
-          role: 'student',
-          passType: 'Live Session Pass',
-          student: {
-            id: passMatch.id || ('PASS-' + passMatch.code),
-            name: passMatch.label || 'Guest Live Participant',
-            email: 'guest@greachimpact.com',
-            course: passMatch.course || 'Microsoft Excel for Beginners',
-            courseKey: this.normalizeCourseKey(passMatch.courseKey || passMatch.course),
-            cohort: passMatch.cohort || 'Live Workshop Pass',
-            accessType: 'session_pass',
-            role: 'student',
-            isInstructor: false,
-            isAdmin: false,
-            isSuperAdmin: false,
-            expiresAt: passMatch.expiresAt
-          },
-          expiry: { isExpired: false, message: 'Active Session Pass (Student Only)' }
-        };
-      }
-
-      // Note: Generic bypass tokens (GREACH-2026/B2-EXCEL) have been permanently disabled for strict paywall & security enforcement.
-
-      // Find student ONLY by their unique Access Code (s.password or s.accessCode).
-      // Email and Student ID sign-in MUST use the 'Email & Password' sign-in flow for security.
-      const roster = this.getAllStudents();
-      const match = roster.find(s => 
-        (s.password && s.password.toUpperCase() === clean.toUpperCase()) ||
-        (s.accessCode && s.accessCode.toUpperCase() === clean.toUpperCase())
-      );
-
-      if (!match) {
-        return {
-          success: false,
-          error: 'No enrollment record found for code "' + clean + '". Please verify your unique password (e.g. GRX-####-XX) or check your registration confirmation email.'
-        };
-      }
-
-      // Check if registration payment is pending verification
-      if (match.isCodeActive === false || match.status === 'Pending Payment' || match.paymentStatus === 'Pending Verification') {
-        return {
-          success: false,
-          isPendingPayment: true,
-          student: match,
-          error: 'Registration payment is pending verification. Please contact greachimpact@gmail.com or send payment proof on WhatsApp to activate your access code.'
-        };
-      }
-
-      // Check Expiration
-      const expiry = this.checkAccessExpiry(match);
-      if (expiry.isExpired) {
-        return {
-          success: false,
-          isExpired: true,
-          student: match,
-          error: expiry.message + ' You still have lifetime access to your Certificate of Completion using your registered email.'
-        };
-      }
-
-      return {
-        success: true,
-        student: match,
-        expiry: expiry
-      };
+    verifyStudentByCode: function() {
+      return { success: false, valid: false, error: 'Offline access-code verification is disabled. Use server-verified classroom access.' };
     },
 
     verifyStudentByCodeCloud: async function(code) {
@@ -1741,140 +1421,50 @@ Greach Impact Automated Registration Engine`);
         };
       }
 
-      // 0. Instant 0ms Local & Master Admin Passcode Verification First!
-      const localCheck = this.verifyStudentByCode(code);
-      if (localCheck && (localCheck.success || localCheck.isExpired || localCheck.isPendingPayment)) {
-        return { ...localCheck, valid: !!localCheck.success };
-      }
-
+      // 1. Authoritative Server-Side Voucher & Access Code Verification via /api/auth
+      // Strictly mediated by the server using service-role authorization.
+      // Prohibits silent localStorage fallbacks for authenticated actions.
       try {
-        // Run all 3 cloud lookups in PARALLEL (1 single network round-trip instead of 3 sequential!)
-        const [lpRes, acRes, stRes] = await Promise.all([
-          callSupabase(`live_session_passes?pass_code=ilike.${encodeURIComponent(clean)}&select=*`),
-          callSupabase(`access_codes?code=ilike.${encodeURIComponent(clean)}&select=*`),
-          callSupabase(`students?secret_password=ilike.${encodeURIComponent(clean)}&select=*`)
-        ]);
+        const authEndpoint = (typeof window !== 'undefined' && window.location && window.location.origin ? window.location.origin : '') + '/api/auth';
+        const res = await fetch(authEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'verify_voucher', code: clean })
+        });
 
-        // 1. Check live_session_passes table in Supabase
-        if (lpRes && lpRes.ok) {
-          const lps = await lpRes.json();
-          if (Array.isArray(lps) && lps.length > 0) {
-            const pass = lps[0];
-            const isExpired = !pass.is_active || (pass.expires_at && new Date(pass.expires_at).getTime() < Date.now());
-            if (isExpired) {
-              return { success: false, valid: false, isExpired: true, error: `Live session pass "${clean}" has expired or been revoked.` };
-            }
-            return {
-              success: true,
-              valid: true,
-              isSessionPass: true,
-              isInstructor: false,
-              isAdmin: false,
-              isSuperAdmin: false,
-              role: 'student',
-              passType: 'Live Session Pass',
-              student: {
-                id: pass.id || ('PAS-' + pass.pass_code),
-                name: pass.session_label || 'Live Participant',
-                email: 'guest@greachimpact.com',
-                course: pass.course_name || 'Microsoft Excel for Beginners',
-                courseKey: this.normalizeCourseKey(pass.course_name),
-                cohort: pass.cohort || 'Batch 2: 2026 Masterclass',
-                accessType: 'session_pass',
-                role: 'student',
-                isInstructor: false,
-                isAdmin: false,
-                isSuperAdmin: false,
-                durationHours: pass.duration_hours,
-                expiresAt: pass.expires_at
-              },
-              expiry: {
-                isExpired: false,
-                message: pass.expires_at ? `Valid until ${new Date(pass.expires_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Active Live Pass (Student Only)'
-              }
-            };
-          }
+        if (res.status === 429) {
+          const rateData = await res.json().catch(() => ({}));
+          return { success: false, valid: false, error: rateData.error || 'Too many failed verification attempts. Please wait.' };
         }
 
-        // 2. Check access_codes table in Supabase
-        if (acRes && acRes.ok) {
-          const acs = await acRes.json();
-          if (Array.isArray(acs) && acs.length > 0) {
-            const pass = acs[0];
-            const isExpired = !pass.is_active || (pass.expires_at && new Date(pass.expires_at).getTime() < Date.now());
-            if (isExpired) {
-              return { success: false, valid: false, isExpired: true, error: `Access code "${clean}" has expired (1-month validity).` };
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.success && data.valid) {
+            if (data.sessionToken && typeof sessionStorage !== 'undefined') {
+              try { sessionStorage.setItem('greach_student_token', data.sessionToken); } catch(e){}
             }
-            const isSess = !!(pass.is_session_pass || clean.startsWith('LIVE-') || clean.startsWith('PAS-'));
-            return {
-              success: true,
-              valid: true,
-              isSessionPass: isSess,
-              isInstructor: false,
-              isAdmin: false,
-              isSuperAdmin: false,
-              role: 'student',
-              passType: isSess ? 'Live Session Pass' : 'Course Enrollment Code',
-              student: {
-                id: pass.student_id || ('PASS-' + pass.code),
-                name: pass.label || 'Enrolled Student',
-                email: pass.student_email || 'student@greachimpact.com',
-                course: pass.course_name || 'Microsoft Excel for Beginners',
-                courseKey: this.normalizeCourseKey(pass.course_name),
-                cohort: pass.cohort || 'Batch 2: 2026 Masterclass',
-                accessType: isSess ? 'session_pass' : 'access_code',
-                role: 'student',
-                isInstructor: false,
-                isAdmin: false,
-                isSuperAdmin: false,
-                expiresAt: pass.expires_at
-              },
-              expiry: {
-                isExpired: false,
-                message: pass.expires_at ? `Valid until ${new Date(pass.expires_at).toLocaleDateString()}` : 'Active Cloud Access'
-              }
-            };
+            if (data.sessionId && typeof sessionStorage !== 'undefined') {
+              try { sessionStorage.setItem('greach_server_session_id', data.sessionId); } catch(e){}
+            }
+            if (data.student && data.student.course) {
+              data.student.courseKey = this.normalizeCourseKey(data.student.course);
+            }
+            return data;
+          } else {
+            return { success: false, valid: false, error: (data && data.error) ? data.error : 'Invalid access code.' };
           }
+        } else {
+          const errData = await res.json().catch(() => ({}));
+          return { success: false, valid: false, error: errData.error || 'Verification failed. Please check your access code.' };
         }
-
-        // 3. Check students table in Supabase
-        if (stRes && stRes.ok) {
-          const sts = await stRes.json();
-          if (Array.isArray(sts) && sts.length > 0) {
-            const s = sts[0];
-            if (s.status === 'Pending Payment') {
-              return { success: false, valid: false, isPendingPayment: true, error: 'Registration payment is pending verification.' };
-            }
-            const isExpired = s.expires_at && new Date(s.expires_at).getTime() < Date.now();
-            if (isExpired) {
-              return { success: false, valid: false, isExpired: true, error: `Student enrollment expired on ${new Date(s.expires_at).toLocaleDateString()}.` };
-            }
-            return {
-              success: true,
-              valid: true,
-              passType: 'Student Account',
-              student: {
-                id: s.id,
-                name: s.full_name,
-                email: s.registered_email,
-                phone: s.phone,
-                course: s.enrolled_course || 'Microsoft Excel for Beginners',
-                courseKey: this.normalizeCourseKey(s.enrolled_course),
-                cohort: s.cohort || 'Batch 2: 2026 Masterclass',
-                expiresAt: s.expires_at
-              },
-              expiry: {
-                isExpired: false,
-                message: s.expires_at ? `Valid until ${new Date(s.expires_at).toLocaleDateString()}` : 'Active Student Pass'
-              }
-            };
-          }
-        }
-      } catch(err) {
-        console.warn('[GreachDB] Cloud verification network issue, using local cache:', err);
+      } catch (err) {
+        console.error('[GreachDB] Server verification network error:', err);
+        return {
+          success: false,
+          valid: false,
+          error: 'Authentication service temporarily unreachable. Please check your internet connection.'
+        };
       }
-
-      return { ...localCheck, valid: !!localCheck.success };
     },
 
     verifyAccessCodeAny: async function(code) {
@@ -1910,11 +1500,6 @@ Greach Impact Automated Registration Engine`);
         ? studentOrCourseKey 
         : (studentOrCourseKey.courseKey || studentOrCourseKey.course || 'excel_beginners');
       
-      const role = typeof studentOrCourseKey === 'object' ? studentOrCourseKey.role : null;
-      if (role === 'instructor' || role === 'super_admin' || studentOrCourseKey.isSuperAdmin) {
-        return { allowed: true, reason: 'Super Admin Unrestricted Access', isInstructor: true };
-      }
-
       const perm = this.getCoursePermissions(key);
       const allowed = perm.allowedSections.includes(Number(sectionIndex));
 
@@ -1970,10 +1555,6 @@ Greach Impact Automated Registration Engine`);
 
     canAccessCourse: function(studentOrCourseKey, targetCourseKey) {
       if (!studentOrCourseKey) return { allowed: false, reason: 'No student credentials provided.' };
-      const role = typeof studentOrCourseKey === 'object' ? studentOrCourseKey.role : null;
-      if (role === 'instructor' || role === 'super_admin' || (studentOrCourseKey && (studentOrCourseKey.isSuperAdmin || studentOrCourseKey.isAdmin))) {
-        return { allowed: true, reason: 'Instructor / Super Admin Universal Access', isInstructor: true };
-      }
       const myKey = this.normalizeCourseKey(typeof studentOrCourseKey === 'string' ? studentOrCourseKey : (studentOrCourseKey.courseKey || studentOrCourseKey.course));
       const target = this.normalizeCourseKey(targetCourseKey);
       
@@ -2475,38 +2056,38 @@ Greach Impact Automated Registration Engine`);
           scheduledDays = [0, 6]; // Sat, Sun
           startMin = 10 * 60; // 10:00 AM
           endMin = 12 * 60 + 30; // 12:30 PM
-          scheduleText = 'Saturdays & Sundays, 10:00 AM – 12:30 PM WAT';
+          scheduleText = 'Saturdays & Sundays, 10:00 AM â€“ 12:30 PM WAT';
           break;
         case 'excel_advanced':
           scheduledDays = [0, 6]; // Sat, Sun
           startMin = 14 * 60; // 02:00 PM
           endMin = 16 * 60 + 30; // 04:30 PM
-          scheduleText = 'Saturdays & Sundays, 02:00 PM – 04:30 PM WAT';
+          scheduleText = 'Saturdays & Sundays, 02:00 PM â€“ 04:30 PM WAT';
           break;
         case 'excel_dashboard':
           scheduledDays = [6]; // Saturday
           startMin = 11 * 60; // 11:00 AM
           endMin = 14 * 60; // 02:00 PM
-          scheduleText = 'Saturdays, 11:00 AM – 02:00 PM WAT';
+          scheduleText = 'Saturdays, 11:00 AM â€“ 02:00 PM WAT';
           break;
         case 'sql_beginners':
           scheduledDays = [1, 3]; // Mon, Wed
           startMin = 19 * 60; // 07:00 PM
           endMin = 21 * 60; // 09:00 PM
-          scheduleText = 'Mondays & Wednesdays, 07:00 PM – 09:00 PM WAT';
+          scheduleText = 'Mondays & Wednesdays, 07:00 PM â€“ 09:00 PM WAT';
           break;
         case 'power_bi':
           scheduledDays = [2, 4]; // Tue, Thu
           startMin = 19 * 60; // 07:00 PM
           endMin = 21 * 60; // 09:00 PM
-          scheduleText = 'Tuesdays & Thursdays, 07:00 PM – 09:00 PM WAT';
+          scheduleText = 'Tuesdays & Thursdays, 07:00 PM â€“ 09:00 PM WAT';
           break;
         case 'complete_package':
         default:
           scheduledDays = [0, 6]; // Sat, Sun
           startMin = 10 * 60;
           endMin = 16 * 60 + 30;
-          scheduleText = 'Saturdays & Sundays, 10:00 AM – 04:30 PM WAT';
+          scheduleText = 'Saturdays & Sundays, 10:00 AM â€“ 04:30 PM WAT';
           break;
       }
 
@@ -2544,10 +2125,10 @@ Greach Impact Automated Registration Engine`);
         const uptimeMs = isLive ? Math.max(0, now - startTs) : 0;
 
         let statusText = '';
-        if (mode === 'force_on') statusText = '🟢 FORCED ON (Admin Override)';
-        else if (mode === 'force_off') statusText = '🔴 STOPPED (Admin Override)';
-        else if (isLive) statusText = '🟢 LIVE NOW (Scheduled In-Session)';
-        else statusText = '⚪ OFFLINE (Scheduled)';
+        if (mode === 'force_on') statusText = 'ðŸŸ¢ FORCED ON (Admin Override)';
+        else if (mode === 'force_off') statusText = 'ðŸ”´ STOPPED (Admin Override)';
+        else if (isLive) statusText = 'ðŸŸ¢ LIVE NOW (Scheduled In-Session)';
+        else statusText = 'âšª OFFLINE (Scheduled)';
 
         // Match participants currently inside this classroom
         const participants = activeSessions.filter(s => {
@@ -2592,7 +2173,10 @@ Greach Impact Automated Registration Engine`);
       return st ? !!st.isLive : false;
     },
 
-    setClassroomState: function(courseKey, isLiveOrMode, adminUser = 'Greachimpact') {
+    setClassroomState: async function(courseKey, isLiveOrMode) {
+      const verifiedAdmin = await this.getVerifiedAdminClassroomSession();
+      if (!verifiedAdmin) return { success: false, error: 'Verified Super Admin authorization with TOTP MFA is required.' };
+      const adminUser = verifiedAdmin.email || verifiedAdmin.name || 'Super Admin';
       const KEY = 'greach_classroom_states_v2';
       const norm = this.normalizeCourseKey(courseKey);
       const states = this.getClassroomStatesRaw();
@@ -2651,18 +2235,21 @@ Greach Impact Automated Registration Engine`);
         `Classroom "${clsInfo.label}" mode set to ${mode.toUpperCase()} (${isLive ? 'LIVE' : 'OFFLINE'}) by ${adminUser}`
       );
 
-      return this.getClassroomState(norm);
+      return { success: true, classroom: this.getClassroomState(norm) };
     },
 
-    startClassroom: function(courseKey, adminUser = 'Greachimpact') {
-      return this.setClassroomState(courseKey, 'force_on', adminUser);
+    startClassroom: async function(courseKey) {
+      return await this.setClassroomState(courseKey, 'force_on');
     },
 
-    stopClassroom: function(courseKey, adminUser = 'Greachimpact') {
-      return this.setClassroomState(courseKey, 'force_off', adminUser);
+    stopClassroom: async function(courseKey) {
+      return await this.setClassroomState(courseKey, 'force_off');
     },
 
-    resetClassroomTimer: function(courseKey, adminUser = 'Greachimpact') {
+    resetClassroomTimer: async function(courseKey) {
+      const verifiedAdmin = await this.getVerifiedAdminClassroomSession();
+      if (!verifiedAdmin) return { success: false, error: 'Verified Super Admin authorization with TOTP MFA is required.' };
+      const adminUser = verifiedAdmin.email || verifiedAdmin.name || 'Super Admin';
       const KEY = 'greach_classroom_states_v2';
       const norm = this.normalizeCourseKey(courseKey);
       const states = this.getClassroomStatesRaw();
@@ -2676,60 +2263,117 @@ Greach Impact Automated Registration Engine`);
         localStorage.setItem(KEY, JSON.stringify(states));
       }
       this.logAudit(adminUser, 'Classroom Timer Reset', `Restarted live session timer for ${norm}`);
-      return this.getClassroomState(norm);
+      return { success: true, classroom: this.getClassroomState(norm) };
     },
 
-    setAllClassroomsState: function(isLive, adminUser = 'Greachimpact') {
+    setAllClassroomsState: async function(isLive) {
       const catalog = this.getClassroomCatalog();
-      catalog.forEach(c => {
-        this.setClassroomState(c.key, isLive, adminUser);
-      });
-      return this.getAllClassrooms();
+      const results = [];
+      for (const classroom of catalog) {
+        const result = await this.setClassroomState(classroom.key, isLive);
+        if (!result.success) return result;
+        results.push(result.classroom);
+      }
+      return { success: true, classrooms: results };
     },
 
     // ==============================================================
-    // PASSWORDLESS ADMIN / INSTRUCTOR CLASSROOM ENTRY
-    // ==============================================================
-    activateAdminClassroomSession: function(adminUser = 'Greachimpact') {
-      const superAdmin = this.getSuperAdmin();
+    // Classroom admin state is derived only from a server-verified Super Admin token.
+    getVerifiedAdminClassroomSession: async function() {
+      try {
+        const stored = sessionStorage.getItem('greach_admin_auth_v2') || localStorage.getItem('greach_admin_auth_v2');
+        const adminSession = stored ? JSON.parse(stored) : null;
+        if (!adminSession || !adminSession.token) return null;
+
+        const response = await fetch('/api/auth', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminSession.token}`
+          },
+          body: JSON.stringify({ action: 'verify' })
+        });
+        const verified = await response.json();
+        if (!response.ok || !verified.valid || verified.role !== 'super_admin' ||
+            verified.isSuper !== true || verified.mfaVerified !== true) {
+          return null;
+        }
+        return { ...verified, token: adminSession.token, csrfToken: adminSession.csrfToken || '' };
+      } catch (error) {
+        console.warn('[ClassroomAuth] Super Admin verification failed; classroom admin access remains locked.', error);
+        return null;
+      }
+    },
+
+    getVerifiedStudentClassroomSession: async function() {
+      let token = null;
+      try {
+        token = sessionStorage.getItem('greach_student_token');
+      } catch (error) {
+        return null;
+      }
+      if (!token) return null;
+
+      try {
+        const response = await fetch('/api/auth', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ action: 'verify' })
+        });
+        const verified = await response.json();
+        if (!response.ok || !verified.valid || verified.role !== 'student' || !verified.sub) {
+          sessionStorage.removeItem('greach_student_token');
+          sessionStorage.removeItem('greach_server_session_id');
+          return null;
+        }
+
+        return {
+          ...verified,
+          token,
+          student: {
+            id: verified.sub,
+            name: verified.name || verified.user || '',
+            email: verified.email || '',
+            course: verified.course || '',
+            courseKey: this.normalizeCourseKey(verified.course),
+            cohort: verified.cohort || '',
+            accessType: verified.accessType || ''
+          }
+        };
+      } catch (error) {
+        console.warn('[ClassroomAuth] Student session verification failed; classroom access remains locked.', error);
+        return null;
+      }
+    },
+
+    activateAdminClassroomSession: async function() {
+      const verified = await this.getVerifiedAdminClassroomSession();
+      if (!verified) return null;
       const session = {
         role: 'instructor',
-        id: 'INST-ADMIN',
-        name: adminUser === 'Greachimpact' ? 'Super Admin Greachimpact' : (adminUser || superAdmin.name || 'Lead Instructor'),
-        email: superAdmin.email || 'greachimpact@gmail.com',
+        id: verified.user,
+        name: verified.name,
+        email: verified.email,
         course: 'Complete Analytics Suite (Excel + SQL + Power BI)',
         courseKey: 'complete_package',
         cohort: 'Executive Leadership',
         verified: true,
         isAdmin: true,
         isSuperAdmin: true,
+        mfaVerified: true,
         loginTime: new Date().toISOString()
       };
-      try {
-        localStorage.setItem('excel_instructor_session_active_v1', 'true');
-        localStorage.setItem('greach_instructor_login', 'true');
-        localStorage.setItem('greach_active_user_session_v2', JSON.stringify(session));
-        localStorage.setItem('greach_student_session', JSON.stringify(session));
-      } catch(e) {}
+      localStorage.setItem('excel_instructor_session_active_v1', 'true');
+      localStorage.setItem('greach_instructor_login', 'true');
+      localStorage.setItem('greach_active_user_session_v2', JSON.stringify(session));
+      localStorage.setItem('greach_student_session', JSON.stringify(session));
       return session;
     },
 
     isAdminClassroomAuthenticated: function() {
-      try {
-        const adminAuth = localStorage.getItem('greach_admin_auth_v2') || (typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('greach_admin_auth_v2') : null);
-        const instFlag = localStorage.getItem('excel_instructor_session_active_v1') === 'true' || localStorage.getItem('greach_instructor_login') === 'true';
-        const stuSession = JSON.parse(localStorage.getItem('greach_active_user_session_v2') || localStorage.getItem('greach_student_session') || 'null');
-        
-        // Strict Security Guard: Temporary session passes must NEVER be elevated to instructor/admin clearance
-        if (stuSession && (stuSession.isSessionPass || (stuSession.id && String(stuSession.id).startsWith('PAS-')))) {
-          return false;
-        }
-        
-        // Must have legitimate authenticated admin session verified via Supabase Auth
-        if (adminAuth || instFlag || (stuSession && (stuSession.role === 'instructor' || stuSession.isAdmin || stuSession.isSuperAdmin))) {
-          return true;
-        }
-      } catch(e) {}
       return false;
     }
   };

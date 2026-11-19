@@ -464,7 +464,7 @@
           <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
             Course Access Code
           </label>
-          <input type="text" id="gateInputCode" placeholder="e.g. GRX-2951-HY or STU-2026-001" style="width: 100%; padding: 0.85rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 1.05rem; font-weight: 700; outline: none; letter-spacing: 0.03em; text-transform: uppercase;" required autofocus />
+          <input type="text" id="gateInputCode" placeholder="e.g. your personal access code or your student ID" style="width: 100%; padding: 0.85rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 1.05rem; font-weight: 700; outline: none; letter-spacing: 0.03em; text-transform: uppercase;" required autofocus />
           <p style="font-size: 0.76rem; color: #64748b; margin-top: 0.4rem; line-height: 1.4;">
             <i class="fas fa-info-circle" style="color:#0284c7;"></i> Enter the unique code generated upon payment confirmation.
           </p>
@@ -600,9 +600,6 @@
       </a>
       <a href="Excel_Master_Course_Hub.html?mode=live" class="nav-btn record">
         <i class="fas fa-satellite-dish"></i> <strong>Live Broadcast Studio (Unlimited Capacity)</strong>
-      </a>
-      <a href="Student_Login_Credentials_300_Roster.xlsx" download class="nav-btn" style="background:#065f46; border-color:#10b981;">
-        <i class="fas fa-id-card"></i> <strong>Student Credentials Roster (.xlsx)</strong>
       </a>
       <a href="Excel_Master_Course_Hub.html#batches" class="nav-btn" style="background:linear-gradient(135deg, #4f46e5, #4338ca); border-color:#818cf8;">
         <i class="fas fa-link"></i> <strong>Batch Manager</strong>
@@ -980,22 +977,6 @@
   <script>
     const INSTRUCTOR_LOGIN_KEY = 'excel_instructor_session_active_v1';
     const ACTIVE_SESSION_KEY = 'greach_active_user_session_v2';
-    const ROSTER_DB_KEY = 'greach_student_roster_v2';
-
-    // Preload student database if not already present
-    const preloadedRoster = [];
-    if (!localStorage.getItem(ROSTER_DB_KEY)) {
-      localStorage.setItem(ROSTER_DB_KEY, JSON.stringify(preloadedRoster));
-    }
-
-    function getStudentDatabase() {
-      try {
-        return JSON.parse(localStorage.getItem(ROSTER_DB_KEY) || '[]');
-      } catch(e) {
-        return preloadedRoster;
-      }
-    }
-
     // Global Mode Switcher Function (Access Code vs Email & Password vs Instructor)
     window.switchLoginMode = function(mode) {
       const tabCode = document.getElementById('tabModeCode');
@@ -1072,88 +1053,81 @@
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    // Security Gate State Checker & Automated Magic Link Evaluator
+    // Restore classroom access only from server-verified administrator or student sessions.
     async function checkAccessSecurity() {
       const securityGateOverlay = document.getElementById('securityGateOverlay');
       const studentStatusPill = document.getElementById('studentStatusPill');
       const verifiedStudentName = document.getElementById('verifiedStudentName');
-
-      // 1. Check Automated URL Query Parameters & Passwordless Admin Session
-      const urlParams = new URLSearchParams(window.location.search);
-      const adminKey = urlParams.get('admin') || urlParams.get('master') || urlParams.get('instructor');
-      if (adminKey !== null || (window.GreachDB && window.GreachDB.isAdminClassroomAuthenticated && window.GreachDB.isAdminClassroomAuthenticated())) {
-        if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
-          window.GreachDB.activateAdminClassroomSession('Greachimpact');
-        } else {
-          localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
-        }
-        if (adminKey !== null) {
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
+      const params = new URLSearchParams(window.location.search);
+      const mode = params.get('mode');
+      const safeQuery = mode === 'live' || mode === 'course' ? `?mode=${mode}` : '';
+      if (window.location.search !== safeQuery) {
+        window.history.replaceState({}, document.title, window.location.pathname + safeQuery);
       }
 
-      // Check URL for ?code=... or ?pass=...
-      const urlCode = urlParams.get('code') || urlParams.get('pass') || urlParams.get('key');
-      if (urlCode && !localStorage.getItem(ACTIVE_SESSION_KEY)) {
-        const inp = document.getElementById('gateInputCode');
-        if (inp) inp.value = urlCode.trim();
-        window.history.replaceState({}, document.title, window.location.pathname);
-        if (typeof window.handleCodeLogin === 'function') {
-          await window.handleCodeLogin();
-          return;
-        }
-      }
-
-      // 2. Check Instructor Login
-      if (localStorage.getItem(INSTRUCTOR_LOGIN_KEY) === 'true') {
+      const verifiedAdmin = window.GreachDB && window.GreachDB.getVerifiedAdminClassroomSession
+        ? await window.GreachDB.getVerifiedAdminClassroomSession()
+        : null;
+      if (verifiedAdmin) {
         if (securityGateOverlay) securityGateOverlay.classList.add('unlocked');
         if (studentStatusPill) {
           studentStatusPill.style.display = 'inline-flex';
           studentStatusPill.style.background = '#14532d';
           studentStatusPill.style.border = '1.5px solid #22c55e';
         }
-        if (verifiedStudentName) {
-          verifiedStudentName.innerHTML = '👑 <strong>Lead Instructor</strong> (Admin Mode)';
-        }
+        if (verifiedStudentName) verifiedStudentName.textContent = 'Lead Instructor (Super Admin)';
+        updateClassroomPortalUI({
+          role: 'instructor',
+          name: verifiedAdmin.name,
+          course: 'Complete Analytics Suite (Universal Access)',
+          courseKey: 'complete_package',
+          serverVerifiedAdmin: true
+        });
         return;
       }
 
-      // 3. Check Active Student Session
-      try {
-        const session = JSON.parse(localStorage.getItem(ACTIVE_SESSION_KEY) || 'null');
-        if (session && session.verified) {
-          // Check expiration
-          if (session.expiresAt && new Date(session.expiresAt).getTime() < Date.now()) {
-            localStorage.removeItem(ACTIVE_SESSION_KEY);
-            if (securityGateOverlay) securityGateOverlay.classList.remove('unlocked');
-            if (studentStatusPill) studentStatusPill.style.display = 'none';
-            return;
-          }
+      localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
+      localStorage.removeItem('greach_instructor_login');
+      localStorage.removeItem('excel_instructor_session_active_v1');
 
-          if (securityGateOverlay) securityGateOverlay.classList.add('unlocked');
-          if (studentStatusPill) {
-            studentStatusPill.style.display = 'inline-flex';
-            studentStatusPill.style.background = 'rgba(16, 124, 65, 0.15)';
-            studentStatusPill.style.border = '1.5px solid #107C41';
-          }
-          if (verifiedStudentName) {
-            const courseLabel = session.course || 'Beginner';
-            verifiedStudentName.innerHTML = `🎓 <strong>${escapeHtml(session.name)}</strong> <span style="font-size:0.75rem; background:#107c41; color:white; padding:2px 8px; border-radius:12px; margin-left:4px;">${escapeHtml(courseLabel)}</span>`;
-          }
-          if (typeof updateClassroomPortalUI === 'function') {
-            updateClassroomPortalUI(session);
-          }
-        } else {
-          if (securityGateOverlay) securityGateOverlay.classList.remove('unlocked');
-          if (studentStatusPill) studentStatusPill.style.display = 'none';
-        }
-      } catch(e) {
+      const verifiedStudent = window.GreachDB && window.GreachDB.getVerifiedStudentClassroomSession
+        ? await window.GreachDB.getVerifiedStudentClassroomSession()
+        : null;
+      if (!verifiedStudent || !verifiedStudent.student) {
+        localStorage.removeItem(ACTIVE_SESSION_KEY);
+        localStorage.removeItem('greach_student_session');
         if (securityGateOverlay) securityGateOverlay.classList.remove('unlocked');
         if (studentStatusPill) studentStatusPill.style.display = 'none';
+        return;
       }
-      if (typeof updateClassroomPortalUI === 'function' && localStorage.getItem(INSTRUCTOR_LOGIN_KEY) === 'true') {
-        updateClassroomPortalUI({ role: 'instructor', name: 'Lead Instructor', course: 'Complete Analytics Suite (VIP)', courseKey: 'complete_package', isSuperAdmin: true });
+
+      const student = verifiedStudent.student;
+      const session = {
+        role: 'student',
+        id: student.id,
+        name: student.name,
+        email: student.email,
+        course: student.course,
+        courseKey: student.courseKey,
+        cohort: student.cohort,
+        accessType: student.accessType,
+        expiresAt: verifiedStudent.expiresAt,
+        verified: true
+      };
+      localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
+      localStorage.setItem('greach_student_session', JSON.stringify(session));
+
+      if (securityGateOverlay) securityGateOverlay.classList.add('unlocked');
+      if (studentStatusPill) {
+        studentStatusPill.style.display = 'inline-flex';
+        studentStatusPill.style.background = 'rgba(16, 124, 65, 0.15)';
+        studentStatusPill.style.border = '1.5px solid #107C41';
       }
+      if (verifiedStudentName) {
+        const courseLabel = student.course || 'Enrolled Course';
+        verifiedStudentName.textContent = `${student.name} (${courseLabel})`;
+      }
+      updateClassroomPortalUI(session);
     }
     window.checkAccessSecurity = checkAccessSecurity;
 
@@ -1264,11 +1238,7 @@
       let verifyRes = null;
       try {
         if (window.GreachDB) {
-          if (window.GreachDB.verifyStudentByCodeCloud) {
-            verifyRes = await window.GreachDB.verifyStudentByCodeCloud(code);
-          } else {
-            verifyRes = window.GreachDB.verifyStudentByCode(code);
-          }
+          verifyRes = await window.GreachDB.verifyStudentByCodeCloud(code);
         }
       } finally {
         if (window.GreachLoader) {
@@ -1276,7 +1246,7 @@
         }
       }
 
-      if (verifyRes && verifyRes.success) {
+      if (verifyRes && verifyRes.success && verifyRes.valid === true) {
         const s = verifyRes.student;
         const courseName = s.course || 'Microsoft Excel for Beginners';
         const courseKey = window.GreachDB ? window.GreachDB.normalizeCourseKey(s.courseKey || s.course) : 'excel_beginners';
@@ -1293,7 +1263,7 @@
         }
 
         const session = {
-          role: verifyRes.isInstructor ? 'instructor' : 'student',
+          role: 'student',
           id: s.id,
           name: s.name,
           email: s.email,
@@ -1306,13 +1276,8 @@
         };
         localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
         localStorage.setItem('greach_student_session', JSON.stringify(session));
-        if (verifyRes.isInstructor) {
-          localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
-          localStorage.setItem('greach_instructor_login', 'true');
-        } else {
-          localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
-          localStorage.removeItem('greach_instructor_login');
-        }
+        localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
+        localStorage.removeItem('greach_instructor_login');
 
         if (window.GreachDB && window.GreachDB.recordStudentLogin) {
           window.GreachDB.recordStudentLogin(s, { classroomKey: courseKey });
@@ -1373,89 +1338,24 @@
     // Student Email & Password Sign-In Handler
     window.handleEmailPasswordLogin = function(e) {
       if (e) e.preventDefault();
-      const email = (document.getElementById('gateInputEmail').value || '').trim();
-      const pwd = (document.getElementById('gateInputPassword').value || '').trim();
       const errBox = document.getElementById('emailErrorBox');
       const errText = document.getElementById('emailErrorText');
-
-      if (!email || !pwd) {
-        if (errText) errText.textContent = 'Please enter both your registered email/student ID and password.';
-        if (errBox) errBox.style.display = 'block';
-        return;
-      }
-
-      if (window.GreachDB) {
-        const verifyRes = window.GreachDB.verifyStudent(email, pwd);
-        if (verifyRes.success) {
-          const s = verifyRes.student;
-          const courseName = s.course || 'Microsoft Excel for Beginners';
-          const courseKey = window.GreachDB ? window.GreachDB.normalizeCourseKey(s.courseKey || s.course) : 'excel_beginners';
-          const session = {
-            role: 'student',
-            id: s.id,
-            name: s.name,
-            email: s.email,
-            course: courseName,
-            courseKey: courseKey,
-            cohort: s.cohort || 'Batch 2: 2026 Masterclass',
-            expiresAt: s.expiresAt,
-            verified: true,
-            loginTime: new Date().toISOString()
-          };
-          localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
-          localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
-
-          if (window.GreachDB && window.GreachDB.recordStudentLogin) {
-            window.GreachDB.recordStudentLogin(s);
-          }
-
-          if (errBox) errBox.style.display = 'none';
-          checkAccessSecurity();
-          alert(`Welcome back, ${s.name}!\n\nSigned in successfully.\nEnrolled Course: ${courseName}`);
-          return;
-        } else if (verifyRes.isPendingPayment) {
-          if (errText) errText.innerHTML = `<strong>Payment Pending:</strong> ${verifyRes.error}`;
-          if (errBox) errBox.style.display = 'block';
-          return;
-        } else if (verifyRes.isExpired) {
-          if (errText) {
-            errText.innerHTML = `<strong><i class="fas fa-hourglass-end"></i> Code Expired:</strong> ${verifyRes.error}`;
-          }
-          if (errBox) errBox.style.display = 'block';
-          return;
-        } else {
-          if (errText) errText.textContent = verifyRes.error || 'Invalid credentials.';
-          if (errBox) errBox.style.display = 'block';
-          return;
-        }
-      }
+      if (errText) errText.textContent = 'Use your unique classroom access code. Student credentials must be verified by the server.';
+      if (errBox) errBox.style.display = 'block';
+      window.switchLoginMode('code');
     };
 
-    // Instructor & Admin Sign-In Handler (Passwordless Instant Entry for Admin)
-    window.handleInstructorLogin = function(e) {
+    window.handleInstructorLogin = async function(e) {
       if (e) e.preventDefault();
-      const userInp = document.getElementById('gateInstructorEmail');
-      const userOrEmail = (userInp && userInp.value ? userInp.value.trim() : '') || 'Greachimpact';
       const errBox = document.getElementById('gateInstErrorBox');
-
-      if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
-        window.GreachDB.activateAdminClassroomSession(userOrEmail);
-      } else {
-        localStorage.setItem(INSTRUCTOR_LOGIN_KEY, 'true');
-        const session = {
-          role: 'instructor',
-          id: 'INST-ADMIN',
-          name: 'Super Admin Greachimpact',
-          email: 'greachimpact@gmail.com',
-          course: 'Complete Analytics Suite (Excel + SQL + Power BI)',
-          courseKey: 'complete_package',
-          verified: true,
-          isAdmin: true,
-          isSuperAdmin: true,
-          loginTime: new Date().toISOString()
-        };
-        localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
-        localStorage.setItem('greach_student_session', JSON.stringify(session));
+      const verifiedAdmin = window.GreachDB && window.GreachDB.getVerifiedAdminClassroomSession
+        ? await window.GreachDB.getVerifiedAdminClassroomSession()
+        : null;
+      if (!verifiedAdmin) {
+        const errText = document.getElementById('gateInstErrorText');
+        if (errText) errText.textContent = 'Access denied. Sign in through the Admin Console and complete TOTP MFA.';
+        if (errBox) errBox.style.display = 'block';
+        return;
       }
       if (errBox) errBox.style.display = 'none';
       checkAccessSecurity();
@@ -1470,6 +1370,10 @@
         }
         localStorage.removeItem(ACTIVE_SESSION_KEY);
         localStorage.removeItem(INSTRUCTOR_LOGIN_KEY);
+        localStorage.removeItem('greach_student_session');
+        sessionStorage.removeItem('greach_student_token');
+        sessionStorage.removeItem('greach_server_session_id');
+        sessionStorage.removeItem('greach_active_session_id');
         checkAccessSecurity();
       }
     };

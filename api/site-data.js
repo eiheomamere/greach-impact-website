@@ -43,13 +43,39 @@ if (isExplicitStaging) {
   SUPABASE_SERVICE_ROLE_KEY = process.env.STAGING_SUPABASE_SERVICE_ROLE_KEY.trim();
   AUTH_SECRET = process.env.STAGING_AUTH_SECRET.trim();
 } else {
-  SUPABASE_URL = process.env.SUPABASE_URL || 'https://fkltvxhqizqrbvogodxv.supabase.co';
-  SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
-  SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_KEY;
-  AUTH_SECRET = process.env.AUTH_SECRET || process.env.JWT_SECRET;
+  SUPABASE_URL = (process.env.SUPABASE_URL || '').trim();
+  SUPABASE_KEY = (process.env.SUPABASE_ANON_KEY || '').trim();
+  SUPABASE_SERVICE_ROLE_KEY = (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim();
+  AUTH_SECRET = (process.env.AUTH_SECRET || '').trim();
 }
 
 let inMemorySiteData = null;
+const SUPER_ADMIN_EMAIL = (isExplicitStaging ? process.env.STAGING_ADMIN_EMAIL || '' : process.env.ADMIN_EMAIL || '').toLowerCase().trim();
+
+async function verifyLiveSuperAdmin(payload) {
+  const isUuid = payload && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(payload.sub || '');
+  if (!isUuid || payload.role !== 'super_admin' || payload.mfaVerified !== true || !SUPABASE_SERVICE_ROLE_KEY) {
+    return false;
+  }
+
+  try {
+    const response = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(payload.sub)}`, {
+      headers: {
+        'apikey': SUPABASE_SERVICE_ROLE_KEY,
+        'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
+      },
+      signal: AbortSignal.timeout(5000)
+    });
+    if (!response.ok) return false;
+
+    const user = await response.json();
+    return user.app_metadata?.role === 'super_admin' &&
+      (user.email || '').toLowerCase().trim() === SUPER_ADMIN_EMAIL;
+  } catch (error) {
+    console.warn('[SiteDataAuth] Live Super Admin verification failed; write denied.', error);
+    return false;
+  }
+}
 
 function parseCookies(cookieHeader) {
   const list = {};
@@ -147,15 +173,34 @@ export default async function handler(req, res) {
 
   // POST: Update universal site data from Super Admin
   if (req.method === 'POST') {
-    // Authenticate Super Admin session
-    const cookies = parseCookies(req.headers.cookie);
-    const authHeader = req.headers.authorization;
-    let token = cookies.greach_admin_token || (authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null);
-    if (!token && req.body && req.body.token) token = req.body.token;
+    if (!AUTH_SECRET || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !SUPER_ADMIN_EMAIL) {
+      return res.status(500).json({ success: false, error: 'Server site-data authorization configuration is unavailable.' });
+    }
 
+    // Authenticate Super Admin session exclusively via Authorization header (Bearer <token>)
+    const headers = req.headers || {};
+    const authHeader = headers['authorization'] || headers['Authorization'];
+    const hasBodyToken = Boolean(req.body && (req.body.token || req.body.adminToken));
+    const hasQueryToken = Boolean(req.query && (req.query.token || req.query.adminToken));
+
+    if (hasBodyToken || hasQueryToken) {
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized: Admin authentication token must be provided exclusively via HTTP Authorization header (Bearer <token>). Request body and query parameter tokens are rejected.'
+      });
+    }
+
+    if (!authHeader || typeof authHeader !== 'string' || !authHeader.match(/^Bearer\s+/i)) {
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized: Administrative Bearer token required in HTTP Authorization header.'
+      });
+    }
+
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
     const payload = verifyToken(token, AUTH_SECRET);
-    if (!payload || payload.role !== 'super_admin') {
-      return res.status(403).json({ success: false, error: 'Super Administrator authorization required.' });
+    if (!payload || !await verifyLiveSuperAdmin(payload)) {
+      return res.status(403).json({ success: false, error: 'Verified Super Administrator authorization with TOTP MFA required.' });
     }
 
     const { prices, schedules, blogPosts, updatedBy } = req.body || {};

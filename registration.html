@@ -69,7 +69,6 @@ h1, h2, h3, h4, .brand-title, .hero-title, .price-big {
   line-height: 1.6;
   font-size: 1rem;
 }
-
 /* TOP WHATSAPP CTA */
 .whatsapp-cta {
   margin-top: 15px;
@@ -617,48 +616,122 @@ footer .socials a:hover {
 
       </div>
 
-      <!-- STEP 3: PAYMENT METHOD -->
+      <!-- STEP 3: PAYMENT METHOD & OFFICIAL BANK ACCOUNTS -->
       <div class="form-section-title">
-        <span class="badge-step">3</span> Payment Instructions &amp; Bank Transfer
+        <span class="badge-step">3</span> Payment Instructions &amp; Bank Transfer Details
       </div>
 
-      <div class="form-group">
-        <label><i class="fas fa-credit-card" style="color:var(--navy-900);"></i> Preferred Payment Method:</label>
-        <select id="paymentMethod" class="form-control" onchange="togglePaymentInstructions(this.value)">
-          <option value="Direct Bank Transfer">Direct Bank Transfer (Instant Verification)</option>
-          <option value="Online Card / Transfer">Online Card / USSD Payment</option>
-          <option value="Already Paid / Admin Code">I have already made payment / Admin Sponsored</option>
-        </select>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="paymentCategorySelect"><i class="fas fa-globe" style="color:var(--navy-900);"></i> Payment Region / Currency Category *</label>
+          <select id="paymentCategorySelect" class="form-control" onchange="handlePaymentCategoryChange(this.value)">
+            <option value="nigeria">Nigeria (NGN - ₦) — Local Bank Transfer</option>
+            <option value="international">International (GBP / USD / EUR) — Foreign Transfer</option>
+          </select>
+          <div class="hint">Select your payment location to reveal the designated bank account details.</div>
+        </div>
+
+        <div class="form-group" id="currencyGroup" style="display:none;">
+          <label for="currencySelect"><i class="fas fa-coins" style="color:var(--gold-500);"></i> Select Currency *</label>
+          <select id="currencySelect" class="form-control" onchange="handleCurrencyChange(this.value)">
+            <option value="GBP">British Pounds (GBP - £)</option>
+            <option value="USD">US Dollars (USD - $)</option>
+            <option value="EUR">Euros (EUR - €)</option>
+          </select>
+          <div class="hint">Designated Zenith Bank foreign currency accounts for overseas students.</div>
+        </div>
       </div>
 
-      <!-- Official Bank Details Card -->
-      <div class="bank-transfer-box" id="bankDetailsBox">
-        <h4><i class="fas fa-university"></i> Official Academy Bank Account Details:</h4>
+      <!-- Official Bank Details Card (Nigeria - GTBank) -->
+      <div class="bank-transfer-box" id="bankDetailsNigeria">
+        <h4><i class="fas fa-university"></i> Official Academy Bank Account (Nigeria - NGN):</h4>
         <div class="bank-grid">
           <div class="bank-item">
             <span>Bank Name:</span>
-            <strong>Zenith Bank PLC / OPay</strong>
+            <strong>Guaranty Trust Bank (GTBank)</strong>
           </div>
           <div class="bank-item">
             <span>Account Number:</span>
-            <strong id="bankAccountNumber">1023456789</strong>
+            <strong id="bankAccountNumberNGN">0763012051</strong>
             <div>
-              <button type="button" class="btn-copy-account" onclick="copyAccountNo()">
+              <button type="button" class="btn-copy-account" onclick="copyAccountNo('0763012051')">
                 <i class="fas fa-copy"></i> Copy Account
               </button>
             </div>
           </div>
           <div class="bank-item">
             <span>Account Name:</span>
-            <strong>Greach Impact Academy</strong>
+            <strong>Greach Impact</strong>
           </div>
           <div class="bank-item">
-            <span>Payment Reference:</span>
-            <strong id="bankRefDisplay">Your Full Name</strong>
+            <span>Currency:</span>
+            <strong>Nigerian Naira (NGN - ₦)</strong>
           </div>
         </div>
-        <div style="font-size:0.82rem; color:#cbd5e1; line-height:1.5;">
-          💡 Complete your transfer of <strong id="bankAmountDue" style="color:#86efac;">₦3,000</strong> using your mobile banking app. Once you click "Submit", your unique access code is generated automatically!
+        <div style="font-size:0.82rem; color:#cbd5e1; line-height:1.5; margin-top:8px;">
+          💡 Complete your transfer of <strong id="bankAmountDueNGN" style="color:#86efac;">₦3,000</strong> using your mobile banking app or USSD to the Greach Impact GTBank account above.
+        </div>
+      </div>
+
+      <!-- Official Bank Details Card (International - Zenith Bank) -->
+      <div class="bank-transfer-box" id="bankDetailsInternational" style="display:none; background: linear-gradient(135deg, #071224 0%, #1e293b 100%); border: 1.5px solid #38bdf8;">
+        <h4 style="color:#38bdf8;"><i class="fas fa-globe-africa"></i> Official International Bank Account (Zenith Bank):</h4>
+        <div class="bank-grid">
+          <div class="bank-item">
+            <span>Bank Name:</span>
+            <strong>Zenith Bank</strong>
+          </div>
+          <div class="bank-item">
+            <span>Account Name:</span>
+            <strong>Emmanuel Iheomamere</strong>
+          </div>
+          <div class="bank-item">
+            <span>Account Number (<span id="intlCurrencyLabel">GBP</span>):</span>
+            <strong id="bankAccountNumberIntl" style="color:#38bdf8;">5061817204</strong>
+            <div>
+              <button type="button" class="btn-copy-account" onclick="copyAccountNo(document.getElementById('bankAccountNumberIntl').textContent)">
+                <i class="fas fa-copy"></i> Copy Account
+              </button>
+            </div>
+          </div>
+          <div class="bank-item">
+            <span>Swift / Sort Code:</span>
+            <strong>Available on request / Chat Support</strong>
+          </div>
+        </div>
+        <div id="intlPricingNotice" style="background:rgba(56, 189, 248, 0.12); border:1px solid #38bdf8; border-radius:8px; padding:10px 14px; margin-top:12px; font-size:0.82rem; color:#e0f2fe; line-height:1.5;">
+          <i class="fas fa-sync-alt" style="color:#38bdf8;"></i> <strong>Dynamic Currency Conversion:</strong> Amount due: <strong id="intlAmountDueText" style="color:#38bdf8; font-size:0.95rem;">Calculating...</strong> (Live rate: <span id="intlLiveRateText">Fetching live rate...</span> via <span id="intlProviderText">ExchangeRate-API</span>).
+        </div>
+      </div>
+
+      <!-- STEP 4: SUBMIT PAYMENT CONFIRMATION -->
+      <div class="form-section-title">
+        <span class="badge-step">4</span> Submit Payment Confirmation &amp; Transfer Details
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="bankUsedInput"><i class="fas fa-university" style="color:var(--navy-900);"></i> Bank Transferred From *</label>
+          <input type="text" id="bankUsedInput" class="form-control" required placeholder="e.g. GTBank, Kuda, Zenith Bank, Access Bank, Barclays" />
+          <div class="hint">The bank or payment service used to send the funds.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="transactionRefInput"><i class="fas fa-receipt" style="color:var(--navy-900);"></i> Transaction / Payment Reference *</label>
+          <input type="text" id="transactionRefInput" class="form-control" required placeholder="e.g. GTB/2026/0987654 or Session ID or Transfer Description" />
+          <div class="hint">Enter the unique session ID, reference, or description used in your transfer.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="paymentDateInput"><i class="fas fa-calendar-day" style="color:var(--navy-900);"></i> Date of Payment *</label>
+          <input type="date" id="paymentDateInput" class="form-control" required />
+          <div class="hint">The date on which your transfer was initiated.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="paymentEvidenceInput"><i class="fas fa-paperclip" style="color:var(--navy-900);"></i> Transfer Receipt / Proof (Optional)</label>
+          <input type="file" id="paymentEvidenceInput" class="form-control" accept="image/*,application/pdf" />
+          <div class="hint">Upload a screenshot or PDF receipt of your payment to expedite verification.</div>
         </div>
       </div>
 
@@ -666,24 +739,24 @@ footer .socials a:hover {
       <div class="order-summary-box">
         <div>
           <div class="summary-course-name" id="summaryCourseName">Microsoft Excel for Beginners</div>
-          <div class="summary-sub" id="summaryDiscountText">Special discounted fee applied • Includes live class &amp; materials</div>
+          <div class="summary-sub" id="summaryDiscountText">Manual Bank Transfer • Administrative Verification Required</div>
         </div>
         <div class="summary-total">
-          <span>Total Payable</span>
+          <span>Amount Payable</span>
           <div class="total-amount" id="summaryTotalAmount">₦3,000</div>
         </div>
       </div>
 
       <!-- SUBMIT BUTTON -->
       <button type="submit" class="btn-submit-order" id="btnSubmitOrder">
-        <i class="fas fa-lock"></i> <span id="btnSubmitText">Complete Registration &amp; Get Access Code (₦3,000)</span>
+        <i class="fas fa-paper-plane"></i> <span id="btnSubmitText">Submit Payment Confirmation (₦3,000)</span>
       </button>
 
       <!-- TRUST & GUARANTEE -->
       <div class="trust-strip">
-        <div class="trust-item"><i class="fas fa-shield-alt" style="color:var(--green-600);"></i> 100% Secure Enrollment</div>
-        <div class="trust-item"><i class="fas fa-key" style="color:var(--gold-500);"></i> Instant Access Code Generated</div>
-        <div class="trust-item"><i class="fas fa-award" style="color:var(--navy-900);"></i> Lifetime Certificate Access</div>
+        <div class="trust-item"><i class="fas fa-shield-alt" style="color:var(--green-600);"></i> Verified Academy Bank Accounts</div>
+        <div class="trust-item"><i class="fas fa-user-check" style="color:var(--gold-500);"></i> Fast Administrative Verification</div>
+        <div class="trust-item"><i class="fas fa-award" style="color:var(--navy-900);"></i> Accredited Certificate</div>
       </div>
 
     </form>
@@ -727,6 +800,15 @@ footer .socials a:hover {
     originalAmount: 15000
   };
 
+  let activePaymentCategory = 'nigeria';
+  let activeCurrency = 'NGN';
+
+  const INTL_ACCOUNTS = {
+    GBP: { number: '5061817204', symbol: '£', name: 'British Pounds' },
+    USD: { number: '5076088703', symbol: '$', name: 'US Dollars' },
+    EUR: { number: '5081531366', symbol: '€', name: 'Euros' }
+  };
+
   // 1. Switch between Direct Form and Classic Form
   function switchRegTab(mode) {
     const directTab = document.getElementById('tabDirectForm');
@@ -767,23 +849,110 @@ footer .socials a:hover {
 
     // Update Summary
     document.getElementById('summaryCourseName').innerHTML = name;
-    document.getElementById('summaryTotalAmount').textContent = '₦' + Number(amount).toLocaleString();
-    document.getElementById('btnSubmitText').textContent = `Complete Registration & Get Access Code (₦${Number(amount).toLocaleString()})`;
-    const bankAmt = document.getElementById('bankAmountDue');
-    if (bankAmt) bankAmt.textContent = '₦' + Number(amount).toLocaleString();
+    updatePricingDisplay();
   }
 
-  // 3. Payment Method Switcher
-  function togglePaymentInstructions(method) {
-    const box = document.getElementById('bankDetailsBox');
-    if (box) {
-      box.style.display = (method === 'Direct Bank Transfer') ? 'block' : 'none';
+  // 3. Payment Category & Currency Handlers
+  function handlePaymentCategoryChange(category) {
+    activePaymentCategory = category;
+    const boxNigeria = document.getElementById('bankDetailsNigeria');
+    const boxIntl = document.getElementById('bankDetailsInternational');
+    const currGroup = document.getElementById('currencyGroup');
+
+    if (category === 'international') {
+      boxNigeria.style.display = 'none';
+      boxIntl.style.display = 'block';
+      currGroup.style.display = 'block';
+      const selCurr = document.getElementById('currencySelect').value || 'GBP';
+      handleCurrencyChange(selCurr);
+    } else {
+      boxNigeria.style.display = 'block';
+      boxIntl.style.display = 'none';
+      currGroup.style.display = 'none';
+      activeCurrency = 'NGN';
+      updatePricingDisplay();
+    }
+  }
+
+  function handleCurrencyChange(currency) {
+    activeCurrency = currency;
+    const acctInfo = INTL_ACCOUNTS[currency] || INTL_ACCOUNTS.GBP;
+
+    document.getElementById('intlCurrencyLabel').textContent = currency;
+    document.getElementById('bankAccountNumberIntl').textContent = acctInfo.number;
+    document.getElementById('intlCurrencyNameText').textContent = `${acctInfo.name} (${currency} - ${acctInfo.symbol})`;
+
+    updatePricingDisplay();
+  }
+
+  let liveRatesCache = null;
+
+  async function fetchLiveRatesClient() {
+    if (liveRatesCache && (Date.now() - liveRatesCache.fetchedAt < 10 * 60 * 1000)) {
+      return liveRatesCache;
+    }
+    try {
+      const res = await fetch('/api/payment?action=get_rates');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.rates) {
+          liveRatesCache = {
+            rates: data.rates,
+            provider: data.provider || 'ExchangeRate-API',
+            timestamp: data.timestamp,
+            fetchedAt: Date.now()
+          };
+          return liveRatesCache;
+        }
+      }
+    } catch (e) {
+      console.warn('[Registration] Could not fetch live rates:', e);
+    }
+    return liveRatesCache;
+  }
+
+  async function updatePricingDisplay() {
+    const summaryTotal = document.getElementById('summaryTotalAmount');
+    const submitBtnText = document.getElementById('btnSubmitText');
+    const bankAmtNGN = document.getElementById('bankAmountDueNGN');
+    const intlAmountDue = document.getElementById('intlAmountDueText');
+    const intlLiveRate = document.getElementById('intlLiveRateText');
+    const intlProvider = document.getElementById('intlProviderText');
+
+    if (activePaymentCategory === 'nigeria') {
+      const formatted = '₦' + Number(currentSelection.amount).toLocaleString();
+      summaryTotal.textContent = formatted;
+      if (submitBtnText) submitBtnText.textContent = `Submit Payment Confirmation (${formatted})`;
+      if (bankAmtNGN) bankAmtNGN.textContent = formatted;
+    } else {
+      const acctInfo = INTL_ACCOUNTS[activeCurrency] || INTL_ACCOUNTS.GBP;
+      const sym = acctInfo.symbol;
+
+      summaryTotal.textContent = `Calculating...`;
+      if (submitBtnText) submitBtnText.textContent = `Submit Payment Confirmation (${activeCurrency})`;
+
+      const rateData = await fetchLiveRatesClient();
+      if (rateData && rateData.rates && rateData.rates[activeCurrency]) {
+        const rate = rateData.rates[activeCurrency];
+        const masterNgn = Number(currentSelection.amount) || 3000;
+        const converted = (Math.round(masterNgn * rate * 100) / 100).toFixed(2);
+        const displayVal = `${sym}${converted}`;
+
+        summaryTotal.textContent = `${displayVal} (${activeCurrency})`;
+        if (submitBtnText) submitBtnText.textContent = `Submit Payment Confirmation (${displayVal})`;
+        if (intlAmountDue) intlAmountDue.textContent = displayVal;
+        if (intlLiveRate) intlLiveRate.textContent = `1 NGN = ${sym}${rate.toFixed(6)}`;
+        if (intlProvider) intlProvider.textContent = rateData.provider;
+      } else {
+        summaryTotal.textContent = `${activeCurrency} (Rate Pending)`;
+      }
     }
   }
 
   // 4. Copy Account Number
-  function copyAccountNo() {
-    const acct = document.getElementById('bankAccountNumber').textContent.trim();
+  function copyAccountNo(textToCopy) {
+    const acct = (textToCopy || '').trim();
+    if (!acct) return;
     navigator.clipboard.writeText(acct).then(() => {
       alert(`Account number (${acct}) copied to clipboard!`);
     }).catch(() => {
@@ -793,6 +962,12 @@ footer .socials a:hover {
 
   // 5. Pre-select course from URL params if present
   window.addEventListener('DOMContentLoaded', () => {
+    // Set payment date default to today
+    const dateInput = document.getElementById('paymentDateInput');
+    if (dateInput) {
+      dateInput.value = new Date().toISOString().split('T')[0];
+    }
+
     const params = new URLSearchParams(window.location.search);
     const paramCourse = params.get('course');
     if (paramCourse) {
@@ -802,27 +977,29 @@ footer .socials a:hover {
       } else if (lower.includes('sql')) {
         selectCourseCard('sql_beginners', 5000, 25000, 'SQL for Data Analytics & Databases');
       } else if (lower.includes('power') || lower.includes('bi')) {
-        selectCourseCard('power_bi', 22500, 45000, 'Power BI for Business Intelligence');
+        selectCourseCard('power_bi', 5000, 10000, 'Power BI for Business Intelligence');
       } else if (lower.includes('complete') || lower.includes('suite')) {
         selectCourseCard('complete_package', 10000, 60000, 'Complete Analytics Suite (Excel + SQL + Power BI)');
       } else if (lower.includes('dashboard')) {
-        selectCourseCard('excel_dashboard', 40000, 80000, 'Executive Interactive Dashboard Design');
+        selectCourseCard('excel_dashboard', 4000, 10000, 'Executive Interactive Dashboard Design');
       } else {
         selectCourseCard('excel_beginners', 3000, 15000, 'Microsoft Excel for Beginners');
       }
     }
-
-    // Update bank ref when name changes
-    const nameInput = document.getElementById('studentFullName');
-    if (nameInput) {
-      nameInput.addEventListener('input', (e) => {
-        const val = e.target.value.trim();
-        document.getElementById('bankRefDisplay').textContent = val ? val : 'Your Full Name';
-      });
-    }
   });
 
-  // 6. Handle Registration Submission
+  // Helper to read file as Base64 Data URL
+  function readFileAsBase64(file) {
+    return new Promise((resolve, reject) => {
+      if (!file) return resolve(null);
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // 6. Handle Registration & Payment Confirmation Submission
   async function handleRegistrationSubmit(e) {
     e.preventDefault();
 
@@ -838,77 +1015,82 @@ footer .socials a:hover {
     const email = document.getElementById('studentEmail').value.trim().toLowerCase();
     const phone = document.getElementById('studentPhone').value.trim();
     const cohort = document.getElementById('cohortSelect').value;
-    const paymentMethod = document.getElementById('paymentMethod').value;
+    const bankUsed = document.getElementById('bankUsedInput').value.trim();
+    const transactionRef = document.getElementById('transactionRefInput').value.trim();
+    const paymentDate = document.getElementById('paymentDateInput').value;
+    const evidenceFileInput = document.getElementById('paymentEvidenceInput');
     const submitBtn = document.getElementById('btnSubmitOrder');
 
-    if (!name || !email) {
-      alert('Please provide your Full Name and Email Address.');
+    if (!name || !email || !bankUsed || !transactionRef) {
+      alert('Please fill in all required fields: Name, Email, Bank Used, and Transaction Reference.');
       return;
     }
 
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Registration...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting Confirmation...';
     if (window.GreachLoader) {
-      window.GreachLoader.show('Processing Your Greach Impact Registration...');
+      window.GreachLoader.show('Recording Payment Confirmation...');
     }
 
     try {
-      const isFree = (paymentMethod === 'Already Paid / Admin Code');
-      const isAdvance = cohort.toLowerCase().includes('advance') || cohort.toLowerCase().includes('accelerated') || cohort.toLowerCase().includes('upcoming');
+      let evidenceBase64 = null;
+      let evidenceFilename = null;
 
-      // 1. Register student in GreachDB (code is created but only active if isFree is true)
-      let student = null;
-      if (window.GreachDB) {
-        student = window.GreachDB.registerStudent({
-          name: name,
-          email: email,
-          phone: phone,
-          course: currentSelection.courseName,
-          cohort: cohort,
-          isFree: isFree,
-          isAdvance: isAdvance
-        });
-      } else {
-        const codeNum = Math.floor(1000 + Math.random() * 9000);
-        student = {
-          id: 'STU-' + codeNum,
-          name: name,
-          email: email,
-          phone: phone,
-          course: currentSelection.courseName,
-          cohort: cohort,
-          password: 'GRX-' + codeNum + '-X7',
-          isCodeActive: isFree,
-          paymentStatus: isFree ? 'Verified & Paid' : 'Pending Verification'
-        };
+      if (evidenceFileInput && evidenceFileInput.files && evidenceFileInput.files[0]) {
+        const file = evidenceFileInput.files[0];
+        if (file.size > 5 * 1024 * 1024) {
+          throw new Error('Receipt file exceeds 5MB size limit. Please upload a smaller image or PDF.');
+        }
+        evidenceFilename = file.name;
+        evidenceBase64 = await readFileAsBase64(file);
       }
 
-      // 2. Trigger Brevo Automation: sends Payment Pending email to student (or Welcome if free) & alert to admin
-      if (window.GreachBrevo) {
-        await window.GreachBrevo.triggerRegistrationAutomation(student, {
-          amount: currentSelection.amount,
-          courseKey: currentSelection.courseKey,
-          courseName: currentSelection.courseName,
-          paymentMethod: paymentMethod,
-          paymentStatus: isFree ? 'Verified & Paid' : 'Pending Verification'
-        });
+      let submitAmount = Number(currentSelection.amount) || 3000;
+      if (activePaymentCategory === 'international' && liveRatesCache?.rates?.[activeCurrency]) {
+        submitAmount = Math.round(submitAmount * liveRatesCache.rates[activeCurrency] * 100) / 100;
       }
 
-      // 3. Smoothly redirect to confirmation page
-      const statusParam = isFree ? 'verified' : 'pending';
-      let redirectUrl = `registration-confirmation.html?status=${statusParam}&name=${encodeURIComponent(student.name)}&email=${encodeURIComponent(student.email)}&phone=${encodeURIComponent(student.phone || '')}&id=${encodeURIComponent(student.id)}&course=${encodeURIComponent(student.course || currentSelection.courseName)}&amount=${encodeURIComponent(currentSelection.amount)}`;
-      if (isFree) {
-        redirectUrl += `&code=${encodeURIComponent(student.password)}`;
+      const payload = {
+        action: 'submit_payment',
+        studentName: name,
+        studentEmail: email,
+        studentPhone: phone,
+        courseName: currentSelection.courseName,
+        courseId: currentSelection.courseKey,
+        cohort: cohort,
+        paymentCategory: activePaymentCategory,
+        currency: activeCurrency,
+        amountPaid: submitAmount,
+        bankUsed: bankUsed,
+        transactionReference: transactionRef,
+        paymentDate: paymentDate,
+        evidenceFilename: evidenceFilename,
+        evidenceBase64: evidenceBase64
+      };
+
+      const res = await fetch('/api/payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to submit payment confirmation.');
       }
-      
+
+      // Keep only the order reference in the browser URL.
+      const redirectUrl = `registration-confirmation.html?ref=${encodeURIComponent(data.orderReference || transactionRef)}`;
+
       window.location.href = redirectUrl;
 
     } catch (err) {
-      console.error('[Registration] Error processing enrollment:', err);
+      console.error('[Registration] Error submitting payment confirmation:', err);
       if (window.GreachLoader) window.GreachLoader.hide();
       submitBtn.disabled = false;
-      submitBtn.innerHTML = '<i class="fas fa-lock"></i> Try Again';
-      alert('Registration error: ' + (err.message || 'Please check your connection and try again.'));
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Try Again';
+      alert('Submission error: ' + (err.message || 'Please check your connection and try again.'));
     }
   }
 </script>

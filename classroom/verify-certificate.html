@@ -195,7 +195,7 @@
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; font-size:0.9rem; margin-bottom:1.2rem;">
           <div>
             <span style="color:#64748b; font-size:0.8rem; display:block;">Awarded To:</span>
-            <strong style="font-size:1.15rem; color:#0b1a2d;" id="resName">Adaeze Balogun</strong>
+            <strong style="font-size:1.15rem; color:#0b1a2d;" id="resName">Student Name</strong>
           </div>
           <div>
             <span style="color:#64748b; font-size:0.8rem; display:block;">Program / Specialization:</span>
@@ -241,24 +241,38 @@
       verifyCertCode(code);
     }
 
-    function verifyCertCode(code) {
+    async function verifyCertCode(code) {
       const resCard = document.getElementById('resultCard');
       const errCard = document.getElementById('errorCard');
 
       if (!code) return;
 
-      const record = window.GreachDB ? window.GreachDB.verifyCertificate(code) : null;
-      if (record || code.toUpperCase().startsWith('GI-EXCEL-2026-')) {
+      resCard.style.display = 'none';
+      errCard.style.display = 'block';
+      errCard.textContent = 'Checking the official certificate registry…';
+      try {
+        const response = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'verify_certificate', certificateId: code })
+        });
+        const result = await response.json();
+        const cert = result && result.certificate;
+        if (!response.ok || !cert) throw new Error(result?.error || 'Certificate not found in the official registry.');
+
         resCard.style.display = 'block';
         errCard.style.display = 'none';
-
-        document.getElementById('resSerial').textContent = (record ? record.serialId : code).toUpperCase();
-        document.getElementById('resName').textContent = record ? (record.studentName || 'Valued Graduate') : 'Verified Excel Masterclass Graduate';
-        document.getElementById('resProgram').textContent = record ? (record.courseName || 'Microsoft Excel Masterclass') : 'Microsoft Excel Masterclass (Beginner to Workplace Hero)';
-        document.getElementById('resStatus').textContent = record ? (record.status || 'VERIFIED & ACCREDITED') : 'VERIFIED & ACCREDITED';
-      } else {
+        document.getElementById('resSerial').textContent = cert.certificateId;
+        document.getElementById('resName').textContent = cert.studentName;
+        document.getElementById('resProgram').textContent = cert.courseName;
+        document.getElementById('resStatus').textContent = cert.verificationStatus.toUpperCase();
+        document.getElementById('resStatus').parentElement.style.background = cert.status === 'valid' ? '#dcfce7' : '#fee2e2';
+        errCard.style.display = cert.status === 'valid' ? 'none' : 'block';
+        if (cert.status !== 'valid') errCard.textContent = cert.status === 'reissued' ? 'This certificate was reissued. Use the replacement reference to verify the current certificate.' : cert.status === 'revoked' ? 'This certificate has been revoked.' : 'This record is not currently verified as valid.';
+      } catch (error) {
         resCard.style.display = 'none';
         errCard.style.display = 'block';
+        errCard.textContent = error.message || 'Certificate verification is temporarily unavailable.';
       }
     }
   </script>

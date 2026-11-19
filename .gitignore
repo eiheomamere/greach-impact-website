@@ -11,6 +11,7 @@ images/raw_backup/
 # Environment and Secret Configurations
 .env
 .env.*
+!.env.example
 .env.local
 .env.staging
 .env.production
@@ -18,4 +19,10 @@ images/raw_backup/
 staging_*.json
 staging_*.sql
 *.dump
+*.backup
+
+# Database Backups & Temporary Archives
+backups/
+*.tar.gz
+*.sql.gz
 

@@ -1,0 +1,50 @@
+﻿<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Certificate Review | Greach Impact Academy</title><style>
+body{font:16px system-ui,sans-serif;background:#f1f5f9;color:#172033;margin:0}.wrap{max-width:1100px;margin:2rem auto;padding:1rem}.card{background:#fff;border-radius:12px;padding:1.25rem;margin:1rem 0;box-shadow:0 4px 20px #17203318}button{background:#075985;color:white;border:0;border-radius:7px;padding:.65rem 1rem;font-weight:700;cursor:pointer;margin:.35rem}textarea,input[type=date]{box-sizing:border-box;width:100%;padding:.65rem;border:1px solid #cbd5e1;border-radius:7px;margin:.4rem 0 1rem}a{color:#075985;overflow-wrap:anywhere}.notice{white-space:pre-wrap;padding:.75rem;background:#eff6ff;border-radius:8px}label{font-weight:700}small{color:#475569}.actions{display:flex;gap:.5rem;flex-wrap:wrap}
+</style></head><body><main class="wrap"><h1>Central Certificate Review</h1><p>This queue is visible only to a signed Super Admin session with verified TOTP. Review the submitted evidence against the course requirements before recording a decision. Browser progress and payment do not prove completion.</p><section class="card"><div id="session" class="notice">Validating administrator sessionâ€¦</div><button id="reload">Refresh pending submissions</button></section><section class="card"><h2>Revoke or reissue a registered certificate</h2><label for="lifecycleId">Certificate reference</label><input id="lifecycleId" maxlength="100" placeholder="GI-â€¦"><label for="lifecycleReason">Reason (minimum 10 characters)</label><textarea id="lifecycleReason" rows="2" maxlength="1000"></textarea><button id="revoke">Revoke certificate</button><button id="reissue">Reissue certificate</button><p><small>Both actions are recorded against the current verified Super Admin. Reissue preserves the old registry record.</small></p></section><div id="items"></div><p><a href="../admin.html">Return to admin console</a></p></main><script>
+const sessionKey='greach_admin_auth_v2';
+const sessionBox=document.querySelector('#session');
+const items=document.querySelector('#items');
+let admin=null;
+function safeSession(){try{return JSON.parse(sessionStorage.getItem(sessionKey)||'null')}catch{return null}}
+async function api(action,data={}){
+  const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json',...(admin?.token?{Authorization:`Bearer ${admin.token}`}:{})},body:JSON.stringify({action,...data})});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||j.success===false)throw Error(j.error||`Request failed (${r.status})`);
+  return j;
+}
+async function initialize(){
+  admin=safeSession();
+  if(!admin?.token){sessionBox.textContent='No signed administrator session is available. Sign in through the admin console and complete TOTP verification.';return}
+  try{const v=await api('verify');if(!v.valid||v.role!=='super_admin'||v.mfaVerified!==true)throw Error('A currently verified Super Admin session with TOTP is required.');admin={...admin,role:v.role};sessionBox.textContent=`Verified Super Admin session for ${v.email||v.user}. Pending submissions are loaded from the central database.`;await refresh()}
+  catch(e){admin=null;sessionBox.textContent=e.message}
+}
+function field(label,value){const box=document.createElement('p'),strong=document.createElement('strong');strong.textContent=label+': ';box.append(strong,document.createTextNode(value||'—'));return box}
+async function refresh(){
+  if(!admin)return;items.textContent='Loading central submission queue…';
+  try{const r=await api('list_course_submissions');items.replaceChildren();if(!r.submissions?.length){items.textContent='No submissions are awaiting review.';return}
+    for(const s of r.submissions){
+      const card=document.createElement('section');card.className='card';
+      card.append(field('Student',`${s.student_name} (${s.student_id})`),field('Course',s.course_name),field('Project',s.project_title),field('Submitted',s.submitted_at),field('Summary',s.submission_notes));
+      const link=document.createElement('a');link.href=s.project_url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Open HTTPS capstone evidence';card.append(link);
+      const checklist=document.createElement('label'),confirmed=document.createElement('input');confirmed.type='checkbox';checklist.append(confirmed,document.createTextNode(' I reviewed the evidence and verified the course completion requirements.'));card.append(document.createElement('br'),checklist);
+      const dateLabel=document.createElement('label');dateLabel.textContent='Course completion date (approval only)';const date=document.createElement('input');date.type='date';date.max=new Date().toISOString().slice(0,10);date.value=date.max;dateLabel.append(date);card.append(dateLabel);
+      const notesLabel=document.createElement('label');notesLabel.textContent='Reviewer decision notes (minimum 10 characters)';const notes=document.createElement('textarea');notes.rows=3;notes.maxLength=2000;notesLabel.append(notes);card.append(notesLabel);
+      const actions=document.createElement('div');actions.className='actions';
+      for(const decision of ['approved','rejected']){const button=document.createElement('button');button.textContent=decision==='approved'?'Approve completion':'Reject submission';button.onclick=async()=>{if(decision==='approved'&&!confirmed.checked){alert('Review the evidence and confirm the completion checklist first.');return}if(notes.value.trim().length<10){alert('Enter substantive review notes of at least 10 characters.');return}button.disabled=true;try{await api('review_course_submission',{submissionId:s.id,decision,completionDate:date.value,completionConfirmed:decision==='approved'&&confirmed.checked,reviewNotes:notes.value.trim()});card.remove();if(!items.children.length)items.textContent='No submissions are awaiting review.'}catch(e){alert(e.message);button.disabled=false}};actions.append(button)}
+      card.append(actions);items.append(card);
+    }
+  }catch(e){items.textContent=e.message}
+}
+const lifecycleId=document.querySelector('#lifecycleId'),lifecycleReason=document.querySelector('#lifecycleReason');
+const requestedId=new URLSearchParams(location.search).get('certificateId');if(requestedId)lifecycleId.value=requestedId;
+async function lifecycle(action){
+  if(!lifecycleId.value||lifecycleReason.value.trim().length<10){alert('Enter a certificate reference and a reason of at least 10 characters.');return}
+  try{const r=await api(action,{certificateId:lifecycleId.value.trim(),reason:lifecycleReason.value.trim()});alert(action==='revoke_certificate'?'Certificate revoked in the central registry.':`Replacement certificate ${r.certificate.certificateId} issued.`);await refresh()}
+  catch(e){alert(e.message)}
+}
+document.querySelector('#reload').onclick=refresh;
+document.querySelector('#revoke').onclick=()=>lifecycle('revoke_certificate');
+document.querySelector('#reissue').onclick=()=>lifecycle('reissue_certificate');
+initialize();
+</script></body></html>
