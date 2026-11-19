@@ -9,7 +9,6 @@
   const ORDERS_DB_KEY = 'greach_course_orders_v2';
 
   const DEFAULT_CONFIG = {
-    apiKey: '',
     senderName: 'Emmanuel from Greach Impact Academy',
     senderEmail: 'greachimpact@gmail.com',
     adminEmail: 'greachimpact@gmail.com',
@@ -23,7 +22,13 @@
     getConfig: function() {
       try {
         const stored = localStorage.getItem(BREVO_CONFIG_KEY);
-        return stored ? { ...DEFAULT_CONFIG, ...JSON.parse(stored) } : DEFAULT_CONFIG;
+        if (!stored) return DEFAULT_CONFIG;
+        const parsed = JSON.parse(stored);
+        if (Object.prototype.hasOwnProperty.call(parsed, 'apiKey')) {
+          delete parsed.apiKey;
+          localStorage.setItem(BREVO_CONFIG_KEY, JSON.stringify(parsed));
+        }
+        return { ...DEFAULT_CONFIG, ...parsed };
       } catch(e) {
         return DEFAULT_CONFIG;
       }
@@ -31,9 +36,18 @@
 
     saveConfig: function(cfg) {
       const current = this.getConfig();
-      const updated = { ...current, ...cfg, updatedAt: new Date().toISOString() };
+      const { senderName, senderEmail, adminEmail, autoSendWelcome, autoSendAdminAlert, autoSendReminders } = cfg || {};
+      const updated = {
+        ...current,
+        ...(senderName !== undefined ? { senderName } : {}),
+        ...(senderEmail !== undefined ? { senderEmail } : {}),
+        ...(adminEmail !== undefined ? { adminEmail } : {}),
+        ...(autoSendWelcome !== undefined ? { autoSendWelcome } : {}),
+        ...(autoSendAdminAlert !== undefined ? { autoSendAdminAlert } : {}),
+        ...(autoSendReminders !== undefined ? { autoSendReminders } : {}),
+        updatedAt: new Date().toISOString()
+      };
       localStorage.setItem(BREVO_CONFIG_KEY, JSON.stringify(updated));
-      console.log('[GreachBrevo] Configuration saved. API Key active:', !!updated.apiKey);
       return updated;
     },
 
@@ -108,10 +122,8 @@
     // 3. Core Dispatcher (Brevo API v3 with Serverless Fallback)
     sendEmail: async function(options) {
       const cfg = this.getConfig();
-      const apiKey = cfg.apiKey ? cfg.apiKey.trim() : '';
 
       const payload = {
-        apiKey: apiKey,
         sender: {
           name: cfg.senderName || 'Greach Impact Academy',
           email: cfg.senderEmail || 'greachimpact@gmail.com'
@@ -122,149 +134,6 @@
         subject: options.subject,
         htmlContent: options.htmlContent
       };
-
-      // If client has Brevo API key, try direct Brevo v3 call
-      if (apiKey) {
-        try {
-          let directPayload = null;
-          if (options.type === 'payment_pending' && options.student) {
-            const s = options.student;
-            const amt = options.amount || (options.student ? options.student.amount : null) || 3000;
-            directPayload = {
-              sender: payload.sender,
-              to: [{ email: s.email, name: s.name }],
-              subject: `Registration Received – Complete Payment to Activate Your Access to ${s.course || 'Masterclass'}`,
-              htmlContent: `
-                <div style="font-family:'Segoe UI',Arial,sans-serif; background:#f8fafc; padding:24px; color:#1e293b;">
-                  <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:14px; border:1px solid #e2e8f0; padding:32px; box-shadow:0 8px 24px rgba(0,0,0,0.05);">
-                    <div style="text-align:center; border-bottom:2px solid #0A0A5E; padding-bottom:18px; margin-bottom:24px;">
-                      <h2 style="color:#0A0A5E; margin:0; font-size:24px;">GREACH IMPACT ACADEMY</h2>
-                      <p style="color:#64748b; font-size:14px; margin:4px 0 0;">Official Registration Confirmation • Learn. Practice. Grow.</p>
-                    </div>
-                    <p style="font-size:16px;">Dear <strong>${s.name}</strong>,</p>
-                    <p>Thank you for registering for the <strong>${s.course || 'Masterclass'}</strong> (${s.cohort || 'Upcoming Batch'})! Your registration details have been securely recorded.</p>
-                    
-                    <div style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:10px; padding:18px; margin:20px 0;">
-                      <h4 style="color:#92400e; margin:0 0 10px; font-size:16px;">⏳ NEXT STEP: COMPLETE YOUR PAYMENT</h4>
-                      <p style="margin:0 0 12px; font-size:14px; color:#78350f;">
-                        To activate your unique Classroom Access Code and unlock the interactive workbooks and live class studio, please make a bank transfer for:
-                      </p>
-                      <div style="font-size:24px; font-weight:800; color:#107C41; margin-bottom:14px;">₦${Number(amt).toLocaleString()}</div>
-                      <div style="background:#ffffff; border:1px solid #fed7aa; border-radius:8px; padding:14px; font-size:14px; color:#1f2937;">
-                        &bull; Bank Name: <strong>Zenith Bank PLC / OPay</strong><br>
-                        &bull; Account Number: <strong>1023456789</strong><br>
-                        &bull; Account Name: <strong>Greach Impact Academy</strong><br>
-                        &bull; Narration / Reference: <strong>${s.name}</strong>
-                      </div>
-                    </div>
-
-                    <p style="font-size:14px; line-height:1.6;">Once your transfer is completed, send your payment receipt directly to our WhatsApp support team or reply to this email:</p>
-                    
-                    <div style="text-align:center; margin:24px 0;">
-                      <a href="https://wa.me/2349072250869?text=Hello%20Greach%20Impact!%20I%20have%20completed%20payment%20for%20my%20registration%20(Name:%20${encodeURIComponent(s.name)},%20Course:%20${encodeURIComponent(s.course || 'Masterclass')})" 
-                         style="background:#25D366; color:#ffffff; padding:14px 28px; border-radius:30px; text-decoration:none; font-weight:bold; font-size:15px; display:inline-block; box-shadow:0 4px 15px rgba(37,211,102,0.35);">
-                        <i class="fab fa-whatsapp"></i> Send Payment Receipt on WhatsApp &rarr;
-                      </a>
-                    </div>
-
-                    <p style="font-size:13px; color:#64748b; background:#f1f5f9; padding:12px; border-radius:8px;">
-                      <strong>Note:</strong> Your official Classroom Access Code will be dispatched to this email immediately upon verification by the administrator.
-                    </p>
-
-                    <div style="font-size:12px; color:#94a3b8; text-align:center; margin-top:28px; border-top:1px solid #f1f5f9; padding-top:16px;">
-                      Emmanuel Iheomamere • Lead Instructor & Founder<br>
-                      Greach Impact Academy • greachimpact@gmail.com
-                    </div>
-                  </div>
-                </div>
-              `
-            };
-          } else if (options.type === 'welcome' && options.student) {
-            const s = options.student;
-            directPayload = {
-              sender: payload.sender,
-              to: [{ email: s.email, name: s.name }],
-              subject: `Welcome to ${s.course || 'Masterclass'} – Your Access Code: ${s.password}`,
-              htmlContent: `
-                <div style="font-family:'Segoe UI',Arial,sans-serif; background:#f8fafc; padding:24px; color:#1e293b;">
-                  <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:14px; border:1px solid #e2e8f0; padding:32px; box-shadow:0 8px 24px rgba(0,0,0,0.05);">
-                    <div style="text-align:center; border-bottom:2px solid #0A0A5E; padding-bottom:18px; margin-bottom:24px;">
-                      <h2 style="color:#0A0A5E; margin:0; font-size:24px;">GREACH IMPACT ACADEMY</h2>
-                      <p style="color:#64748b; font-size:14px; margin:4px 0 0;">Official Enrollment Confirmation &bull; Learn. Practice. Grow.</p>
-                    </div>
-                    <p style="font-size:16px;">Dear <strong>${s.name}</strong>,</p>
-                    <p>Congratulations on joining the <strong>${s.course || 'Microsoft Excel Masterclass'}</strong>!</p>
-                    
-                    <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:10px; padding:18px; margin:20px 0;">
-                      <h4 style="color:#166534; margin:0 0 10px; font-size:16px;">🔑 YOUR CLASSROOM ACCESS CODE:</h4>
-                      <div style="font-size:26px; font-weight:800; color:#107C41; font-family:monospace; letter-spacing:1.5px;">${s.password}</div>
-                      <div style="margin-top:8px; font-size:14px; color:#374151;">
-                        &bull; Student ID: <strong>${s.id}</strong><br>
-                        &bull; Registered Email: <strong>${s.email}</strong><br>
-                        &bull; Cohort: <strong>${s.cohort || 'Batch 2: 2026 Masterclass'}</strong><br>
-                        &bull; Access Code Valid Until: <strong style="color:#b91c1c;">${s.expiresAt || '1 Month After Class'}</strong> (1 month after class ends)
-                      </div>
-                    </div>
-
-                    <p>You can connect to the interactive classroom, download your guided exercises, and join the live studio stream immediately:</p>
-                    
-                    <div style="text-align:center; margin:26px 0;">
-                      <a href="https://greach-impact-website.vercel.app/classroom/index.html?code=${encodeURIComponent(s.password)}&id=${encodeURIComponent(s.id)}" 
-                         style="background:#107C41; color:#ffffff; padding:14px 32px; border-radius:30px; text-decoration:none; font-weight:bold; font-size:16px; display:inline-block; box-shadow:0 4px 15px rgba(16,124,65,0.35);">
-                        🚀 Connect to Classroom with 1-Click &rarr;
-                      </a>
-                    </div>
-
-                    <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:14px; margin-top:20px; font-size:13px; color:#1e40af;">
-                      <strong>🎓 Lifetime Certificate Access:</strong> Even after your 1-month classroom access code expires, you have permanent lifetime access to retrieve, view, and download your official Certificate of Completion using your registered email at <strong>greach-impact-website.vercel.app/classroom/claim-certificate.html</strong>.
-                    </div>
-
-                    <div style="font-size:12px; color:#94a3b8; text-align:center; margin-top:28px; border-top:1px solid #f1f5f9; padding-top:16px;">
-                      Emmanuel Iheomamere &bull; Lead Instructor & Founder<br>
-                      Greach Impact Academy &bull; greachimpact@gmail.com
-                    </div>
-                  </div>
-                </div>
-              `
-            };
-          } else if (options.to && options.subject && options.htmlContent) {
-            directPayload = {
-              sender: payload.sender,
-              to: Array.isArray(options.to) ? options.to : [{ email: options.to }],
-              subject: options.subject,
-              htmlContent: options.htmlContent
-            };
-          }
-
-          if (directPayload) {
-            const resp = await fetch('https://api.brevo.com/v3/smtp/email', {
-              method: 'POST',
-              headers: {
-                'accept': 'application/json',
-                'api-key': apiKey,
-                'content-type': 'application/json'
-              },
-              body: JSON.stringify(directPayload)
-            });
-
-            const data = await resp.json();
-            if (resp.ok) {
-              console.log('[GreachBrevo] Dispatched via Brevo API successfully:', data.messageId);
-              this.logDispatch({
-                type: options.type || 'direct_brevo',
-                recipient: directPayload.to[0].email,
-                subject: directPayload.subject,
-                status: 'Sent via Brevo API',
-                messageId: data.messageId
-              });
-              return { success: true, method: 'brevo_direct', messageId: data.messageId };
-            }
-          }
-        } catch(e) {
-          console.warn('[GreachBrevo] Client-side Brevo API fetch error, falling back to /api/brevo:', e);
-        }
-      }
-
       // Serverless Endpoint Fallback (with fast 2200ms timeout)
       try {
         const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
@@ -272,8 +141,7 @@
         const resp = await fetch('/api/brevo', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'api-key': apiKey
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify(payload),
           ...(controller ? { signal: controller.signal } : {})
@@ -390,65 +258,23 @@
       });
     },
 
-    testConnection: async function(testKey, testEmail) {
-      const apiKey = testKey || this.getConfig().apiKey;
-      if (!apiKey) return { success: false, error: 'Please enter a Brevo API key.' };
-
+    testConnection: async function(testEmail, adminToken) {
+      if (!adminToken) return { success: false, error: 'A verified Super Admin session is required.' };
       try {
-        const resp = await fetch('https://api.brevo.com/v3/smtp/email', {
+        const resp = await fetch('/api/brevo', {
           method: 'POST',
           headers: {
-            'accept': 'application/json',
-            'api-key': apiKey.trim(),
-            'content-type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminToken}`
           },
-          body: JSON.stringify({
-            sender: { name: 'Greach Impact Academy', email: 'greachimpact@gmail.com' },
-            to: [{ email: testEmail || 'greachimpact@gmail.com', name: 'Lead Administrator' }],
-            subject: '✅ Brevo Email Automation Connected Successfully!',
-            htmlContent: `
-              <div style="font-family:sans-serif; padding:20px; background:#ecfdf5; border-radius:10px; border:1.5px solid #a7f3d0;">
-                <h3 style="color:#065f46; margin-top:0;">🎉 Brevo API Connection Operational</h3>
-                <p>Your Brevo API key has been authenticated successfully. Automated student welcome emails, order alerts, and live class reminders are now active.</p>
-                <p style="font-size:12px; color:#6b7280;">Timestamp: ${new Date().toLocaleString()}</p>
-              </div>
-            `
-          })
+          body: JSON.stringify({ type: 'test_connection', testEmail })
         });
-
         const data = await resp.json();
-        if (resp.ok) {
-          return { success: true, messageId: data.messageId };
-        } else {
-          return { success: false, error: data.message || 'Brevo API authentication error.' };
-        }
+        return resp.ok
+          ? { success: true, messageId: data.messageId }
+          : { success: false, error: data.error || 'Server-side Brevo test failed.' };
       } catch(e) {
-        // Fallback to Serverless API gateway (bypasses browser CORS restrictions)
-        try {
-          const fbResp = await fetch('/api/brevo', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'api-key': apiKey.trim() },
-            body: JSON.stringify({
-              apiKey: apiKey.trim(),
-              to: [{ email: testEmail || 'greachimpact@gmail.com', name: 'Lead Administrator' }],
-              subject: '✅ Brevo Email Automation Connected Successfully!',
-              htmlContent: `
-                <div style="font-family:sans-serif; padding:20px; background:#ecfdf5; border-radius:10px; border:1.5px solid #a7f3d0;">
-                  <h3 style="color:#065f46; margin-top:0;">🎉 Brevo API Connection Operational</h3>
-                  <p>Your Brevo API key has been authenticated successfully via serverless gateway.</p>
-                </div>
-              `
-            })
-          });
-          const fbData = await fbResp.json();
-          if (fbResp.ok && fbData.success && (fbData.dispatched || fbData.messageId)) {
-            return { success: true, messageId: fbData.messageId || (fbData.data && fbData.data.messageId) || 'OK' };
-          } else {
-            return { success: false, error: fbData.error || (fbData.data && fbData.data.message) || e.message };
-          }
-        } catch(err2) {
-          return { success: false, error: e.message || 'Network error reaching Brevo API.' };
-        }
+        return { success: false, error: e.message || 'Network error reaching the serverless email service.' };
       }
     }
   };

@@ -3,5 +3,26 @@ node_modules
 .DS_Store
 Thumbs.db
 .vercel
+__pycache__/
+*.pyc
 
 images/raw_backup/
+
+# Environment and Secret Configurations
+.env
+.env.*
+!.env.example
+.env.local
+.env.staging
+.env.production
+*.staging.json
+staging_*.json
+staging_*.sql
+*.dump
+*.backup
+
+# Database Backups & Temporary Archives
+backups/
+*.tar.gz
+*.sql.gz
+

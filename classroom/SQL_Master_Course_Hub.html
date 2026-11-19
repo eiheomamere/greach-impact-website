@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SQL for Beginners & Analytics Classroom | Greach Impact Academy</title>
-  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <link rel="icon" type="image/jpeg" href="../images/Greach Impact Logo (2).jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -823,14 +823,14 @@ LIMIT 10;</textarea>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>STU-2026-001</td>
+                    <td>DEMO-STUDENT-001</td>
                     <td>Amaka Okafor</td>
                     <td>amaka.o@gmail.com</td>
                     <td>Microsoft Excel for Beginners</td>
                     <td>Batch 2: 2026</td>
                   </tr>
                   <tr>
-                    <td>STU-2026-002</td>
+                    <td>DEMO-STUDENT-002</td>
                     <td>Chidi Obi</td>
                     <td>chidi.obi@yahoo.com</td>
                     <td>Microsoft Excel Advanced</td>
@@ -969,7 +969,7 @@ LIMIT 10;</textarea>
         <label style="display:block; font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.4rem;">
           Enter Your Unique SQL Access Code:
         </label>
-        <input type="text" id="gateSqlAccessCode" placeholder="e.g. GRX-SQL-9821 or STU-2026-001" style="width:100%; padding:0.8rem; border:1.5px solid #cbd5e1; border-radius:8px; font-size:1rem; font-weight:700; text-transform:uppercase;">
+        <input type="text" id="gateSqlAccessCode" placeholder="e.g. GRX-SQL-9821 or DEMO-STUDENT-001" style="width:100%; padding:0.8rem; border:1.5px solid #cbd5e1; border-radius:8px; font-size:1rem; font-weight:700; text-transform:uppercase;">
       </div>
 
       <button onclick="verifySqlCode()" style="width:100%; background:var(--accent-sql); color:white; padding:0.8rem; border:none; border-radius:8px; font-weight:800; font-size:0.95rem; cursor:pointer; margin-bottom:0.6rem;">
@@ -996,16 +996,16 @@ LIMIT 10;</textarea>
     // 1. Mock Relational In-Memory Database for SQL Runner
     const DB = {
       students: [
-        { id: 'STU-2026-001', name: 'Amaka Okafor', email: 'amaka.o@gmail.com', course: 'Microsoft Excel for Beginners', cohort: 'Batch 2: 2026', paid: true },
-        { id: 'STU-2026-002', name: 'Chidi Obi', email: 'chidi.obi@yahoo.com', course: 'Microsoft Excel Advanced', cohort: 'Batch 2: 2026', paid: true },
-        { id: 'STU-2026-003', name: 'Fatima Bello', email: 'f.bello@kpmg.ng', course: 'SQL for Beginners', cohort: 'Batch 2: 2026', paid: true },
-        { id: 'STU-2026-004', name: 'Tunde Bakare', email: 'tunde.b@accessbank.com', course: 'Power BI for Beginners', cohort: 'Batch 2: 2026', paid: true },
-        { id: 'STU-2026-005', name: 'Emeka Eze', email: 'emeka.eze@mtn.ng', course: 'Complete Analytics Suite', cohort: 'Batch 2: 2026', paid: true },
-        { id: 'STU-2026-006', name: 'Zainab Ahmed', email: 'zainab@dangote.com', course: 'Microsoft Excel for Beginners', cohort: 'Batch 2: 2026', paid: false },
-        { id: 'STU-2026-007', name: 'Kelechi Iheanacho', email: 'kelechi@gmail.com', course: 'SQL for Beginners', cohort: 'Batch 2: 2026', paid: true },
-        { id: 'STU-2026-008', name: 'Amina Mohammed', email: 'amina.m@un.org', course: 'Complete Analytics Suite', cohort: 'Batch 2: 2026', paid: true },
-        { id: 'STU-2026-009', name: 'David Adeleke', email: 'david@dmw.com', course: 'Executive Dashboard Design', cohort: 'Batch 2: 2026', paid: true },
-        { id: 'STU-2026-010', name: 'Ngozi Okonjo', email: 'ngozi@wto.org', course: 'SQL for Beginners', cohort: 'Batch 2: 2026', paid: true }
+        { id: 'DEMO-STUDENT-001', name: 'Amaka Okafor', email: 'amaka.o@gmail.com', course: 'Microsoft Excel for Beginners', cohort: 'Batch 2: 2026', paid: true },
+        { id: 'DEMO-STUDENT-002', name: 'Chidi Obi', email: 'chidi.obi@yahoo.com', course: 'Microsoft Excel Advanced', cohort: 'Batch 2: 2026', paid: true },
+        { id: 'DEMO-STUDENT-003', name: 'Fatima Bello', email: 'f.bello@kpmg.ng', course: 'SQL for Beginners', cohort: 'Batch 2: 2026', paid: true },
+        { id: 'DEMO-STUDENT-004', name: 'Tunde Bakare', email: 'tunde.b@accessbank.com', course: 'Power BI for Beginners', cohort: 'Batch 2: 2026', paid: true },
+        { id: 'DEMO-STUDENT-005', name: 'Emeka Eze', email: 'emeka.eze@mtn.ng', course: 'Complete Analytics Suite', cohort: 'Batch 2: 2026', paid: true },
+        { id: 'DEMO-STUDENT-006', name: 'Zainab Ahmed', email: 'zainab@dangote.com', course: 'Microsoft Excel for Beginners', cohort: 'Batch 2: 2026', paid: false },
+        { id: 'DEMO-STUDENT-007', name: 'Kelechi Iheanacho', email: 'kelechi@gmail.com', course: 'SQL for Beginners', cohort: 'Batch 2: 2026', paid: true },
+        { id: 'DEMO-STUDENT-008', name: 'Amina Mohammed', email: 'amina.m@un.org', course: 'Complete Analytics Suite', cohort: 'Batch 2: 2026', paid: true },
+        { id: 'DEMO-STUDENT-009', name: 'David Adeleke', email: 'david@dmw.com', course: 'Executive Dashboard Design', cohort: 'Batch 2: 2026', paid: true },
+        { id: 'DEMO-STUDENT-010', name: 'Ngozi Okonjo', email: 'ngozi@wto.org', course: 'SQL for Beginners', cohort: 'Batch 2: 2026', paid: true }
       ],
       courses: [
         { course_id: 'CRS-EXC-BEG', name: 'Microsoft Excel for Beginners', fee: 15000, instructor: 'Lead Analytics Team' },
@@ -1015,14 +1015,14 @@ LIMIT 10;</textarea>
         { course_id: 'CRS-PBI-BEG', name: 'Power BI for Beginners', fee: 25000, instructor: 'Lead Analytics Team' }
       ],
       orders: [
-        { order_id: 101, student_id: 'STU-2026-001', course_id: 'CRS-EXC-BEG', amount: 15000, status: 'Completed', date: '2026-10-01' },
-        { order_id: 102, student_id: 'STU-2026-002', course_id: 'CRS-EXC-ADV', amount: 25000, status: 'Completed', date: '2026-10-02' },
-        { order_id: 103, student_id: 'STU-2026-003', course_id: 'CRS-SQL-BEG', amount: 20000, status: 'Completed', date: '2026-10-03' },
-        { order_id: 104, student_id: 'STU-2026-004', course_id: 'CRS-PBI-BEG', amount: 25000, status: 'Completed', date: '2026-10-04' },
-        { order_id: 105, student_id: 'STU-2026-005', course_id: 'CRS-DAT-SUITE', amount: 65000, status: 'Completed', date: '2026-10-05' },
-        { order_id: 106, student_id: 'STU-2026-006', course_id: 'CRS-EXC-BEG', amount: 15000, status: 'Pending', date: '2026-10-06' },
-        { order_id: 107, student_id: 'STU-2026-007', course_id: 'CRS-SQL-BEG', amount: 20000, status: 'Completed', date: '2026-10-07' },
-        { order_id: 108, student_id: 'STU-2026-008', course_id: 'CRS-DAT-SUITE', amount: 65000, status: 'Completed', date: '2026-10-08' }
+        { order_id: 101, student_id: 'DEMO-STUDENT-001', course_id: 'CRS-EXC-BEG', amount: 15000, status: 'Completed', date: '2026-10-01' },
+        { order_id: 102, student_id: 'DEMO-STUDENT-002', course_id: 'CRS-EXC-ADV', amount: 25000, status: 'Completed', date: '2026-10-02' },
+        { order_id: 103, student_id: 'DEMO-STUDENT-003', course_id: 'CRS-SQL-BEG', amount: 20000, status: 'Completed', date: '2026-10-03' },
+        { order_id: 104, student_id: 'DEMO-STUDENT-004', course_id: 'CRS-PBI-BEG', amount: 25000, status: 'Completed', date: '2026-10-04' },
+        { order_id: 105, student_id: 'DEMO-STUDENT-005', course_id: 'CRS-DAT-SUITE', amount: 65000, status: 'Completed', date: '2026-10-05' },
+        { order_id: 106, student_id: 'DEMO-STUDENT-006', course_id: 'CRS-EXC-BEG', amount: 15000, status: 'Pending', date: '2026-10-06' },
+        { order_id: 107, student_id: 'DEMO-STUDENT-007', course_id: 'CRS-SQL-BEG', amount: 20000, status: 'Completed', date: '2026-10-07' },
+        { order_id: 108, student_id: 'DEMO-STUDENT-008', course_id: 'CRS-DAT-SUITE', amount: 65000, status: 'Completed', date: '2026-10-08' }
       ]
     };
 
@@ -1363,7 +1363,7 @@ LIMIT 10;</textarea>
             title: '23. Indexing & Query Performance Optimization',
             concept: 'Indexes (B-Trees) dramatically speed up SELECT queries on large tables with millions of rows by avoiding full table scans.',
             syntax: 'CREATE INDEX idx_orders_student ON orders(student_id);',
-            sampleSql: 'SELECT * FROM orders WHERE student_id = "STU-2026-001";',
+            sampleSql: 'SELECT * FROM orders WHERE student_id = "DEMO-STUDENT-001";',
             quiz: {
               q: 'What is the primary benefit of creating an index on a foreign key column?',
               options: ['Reduces database storage', 'Accelerates search and JOIN query performance', 'Enforces automatic backups', 'Formats text strings'],
@@ -1401,84 +1401,74 @@ LIMIT 10;</textarea>
       initPresenceHeartbeat();
     });
 
-    function enterSqlAsAdmin() {
-      const pwd = prompt('Enter Universal Super Admin Password (Evana_Oluebube123890):');
-      if (!pwd) return;
-      if (pwd.trim() === 'Evana_Oluebube123890') {
-        if (window.GreachDB && window.GreachDB.activateAdminClassroomSession) {
-          window.GreachDB.activateAdminClassroomSession('Greachimpact');
-        } else {
-          localStorage.setItem('excel_instructor_session_active_v1', 'true');
-          localStorage.setItem('greach_instructor_login', 'true');
-        }
+    async function enterSqlAsAdmin() {
+      const verifiedAdmin = window.GreachDB && window.GreachDB.getVerifiedAdminClassroomSession
+        ? await window.GreachDB.getVerifiedAdminClassroomSession()
+        : null;
+      if (verifiedAdmin) {
         const modal = document.getElementById('securityGateModal');
         if (modal) modal.classList.remove('active');
         checkSqlAccessAuth();
       } else {
-        alert('Access Denied: Incorrect Super Admin password.');
+        alert('Access denied. Sign in through the Admin Console and complete TOTP MFA.');
       }
     }
 
-    function checkSqlAccessAuth() {
-      const session = JSON.parse(localStorage.getItem('greach_student_session') || localStorage.getItem('greach_active_user_session_v2') || 'null');
-      const isSessPass = session && (session.isSessionPass || (session.id && String(session.id).startsWith('PAS-')));
-      if (isSessPass) {
-        localStorage.removeItem('excel_instructor_session_active_v1');
-        localStorage.removeItem('greach_instructor_login');
-      }
-
-      const isAdminAuth = !isSessPass && window.GreachDB && window.GreachDB.isAdminClassroomAuthenticated && window.GreachDB.isAdminClassroomAuthenticated();
-      const isLead = !isSessPass && (isAdminAuth || (localStorage.getItem('greach_instructor_login') === 'true' || localStorage.getItem('excel_instructor_session_active_v1') === 'true'));
-      
+    async function checkSqlAccessAuth() {
+      const verifiedAdmin = window.GreachDB && window.GreachDB.getVerifiedAdminClassroomSession
+        ? await window.GreachDB.getVerifiedAdminClassroomSession()
+        : null;
       const pillName = document.getElementById('studentDisplayName');
-
-      if (isLead || (session && (session.role === 'instructor' || session.isSuperAdmin))) {
+      if (verifiedAdmin) {
         const modal = document.getElementById('securityGateModal');
         if (modal) modal.classList.remove('active');
-        if (pillName) pillName.innerHTML = '👑 <strong>Lead Instructor</strong> (Admin Mode)';
-        // Seamlessly propagate admin parameter to classroom switcher
-        document.querySelectorAll('.switcher-item').forEach(el => {
-          const href = el.getAttribute('href');
-          if (href && !href.includes('admin=')) {
-            el.setAttribute('href', href + (href.includes('?') ? '&' : '?') + 'admin=true');
-          }
-        });
+        if (pillName) pillName.textContent = 'Lead Instructor (Super Admin)';
         return;
       }
 
-      if (!session || !session.verified) {
-        showGateModal('Please enter your unique course access code to unlock the SQL Analytics Classroom.');
-        return;
-      }
-
-      // Check revocation
-      const sqlPassCode = session.accessCode || (session.id && String(session.id).replace(/^PASS-/, ''));
-      if (window.GreachDB && window.GreachDB.isCodeRevoked && (window.GreachDB.isCodeRevoked(sqlPassCode) || window.GreachDB.isCodeRevoked(session.id))) {
+      const verifiedStudent = window.GreachDB && window.GreachDB.getVerifiedStudentClassroomSession
+        ? await window.GreachDB.getVerifiedStudentClassroomSession()
+        : null;
+      if (!verifiedStudent || !verifiedStudent.student) {
         localStorage.removeItem('greach_student_session');
         localStorage.removeItem('greach_active_user_session_v2');
-        showGateModal('<strong><i class="fas fa-ban"></i> Access Revoked:</strong> Your classroom session pass has been revoked by the instructor.');
+        showGateModal('Please enter your unique access code to unlock the SQL Analytics Classroom.');
         return;
       }
+
+      const student = verifiedStudent.student;
+      const session = {
+        role: 'student',
+        id: student.id,
+        name: student.name,
+        email: student.email,
+        course: student.course,
+        courseKey: student.courseKey,
+        cohort: student.cohort,
+        accessType: student.accessType,
+        expiresAt: verifiedStudent.expiresAt,
+        verified: true
+      };
+      localStorage.setItem('greach_student_session', JSON.stringify(session));
+      localStorage.setItem('greach_active_user_session_v2', JSON.stringify(session));
+      localStorage.removeItem('excel_instructor_session_active_v1');
+      localStorage.removeItem('greach_instructor_login');
 
       if (window.GreachDB && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen('sql_beginners')) {
         const sched = window.GreachDB.isClassroomInScheduledHours ? window.GreachDB.isClassroomInScheduledHours('sql_beginners') : null;
-        showGateModal('🛑 <strong>Classroom Currently Offline:</strong> The SQL Analytics Studio is not in session at this time.<br><br><span style="font-size:0.8rem; color:#475569;"><strong>Scheduled Live Hours:</strong> ' + (sched ? sched.scheduleText : 'Mondays & Wednesdays, 07:00 PM – 09:00 PM WAT') + '<br>(Current WAT Time: ' + (sched ? sched.currentWATTime + ', ' + sched.currentWATDay : '') + ')</span>');
+        showGateModal('Classroom is currently offline.' + (sched ? ' Scheduled hours: ' + sched.scheduleText : ''));
         return;
       }
-
-      // Check course permission
       if (window.GreachDB && window.GreachDB.canAccessCourse) {
         const access = window.GreachDB.canAccessCourse(session, 'sql_beginners');
         if (!access.allowed) {
-          const enrolledUrl = window.GreachDB.getCourseClassroomUrl ? window.GreachDB.getCourseClassroomUrl(session.courseKey) : 'Excel_Master_Course_Hub.html';
-          showGateModal('Your current pass is registered for <strong>"' + escapeHtml(session.course) + '"</strong>.<br><br>This classroom is dedicated to <strong>SQL for Beginners & Analytics</strong>.<br><br><a href="' + enrolledUrl + '" style="color:#0284c7; font-weight:700; text-decoration:underline;">Click here to enter your enrolled classroom &rarr;</a>');
+          showGateModal('Your verified enrollment does not include this course.');
           return;
         }
       }
-
-      if (pillName) {
-        pillName.innerHTML = `🎓 <strong>${session.name || 'Verified Student'}</strong>`;
-      }
+      const modal = document.getElementById('securityGateModal');
+      if (modal) modal.classList.remove('active');
+      if (pillName) pillName.textContent = student.name || 'Verified Student';
     }
 
     function showGateModal(msg) {
@@ -1502,37 +1492,26 @@ LIMIT 10;</textarea>
           const res = await window.GreachDB.verifyAccessCodeAny(code);
           if (res && res.valid) {
             const s = res.student || {};
-            const isSessionPass = !!(res.isSessionPass || code.toUpperCase().startsWith('LIVE-') || code.toUpperCase().startsWith('PAS-'));
-            const isInstructor = !isSessionPass && !!res.isInstructor;
-
+            const isSessionPass = res.isSessionPass === true;
             const session = {
-              role: isInstructor ? 'instructor' : 'student',
-              isInstructor: isInstructor,
-              isAdmin: isInstructor,
-              isSuperAdmin: isInstructor,
-              isSessionPass: isSessionPass,
+              role: 'student',
+              isSessionPass,
               id: s.id || 'STU-SQL-VERIFIED',
               name: s.name || 'Verified Student',
               email: s.email || '',
               course: s.course || 'SQL for Beginners & Analytics',
               courseKey: window.GreachDB.normalizeCourseKey(s.courseKey || s.course || 'sql_beginners'),
-              cohort: s.cohort || 'Batch 2: 2026 Masterclass',
+              cohort: s.cohort || '',
+              accessType: s.accessType || (isSessionPass ? 'session_pass' : 'access_code'),
               verified: true,
-              authMethod: 'code',
-              accessCode: code,
               loginTime: new Date().toISOString()
             };
             localStorage.setItem('greach_student_session', JSON.stringify(session));
             localStorage.setItem('greach_active_user_session_v2', JSON.stringify(session));
-            if (isInstructor) {
-              localStorage.setItem('excel_instructor_session_active_v1', 'true');
-              localStorage.setItem('greach_instructor_login', 'true');
-            } else {
-              localStorage.removeItem('excel_instructor_session_active_v1');
-              localStorage.removeItem('greach_instructor_login');
-            }
+            localStorage.removeItem('excel_instructor_session_active_v1');
+            localStorage.removeItem('greach_instructor_login');
             if (window.GreachDB.recordStudentLogin) {
-              window.GreachDB.recordStudentLogin(session, { classroomKey: 'sql_beginners' });
+              window.GreachDB.recordStudentLogin(s, { classroomKey: 'sql_beginners' });
             }
             document.getElementById('securityGateModal').classList.remove('active');
             checkSqlAccessAuth();
@@ -1547,7 +1526,7 @@ LIMIT 10;</textarea>
     }
 
     function initPresenceHeartbeat() {
-      const tick = () => {
+      const tick = async () => {
         const session = JSON.parse(localStorage.getItem('greach_student_session') || localStorage.getItem('greach_active_user_session_v2') || '{}');
         if (window.GreachDB && session && session.id) {
           const sCode = session.accessCode || (session.id && String(session.id).replace(/^PASS-/, ''));
@@ -1563,7 +1542,9 @@ LIMIT 10;</textarea>
             showGateModal('Your live classroom session was terminated by the Super Administrator.');
             return;
           }
-          const isLead = (localStorage.getItem('greach_instructor_login') === 'true' || localStorage.getItem('excel_instructor_session_active_v1') === 'true' || session.role === 'instructor' || session.isSuperAdmin);
+          const isLead = window.GreachDB.getVerifiedAdminClassroomSession
+            ? Boolean(await window.GreachDB.getVerifiedAdminClassroomSession())
+            : false;
           if (!isLead && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen('sql_beginners')) {
             const sched = window.GreachDB.isClassroomInScheduledHours ? window.GreachDB.isClassroomInScheduledHours('sql_beginners') : null;
             showGateModal('🛑 <strong>Classroom Currently Offline:</strong> Live session is not active at this time.<br><small style="color:#64748b;">Scheduled: ' + (sched ? sched.scheduleText : 'Mondays & Wednesdays, 07:00 PM – 09:00 PM WAT') + '</small>');
@@ -2059,6 +2040,10 @@ CREATE TABLE orders (
     function logoutClassroom() {
       if (confirm('Log out of SQL Classroom?')) {
         localStorage.removeItem('greach_student_session');
+        localStorage.removeItem('greach_active_user_session_v2');
+        sessionStorage.removeItem('greach_student_token');
+        sessionStorage.removeItem('greach_server_session_id');
+        sessionStorage.removeItem('greach_active_session_id');
         window.location.href = 'index.html';
       }
     }
