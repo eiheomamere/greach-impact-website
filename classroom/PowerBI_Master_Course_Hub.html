@@ -701,7 +701,7 @@
       <a href="index.html" class="brand-logo">
         <i class="fas fa-chart-pie"></i> Greach Impact Academy
       </a>
-      <span class="course-badge"><i class="fas fa-award"></i> CRS-PBI-BEG â€¢ Power BI Intelligence</span>
+      <span class="course-badge"><i class="fas fa-award"></i> CRS-PBI-BEG • Power BI Intelligence</span>
 
       <!-- Classroom Switcher -->
       <div class="classroom-switcher">
@@ -776,7 +776,7 @@
       <!-- Lesson Header -->
       <div class="lesson-header">
         <div>
-          <div class="lesson-tag" id="lessonModuleTag">MODULE 1 â€¢ FOUNDATIONS</div>
+          <div class="lesson-tag" id="lessonModuleTag">MODULE 1 • FOUNDATIONS</div>
           <h1 class="lesson-headline" id="lessonTitle">Loading Power BI Curriculum...</h1>
         </div>
         <div class="lesson-actions">
@@ -841,7 +841,7 @@
           <div class="pbi-kpi-grid">
             <div class="kpi-card">
               <div class="kpi-title">Total Gross Revenue</div>
-              <div class="kpi-value" id="kpiRevenue">â‚¦14,850,000</div>
+              <div class="kpi-value" id="kpiRevenue">₦14,850,000</div>
               <div class="kpi-trend"><i class="fas fa-arrow-up"></i> +18.4% YoY vs 2025</div>
             </div>
             <div class="kpi-card">
@@ -851,7 +851,7 @@
             </div>
             <div class="kpi-card">
               <div class="kpi-title">Average Order Value (AOV)</div>
-              <div class="kpi-value" id="kpiAov">â‚¦30,809</div>
+              <div class="kpi-value" id="kpiAov">₦30,809</div>
               <div class="kpi-trend"><i class="fas fa-calculator"></i> DAX: [Total Rev] / [Orders]</div>
             </div>
             <div class="kpi-card">
@@ -866,7 +866,7 @@
             <div class="visual-panel">
               <div class="visual-header">
                 <span>Revenue by Course Track (Bar Chart)</span>
-                <span style="font-size:0.75rem; color:#64748b;">Values in â‚¦ Millions</span>
+                <span style="font-size:0.75rem; color:#64748b;">Values in ₦ Millions</span>
               </div>
               <div class="visual-bars-container" id="courseBarsContainer">
                 <!-- Dynamically rendered via JS -->
@@ -1056,7 +1056,7 @@ SUMX (
       </button>
 
       <button type="button" onclick="enterPbiAsAdmin()" style="width:100%; background:#fef3c7; border:1.5px solid #fde68a; color:#92400e; padding:0.65rem; border-radius:8px; font-weight:800; font-size:0.86rem; cursor:pointer; margin-bottom:0.8rem;">
-        ðŸ‘‘ Enter as Admin / Instructor (Password Required) &rarr;
+         Enter as Admin / Instructor (Password Required) &rarr;
       </button>
 
       <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
@@ -1099,9 +1099,9 @@ SUMX (
       const totalStu = filtered.reduce((acc, r) => acc + r.students, 0);
       const aov = totalStu > 0 ? Math.round(totalRev / totalStu) : 0;
 
-      document.getElementById('kpiRevenue').textContent = 'â‚¦' + totalRev.toLocaleString();
+      document.getElementById('kpiRevenue').textContent = '₦' + totalRev.toLocaleString();
       document.getElementById('kpiStudents').textContent = totalStu.toLocaleString();
-      document.getElementById('kpiAov').textContent = 'â‚¦' + aov.toLocaleString();
+      document.getElementById('kpiAov').textContent = '₦' + aov.toLocaleString();
 
       // Render Bar Chart
       const barsContainer = document.getElementById('courseBarsContainer');
@@ -1121,7 +1121,7 @@ SUMX (
           <div class="chart-bar-track">
             <div class="chart-bar-fill" style="width:${pct}%;"></div>
           </div>
-          <div class="chart-bar-val">â‚¦${(val / 1000000).toFixed(1)}M</div>
+          <div class="chart-bar-val">₦${(val / 1000000).toFixed(1)}M</div>
         `;
         barsContainer.appendChild(row);
       });
@@ -1169,12 +1169,12 @@ SUMX (
     const CURRICULUM = [
       {
         module: 'Module 1: BI Fundamentals & Power BI Architecture',
-        tag: 'MODULE 1 â€¢ FOUNDATIONS',
+        tag: 'MODULE 1 • FOUNDATIONS',
         lessons: [
           {
             id: 'PBI_L1',
             title: '1. What is Power BI & Modern BI Architecture?',
-            concept: 'Power BI is Microsoftâ€™s premier business intelligence platform combining self-service data prep (Power Query), analytical modeling (VertiPaq engine), and interactive dashboard storytelling.',
+            concept: 'Power BI is Microsoft’s premier business intelligence platform combining self-service data prep (Power Query), analytical modeling (VertiPaq engine), and interactive dashboard storytelling.',
             formula: '// Core BI Lifecycle:\n// 1. Ingest (Extract) -> 2. Model (Star Schema) -> 3. Calculate (DAX) -> 4. Visualize',
             quiz: {
               q: 'What is the internal in-memory columnar database engine that powers Power BI?',
@@ -1222,8 +1222,8 @@ SUMX (
         ]
       },
       {
-        module: 'Module 2: Power Query ETL â€” Ingestion & Transformation',
-        tag: 'MODULE 2 â€¢ POWER QUERY ETL',
+        module: 'Module 2: Power Query ETL — Ingestion & Transformation',
+        tag: 'MODULE 2 • POWER QUERY ETL',
         lessons: [
           {
             id: 'PBI_L5',
@@ -1277,7 +1277,7 @@ SUMX (
       },
       {
         module: 'Module 3: Data Modeling & Star Schema Architecture',
-        tag: 'MODULE 3 â€¢ DATA MODELING',
+        tag: 'MODULE 3 • DATA MODELING',
         lessons: [
           {
             id: 'PBI_L9',
@@ -1331,7 +1331,7 @@ SUMX (
       },
       {
         module: 'Module 4: DAX Essentials & Calculations',
-        tag: 'MODULE 4 â€¢ DAX CALCULATIONS',
+        tag: 'MODULE 4 • DAX CALCULATIONS',
         lessons: [
           {
             id: 'PBI_L13',
@@ -1385,7 +1385,7 @@ SUMX (
       },
       {
         module: 'Module 5: Interactive Visualizations & Design',
-        tag: 'MODULE 5 â€¢ REPORT DESIGN',
+        tag: 'MODULE 5 • REPORT DESIGN',
         lessons: [
           {
             id: 'PBI_L17',
@@ -1439,7 +1439,7 @@ SUMX (
       },
       {
         module: 'Module 6: Power BI Service, Workspaces & Capstone',
-        tag: 'MODULE 6 â€¢ CAPSTONE & DEPLOYMENT',
+        tag: 'MODULE 6 • CAPSTONE & DEPLOYMENT',
         lessons: [
           {
             id: 'PBI_L21',
@@ -1652,7 +1652,7 @@ SUMX (
             : false;
           if (!isLead && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen('power_bi')) {
             const sched = window.GreachDB.isClassroomInScheduledHours ? window.GreachDB.isClassroomInScheduledHours('power_bi') : null;
-            showGateModal('ðŸ›‘ <strong>Classroom Currently Offline:</strong> Live session is not active at this time.<br><small style="color:#64748b;">Scheduled: ' + (sched ? sched.scheduleText : 'Scheduled hours') + '</small>');
+            showGateModal(' <strong>Classroom Currently Offline:</strong> Live session is not active at this time.<br><small style="color:#64748b;">Scheduled: ' + (sched ? sched.scheduleText : 'Scheduled hours') + '</small>');
             return;
           }
           if (window.GreachDB.updateStudentHeartbeat) {
@@ -1894,7 +1894,7 @@ CALCULATE (
         document.getElementById('btnStopRecord').style.background = '#22c55e';
         document.getElementById('btnStopRecord').style.color = 'white';
         document.getElementById('btnStopRecord').style.cursor = 'pointer';
-        document.getElementById('recorderStatusPill').textContent = 'ðŸ”´ Recording Live...';
+        document.getElementById('recorderStatusPill').textContent = ' Recording Live...';
         document.getElementById('recorderStatusPill').style.background = '#991b1b';
         document.getElementById('recorderStatusPill').style.color = '#fee2e2';
       } catch (err) {
