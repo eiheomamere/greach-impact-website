@@ -645,7 +645,8 @@ export default async function handler(req, res) {
     }
 
     // 3. CSRF PROTECTION FOR COOKIE-BASED AUTHENTICATION
-    if (isCookieAuth && ['verify_super_action', 'logout', 'mfa_enroll', 'mfa_activate', 'change_password'].includes(action)) {
+    const usesMfaTicket = Boolean(ticket && (action === 'mfa_enroll' || action === 'mfa_activate'));
+    if (isCookieAuth && !usesMfaTicket && ['verify_super_action', 'logout', 'mfa_enroll', 'mfa_activate', 'change_password'].includes(action)) {
       const clientCsrf = req.headers['x-csrf-token'] || req.headers['x-xsrf-token'];
       const cookieCsrf = cookies['gi_csrf'];
 
@@ -1835,7 +1836,7 @@ export default async function handler(req, res) {
         return res.status(401).json({ success: false, error: 'Authenticated session or setup ticket required.' });
       }
 
-      const enrollRes = await callSupabaseAuth('factors', {
+      let enrollRes = await callSupabaseAuth('factors', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${sbTokenToUse}` },
         body: JSON.stringify({
@@ -1843,6 +1844,17 @@ export default async function handler(req, res) {
           friendly_name: `Greach Impact Admin`
         })
       });
+
+      if (!enrollRes.ok && enrollRes.status === 422) {
+        enrollRes = await callSupabaseAuth('factors', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${sbTokenToUse}` },
+          body: JSON.stringify({
+            factor_type: 'totp',
+            friendly_name: `Greach Impact Admin ${Date.now().toString(36)}`
+          })
+        });
+      }
 
       if (!enrollRes.ok) {
         const err = await enrollRes.json();
