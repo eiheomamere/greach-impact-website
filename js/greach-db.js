@@ -28,7 +28,7 @@
       label: 'Microsoft Excel for Beginners',
       hubUrl: 'Excel_Master_Course_Hub.html?track=beginners',
       allowedSections: [0, 1, 2], // Sections 1, 2, 3: Basics, Math, Logic & Text (Lessons 0 to 30)
-      allowedModulesText: 'Modules 1â€“3 (Excel Basics, Formatting, Formulas, Logic & Text Functions)',
+      allowedModulesText: 'Modules 1–3 (Excel Basics, Formatting, Formulas, Logic & Text Functions)',
       maxSlide: 30,
       badge: 'Beginner Access'
     },
@@ -37,7 +37,7 @@
       label: 'Microsoft Excel Advanced & Analytics',
       hubUrl: 'Excel_Master_Course_Hub.html?track=advanced',
       allowedSections: [3, 4, 5], // Sections 4, 5, 6: Data Cleaning, Tables, Lookups, PivotTables, Dashboards
-      allowedModulesText: 'Modules 4â€“6 (Advanced Data Cleaning, Dynamic Arrays, XLOOKUP, PivotTables & Dashboards)',
+      allowedModulesText: 'Modules 4–6 (Advanced Data Cleaning, Dynamic Arrays, XLOOKUP, PivotTables & Dashboards)',
       minSlide: 31,
       maxSlide: 63,
       badge: 'Advanced Access'
@@ -1290,7 +1290,7 @@
           this.logAudit(
             updatedBy || 'Super Admin',
             'Price Update',
-            `Updated ${prices[targetKey].label} fee: was â‚¦${oldVal.toLocaleString()} â†’ now â‚¦${prices[targetKey].current.toLocaleString()} (${prices[targetKey].discount})`
+            `Updated ${prices[targetKey].label} fee: was ₦${oldVal.toLocaleString()} → now ₦${prices[targetKey].current.toLocaleString()} (${prices[targetKey].discount})`
           );
         }
 
@@ -2060,38 +2060,38 @@
           scheduledDays = [0, 6]; // Sat, Sun
           startMin = 10 * 60; // 10:00 AM
           endMin = 12 * 60 + 30; // 12:30 PM
-          scheduleText = 'Saturdays & Sundays, 10:00 AM â€“ 12:30 PM WAT';
+          scheduleText = 'Saturdays & Sundays, 10:00 AM – 12:30 PM WAT';
           break;
         case 'excel_advanced':
           scheduledDays = [0, 6]; // Sat, Sun
           startMin = 14 * 60; // 02:00 PM
           endMin = 16 * 60 + 30; // 04:30 PM
-          scheduleText = 'Saturdays & Sundays, 02:00 PM â€“ 04:30 PM WAT';
+          scheduleText = 'Saturdays & Sundays, 02:00 PM – 04:30 PM WAT';
           break;
         case 'excel_dashboard':
           scheduledDays = [6]; // Saturday
           startMin = 11 * 60; // 11:00 AM
           endMin = 14 * 60; // 02:00 PM
-          scheduleText = 'Saturdays, 11:00 AM â€“ 02:00 PM WAT';
+          scheduleText = 'Saturdays, 11:00 AM – 02:00 PM WAT';
           break;
         case 'sql_beginners':
           scheduledDays = [1, 3]; // Mon, Wed
           startMin = 19 * 60; // 07:00 PM
           endMin = 21 * 60; // 09:00 PM
-          scheduleText = 'Mondays & Wednesdays, 07:00 PM â€“ 09:00 PM WAT';
+          scheduleText = 'Mondays & Wednesdays, 07:00 PM – 09:00 PM WAT';
           break;
         case 'power_bi':
           scheduledDays = [2, 4]; // Tue, Thu
           startMin = 19 * 60; // 07:00 PM
           endMin = 21 * 60; // 09:00 PM
-          scheduleText = 'Tuesdays & Thursdays, 07:00 PM â€“ 09:00 PM WAT';
+          scheduleText = 'Tuesdays & Thursdays, 07:00 PM – 09:00 PM WAT';
           break;
         case 'complete_package':
         default:
           scheduledDays = [0, 6]; // Sat, Sun
           startMin = 10 * 60;
           endMin = 16 * 60 + 30;
-          scheduleText = 'Saturdays & Sundays, 10:00 AM â€“ 04:30 PM WAT';
+          scheduleText = 'Saturdays & Sundays, 10:00 AM – 04:30 PM WAT';
           break;
       }
 
@@ -2129,10 +2129,10 @@
         const uptimeMs = isLive ? Math.max(0, now - startTs) : 0;
 
         let statusText = '';
-        if (mode === 'force_on') statusText = 'ðŸŸ¢ FORCED ON (Admin Override)';
-        else if (mode === 'force_off') statusText = 'ðŸ”´ STOPPED (Admin Override)';
-        else if (isLive) statusText = 'ðŸŸ¢ LIVE NOW (Scheduled In-Session)';
-        else statusText = 'âšª OFFLINE (Scheduled)';
+        if (mode === 'force_on') statusText = 'FORCED ON (Admin Override)';
+        else if (mode === 'force_off') statusText = 'STOPPED (Admin Override)';
+        else if (isLive) statusText = 'LIVE NOW (Scheduled In-Session)';
+        else statusText = 'OFFLINE (Scheduled)';
 
         // Match participants currently inside this classroom
         const participants = activeSessions.filter(s => {

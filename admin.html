@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Greach Impact Academy Ã¢â‚¬â€ Super Admin Control Center</title>
+  <title>Greach Impact Academy — Super Admin Control Center</title>
   <link rel="icon" type="image/jpeg" href="images/Greach Impact Logo (2).jpg" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -506,7 +506,7 @@
 </head>
 <body>
 
-  <!-- Ã°Å¸â€â€™ SUPER ADMIN LOGIN OVERLAY -->
+  <!-- SUPER ADMIN LOGIN OVERLAY -->
   <div class="auth-overlay" id="adminAuthOverlay">
     <div class="auth-box">
       <div style="width:64px; height:64px; background:linear-gradient(135deg, #0a192f, #0284c7); border-radius:18px; margin:0 auto 1.2rem; display:flex; align-items:center; justify-content:center; color:white; font-size:1.8rem; border:2px solid var(--gold-400);">
@@ -662,7 +662,7 @@
     </div>
   </div>
 
-  <!-- Ã°Å¸Å’Â TOP APPLICATION BAR -->
+  <!-- TOP APPLICATION BAR -->
   <header class="admin-topbar">
     <div class="brand-group">
       <img src="images/Greach Impact Logo (2).jpg" alt="Logo" class="brand-logo" onerror="this.style.display='none'" />
@@ -712,7 +712,7 @@
     </div>
   </header>
 
-  <!-- Ã°Å¸â€œÅ  MAIN WORKSPACE -->
+  <!-- MAIN WORKSPACE -->
   <main class="admin-container">
 
     <!-- KPI Metric Cards -->
@@ -740,7 +740,7 @@
       <div class="stat-card gold">
         <div class="stat-title"><span>Course Orders</span> <i class="fas fa-shopping-cart" style="color:var(--gold-500);"></i></div>
         <div class="stat-val" id="statTotalOrders">0</div>
-        <div class="stat-sub" id="statRevenueText">Ã¢â€šÂ¦0 verified revenue</div>
+        <div class="stat-sub" id="statRevenueText">₦0 verified revenue</div>
       </div>
       <div class="stat-card teal">
         <div class="stat-title"><span>Brevo Dispatches</span> <i class="fas fa-paper-plane" style="color:var(--accent-teal);"></i></div>
@@ -767,12 +767,12 @@
     <!-- Navigation Tabs -->
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchAdminTab('students')"><i class="fas fa-user-graduate"></i> Student Roster &amp; Bank</button>
-      <button class="tab-btn" onclick="switchAdminTab('classrooms')"><i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i> Ã°Å¸ÂÂ« Live Classrooms Control (6)</button>
+      <button class="tab-btn" onclick="switchAdminTab('classrooms')"><i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i> Live Classrooms Control (6)</button>
       <button class="tab-btn" onclick="switchAdminTab('activity')"><i class="fas fa-satellite-dish" style="color:#22c55e;"></i> Live Student Logins &amp; Presence</button>
       <button class="tab-btn" onclick="switchAdminTab('orders')"><i class="fas fa-shopping-cart"></i> Orders &amp; Pipeline</button>
       <button class="tab-btn" onclick="switchAdminTab('session_passes')"><i class="fas fa-stopwatch"></i> Temporary Session Passes</button>
       <button class="tab-btn" onclick="switchAdminTab('blog')"><i class="fas fa-newspaper" style="color:#0284c7;"></i> Blog Articles &amp; Content</button>
-      <button class="tab-btn" onclick="switchAdminTab('supabase')"><i class="fas fa-database" style="color:#22c55e;"></i> Ã¢Å¡Â¡ Supabase Cloud DB</button>
+      <button class="tab-btn" onclick="switchAdminTab('supabase')"><i class="fas fa-database" style="color:#22c55e;"></i> Supabase Cloud DB</button>
       <button class="tab-btn" onclick="switchAdminTab('prices')"><i class="fas fa-tags"></i> Course Pricing &amp; Discounts</button>
       <button class="tab-btn" onclick="switchAdminTab('schedules')"><i class="fas fa-calendar-alt"></i> Dates &amp; Self-Paced Modes</button>
       <button class="tab-btn" onclick="switchAdminTab('brevo')"><i class="fas fa-paper-plane"></i> Brevo &amp; Automation Hub</button>
@@ -830,7 +830,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; flex-wrap:wrap; gap:0.5rem;">
           <h3 style="font-size:1.08rem; color:var(--navy-900); display:flex; align-items:center; gap:8px;">
             <i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i>
-            All 6 Course Classrooms Ã¢â‚¬â€ Live Status, Uptime &amp; Superuser Controls
+            All 6 Course Classrooms — Live Status, Uptime &amp; Superuser Controls
           </h3>
           <div style="display:flex; gap:0.5rem;">
             <button class="btn-action" style="background:#e0f2fe; color:#0369a1; border-color:#38bdf8; font-weight:700;" onclick="handleSetAllClassrooms('auto')"><i class="fas fa-clock"></i> Auto-Schedule</button>
@@ -920,11 +920,11 @@
       <div id="currencyRevenuePoolsBanner" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap:12px; margin: 1rem 0;">
         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; text-align:center;">
           <div style="font-size:0.75rem; color:#64748b; font-weight:700;">NGN REVENUE POOL</div>
-          <div style="font-size:1.2rem; font-weight:800; color:#0A0A5E;" id="poolNgnDisplay">â‚¦0</div>
+          <div style="font-size:1.2rem; font-weight:800; color:#0A0A5E;" id="poolNgnDisplay">₦0</div>
         </div>
         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; text-align:center;">
           <div style="font-size:0.75rem; color:#64748b; font-weight:700;">GBP REVENUE POOL</div>
-          <div style="font-size:1.2rem; font-weight:800; color:#0284c7;" id="poolGbpDisplay">Â£0.00</div>
+          <div style="font-size:1.2rem; font-weight:800; color:#0284c7;" id="poolGbpDisplay">£0.00</div>
         </div>
         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; text-align:center;">
           <div style="font-size:0.75rem; color:#64748b; font-weight:700;">USD REVENUE POOL</div>
@@ -932,16 +932,16 @@
         </div>
         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; text-align:center;">
           <div style="font-size:0.75rem; color:#64748b; font-weight:700;">EUR REVENUE POOL</div>
-          <div style="font-size:1.2rem; font-weight:800; color:#ea580c;" id="poolEurDisplay">â‚¬0.00</div>
+          <div style="font-size:1.2rem; font-weight:800; color:#ea580c;" id="poolEurDisplay">€0.00</div>
         </div>
         <div style="background:#ecfdf5; border:1.5px solid #10b981; border-radius:8px; padding:12px; text-align:center;">
           <div style="font-size:0.75rem; color:#065f46; font-weight:800;">CONSOLIDATED NGN REVENUE</div>
-          <div style="font-size:1.25rem; font-weight:800; color:#047857;" id="consolidatedNgnDisplay">â‚¦0</div>
+          <div style="font-size:1.25rem; font-weight:800; color:#047857;" id="consolidatedNgnDisplay">₦0</div>
         </div>
       </div>
 
       <div class="controls-strip">
-        <input type="text" id="filterSearch" class="search-input" placeholder="Ã°Å¸â€Â Search by student name, ID, or email..." oninput="renderStudentsTable()" />
+        <input type="text" id="filterSearch" class="search-input" placeholder=" Search by student name, ID, or email..." oninput="renderStudentsTable()" />
         <select id="filterStatus" class="filter-select" onchange="renderStudentsTable()">
           <option value="all">All Students (Unlimited)</option>
           <option value="active">Active Access Only</option>
@@ -1008,10 +1008,10 @@
         </select>
         <select id="orderCurrencyFilter" class="filter-select" onchange="renderOrdersTable()">
           <option value="all">All Currencies</option>
-          <option value="NGN">NGN (â‚¦ - Nigeria)</option>
-          <option value="GBP">GBP (Â£ - Zenith Bank)</option>
+          <option value="NGN">NGN (₦ - Nigeria)</option>
+          <option value="GBP">GBP (£ - Zenith Bank)</option>
           <option value="USD">USD ($ - Zenith Bank)</option>
-          <option value="EUR">EUR (â‚¬ - Zenith Bank)</option>
+          <option value="EUR">EUR (€ - Zenith Bank)</option>
         </select>
         <button class="btn-action" onclick="loadAndRenderOrders()"><i class="fas fa-sync-alt"></i> Refresh Orders</button>
       </div>
@@ -1225,9 +1225,9 @@
           </div>
           <div style="font-size: 0.82rem; color: #cbd5e1; margin-top: 4px;">
             <strong>Live Rates:</strong>
-            <span style="background: rgba(56,189,248,0.2); padding: 2px 6px; border-radius: 4px;">Â£1 = â‚¦<span id="adminRateGbpDisplay">1,795.00</span></span> â€¢
-            <span style="background: rgba(56,189,248,0.2); padding: 2px 6px; border-radius: 4px;">$1 = â‚¦<span id="adminRateUsdDisplay">1,345.00</span></span> â€¢
-            <span style="background: rgba(56,189,248,0.2); padding: 2px 6px; border-radius: 4px;">â‚¬1 = â‚¦<span id="adminRateEurDisplay">1,499.00</span></span>
+            <span style="background: rgba(56,189,248,0.2); padding: 2px 6px; border-radius: 4px;">£1 = ₦<span id="adminRateGbpDisplay">1,795.00</span></span> •
+            <span style="background: rgba(56,189,248,0.2); padding: 2px 6px; border-radius: 4px;">$1 = ₦<span id="adminRateUsdDisplay">1,345.00</span></span> •
+            <span style="background: rgba(56,189,248,0.2); padding: 2px 6px; border-radius: 4px;">€1 = ₦<span id="adminRateEurDisplay">1,499.00</span></span>
             <span style="margin-left: 8px; color: #94a3b8;">(<span id="adminRateProviderText">ExchangeRate-API</span>, Updated: <span id="adminRateUpdatedText">Live</span>)</span>
           </div>
         </div>
@@ -1256,7 +1256,7 @@
       </div>
 
       <div class="controls-strip">
-        <input type="text" id="certSearchInput" class="search-input" placeholder="Search registry by reference, student, course, or statusâ€¦" oninput="renderCertsTable()" />
+        <input type="text" id="certSearchInput" class="search-input" placeholder="Search registry by reference, student, course, or status…" oninput="renderCertsTable()" />
       </div>
 
       <div class="table-responsive">
@@ -1336,7 +1336,7 @@
         <div>
           <h2><i class="fas fa-calendar-alt" style="color:var(--accent-teal);"></i> Course Dates, Schedules &amp; Class Times</h2>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
-            Update course start dates, end dates, and daily class times (e.g. 10:00 AM Ã¢â‚¬â€œ 12:30 PM WAT). Changes reflect across all website pages and student portals instantly.
+            Update course start dates, end dates, and daily class times (e.g. 10:00 AM – 12:30 PM WAT). Changes reflect across all website pages and student portals instantly.
           </p>
         </div>
         <button class="btn-primary" onclick="resetDefaultSchedules()"><i class="fas fa-undo"></i> Reset to Default Schedules</button>
@@ -1436,7 +1436,7 @@
       </div>
 
       <div class="controls-strip">
-        <input type="text" id="filterBlogSearch" class="search-input" placeholder="Ã°Å¸â€Â Search articles by title, keyword, or excerpt..." oninput="renderBlogTable()" />
+        <input type="text" id="filterBlogSearch" class="search-input" placeholder=" Search articles by title, keyword, or excerpt..." oninput="renderBlogTable()" />
         <select id="filterBlogCategory" class="filter-select" onchange="renderBlogTable()">
           <option value="all">All Categories</option>
           <option value="Excel & Data">Excel & Data</option>
@@ -1620,8 +1620,8 @@
           <label>Access Grant Type:</label>
           <select id="modalStuAccessType" class="form-control">
             <option value="paid">Standard Paid (Expires 1 Month After Class)</option>
-            <option value="free_grant">Ã°Å¸Å½Â Free Access Pass (Expires 1 Month After Class)</option>
-            <option value="free_lifetime">Ã°Å¸â€˜â€˜ Admin Free Lifetime Access (Never Expires)</option>
+            <option value="free_grant"> Free Access Pass (Expires 1 Month After Class)</option>
+            <option value="free_lifetime"> Admin Free Lifetime Access (Never Expires)</option>
           </select>
         </div>
         <div class="form-group">
@@ -1688,12 +1688,12 @@
         <div class="form-group">
           <label>Course Programme:</label>
           <select id="moCourse" class="form-control" onchange="updateManualOrderAmount(this.value)">
-            <option value="Microsoft Excel for Beginners|3000">Microsoft Excel for Beginners (Ã¢â€šÂ¦3,000)</option>
-            <option value="Microsoft Excel Advanced & Analytics|4000">Microsoft Excel Advanced & Analytics (Ã¢â€šÂ¦4,000)</option>
-            <option value="SQL for Data Analytics & Databases|5000">SQL for Data Analytics & Databases (Ã¢â€šÂ¦5,000)</option>
-            <option value="Complete Analytics Suite (Excel + SQL + Power BI)|10000">Complete Analytics Suite (Ã¢â€šÂ¦10,000)</option>
-            <option value="Power BI for Business Intelligence|22500">Power BI for Business Intelligence (Ã¢â€šÂ¦22,500)</option>
-            <option value="Executive Interactive Dashboard Design|40000">Executive Interactive Dashboard Design (Ã¢â€šÂ¦40,000)</option>
+            <option value="Microsoft Excel for Beginners|3000">Microsoft Excel for Beginners (₦3,000)</option>
+            <option value="Microsoft Excel Advanced & Analytics|4000">Microsoft Excel Advanced & Analytics (₦4,000)</option>
+            <option value="SQL for Data Analytics & Databases|5000">SQL for Data Analytics & Databases (₦5,000)</option>
+            <option value="Complete Analytics Suite (Excel + SQL + Power BI)|10000">Complete Analytics Suite (₦10,000)</option>
+            <option value="Power BI for Business Intelligence|22500">Power BI for Business Intelligence (₦22,500)</option>
+            <option value="Executive Interactive Dashboard Design|40000">Executive Interactive Dashboard Design (₦40,000)</option>
           </select>
         </div>
         <div class="form-group">
@@ -1705,7 +1705,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Amount (Ã¢â€šÂ¦):</label>
+          <label>Amount (₦):</label>
           <input type="number" id="moAmount" class="form-control" value="3000" required />
         </div>
         <div style="display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.5rem;">
@@ -1811,9 +1811,9 @@
         <div class="form-group">
           <label><i class="fas fa-sliders-h"></i> Access Code Type:</label>
           <select id="ucType" class="form-control" onchange="handleCodeTypeChange()">
-            <option value="student_course">Ã°Å¸Å½â€œ Student Course Enrollment Code (Permanent / 30-Day)</option>
-            <option value="session_pass">Ã¢ÂÂ±Ã¯Â¸Â Temporary Live Session Pass (Single Class / Workshop)</option>
-            <option value="vip_suite">Ã°Å¸â€˜â€˜ Complete Suite VIP Pass (Unlocks All 5 Modules)</option>
+            <option value="student_course"> Student Course Enrollment Code (Permanent / 30-Day)</option>
+            <option value="session_pass"> Temporary Live Session Pass (Single Class / Workshop)</option>
+            <option value="vip_suite"> Complete Suite VIP Pass (Unlocks All 5 Modules)</option>
           </select>
         </div>
 
@@ -1889,7 +1889,7 @@
         <div style="text-align:center; padding:1rem; background:white; border-radius:8px; border:1px solid #bbf7d0; margin-bottom:1rem;">
           <div style="font-size:0.8rem; color:#64748b; text-transform:uppercase; font-weight:700; letter-spacing:1px; margin-bottom:4px;">Unique Access Code</div>
           <div id="ucGeneratedCodeDisplay" style="font-family:monospace; font-size:1.8rem; font-weight:800; color:#0A0A5E; letter-spacing:2px;">GRC-2026-XXXX</div>
-          <div id="ucGeneratedDetails" style="font-size:0.82rem; color:#475569; margin-top:6px;">Course: Microsoft Excel for Beginners Ã¢â‚¬Â¢ Valid for: 30 Days</div>
+          <div id="ucGeneratedDetails" style="font-size:0.82rem; color:#475569; margin-top:6px;">Course: Microsoft Excel for Beginners • Valid for: 30 Days</div>
         </div>
 
         <!-- 1-Click Action Buttons -->
@@ -2022,7 +2022,7 @@
     </div>
   </div>
 
-  <!-- Ã°Å¸â€˜â€˜ MANDATORY SUPER ADMIN AUTHORIZATION MODAL -->
+  <!-- MANDATORY SUPER ADMIN AUTHORIZATION MODAL -->
   <div class="modal-overlay" id="superAdminConfirmModal" style="z-index: 100000;">
     <div class="modal-card" style="max-width:480px; width:92%; border-top: 5px solid #dc2626; box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.45); border-radius:16px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
@@ -2515,7 +2515,7 @@
       const origin = window.location.origin;
       const link = `${origin}/classroom/index.html?code=${encodeURIComponent(lastGeneratedCodeData.code)}`;
       const msg = encodeURIComponent(
-        `Hello ${lastGeneratedCodeData.studentName || 'Student'}!\n\nHere is your official access code for Greach Impact Academy:\n\nÃ°Å¸â€â€˜ Code: ${lastGeneratedCodeData.code}\nÃ°Å¸â€œÅ¡ Course: ${lastGeneratedCodeData.course}\nÃ¢ÂÂ±Ã¯Â¸Â Validity: ${lastGeneratedCodeData.expiresText}\n\nÃ°Å¸â€˜â€° Click to enter your classroom directly: ${link}\n\nWelcome to class!`
+        `Hello ${lastGeneratedCodeData.studentName || 'Student'}!\n\nHere is your official access code for Greach Impact Academy:\n\n Code: ${lastGeneratedCodeData.code}\n Course: ${lastGeneratedCodeData.course}\n Validity: ${lastGeneratedCodeData.expiresText}\n\n Click to enter your classroom directly: ${link}\n\nWelcome to class!`
       );
       const phoneClean = (lastGeneratedCodeData.phone || '').replace(/[^0-9]/g, '');
       const waUrl = phoneClean ? `https://wa.me/${phoneClean}?text=${msg}` : `https://api.whatsapp.com/send?text=${msg}`;
@@ -2552,7 +2552,7 @@
         document.getElementById('sbAnonKey').value = cfg.key;
         if (dot) dot.style.background = '#22c55e';
         if (text) text.innerHTML = '<span style="color:#166534;">Supabase Status: Connected to Cloud PostgreSQL</span>';
-        if (sub) sub.textContent = `Project Endpoint: ${cfg.url} Ã¢â‚¬Â¢ Active & Ready for Universal Real-Time Sync`;
+        if (sub) sub.textContent = `Project Endpoint: ${cfg.url} • Active & Ready for Universal Real-Time Sync`;
       } else {
         if (dot) dot.style.background = '#94a3b8';
         if (text) text.textContent = 'Supabase Status: Not Configured (Using LocalStorage & Serverless Sync)';
@@ -3508,7 +3508,7 @@
       const statOrdersEl = document.getElementById('statTotalOrders');
       if (statOrdersEl) statOrdersEl.textContent = orders.length.toLocaleString();
       const statRevEl = document.getElementById('statRevenueText');
-      if (statRevEl) statRevEl.textContent = 'Ã¢â€šÂ¦' + totalRevenue.toLocaleString() + ' verified revenue';
+      if (statRevEl) statRevEl.textContent = '₦' + totalRevenue.toLocaleString() + ' verified revenue';
       const statDispEl = document.getElementById('statTotalDispatches');
       if (statDispEl) statDispEl.textContent = dispatches.length.toLocaleString();
       const now = new Date();
@@ -3533,7 +3533,7 @@
       document.getElementById('statActiveStudents').textContent = activeCount.toLocaleString();
       document.getElementById('statExpiredStudents').textContent = expiredCount.toLocaleString();
       document.getElementById('statFreeGrants').textContent = freeCount.toLocaleString();
-      document.getElementById('statCertsIssued').textContent = 'â€”';
+      document.getElementById('statCertsIssued').textContent = '—';
       document.getElementById('statCertsIssued').title = 'Open the Certificate Registry tab for the server-backed record list.';
     }
 
@@ -3578,7 +3578,7 @@
               </div>
               <span style="background:${statusBg}; color:${statusColor}; border:1px solid ${statusBorder}; padding:3px 10px; border-radius:20px; font-size:0.74rem; font-weight:800; display:inline-flex; align-items:center; gap:6px;">
                 <span style="width:8px; height:8px; border-radius:50%; background:${dotColor}; display:inline-block;"></span>
-                ${cls.isLive ? 'Ã°Å¸Å¸Â¢ CLASS ON / LIVE' : 'Ã°Å¸â€Â´ STOPPED / OFF'}
+                ${cls.isLive ? 'CLASS ON / LIVE' : 'STOPPED / OFF'}
               </span>
             </div>
 
@@ -3615,7 +3615,7 @@
           <!-- Course Timetable & Mode Info -->
           <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:0.5rem 0.75rem; margin-bottom:0.75rem; font-size:0.76rem;">
             <div style="color:#334155; margin-bottom:2px;"><i class="fas fa-calendar-check" style="color:#0284c7;"></i> <strong>Scheduled Hours (WAT):</strong> ${escapeHtml(cls.scheduleText || 'Weekly Sessions')}</div>
-            <div style="color:#64748b;"><strong>Current Mode:</strong> <span style="font-weight:800; color:${cls.mode === 'auto' ? '#0284c7' : (cls.mode === 'force_on' ? '#15803d' : '#dc2626')};">${cls.mode === 'auto' ? 'â° Auto-Schedule (Timetable)' : (cls.mode === 'force_on' ? 'ðŸŸ¢ Forced ON (Admin Override)' : 'ðŸ”´ Stopped (Admin Override)')}</span></div>
+            <div style="color:#64748b;"><strong>Current Mode:</strong> <span style="font-weight:800; color:${cls.mode === 'auto' ? '#0284c7' : (cls.mode === 'force_on' ? '#15803d' : '#dc2626')};">${cls.mode === 'auto' ? 'Auto-Schedule (Timetable)' : (cls.mode === 'force_on' ? 'Forced ON (Admin Override)' : 'Stopped (Admin Override)')}</span></div>
           </div>
 
           <div style="display:flex; flex-wrap:wrap; gap:5px; padding-top:0.75rem; border-top:1px solid #f1f5f9;">
@@ -3873,7 +3873,7 @@
                     <i class="fas ${icon}"></i> ${l.type}
                   </span>
                 </td>
-                <td style="font-size:0.82rem; font-weight:600; color:#334155;">${escapeHtml(l.duration || 'Ã¢â‚¬â€')}</td>
+                <td style="font-size:0.82rem; font-weight:600; color:#334155;">${escapeHtml(l.duration || '—')}</td>
                 <td style="font-size:0.8rem; color:#64748b;">${escapeHtml(l.reason || 'Normal Session')}</td>
                 <td style="font-size:0.8rem; color:#475569;">${escapeHtml(l.details || '')}</td>
               </tr>
@@ -3992,7 +3992,7 @@
             <td><span style="font-size:0.8rem; color:#64748b;">${s.classEndDate || '2026-06-30'}</span></td>
             <td>
               <strong style="color:${isExpired ? '#dc2626' : '#16a34a'}; font-size:0.82rem;">
-                ${isLifetime ? 'âˆž Lifetime' : (s.expiresAt || 'Active')}
+                ${isLifetime ? '∞ Lifetime' : (s.expiresAt || 'Active')}
               </strong>
             </td>
             <td>${statusBadge}</td>
@@ -4021,7 +4021,7 @@
 
     // 4. Quick Actions
     function grantFreeAccessClick(studentId) {
-      const choice = confirm(`Grant Free Access to student (${studentId})?\n\nÃ¢â‚¬Â¢ Click OK for Free 1-Month Extension\nÃ¢â‚¬Â¢ Click Cancel to abort`);
+      const choice = confirm(`Grant Free Access to student (${studentId})?\n\n• Click OK for Free 1-Month Extension\n• Click Cancel to abort`);
       if (choice) {
         window.GreachDB.grantFreeAccess(studentId, false);
         alert('Free 30-Day Access pass successfully granted!');
@@ -4188,11 +4188,11 @@ Here are your official login credentials and access details:
 
 YOUR UNIQUE CREDENTIALS:
 ------------------------
-Ã¢â‚¬Â¢ Student ID: ${student.id}
-Ã¢â‚¬Â¢ Registered Email: ${student.email}
-Ã¢â‚¬Â¢ Secret Access Password: ${student.password}
-Ã¢â‚¬Â¢ Cohort: ${student.cohort || 'Batch 2: 2026 Masterclass'}
-Ã¢â‚¬Â¢ Access Expiry Date: ${student.expiresAt || 'Lifetime Access'} (1 month after class ends)
+• Student ID: ${student.id}
+• Registered Email: ${student.email}
+• Secret Access Password: ${student.password}
+• Cohort: ${student.cohort || 'Batch 2: 2026 Masterclass'}
+• Access Expiry Date: ${student.expiresAt || 'Lifetime Access'} (1 month after class ends)
 
 INSTANT 1-CLICK CLASSROOM ACCESS:
 https://greachimpact.com/classroom/index.html?id=${student.id}&key=${encodeURIComponent(student.password)}
@@ -4325,12 +4325,12 @@ greachimpact@gmail.com`;
               <span>${escapeHtml(crs.label)}</span>
             </div>
             <div style="display:flex; align-items:baseline; margin:0.8rem 0; gap:8px;">
-              <span class="pricing-slashed" style="color:#94a3b8; text-decoration:line-through; font-size:0.95rem;">Ã¢â€šÂ¦${Number(item.regular).toLocaleString()}</span>
-              <span class="pricing-current" style="color:#0A0A5E; font-size:1.6rem; font-weight:800;">Ã¢â€šÂ¦${Number(item.current).toLocaleString()}</span>
+              <span class="pricing-slashed" style="color:#94a3b8; text-decoration:line-through; font-size:0.95rem;">₦${Number(item.regular).toLocaleString()}</span>
+              <span class="pricing-current" style="color:#0A0A5E; font-size:1.6rem; font-weight:800;">₦${Number(item.current).toLocaleString()}</span>
             </div>
             <div style="display:flex; gap:0.5rem; margin-top:1rem; align-items:center;">
               <div style="position:relative; flex:1;">
-                <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#64748b; font-weight:700;">Ã¢â€šÂ¦</span>
+                <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#64748b; font-weight:700;">₦</span>
                 <input type="number" id="inputPrice_${crs.key}" value="${item.current}" class="form-control" style="padding-left:26px; font-weight:700;" placeholder="New Price" oninput="updateForeignEquivalents('${crs.key}', this.value)" />
               </div>
               <button id="btnSavePrice_${crs.key}" onclick="saveCoursePrice('${crs.key}', this)" class="btn-primary" style="padding:0.6rem 1.1rem; font-size:0.85rem; font-weight:700; white-space:nowrap;">
@@ -4340,9 +4340,9 @@ greachimpact@gmail.com`;
             <!-- Auto-Calculated Dynamic Foreign Currency Equivalents -->
             <div id="foreignEquivContainer_${crs.key}" style="margin-top:0.6rem; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:6px 10px; font-size:0.78rem; color:#475569; display:flex; justify-content:space-between; align-items:center;">
               <span><strong>Foreign Eqv:</strong></span>
-              <span>Â£<span id="equivGbp_${crs.key}">0.00</span></span> â€¢
-              <span>$<span id="equivUsd_${crs.key}">0.00</span></span> â€¢
-              <span>â‚¬<span id="equivEur_${crs.key}">0.00</span></span>
+              <span>£<span id="equivGbp_${crs.key}">0.00</span></span> •
+              <span>$<span id="equivUsd_${crs.key}">0.00</span></span> •
+              <span>€<span id="equivEur_${crs.key}">0.00</span></span>
             </div>
           `;
           container.appendChild(card);
@@ -4356,11 +4356,11 @@ greachimpact@gmail.com`;
       const inp = document.getElementById(`inputPrice_${courseKey}`);
       const val = inp ? inp.value.trim() : '';
       if (!val || Number(val) <= 0) {
-        showToast('Invalid Price', 'Please enter a valid price greater than â‚¦0.', 'error');
+        showToast('Invalid Price', 'Please enter a valid price greater than ₦0.', 'error');
         return;
       }
       const courseDef = CANONICAL_COURSES.find(c => c.key === courseKey) || { label: courseKey };
-      requireSuperAdminAuth(`Update course fee for "${courseDef.label}" to â‚¦${Number(val).toLocaleString()}`, () => {
+      requireSuperAdminAuth(`Update course fee for "${courseDef.label}" to ₦${Number(val).toLocaleString()}`, () => {
         executeSaveCoursePrice(courseKey, btn);
       });
     }
@@ -4376,11 +4376,11 @@ greachimpact@gmail.com`;
         if (window.GreachDB && window.GreachDB.updateCoursePriceAsync) {
           await window.GreachDB.updateCoursePriceAsync(courseKey, val, null, 'Super Admin');
           setButtonLoading(buttonEl, false);
-          showToast('Price Updated Live!', `Fee for ${courseDef.label} set to â‚¦${Number(val).toLocaleString()} in Supabase Cloud!`, 'success');
+          showToast('Price Updated Live!', `Fee for ${courseDef.label} set to ₦${Number(val).toLocaleString()} in Supabase Cloud!`, 'success');
         } else if (window.GreachDB) {
           window.GreachDB.updateCoursePrice(courseKey, val);
           setButtonLoading(buttonEl, false);
-          showToast('Price Updated', `Fee for ${courseDef.label} updated to â‚¦${Number(val).toLocaleString()}`, 'success');
+          showToast('Price Updated', `Fee for ${courseDef.label} updated to ₦${Number(val).toLocaleString()}`, 'success');
         }
         renderPricingCards();
       } catch(err) {
@@ -4409,7 +4409,7 @@ greachimpact@gmail.com`;
       if (!tbody) return;
       tbody.replaceChildren();
       const waiting = document.createElement('tr'), message = document.createElement('td');
-      message.colSpan = 6; message.textContent = 'Loading central certificate registryâ€¦'; waiting.appendChild(message); tbody.appendChild(waiting);
+      message.colSpan = 6; message.textContent = 'Loading central certificate registry…'; waiting.appendChild(message); tbody.appendChild(waiting);
       try {
         const response = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json', ...(currentAdminSession?.token ? { Authorization: `Bearer ${currentAdminSession.token}` } : {}) }, body: JSON.stringify({ action: 'list_certificate_registry' }) });
         const result = await response.json();
@@ -4420,7 +4420,7 @@ greachimpact@gmail.com`;
         if (!records.length) { const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=6;td.textContent='No matching central registry records.';tr.appendChild(td);tbody.appendChild(tr);return; }
         for (const cert of records) {
           const tr=document.createElement('tr');
-          for (const value of [cert.certificateId,cert.studentName,cert.courseName,cert.issuedDate,cert.status]) { const td=document.createElement('td');td.textContent=value || 'â€”';tr.appendChild(td); }
+          for (const value of [cert.certificateId,cert.studentName,cert.courseName,cert.issuedDate,cert.status]) { const td=document.createElement('td');td.textContent=value || '—';tr.appendChild(td); }
           const actions=document.createElement('td'),verify=document.createElement('a'),manage=document.createElement('a');
           verify.href=cert.verificationUrl;verify.target='_blank';verify.rel='noopener noreferrer';verify.textContent='Verify';
           manage.href=`classroom/certificate-review.html?certificateId=${encodeURIComponent(cert.certificateId)}`;manage.textContent='Manage';manage.style.marginLeft='.75rem';
@@ -4610,10 +4610,10 @@ greachimpact@gmail.com`;
     function formatCurrencyDisplay(amount, currency) {
       const num = Number(amount || 0).toLocaleString();
       const curr = (currency || 'NGN').toUpperCase();
-      if (curr === 'GBP') return 'Â£' + num + ' (GBP)';
+      if (curr === 'GBP') return '£' + num + ' (GBP)';
       if (curr === 'USD') return '$' + num + ' (USD)';
-      if (curr === 'EUR') return 'â‚¬' + num + ' (EUR)';
-      return 'â‚¦' + num + ' (NGN)';
+      if (curr === 'EUR') return '€' + num + ' (EUR)';
+      return '₦' + num + ' (NGN)';
     }
 
     async function fetchOrdersFromBackend() {
@@ -4654,11 +4654,11 @@ greachimpact@gmail.com`;
               const pUsd = document.getElementById('poolUsdDisplay');
               const pEur = document.getElementById('poolEurDisplay');
               const pCons = document.getElementById('consolidatedNgnDisplay');
-              if (pNgn) pNgn.textContent = 'â‚¦' + Number(data.revenuePools.NGN || 0).toLocaleString();
-              if (pGbp) pGbp.textContent = 'Â£' + Number(data.revenuePools.GBP || 0).toFixed(2);
+              if (pNgn) pNgn.textContent = '₦' + Number(data.revenuePools.NGN || 0).toLocaleString();
+              if (pGbp) pGbp.textContent = '£' + Number(data.revenuePools.GBP || 0).toFixed(2);
               if (pUsd) pUsd.textContent = '$' + Number(data.revenuePools.USD || 0).toFixed(2);
-              if (pEur) pEur.textContent = 'â‚¬' + Number(data.revenuePools.EUR || 0).toFixed(2);
-              if (pCons) pCons.textContent = 'â‚¦' + Number(data.consolidatedNgnRevenue || 0).toLocaleString();
+              if (pEur) pEur.textContent = '€' + Number(data.revenuePools.EUR || 0).toFixed(2);
+              if (pCons) pCons.textContent = '₦' + Number(data.consolidatedNgnRevenue || 0).toLocaleString();
             }
             return cachedApiOrders;
           }
@@ -4756,7 +4756,7 @@ greachimpact@gmail.com`;
             <strong style="color:var(--green-600); font-size:1.02rem;">${escapeHtml(formattedAmount)}</strong>
             ${o.exchangeRate && o.currency !== 'NGN' ? `
               <div style="font-size:0.72rem; color:#64748b; margin-top:2px;" title="Snapshot from ${escapeHtml(o.rateProvider || 'Live')}">
-                Rate: ${Number(o.exchangeRate).toFixed(6)} â€¢ Master: â‚¦${Number(o.originalMasterNgn || 0).toLocaleString()}
+                Rate: ${Number(o.exchangeRate).toFixed(6)} • Master: ₦${Number(o.originalMasterNgn || 0).toLocaleString()}
               </div>` : ''}
           </td>
           <td>
