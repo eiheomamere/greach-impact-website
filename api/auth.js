@@ -2416,22 +2416,37 @@ export default async function handler(req, res) {
           if (!data || !data.code || typeof data.code !== 'string' || data.code.length < 4 || (data.max_uses && Number(data.max_uses) < 1)) {
             return res.status(400).json({ success: false, error: 'Invalid access pass parameters.' });
           }
+          const isSessPass = !!data.is_session_pass;
+          const insertRecord = {
+            code: data.code.trim().toUpperCase(),
+            label: data.label || 'Access Pass',
+            course_name: data.course_name,
+            max_uses: Number(data.max_uses) || (isSessPass ? 500 : 1),
+            times_used: 0,
+            is_session_pass: isSessPass,
+            is_active: true
+          };
+          if (data.cohort && typeof data.cohort === 'string') {
+            insertRecord.cohort = data.cohort.trim();
+          }
+          if (data.student_email && typeof data.student_email === 'string') {
+            insertRecord.student_email = data.student_email.trim().toLowerCase();
+          }
+          if (data.student_id && typeof data.student_id === 'string') {
+            insertRecord.student_id = data.student_id.trim();
+          }
+          if (data.expires_at && typeof data.expires_at === 'string') {
+            insertRecord.expires_at = data.expires_at;
+          }
           const cRes = await fetch(`${SUPABASE_URL}/rest/v1/access_codes`, {
             method: 'POST',
             headers: {
               'apikey': SUPABASE_SERVICE_ROLE_KEY,
               'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'Prefer': 'resolution=merge-duplicates'
             },
-            body: JSON.stringify({
-              code: data.code.trim().toUpperCase(),
-              label: data.label || 'Access Pass',
-              course_name: data.course_name,
-              max_uses: Number(data.max_uses) || 1,
-              times_used: 0,
-              is_session_pass: !!data.is_session_pass,
-              is_active: true
-            })
+            body: JSON.stringify(insertRecord)
           });
           return res.status(cRes.ok ? 200 : cRes.status).json({ success: cRes.ok });
         }

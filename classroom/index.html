@@ -4,6 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Course Hub &amp; Launchpad · Microsoft Excel Masterclass</title>
+  <script>
+    if (window.location.pathname === '/classroom') {
+      var classroomBase = document.createElement('base');
+      classroomBase.setAttribute('href', window.location.origin + '/classroom/');
+      document.head.appendChild(classroomBase);
+    }
+  </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     :root {
@@ -1314,8 +1321,10 @@
         const courseName = s.course || 'Microsoft Excel for Beginners';
         const courseKey = window.GreachDB ? window.GreachDB.normalizeCourseKey(s.courseKey || s.course) : 'excel_beginners';
 
-        // Check if Classroom is in scheduled hours or forced ON (unless user is Instructor/Super Admin)
-        if (!verifyRes.isInstructor && window.GreachDB && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen(courseKey)) {
+        const isSessionPass = !!(verifyRes.isSessionPass || code.toUpperCase().startsWith('LIVE-') || code.toUpperCase().startsWith('PAS-'));
+
+        // Check if Classroom is in scheduled hours or forced ON (unless user is Instructor/Super Admin or holds an active Live Session Pass)
+        if (!verifyRes.isInstructor && !isSessionPass && window.GreachDB && window.GreachDB.isClassroomOpen && !window.GreachDB.isClassroomOpen(courseKey)) {
           if (errBox && errText) {
             errBox.style.background = '#fef2f2';
             errBox.style.color = '#991b1b';
@@ -1326,7 +1335,6 @@
           return;
         }
 
-        const isSessionPass = !!(verifyRes.isSessionPass || code.toUpperCase().startsWith('LIVE-') || code.toUpperCase().startsWith('PAS-'));
         const isInstructor = false;
 
         const session = {
@@ -1382,7 +1390,8 @@
           }).catch(() => {});
         } catch(e) {}
 
-        const targetUrl = window.GreachDB && window.GreachDB.getCourseClassroomUrl ? window.GreachDB.getCourseClassroomUrl(courseKey) : 'Excel_Master_Course_Hub.html';
+        const rawTargetUrl = window.GreachDB && window.GreachDB.getCourseClassroomUrl ? window.GreachDB.getCourseClassroomUrl(courseKey) : 'Excel_Master_Course_Hub.html';
+        const targetUrl = new URL(rawTargetUrl, window.location.origin + '/classroom/').href;
         if (errBox && errText) {
           errBox.style.display = 'block';
           errBox.style.background = '#dcfce7';

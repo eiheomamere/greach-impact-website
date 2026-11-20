@@ -2454,26 +2454,19 @@
         }
       }
 
-      // Immediately sync Access Code to Supabase Cloud Database
-      const sbCfg = getSupabaseConfig();
-      if (sbCfg && sbCfg.url && sbCfg.key) {
-        fetch(`${sbCfg.url}/rest/v1/access_codes`, {
-          method: 'POST',
-          headers: { 'apikey': sbCfg.key, 'Authorization': `Bearer ${sbCfg.key}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
-          body: JSON.stringify([{
+      // Immediately sync Access Code to Supabase Cloud Database via hardened server-side Super Admin API
+      const cloudCodeRes = (window.GreachDB && window.GreachDB.callAdminApi)
+        ? await window.GreachDB.callAdminApi('create_access_pass', {
             code: code,
             label: studentName ? `Pass - ${studentName}` : (type === 'session_pass' ? 'Live Class Session Pass' : `Course Code (${course})`),
             course_name: course,
             cohort: 'Batch 2: 2026 Masterclass',
             student_email: studentEmail || null,
-            is_session_pass: type === 'session_pass',
-            is_active: true,
             expires_at: expiresAt,
-            created_by: currentAdminSession ? currentAdminSession.username : 'Super Admin'
-          }])
-        }).then(() => console.log('[Cloud DB] Access code synced to Supabase:', code))
-          .catch(err => console.warn('[Cloud DB] Code sync error:', err));
-      }
+            max_uses: type === 'session_pass' ? 500 : 10,
+            is_session_pass: type === 'session_pass'
+          })
+        : { success: false, error: 'Admin API unavailable' };
 
       // Store in state and display result
       lastGeneratedCodeData = {
@@ -2485,11 +2478,15 @@
       };
 
       document.getElementById('ucGeneratedCodeDisplay').textContent = code;
-      document.getElementById('ucGeneratedDetails').textContent = `Course: ${course} Ã¢â‚¬Â¢ Valid for: ${expText}` + (studentName ? ` Ã¢â‚¬Â¢ Student: ${studentName}` : '');
+      document.getElementById('ucGeneratedDetails').textContent = `Course: ${course} • Valid for: ${expText}` + (studentName ? ` • Student: ${studentName}` : '');
       document.getElementById('ucResultBox').style.display = 'block';
 
       setButtonLoading(submitBtn, false);
-      showToast('Code Created in Cloud DB!', `Generated ${code} (${entityId})`, 'success');
+      if (cloudCodeRes && cloudCodeRes.success) {
+        showToast('Code Created in Cloud DB!', `Generated ${code} (${entityId})`, 'success');
+      } else {
+        showToast('Cloud Sync Warning', `Code ${code} created locally, but cloud sync failed: ${(cloudCodeRes && cloudCodeRes.error) || 'Please verify Super Admin session.'}`, 'warning');
+      }
 
       // Refresh background tables
       renderStats();
@@ -5223,7 +5220,7 @@ greachimpact@gmail.com`;
       const course = document.getElementById('spCourse') ? document.getElementById('spCourse').value : 'Microsoft Excel for Beginners';
       const durationHours = parseFloat(document.getElementById('spDuration').value);
 
-      const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
+      const currentUser = currentAdminSession ? (currentAdminSession.username || currentAdminSession.user || 'Super Admin') : 'Super Admin';
       const pass = window.GreachDB.createSessionPass({
         label: label,
         customCode: customCode || null,
@@ -5232,9 +5229,24 @@ greachimpact@gmail.com`;
         durationHours: durationHours
       }, currentUser);
 
+      // Persist authoritatively via server-side Super Admin API (service_role)
+      const cloudRes = await window.GreachDB.callAdminApi('create_access_pass', {
+        code: pass.code,
+        label: pass.label,
+        course_name: pass.course,
+        cohort: pass.cohort,
+        expires_at: pass.expiresAt,
+        max_uses: 500,
+        is_session_pass: true
+      });
+
       setButtonLoading(submitBtn, false);
       closeSessionPassModal();
-      showToast('Live Pass Generated!', `Pass code ${pass.code} active in Supabase Cloud!`, 'success');
+      if (cloudRes && cloudRes.success) {
+        showToast('Live Pass Generated!', `Pass code ${pass.code} is active in Supabase Cloud!`, 'success');
+      } else {
+        showToast('Cloud Sync Warning', `Pass ${pass.code} saved locally, but cloud sync failed: ${(cloudRes && cloudRes.error) || 'Verify Super Admin session.'}`, 'warning');
+      }
       await renderSessionPassesTable();
     }
 
@@ -5321,6 +5333,7 @@ greachimpact@gmail.com`;
       const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
       try {
         window.GreachDB.expireSessionPass(code, currentUser);
+        await window.GreachDB.callAdminApi('revoke_access_pass', { code: String(code).trim().toUpperCase() });
         showToast('Pass Revoked', `Pass ${code} is now revoked across all classrooms and Cloud DB.`, 'warning');
         await renderSessionPassesTable();
         if (typeof renderStudentActivity === 'function') renderStudentActivity();
@@ -5341,6 +5354,7 @@ greachimpact@gmail.com`;
       const currentUser = currentAdminSession ? currentAdminSession.user : 'Super Admin';
       try {
         window.GreachDB.deleteSessionPass(code, currentUser);
+        await window.GreachDB.callAdminApi('delete_access_pass', { code: String(code).trim().toUpperCase() });
         showToast('Pass Deleted', `Pass ${code} removed from database.`, 'info');
         await renderSessionPassesTable();
       } finally {

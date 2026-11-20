@@ -247,6 +247,13 @@
     if (!resolvedEnv && typeof window !== 'undefined' && window.location) {
       const host = (window.location.hostname || '').toLowerCase().trim();
       if (
+        host === 'greachimpact.com' ||
+        host === 'www.greachimpact.com' ||
+        host === 'academy.greachimpact.com' ||
+        host === 'greach-impact-website.vercel.app'
+      ) {
+        resolvedEnv = 'production';
+      } else if (
         host.includes('staging') ||
         host.includes('preview') ||
         host === 'localhost' ||
@@ -254,12 +261,6 @@
         host.endsWith('.vercel.app')
       ) {
         resolvedEnv = 'staging';
-      } else if (
-        host === 'greachimpact.com' ||
-        host === 'www.greachimpact.com' ||
-        host === 'academy.greachimpact.com'
-      ) {
-        resolvedEnv = 'production';
       }
     }
 
@@ -822,7 +823,8 @@
         const passes = this.getAllSessionPasses ? this.getAllSessionPasses() : [];
         const match = passes.find(p => p.code && p.code.toUpperCase() === clean);
         if (match && match.isActive === false) return true;
-        if (this.isSessionTerminated && (this.isSessionTerminated(clean) || this.isSessionTerminated('PASS-' + clean))) return true;
+        if (localStorage.getItem('greach_terminated_' + clean)) return true;
+        if (localStorage.getItem('greach_terminated_PASS-' + clean)) return true;
       } catch(e) {}
       return false;
     },
@@ -1834,10 +1836,12 @@
       if (!studentId) return false;
       try {
         const clean = String(studentId).trim();
+        const stripped = clean.replace(/^PASS-/i, '').toUpperCase();
         if (localStorage.getItem('greach_terminated_' + clean)) return true;
         if (clean.startsWith('PASS-') && localStorage.getItem('greach_terminated_' + clean.replace(/^PASS-/, ''))) return true;
         if (!clean.startsWith('PASS-') && localStorage.getItem('greach_terminated_PASS-' + clean)) return true;
-        if (this.isCodeRevoked && this.isCodeRevoked(clean.replace(/^PASS-/, ''))) return true;
+        const revoked = JSON.parse(localStorage.getItem('greach_revoked_codes_v1') || '[]');
+        if (revoked.includes(stripped)) return true;
       } catch(e) {}
       return false;
     },
