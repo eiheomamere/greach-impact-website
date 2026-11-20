@@ -197,7 +197,7 @@ export default async function handler(req, res) {
 
   try {
     const { student, type, amount, currency, reference, reason } = req.body || {};
-    const maintenanceActions = new Set(['retry_failed', 'reconcile_pending', 'test_connection']);
+    const maintenanceActions = new Set(['retry_failed', 'reconcile_pending', 'test_connection', 'list_notifications', 'preview_templates']);
     const emailTypes = new Set([
       'registration_ack',
       'payment_pending',
@@ -231,6 +231,111 @@ export default async function handler(req, res) {
     );
     if (adminOnlyAction && !(await verifySuperAdminSession(req))) {
       return res.status(403).json({ success: false, error: 'Super Admin authorization with verified TOTP MFA is required.' });
+    }
+
+    if (type === 'list_notifications' || req.body?.action === 'list_notifications') {
+      const limit = Math.min(Math.max(Number(req.body?.limit) || 100, 1), 200);
+      const listRes = await callSupabaseDb(
+        `email_notifications?order=created_at.desc&limit=${limit}&select=id,notification_type,recipient_email,recipient_name,order_reference,student_id,status,provider_message_id,error_message,retry_count,created_at,sent_at,updated_at`
+      );
+      if (!listRes.ok) {
+        return res.status(503).json({ success: false, error: 'Could not load email delivery logs from database.' });
+      }
+      const notifications = await listRes.json();
+      const rows = Array.isArray(notifications) ? notifications : [];
+      const summary = {
+        total: rows.length,
+        sent: rows.filter(r => r.status === 'sent').length,
+        pending: rows.filter(r => r.status === 'pending' || r.status === 'retrying').length,
+        failed: rows.filter(r => r.status === 'failed').length,
+        requires_reconciliation: rows.filter(r => r.status === 'requires_reconciliation').length
+      };
+      return res.status(200).json({
+        success: true,
+        configured: Boolean(brevoApiKey),
+        sender: senderObj,
+        summary,
+        notifications: rows
+      });
+    }
+
+    if (type === 'preview_templates' || req.body?.action === 'preview_templates') {
+      const previewCurr = ['NGN', 'GBP', 'USD', 'EUR'].includes(String(currency || 'NGN').toUpperCase())
+        ? String(currency || 'NGN').toUpperCase()
+        : 'NGN';
+      const sampleAmount = previewCurr === 'NGN' ? 3000 : (previewCurr === 'GBP' ? 2.5 : (previewCurr === 'USD' ? 3.2 : 2.9));
+      let sampleBank = '';
+      if (previewCurr === 'GBP') {
+        sampleBank = '&bull; Bank Name: <strong>Zenith Bank</strong><br>&bull; Account Name: <strong>Emmanuel Iheomamere</strong><br>&bull; Account Number: <strong>5061817204</strong><br>&bull; Currency: <strong>British Pounds (GBP - £)</strong>';
+      } else if (previewCurr === 'USD') {
+        sampleBank = '&bull; Bank Name: <strong>Zenith Bank</strong><br>&bull; Account Name: <strong>Emmanuel Iheomamere</strong><br>&bull; Account Number: <strong>5076088703</strong><br>&bull; Currency: <strong>US Dollars (USD - $)</strong>';
+      } else if (previewCurr === 'EUR') {
+        sampleBank = '&bull; Bank Name: <strong>Zenith Bank</strong><br>&bull; Account Name: <strong>Emmanuel Iheomamere</strong><br>&bull; Account Number: <strong>5081531366</strong><br>&bull; Currency: <strong>Euros (EUR - €)</strong>';
+      } else {
+        sampleBank = '&bull; Bank Name: <strong>Guaranty Trust Bank (GTBank)</strong><br>&bull; Account Name: <strong>Greach Impact</strong><br>&bull; Account Number: <strong>0763012051</strong><br>&bull; Currency: <strong>Nigerian Naira (NGN - ₦)</strong>';
+      }
+      const sampleName = 'Adaeze Okafor (Sample Student)';
+      const sampleCourse = 'Microsoft Excel for Beginners';
+      const sampleCohort = 'Batch 2: 2026 Masterclass';
+      const sampleRef = 'GIA-2026-SAMPLE01';
+      const sampleCode = 'GRX-4821-MK';
+      const adminPortalUrl = 'https://greach-impact-website.vercel.app/admin.html';
+
+      const templates = [
+        {
+          type: 'registration_ack',
+          title: 'Registration Received',
+          trigger: 'Automatic immediately when a student submits the registration form',
+          needsApproval: false,
+          recipient: 'Student Email',
+          subject: `Registration Received – ${sampleCourse} (${sampleCohort})`,
+          html: `<div style="font-family:Segoe UI,Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;color:#1e293b;"><div style="text-align:center;border-bottom:2px solid #0A0A5E;padding-bottom:14px;margin-bottom:18px;"><h2 style="margin:0;color:#0A0A5E;">GREACH IMPACT ACADEMY</h2><p style="margin:4px 0 0;color:#64748b;font-size:13px;">Executive Workplace Excellence</p></div><h3>Dear ${sampleName},</h3><p>Your registration for <strong>${sampleCourse}</strong> has been successfully received and recorded in our admissions database.</p><div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:8px;padding:14px;margin:16px 0;"><p style="margin:4px 0;"><strong>Student:</strong> ${sampleName}</p><p style="margin:4px 0;"><strong>Course:</strong> ${sampleCourse}</p><p style="margin:4px 0;"><strong>Cohort:</strong> ${sampleCohort}</p><p style="margin:4px 0;"><strong>Amount Payable:</strong> ${previewCurr} ${sampleAmount.toLocaleString()}</p></div><div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:14px;margin:16px 0;"><h4 style="margin:0 0 8px;color:#92400e;">Next Step: Complete Bank Transfer</h4><div style="background:#fff;border:1px solid #fed7aa;border-radius:8px;padding:12px;line-height:1.6;">${sampleBank}<br>&bull; Reference / Description: <strong>${sampleRef}</strong></div></div><p style="font-size:13px;">After sending your transfer, return to the registration portal to submit your transfer reference and receipt for verification.</p></div>`
+        },
+        {
+          type: 'payment_pending',
+          title: 'Payment Transfer Instructions',
+          trigger: 'Automatic when a student creates a bank transfer order',
+          needsApproval: false,
+          recipient: 'Student Email',
+          subject: `Payment Instructions – ${sampleCourse} (${previewCurr})`,
+          html: `<div style="font-family:Segoe UI,Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;color:#1e293b;"><div style="text-align:center;border-bottom:2px solid #0A0A5E;padding-bottom:14px;margin-bottom:18px;"><h2 style="margin:0;color:#0A0A5E;">GREACH IMPACT ACADEMY</h2><p style="margin:4px 0 0;color:#64748b;font-size:13px;">Learn. Practice. Grow.</p></div><h3>Dear ${sampleName},</h3><p>Thank you for registering for <strong>${sampleCourse}</strong> (${sampleCohort}). Please find the official manual bank transfer details below:</p><div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px;margin:16px 0;"><div style="font-size:22px;font-weight:800;color:#107C41;margin-bottom:10px;">${previewCurr} ${sampleAmount.toLocaleString()}</div><div style="background:#fff;border:1px solid #fed7aa;border-radius:8px;padding:12px;line-height:1.6;">${sampleBank}<br>&bull; Payment Reference: <strong>${sampleRef}</strong></div></div><p style="font-size:12px;color:#64748b;background:#f1f5f9;padding:10px;border-radius:6px;"><strong>Verification Note:</strong> Your official Classroom Access Code will be dispatched to this email address immediately upon review and confirmation by our admissions team.</p></div>`
+        },
+        {
+          type: 'admin_payment_alert',
+          title: 'Admin Bank Transfer Alert',
+          trigger: 'Automatic when a student submits payment proof / transfer confirmation',
+          needsApproval: false,
+          recipient: senderObj.email,
+          subject: `[Manual Bank Transfer] Verification Required for ${sampleName}`,
+          html: `<div style="font-family:Segoe UI,Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;color:#1e293b;"><h3>New Manual Bank Transfer Confirmation</h3><p>A student has submitted a manual bank transfer confirmation:</p><ul><li><strong>Student Name:</strong> ${sampleName}</li><li><strong>Email:</strong> student@example.com</li><li><strong>Course:</strong> ${sampleCourse}</li><li><strong>Amount:</strong> ${previewCurr} ${sampleAmount.toLocaleString()}</li><li><strong>Reference:</strong> ${sampleRef}</li></ul><p><a href="${adminPortalUrl}" style="color:#0284c7;font-weight:700;">Open Admin Console to Verify &rarr;</a></p></div>`
+        },
+        {
+          type: 'payment_confirmed',
+          title: 'Payment Confirmed & Access Code',
+          trigger: 'Sent immediately after you click Confirm Payment in Orders & Payments',
+          needsApproval: true,
+          recipient: 'Student Email',
+          subject: `Payment Confirmed – Course Access Activated for ${sampleCourse}`,
+          html: `<div style="font-family:Segoe UI,Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;color:#1e293b;"><div style="text-align:center;border-bottom:2px solid #0A0A5E;padding-bottom:14px;margin-bottom:18px;"><h2 style="margin:0;color:#0A0A5E;">GREACH IMPACT ACADEMY</h2><p style="margin:4px 0 0;color:#64748b;font-size:13px;">Executive Workplace Excellence</p></div><h3>Dear ${sampleName},</h3><p>Your bank transfer has been <strong>verified and confirmed</strong> by our admissions team! Your enrollment in <strong>${sampleCourse}</strong> is now officially active.</p><div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:8px;padding:16px;margin:16px 0;"><h4 style="margin:0 0 10px;color:#0A0A5E;">Your Unique Classroom Credentials:</h4><p style="margin:4px 0;"><strong>Student ID:</strong> STU-2026-0042</p><p style="margin:4px 0;"><strong>Access Code:</strong> <span style="color:#107C41;font-family:monospace;font-size:18px;font-weight:800;">${sampleCode}</span></p><p style="margin:4px 0;"><strong>Access Validity:</strong> 2 Months Access</p></div><div style="text-align:center;"><span style="display:inline-block;background:#107C41;color:#fff;font-weight:700;padding:12px 24px;border-radius:30px;">Enter Classroom Portal</span></div></div>`
+        },
+        {
+          type: 'payment_rejected',
+          title: 'Payment Verification Notice (Rejected)',
+          trigger: 'Sent if you reject a transfer in Orders & Payments',
+          needsApproval: true,
+          recipient: 'Student Email',
+          subject: `Payment Verification Update – ${sampleCourse}`,
+          html: `<div style="font-family:Segoe UI,Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;color:#1e293b;"><div style="text-align:center;border-bottom:2px solid #dc2626;padding-bottom:14px;margin-bottom:18px;"><h2 style="margin:0;color:#0A0A5E;">GREACH IMPACT ACADEMY</h2><p style="margin:4px 0 0;color:#64748b;font-size:13px;">Admissions &amp; Verification Team</p></div><h3>Dear ${sampleName},</h3><p>We are writing to provide an update regarding your payment submission for <strong>${sampleCourse}</strong>.</p><div style="background:#fef2f2;border-left:4px solid #dc2626;border-radius:8px;padding:14px;margin:16px 0;color:#7f1d1d;"><strong>Payment Verification Notice:</strong><br>The submitted transaction reference could not be matched with our bank statement.</div><p style="font-size:13px;">If you have already been debited, please send your bank payment receipt on WhatsApp or reply to this email so we can manually trace your transfer.</p></div>`
+        }
+      ];
+
+      return res.status(200).json({
+        success: true,
+        configured: Boolean(brevoApiKey),
+        sender: senderObj,
+        currency: previewCurr,
+        templates
+      });
     }
 
     if (type === 'test_connection' || req.body?.action === 'test_connection') {
@@ -821,7 +926,7 @@ export default async function handler(req, res) {
           <li><strong>Amount:</strong> ${curr} ${Number(amount || 0).toLocaleString()}</li>
           <li><strong>Reference:</strong> ${safeAlertReference}</li>
         </ul>
-        <p><a href="https://greachimpact.com/admin.html">Open Admin Console to Verify &rarr;</a></p>
+        <p><a href="https://greach-impact-website.vercel.app/admin.html">Open Admin Console to Verify &rarr;</a></p>
       `;
     }
 
