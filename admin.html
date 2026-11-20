@@ -2863,16 +2863,22 @@
       if (!rawQr || typeof rawQr !== 'string') return '';
       const trimmed = rawQr.trim();
       if (trimmed.startsWith('data:image/svg+xml;base64,')) return trimmed;
-      if (trimmed.startsWith('data:image/svg+xml')) {
-        const commaIdx = trimmed.indexOf(',');
+      let candidate = trimmed;
+      if (candidate.startsWith('data:image/svg+xml')) {
+        const commaIdx = candidate.indexOf(',');
         if (commaIdx !== -1) {
-          const payload = trimmed.slice(commaIdx + 1);
-          const svgText = payload.startsWith('<') ? payload : decodeURIComponent(payload);
-          return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgText);
+          const payload = candidate.slice(commaIdx + 1).trim();
+          if (payload.includes('<svg')) {
+            candidate = payload;
+          } else {
+            try { candidate = decodeURIComponent(payload); } catch (e) { candidate = payload; }
+          }
         }
       }
-      if (trimmed.startsWith('<svg')) {
-        return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(trimmed);
+      const svgIdx = candidate.indexOf('<svg');
+      if (svgIdx !== -1) {
+        const svgOnly = candidate.slice(svgIdx).trim();
+        return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgOnly);
       }
       return '';
     }
