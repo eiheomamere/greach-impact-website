@@ -503,16 +503,6 @@
     @keyframes slideInRight { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
   
   </style>
-  <script>
-    try {
-      if (sessionStorage.getItem('greach_admin_auth_v2') || localStorage.getItem('greach_admin_auth_v2')) {
-        document.documentElement.classList.add('admin-pre-authed');
-      }
-    } catch(e) {}
-  </script>
-  <style>
-    .admin-pre-authed #adminAuthOverlay { display: none !important; }
-  </style>
 </head>
 <body>
 
@@ -595,6 +585,49 @@
         <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.8rem; background:#059669;">
           <i class="fas fa-save"></i> Save New Password
         </button>
+      </form>
+
+      <!-- Compulsory Super Admin 2FA Setup Form (TOTP Authenticator Enrollment) -->
+      <form id="adminMfaSetupForm" onsubmit="handleAdminMfaActivate(event)" style="display:none; text-align:left;">
+        <p style="font-size:0.83rem; color:#1e3a8a; background:#eff6ff; border-left:4px solid #0284c7; padding:0.65rem; border-radius:6px; margin-bottom:0.9rem;">
+          <i class="fas fa-mobile-alt"></i> <strong>Two-Factor Authentication Required.</strong> Scan this QR code with Google Authenticator, Microsoft Authenticator, or Authy, then enter the 6-digit code below.
+        </p>
+        <div style="text-align:center; margin-bottom:0.85rem;">
+          <img id="adminMfaQrImg" alt="Authenticator QR Code" style="display:none; width:190px; height:190px; margin:0 auto; border:1px solid #e2e8f0; border-radius:10px; padding:6px; background:#ffffff;" />
+        </div>
+        <div class="form-group" style="margin-bottom:0.85rem;">
+          <label style="font-size:0.78rem;"><i class="fas fa-key"></i> Manual Setup Key (if you cannot scan QR):</label>
+          <input type="text" id="adminMfaManualSecret" class="form-control" readonly style="font-family:monospace; font-size:0.82rem; background:#f8fafc; letter-spacing:1px;" />
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-shield-alt"></i> 6-Digit Authenticator Code:</label>
+          <input type="text" id="adminMfaSetupCode" class="form-control" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="000000" autocomplete="one-time-code" required style="font-family:monospace; font-size:1.15rem; letter-spacing:4px; text-align:center;" />
+        </div>
+        <div id="adminMfaSetupMsg" style="display:none; padding:0.65rem; border-radius:6px; font-size:0.82rem; margin-bottom:0.9rem;"></div>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.8rem; background:#059669;">
+          <i class="fas fa-check-circle"></i> Verify &amp; Activate 2FA
+        </button>
+        <div style="margin-top:0.8rem; text-align:center;">
+          <button type="button" onclick="showAdminAuthView('login')" style="background:none; border:none; color:#64748b; font-size:0.82rem; cursor:pointer;">&larr; Cancel &amp; Back to Sign In</button>
+        </div>
+      </form>
+
+      <!-- Two-Factor Authentication Verification Form -->
+      <form id="adminMfaChallengeForm" onsubmit="handleAdminMfaChallengeSubmit(event)" style="display:none; text-align:left;">
+        <p id="adminMfaChallengeHint" style="font-size:0.84rem; color:#1e3a8a; background:#eff6ff; border-left:4px solid #0284c7; padding:0.65rem; border-radius:6px; margin-bottom:1rem;">
+          <i class="fas fa-shield-alt"></i> Enter the 6-digit code from your authenticator app to complete sign-in.
+        </p>
+        <div class="form-group">
+          <label><i class="fas fa-lock"></i> 6-Digit Authenticator Code:</label>
+          <input type="text" id="adminMfaChallengeCode" class="form-control" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="000000" autocomplete="one-time-code" required style="font-family:monospace; font-size:1.2rem; letter-spacing:4px; text-align:center;" />
+        </div>
+        <div id="adminMfaChallengeMsg" style="display:none; padding:0.65rem; border-radius:6px; font-size:0.82rem; margin-bottom:1rem;"></div>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.85rem; background:linear-gradient(135deg, #0a192f, #1b365d);">
+          <i class="fas fa-sign-in-alt"></i> Verify &amp; Enter Console
+        </button>
+        <div style="margin-top:0.8rem; text-align:center;">
+          <button type="button" onclick="showAdminAuthView('login')" style="background:none; border:none; color:#64748b; font-size:0.82rem; cursor:pointer;">&larr; Back to Sign In</button>
+        </div>
       </form>
     </div>
   </div>
@@ -2739,11 +2772,17 @@
 
     // 1. Check Authentication on Load
     async function checkAdminAuth() {
+      const overlay = document.getElementById('adminAuthOverlay');
+      if (pendingRecoveryAccessToken) {
+        showAdminAuthView('recovery');
+        return;
+      }
       const stored = sessionStorage.getItem(ADMIN_SESSION_KEY) || localStorage.getItem(ADMIN_SESSION_KEY);
       if (!stored) {
-        document.getElementById('adminAuthOverlay').classList.remove('unlocked');
-        const overlay = document.getElementById('adminAuthOverlay');
-        if (overlay) overlay.style.display = 'flex';
+        if (overlay) {
+          overlay.classList.remove('unlocked');
+          overlay.style.display = 'flex';
+        }
         return;
       }
 
@@ -2767,7 +2806,7 @@
               role: verified.role,
               isSuper: !!verified.isSuper,
               token: parsed.token,
-              csrfToken: parsed.csrfToken || '',
+              csrfToken: verified.csrfToken || parsed.csrfToken || '',
               expiresAt: verified.expiresAt
             };
             sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(currentAdminSession));
@@ -2784,18 +2823,23 @@
       sessionStorage.removeItem(ADMIN_SESSION_KEY);
       localStorage.removeItem(ADMIN_SESSION_KEY);
       currentAdminSession = null;
-      document.getElementById('adminAuthOverlay').classList.remove('unlocked');
-      const overlay = document.getElementById('adminAuthOverlay');
-      if (overlay) overlay.style.display = 'flex';
+      if (overlay) {
+        overlay.classList.remove('unlocked');
+        overlay.style.display = 'flex';
+      }
     }
 
     function unlockAdminConsole() {
-      document.getElementById('adminAuthOverlay').classList.add('unlocked');
+      const overlay = document.getElementById('adminAuthOverlay');
+      if (overlay) {
+        overlay.classList.add('unlocked');
+        overlay.style.display = 'none';
+      }
       const badge = document.getElementById('adminRoleBadge');
       const greet = document.getElementById('adminUserGreeting');
       if (currentAdminSession) {
         badge.innerHTML = currentAdminSession.isSuper ? '<i class="fas fa-crown"></i> Super Admin' : '<i class="fas fa-user-shield"></i> Sub-Admin';
-        greet.textContent = `Logged in as: ${currentAdminSession.username} â€¢ ${currentAdminSession.isSuper ? 'Global Superuser Access' : 'Delegated Admin'}`;
+        greet.textContent = `Logged in as: ${currentAdminSession.username} • ${currentAdminSession.isSuper ? 'Global Superuser Access' : 'Delegated Admin'}`;
       }
       if (badge) {
         badge.style.cursor = 'pointer';
@@ -2812,6 +2856,254 @@
       refreshAllData();
     }
 
+    let pendingMfaSetup = null;
+    let pendingMfaChallenge = null;
+
+    function buildSafeQrImageSrc(rawQr) {
+      if (!rawQr || typeof rawQr !== 'string') return '';
+      const trimmed = rawQr.trim();
+      if (trimmed.startsWith('data:image/svg+xml;base64,')) return trimmed;
+      if (trimmed.startsWith('data:image/svg+xml')) {
+        const commaIdx = trimmed.indexOf(',');
+        if (commaIdx !== -1) {
+          const payload = trimmed.slice(commaIdx + 1);
+          const svgText = payload.startsWith('<') ? payload : decodeURIComponent(payload);
+          return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgText);
+        }
+      }
+      if (trimmed.startsWith('<svg')) {
+        return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(trimmed);
+      }
+      return '';
+    }
+
+    function showAdminAuthView(viewName) {
+      const overlay = document.getElementById('adminAuthOverlay');
+      if (overlay) {
+        overlay.classList.remove('unlocked');
+        overlay.style.display = 'flex';
+      }
+      const views = {
+        login: document.getElementById('superAdminLoginForm'),
+        reset: document.getElementById('adminResetRequestForm'),
+        recovery: document.getElementById('adminRecoveryCompleteForm'),
+        mfaSetup: document.getElementById('adminMfaSetupForm'),
+        mfaChallenge: document.getElementById('adminMfaChallengeForm')
+      };
+      Object.entries(views).forEach(([key, el]) => {
+        if (el) el.style.display = (key === viewName) ? 'block' : 'none';
+      });
+      if (viewName === 'login') {
+        pendingMfaSetup = null;
+        pendingMfaChallenge = null;
+      }
+    }
+
+    function completeAdminLoginSession(data) {
+      pendingMfaSetup = null;
+      pendingMfaChallenge = null;
+      currentAdminSession = {
+        username: data.username,
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        isSuper: !!data.isSuperAdmin,
+        token: data.token,
+        csrfToken: data.csrfToken || '',
+        expiresAt: data.expiresAt
+      };
+      sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(currentAdminSession));
+      localStorage.removeItem(ADMIN_SESSION_KEY);
+      unlockAdminConsole();
+      showToast('Login Successful', `Authenticated as ${data.name} (${data.role})`, 'success');
+    }
+
+    async function startCompulsoryMfaSetup(user, pass, setupTicket) {
+      const errBox = document.getElementById('authErrorMsg');
+      const errText = document.getElementById('authErrorText');
+      const qrImg = document.getElementById('adminMfaQrImg');
+      const manualSecretEl = document.getElementById('adminMfaManualSecret');
+      const codeInput = document.getElementById('adminMfaSetupCode');
+      const setupMsg = document.getElementById('adminMfaSetupMsg');
+
+      const enrollRes = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'mfa_enroll', ticket: setupTicket })
+      });
+      const enrollData = await enrollRes.json().catch(() => ({}));
+      if (!enrollRes.ok || !enrollData.success || !enrollData.factorId) {
+        if (errBox) errBox.style.display = 'block';
+        if (errText) errText.textContent = enrollData.error || 'Could not initialize 2FA setup. Please try again.';
+        return;
+      }
+
+      pendingMfaSetup = {
+        email: user,
+        password: pass,
+        ticket: setupTicket,
+        factorId: enrollData.factorId
+      };
+
+      const safeQrSrc = buildSafeQrImageSrc(enrollData.totp?.qr_code || '');
+      if (qrImg) {
+        if (safeQrSrc) {
+          qrImg.src = safeQrSrc;
+          qrImg.style.display = 'block';
+        } else {
+          qrImg.style.display = 'none';
+        }
+      }
+      if (manualSecretEl) manualSecretEl.value = enrollData.totp?.secret || '';
+      if (codeInput) codeInput.value = '';
+      if (setupMsg) { setupMsg.style.display = 'none'; setupMsg.textContent = ''; }
+      if (errBox) errBox.style.display = 'none';
+      showAdminAuthView('mfaSetup');
+      if (codeInput) setTimeout(() => codeInput.focus(), 100);
+    }
+
+    async function handleAdminMfaActivate(e) {
+      e.preventDefault();
+      const codeInput = document.getElementById('adminMfaSetupCode');
+      const msg = document.getElementById('adminMfaSetupMsg');
+      const btn = e.target.querySelector('button[type="submit"]');
+      const code = (codeInput?.value || '').replace(/\s+/g, '').trim();
+
+      if (!pendingMfaSetup || !pendingMfaSetup.ticket || !pendingMfaSetup.factorId) {
+        showAdminAuthView('login');
+        return;
+      }
+      if (!/^\d{6}$/.test(code)) {
+        if (msg) {
+          msg.style.display = 'block';
+          msg.style.background = '#fef2f2';
+          msg.style.color = '#991b1b';
+          msg.textContent = 'Enter the 6-digit numeric code from your authenticator app.';
+        }
+        return;
+      }
+
+      setButtonLoading(btn, true, 'Activating 2FA...');
+      try {
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'mfa_activate',
+            ticket: pendingMfaSetup.ticket,
+            factorId: pendingMfaSetup.factorId,
+            mfaCode: code
+          })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.success) {
+          if (msg) {
+            msg.style.display = 'block';
+            msg.style.background = '#fef2f2';
+            msg.style.color = '#991b1b';
+            msg.textContent = data.error || 'Invalid verification code. Check your authenticator app and try again.';
+          }
+          return;
+        }
+
+        // 2FA is now active; prompt for the next 6-digit code to issue a fresh verified session
+        pendingMfaChallenge = {
+          email: pendingMfaSetup.email,
+          password: pendingMfaSetup.password,
+          ticket: ''
+        };
+        pendingMfaSetup = null;
+        const hint = document.getElementById('adminMfaChallengeHint');
+        const chalMsg = document.getElementById('adminMfaChallengeMsg');
+        const chalInput = document.getElementById('adminMfaChallengeCode');
+        if (hint) {
+          hint.style.background = '#ecfdf5';
+          hint.style.borderLeftColor = '#10b981';
+          hint.style.color = '#065f46';
+          hint.innerHTML = '<i class="fas fa-check-circle"></i> <strong>2FA Activated!</strong> Wait for the next 6-digit code in your authenticator app and enter it below to sign in.';
+        }
+        if (chalMsg) { chalMsg.style.display = 'none'; chalMsg.textContent = ''; }
+        if (chalInput) chalInput.value = '';
+        showAdminAuthView('mfaChallenge');
+        if (chalInput) setTimeout(() => chalInput.focus(), 100);
+      } catch (err) {
+        if (msg) {
+          msg.style.display = 'block';
+          msg.style.background = '#fef2f2';
+          msg.style.color = '#991b1b';
+          msg.textContent = 'Network error activating 2FA. Please try again.';
+        }
+      } finally {
+        setButtonLoading(btn, false);
+      }
+    }
+
+    async function handleAdminMfaChallengeSubmit(e) {
+      e.preventDefault();
+      const codeInput = document.getElementById('adminMfaChallengeCode');
+      const msg = document.getElementById('adminMfaChallengeMsg');
+      const btn = e.target.querySelector('button[type="submit"]');
+      const code = (codeInput?.value || '').replace(/\s+/g, '').trim();
+
+      if (!pendingMfaChallenge || !pendingMfaChallenge.email || !pendingMfaChallenge.password) {
+        showAdminAuthView('login');
+        return;
+      }
+      if (!/^\d{6}$/.test(code)) {
+        if (msg) {
+          msg.style.display = 'block';
+          msg.style.background = '#fef2f2';
+          msg.style.color = '#991b1b';
+          msg.textContent = 'Please enter a valid 6-digit authenticator code.';
+        }
+        return;
+      }
+
+      setButtonLoading(btn, true, 'Verifying 2FA code...');
+      try {
+        const body = {
+          action: 'login',
+          email: pendingMfaChallenge.email,
+          password: pendingMfaChallenge.password,
+          mfaCode: code
+        };
+        if (pendingMfaChallenge.ticket) {
+          body.ticket = pendingMfaChallenge.ticket;
+        }
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.success && data.token) {
+          completeAdminLoginSession(data);
+        } else {
+          // Clear consumed challenge ticket so retry does not replay it
+          pendingMfaChallenge.ticket = '';
+          if (msg) {
+            msg.style.display = 'block';
+            msg.style.background = '#fef2f2';
+            msg.style.color = '#991b1b';
+            msg.textContent = data.error || 'Invalid 2FA code. Wait for the next code and try again.';
+          }
+          if (codeInput) {
+            codeInput.value = '';
+            codeInput.focus();
+          }
+        }
+      } catch (err) {
+        if (msg) {
+          msg.style.display = 'block';
+          msg.style.background = '#fef2f2';
+          msg.style.color = '#991b1b';
+          msg.textContent = 'Network error verifying 2FA code.';
+        }
+      } finally {
+        setButtonLoading(btn, false);
+      }
+    }
+
     async function handleSuperAdminLogin(e) {
       if (e) e.preventDefault();
       const user = document.getElementById('adminInputUser').value.trim();
@@ -2826,6 +3118,7 @@
         return;
       }
 
+      if (errBox) errBox.style.display = 'none';
       setButtonLoading(btn, true, 'Authenticating with Supabase...');
       try {
         const res = await fetch('/api/auth', {
@@ -2833,43 +3126,37 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'login', email: user, password: pass })
         });
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
+
+        if (data.mfaSetupRequired && data.ticket) {
+          await startCompulsoryMfaSetup(user, pass, data.ticket);
+          return;
+        }
+
         if (res.ok && data.success) {
           if (data.mfaRequired) {
-            const mfaCode = prompt('Two-Factor Authentication Required.\nEnter 6-digit authenticator code:');
-            if (!mfaCode) {
-              setButtonLoading(btn, false);
-              return;
+            pendingMfaChallenge = {
+              email: user,
+              password: pass,
+              ticket: data.ticket || ''
+            };
+            const hint = document.getElementById('adminMfaChallengeHint');
+            const chalMsg = document.getElementById('adminMfaChallengeMsg');
+            const chalInput = document.getElementById('adminMfaChallengeCode');
+            if (hint) {
+              hint.style.background = '#eff6ff';
+              hint.style.borderLeftColor = '#0284c7';
+              hint.style.color = '#1e3a8a';
+              hint.innerHTML = '<i class="fas fa-shield-alt"></i> Enter the 6-digit code from your authenticator app to complete sign-in.';
             }
-            const mfaRes = await fetch('/api/auth', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ action: 'login', email: user, password: pass, mfaCode: mfaCode.trim() })
-            });
-            const mfaData = await mfaRes.json();
-            if (!mfaRes.ok || !mfaData.success) {
-              if (errBox) errBox.style.display = 'block';
-              if (errText) errText.textContent = mfaData.error || 'Invalid 2FA code.';
-              setButtonLoading(btn, false);
-              return;
-            }
-            Object.assign(data, mfaData);
+            if (chalMsg) { chalMsg.style.display = 'none'; chalMsg.textContent = ''; }
+            if (chalInput) chalInput.value = '';
+            showAdminAuthView('mfaChallenge');
+            if (chalInput) setTimeout(() => chalInput.focus(), 100);
+            return;
           }
 
-          currentAdminSession = {
-            username: data.username,
-            name: data.name,
-            email: data.email,
-            role: data.role,
-            isSuper: !!data.isSuperAdmin,
-            token: data.token,
-            csrfToken: data.csrfToken || '',
-            expiresAt: data.expiresAt
-          };
-          sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(currentAdminSession));
-          localStorage.removeItem(ADMIN_SESSION_KEY);
-          unlockAdminConsole();
-          showToast('Login Successful', `Authenticated as ${data.name} (${data.role})`, 'success');
+          completeAdminLoginSession(data);
         } else {
           if (errBox) errBox.style.display = 'block';
           if (errText) errText.textContent = data.error || 'Invalid credentials. Access restricted.';
@@ -2921,25 +3208,13 @@
           if (window.history && window.history.replaceState) {
             window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
           }
-          const overlay = document.getElementById('adminAuthOverlay');
-          const loginForm = document.getElementById('superAdminLoginForm');
-          const reqForm = document.getElementById('adminResetRequestForm');
-          const recForm = document.getElementById('adminRecoveryCompleteForm');
-          if (overlay) overlay.style.display = 'flex';
-          if (loginForm) loginForm.style.display = 'none';
-          if (reqForm) reqForm.style.display = 'none';
-          if (recForm) recForm.style.display = 'block';
+          showAdminAuthView('recovery');
         }
       } catch (e) {}
     })();
 
     function toggleAdminResetRequestForm(show = true) {
-      const loginForm = document.getElementById('superAdminLoginForm');
-      const reqForm = document.getElementById('adminResetRequestForm');
-      const recForm = document.getElementById('adminRecoveryCompleteForm');
-      if (recForm) recForm.style.display = 'none';
-      if (loginForm) loginForm.style.display = show ? 'none' : 'block';
-      if (reqForm) reqForm.style.display = show ? 'block' : 'none';
+      showAdminAuthView(show ? 'reset' : 'login');
     }
 
     async function handleAdminResetRequest(e) {
@@ -3006,6 +3281,11 @@
     }
 
     function openChangeAdminPasswordModal() {
+      if (!currentAdminSession || !currentAdminSession.token) {
+        showAdminAuthView('login');
+        showToast('Sign In Required', 'Please sign in with your verified Super Admin session first.', 'warning');
+        return;
+      }
       const m = document.getElementById('changeAdminPasswordModal');
       const msg = document.getElementById('changePassMsg');
       const form = document.getElementById('changeAdminPasswordForm');
