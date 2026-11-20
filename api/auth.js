@@ -2356,7 +2356,10 @@ export default async function handler(req, res) {
         'create_access_pass',
         'revoke_access_pass',
         'delete_access_pass',
-        'terminate_presence'
+        'terminate_presence',
+        'list_sub_admins',
+        'create_sub_admin',
+        'revoke_sub_admin'
       ]);
 
       if (!operation || !ALLOWED_ADMIN_OPS.has(operation)) {
@@ -2504,6 +2507,144 @@ export default async function handler(req, res) {
             })
           });
           return res.status(tRes.ok ? 200 : tRes.status).json({ success: tRes.ok });
+        }
+
+        // OP 7: List Sub-Admins (Supabase Auth Admin API)
+        if (operation === 'list_sub_admins') {
+          const uListRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users?page=1&per_page=200`, {
+            headers: serviceRoleHeaders(),
+            signal: AbortSignal.timeout(7000)
+          });
+          if (!uListRes.ok) {
+            return res.status(503).json({ success: false, error: 'Could not load administrator accounts from Supabase Auth.' });
+          }
+          const uListData = await uListRes.json();
+          const allUsers = Array.isArray(uListData?.users) ? uListData.users : (Array.isArray(uListData) ? uListData : []);
+          const subAdmins = allUsers
+            .filter(u => u?.app_metadata?.role === 'sub_admin')
+            .map(u => ({
+              id: u.id,
+              email: u.email,
+              name: u.user_metadata?.name || (u.email ? u.email.split('@')[0] : 'Sub-Admin'),
+              role: u.app_metadata?.role,
+              createdAt: u.created_at || null,
+              lastSignInAt: u.last_sign_in_at || null,
+              bannedUntil: u.banned_until || null
+            }));
+          return res.status(200).json({ success: true, subAdmins });
+        }
+
+        // OP 8: Create Sub-Admin (Supabase Auth Admin API with app_metadata.role = 'sub_admin')
+        if (operation === 'create_sub_admin') {
+          const name = typeof data?.name === 'string' ? data.name.trim() : '';
+          const subEmail = typeof data?.email === 'string' ? data.email.trim().toLowerCase() : '';
+          const subPass = typeof data?.password === 'string' ? data.password : '';
+          const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(subEmail);
+          const strongPw = subPass.length >= 12 && /[A-Z]/.test(subPass) && /[a-z]/.test(subPass) && /\d/.test(subPass) && /[^A-Za-z0-9]/.test(subPass);
+
+          if (name.length < 2 || name.length > 100 || !validEmail) {
+            return res.status(400).json({ success: false, error: 'Please provide a valid full name (2-100 characters) and email address.' });
+          }
+          if (subEmail === SUPER_ADMIN_EMAIL) {
+            return res.status(400).json({ success: false, error: 'Cannot create a sub-admin using the Lead Super Admin email address.' });
+          }
+          if (!strongPw) {
+            return res.status(400).json({
+              success: false,
+              error: 'Temporary password must be at least 12 characters with uppercase, lowercase, a number, and a symbol.'
+            });
+          }
+
+          const createRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users`, {
+            method: 'POST',
+            headers: serviceRoleHeaders(),
+            body: JSON.stringify({
+              email: subEmail,
+              password: subPass,
+              email_confirm: true,
+              user_metadata: { name },
+              app_metadata: { role: 'sub_admin' }
+            })
+          });
+          const created = await createRes.json().catch(() => ({}));
+          if (!createRes.ok) {
+            return res.status(createRes.status === 422 ? 409 : createRes.status).json({
+              success: false,
+              error: created.msg || created.message || 'Could not create sub-admin account. An account with that email may already exist.'
+            });
+          }
+
+          try {
+            await fetch(`${SUPABASE_URL}/rest/v1/audit_logs`, {
+              method: 'POST',
+              headers: serviceRoleHeaders(),
+              body: JSON.stringify({
+                action: 'sub_admin_created',
+                performed_by: payload.email || 'Super Admin',
+                target: created.id || subEmail,
+                details: { email: subEmail, name, role: 'sub_admin' },
+                ip_address: clientIp || 'unknown'
+              })
+            });
+          } catch (e) {}
+
+          return res.status(200).json({
+            success: true,
+            subAdmin: {
+              id: created.id,
+              email: created.email || subEmail,
+              name,
+              role: 'sub_admin',
+              createdAt: created.created_at || new Date().toISOString()
+            }
+          });
+        }
+
+        // OP 9: Revoke Sub-Admin (Demote role & disable login, never touches Super Admin)
+        if (operation === 'revoke_sub_admin') {
+          const userId = typeof data?.userId === 'string' ? data.userId.trim() : '';
+          if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId)) {
+            return res.status(400).json({ success: false, error: 'A valid sub-admin user ID is required.' });
+          }
+
+          const targetRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(userId)}`, {
+            headers: serviceRoleHeaders()
+          });
+          if (!targetRes.ok) {
+            return res.status(404).json({ success: false, error: 'Sub-admin account not found.' });
+          }
+          const targetUser = await targetRes.json();
+          if (targetUser.app_metadata?.role === 'super_admin' || (targetUser.email || '').toLowerCase() === SUPER_ADMIN_EMAIL) {
+            return res.status(403).json({ success: false, error: 'The Lead Super Admin account cannot be revoked from this panel.' });
+          }
+
+          const revokeRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(userId)}`, {
+            method: 'PUT',
+            headers: serviceRoleHeaders(),
+            body: JSON.stringify({
+              app_metadata: { role: 'revoked' },
+              ban_duration: '876000h'
+            })
+          });
+          if (!revokeRes.ok) {
+            return res.status(503).json({ success: false, error: 'Could not revoke sub-admin privileges.' });
+          }
+
+          try {
+            await fetch(`${SUPABASE_URL}/rest/v1/audit_logs`, {
+              method: 'POST',
+              headers: serviceRoleHeaders(),
+              body: JSON.stringify({
+                action: 'sub_admin_revoked',
+                performed_by: payload.email || 'Super Admin',
+                target: userId,
+                details: { email: targetUser.email },
+                ip_address: clientIp || 'unknown'
+              })
+            });
+          } catch (e) {}
+
+          return res.status(200).json({ success: true, message: 'Sub-admin privileges revoked.' });
         }
 
         return res.status(400).json({ success: false, error: 'Unknown admin operation requested.' });

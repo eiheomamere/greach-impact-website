@@ -677,7 +677,6 @@
     <div class="admin-actions">
       <a href="classroom/certificate-review.html" class="btn-nav" style="background:#075985; border-color:#075985; font-weight:700;"><i class="fas fa-certificate"></i> Certificate Review</a>
       <button onclick="openUniversalCodeModal()" class="btn-nav" style="background:#107C41; border-color:#107C41; font-weight:700;"><i class="fas fa-key"></i> + Generate Access Code</button>
-      <button onclick="syncSiteDataToCloud()" class="btn-nav" style="background:var(--accent-teal); color:#0A0A5E; border-color:var(--accent-teal); font-weight:700;"><i class="fas fa-cloud-upload-alt"></i> Publish Live Updates</button>
       <a href="index.html" class="btn-nav" target="_blank"><i class="fas fa-globe"></i> View Website</a>
       <!-- Direct 1-Click Admin Classroom Access Dropdown -->
       <div class="admin-classroom-menu" style="position:relative; display:inline-block;">
@@ -715,191 +714,41 @@
   <!-- MAIN WORKSPACE -->
   <main class="admin-container">
 
-    <!-- KPI Metric Cards -->
+    <!-- KPI Metric Cards (Focused, Server-Aligned) -->
     <section class="stats-grid">
-      <div class="stat-card green" style="border-left: 5px solid #10b981; cursor:pointer;" onclick="switchAdminTab('classrooms')" title="Click to manage all 6 Live Classrooms">
-        <div class="stat-title"><span>Classrooms Live</span> <i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i></div>
-        <div class="stat-val" id="statClassroomsLive">6/6</div>
-        <div class="stat-sub"><span style="display:inline-block; width:8px; height:8px; background:#10b981; border-radius:50%; margin-right:4px;"></span>Click to Stop or Leave On</div>
-      </div>
-      <div class="stat-card green" style="border-left: 5px solid #22c55e; cursor:pointer;" onclick="switchAdminTab('activity')" title="Click to view who is in class">
-        <div class="stat-title"><span>Students Online</span> <i class="fas fa-satellite-dish" style="color:#22c55e;"></i></div>
-        <div class="stat-val" id="statOnlineStudents">0</div>
-        <div class="stat-sub"><span style="display:inline-block; width:8px; height:8px; background:#22c55e; border-radius:50%; margin-right:4px;"></span>Live Presence Active</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-title"><span>Total Enrolled</span> <i class="fas fa-users" style="color:var(--accent-blue);"></i></div>
-        <div class="stat-val" id="statTotalStudents">0</div>
-        <div class="stat-sub">Unlimited student capacity</div>
-      </div>
-      <div class="stat-card green">
-        <div class="stat-title"><span>Active Access</span> <i class="fas fa-check-circle" style="color:var(--green-600);"></i></div>
-        <div class="stat-val" id="statActiveStudents">0</div>
-        <div class="stat-sub">Valid credentials &amp; codes</div>
-      </div>
-      <div class="stat-card gold">
-        <div class="stat-title"><span>Course Orders</span> <i class="fas fa-shopping-cart" style="color:var(--gold-500);"></i></div>
+      <div class="stat-card gold" style="cursor:pointer;" onclick="switchAdminTab('orders')" title="Open Orders & Payments">
+        <div class="stat-title"><span>Orders &amp; Payments</span> <i class="fas fa-shopping-cart" style="color:var(--gold-500);"></i></div>
         <div class="stat-val" id="statTotalOrders">0</div>
-        <div class="stat-sub" id="statRevenueText">₦0 verified revenue</div>
+        <div class="stat-sub" id="statRevenueText">Click to review transfers</div>
       </div>
-      <div class="stat-card teal">
-        <div class="stat-title"><span>Brevo Dispatches</span> <i class="fas fa-paper-plane" style="color:var(--accent-teal);"></i></div>
-        <div class="stat-val" id="statTotalDispatches">0</div>
-        <div class="stat-sub" id="statBrevoStatus">Automated Engine Active</div>
+      <div class="stat-card" style="cursor:pointer;" onclick="switchAdminTab('students')" title="Open Students & Access Codes">
+        <div class="stat-title"><span>Students Roster</span> <i class="fas fa-users" style="color:var(--accent-blue);"></i></div>
+        <div class="stat-val" id="statTotalStudents">0</div>
+        <div class="stat-sub"><span id="statActiveStudents">0</span> active access</div>
       </div>
-      <div class="stat-card red">
-        <div class="stat-title"><span>Expired Codes</span> <i class="fas fa-hourglass-end" style="color:var(--red-600);"></i></div>
-        <div class="stat-val" id="statExpiredStudents">0</div>
-        <div class="stat-sub">Past 1-month post-class limit</div>
+      <div class="stat-card teal" style="cursor:pointer;" onclick="switchAdminTab('brevo')" title="Open Brevo & Emails Hub">
+        <div class="stat-title"><span>Brevo Emails</span> <i class="fas fa-paper-plane" style="color:var(--accent-teal);"></i></div>
+        <div class="stat-val" id="statTotalDispatches">—</div>
+        <div class="stat-sub" id="statBrevoStatus">View sent &amp; automated templates</div>
       </div>
-      <div class="stat-card teal">
-        <div class="stat-title"><span>Free Access Passes</span> <i class="fas fa-gift" style="color:var(--accent-teal);"></i></div>
-        <div class="stat-val" id="statFreeGrants">0</div>
-        <div class="stat-sub">Admin 1-click grants</div>
-      </div>
-      <div class="stat-card gold">
-        <div class="stat-title"><span>Certificates Issued</span> <i class="fas fa-award" style="color:var(--gold-500);"></i></div>
-        <div class="stat-val" id="statCertsIssued">0</div>
-        <div class="stat-sub">Strict single-issue locked</div>
+      <div class="stat-card green" style="cursor:pointer;" onclick="switchAdminTab('certificates')" title="Open Certificate Registry">
+        <div class="stat-title"><span>Certificates</span> <i class="fas fa-award" style="color:var(--green-600);"></i></div>
+        <div class="stat-val" id="statCertsIssued">—</div>
+        <div class="stat-sub">Server-verified registry</div>
       </div>
     </section>
 
-    <!-- Navigation Tabs -->
+    <!-- Streamlined Navigation Tabs (8 Working, Server-Backed Tabs) -->
     <div class="tab-bar">
-      <button class="tab-btn active" onclick="switchAdminTab('students')"><i class="fas fa-user-graduate"></i> Student Roster &amp; Bank</button>
-      <button class="tab-btn" onclick="switchAdminTab('classrooms')"><i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i> Live Classrooms Control (6)</button>
-      <button class="tab-btn" onclick="switchAdminTab('activity')"><i class="fas fa-satellite-dish" style="color:#22c55e;"></i> Live Student Logins &amp; Presence</button>
-      <button class="tab-btn" onclick="switchAdminTab('orders')"><i class="fas fa-shopping-cart"></i> Orders &amp; Pipeline</button>
-      <button class="tab-btn" onclick="switchAdminTab('session_passes')"><i class="fas fa-stopwatch"></i> Temporary Session Passes</button>
-      <button class="tab-btn" onclick="switchAdminTab('blog')"><i class="fas fa-newspaper" style="color:#0284c7;"></i> Blog Articles &amp; Content</button>
-      <button class="tab-btn" onclick="switchAdminTab('supabase')"><i class="fas fa-database" style="color:#22c55e;"></i> Supabase Cloud DB</button>
-      <button class="tab-btn" onclick="switchAdminTab('prices')"><i class="fas fa-tags"></i> Course Pricing &amp; Discounts</button>
-      <button class="tab-btn" onclick="switchAdminTab('schedules')"><i class="fas fa-calendar-alt"></i> Dates &amp; Self-Paced Modes</button>
-      <button class="tab-btn" onclick="switchAdminTab('brevo')"><i class="fas fa-paper-plane"></i> Brevo &amp; Automation Hub</button>
-      <button class="tab-btn" onclick="switchAdminTab('audit')"><i class="fas fa-history"></i> DB Audit Trail</button>
-      <button class="tab-btn" onclick="switchAdminTab('superuser')"><i class="fas fa-user-cog"></i> Superuser Settings</button>
-      <button class="tab-btn" onclick="switchAdminTab('admins')"><i class="fas fa-user-shield"></i> Sub-Admins Manager</button>
-      <button class="tab-btn" onclick="switchAdminTab('certificates')"><i class="fas fa-certificate"></i> Certificate Vault</button>
-      <button class="tab-btn" onclick="switchAdminTab('broadcast')"><i class="fas fa-bullhorn"></i> Live Stream &amp; Broadcast</button>
+      <button class="tab-btn active" onclick="switchAdminTab('students')"><i class="fas fa-user-graduate"></i> Students &amp; Access Codes</button>
+      <button class="tab-btn" onclick="switchAdminTab('orders')"><i class="fas fa-shopping-cart"></i> Orders &amp; Payments</button>
+      <button class="tab-btn" onclick="switchAdminTab('session_passes')"><i class="fas fa-stopwatch"></i> Live Session Passes</button>
+      <button class="tab-btn" onclick="switchAdminTab('prices')"><i class="fas fa-tags" style="color:#107C41;"></i> Course Pricing</button>
+      <button class="tab-btn" onclick="switchAdminTab('schedules')"><i class="fas fa-calendar-alt"></i> Course Schedules</button>
+      <button class="tab-btn" onclick="switchAdminTab('certificates')"><i class="fas fa-certificate" style="color:#d97706;"></i> Certificates</button>
+      <button class="tab-btn" onclick="switchAdminTab('admins')"><i class="fas fa-user-shield" style="color:#0284c7;"></i> Sub-Admins</button>
+      <button class="tab-btn" onclick="switchAdminTab('brevo')"><i class="fas fa-paper-plane" style="color:#0d9488;"></i> Brevo &amp; Emails</button>
     </div>
-
-    <!-- ========================================== -->
-    <!-- TAB: SUPERUSER LIVE CLASSROOMS COMMAND CENTER (ALL 6 CLASSES) -->
-    <!-- ========================================== -->
-    <section id="tabClassrooms" class="admin-card" style="display:none;">
-      <div class="card-head">
-        <div>
-          <h2><i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i> Superuser Live Classrooms Command Center (All 6 Classes)</h2>
-          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
-            Monitor every dedicated course classroom in real time: see <strong>which class is ON or STOPPED</strong>, <strong>how long it has been ON</strong>, <strong>who is currently inside it</strong>, and as Superuser (<code>Greachimpact</code>) <strong>stop any class or leave it on</strong> with 1 click.
-          </p>
-        </div>
-        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
-          <button class="btn-primary" style="background:#0284c7; border-color:#0284c7;" onclick="handleSetAllClassrooms('auto')"><i class="fas fa-clock"></i> Set All to Auto-Schedule (Timetable)</button>
-          <button class="btn-primary" style="background:#107C41; border-color:#107C41;" onclick="handleSetAllClassrooms('force_on')"><i class="fas fa-play-circle"></i> Force All 6 ON</button>
-          <button class="btn-gold" style="background:#dc2626; color:#fff;" onclick="handleSetAllClassrooms('force_off')"><i class="fas fa-stop-circle"></i> Force Stop All 6</button>
-          <button class="btn-primary" onclick="renderClassroomsControlCenter()"><i class="fas fa-sync-alt"></i> Refresh Live Status</button>
-        </div>
-      </div>
-
-      <div id="liveClassroomsControlGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(340px, 1fr)); gap:1.25rem; margin-top:1.25rem;">
-        <!-- Dynamically populated by renderClassroomsControlCenter() -->
-      </div>
-    </section>
-
-    <!-- ========================================== -->
-    <!-- TAB: LIVE STUDENT PRESENCE & ACTIVITY LOG -->
-    <!-- ========================================== -->
-    <section id="tabActivity" class="admin-card" style="display:none;">
-      <div class="card-head">
-        <div>
-          <h2><i class="fas fa-satellite-dish" style="color:#22c55e;"></i> Live Student Presence, Active Classrooms &amp; Login / Logout Activity</h2>
-          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
-            Real-time presence monitoring of all 6 classrooms and enrolled students. View which class is ON, how long it has been running, who is inside it, and stop or leave classes on.
-          </p>
-        </div>
-        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
-          <button class="btn-primary" style="background:#107C41; border-color:#107C41;" onclick="switchAdminTab('classrooms')"><i class="fas fa-chalkboard-teacher"></i> Full Classroom Command View</button>
-          <button class="btn-primary" onclick="renderStudentActivity()"><i class="fas fa-sync-alt"></i> Refresh Presence</button>
-          <button class="btn-gold" style="background:#dc2626;" onclick="clearActivityHistory()"><i class="fas fa-trash-alt"></i> Clear Activity History</button>
-        </div>
-      </div>
-
-      <!-- SUB-SECTION 0: COMPACT LIVE CLASSROOMS STATUS OVERVIEW -->
-      <div style="margin-top:1.25rem; margin-bottom:2rem;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; flex-wrap:wrap; gap:0.5rem;">
-          <h3 style="font-size:1.08rem; color:var(--navy-900); display:flex; align-items:center; gap:8px;">
-            <i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i>
-            All 6 Course Classrooms — Live Status, Uptime &amp; Superuser Controls
-          </h3>
-          <div style="display:flex; gap:0.5rem;">
-            <button class="btn-action" style="background:#e0f2fe; color:#0369a1; border-color:#38bdf8; font-weight:700;" onclick="handleSetAllClassrooms('auto')"><i class="fas fa-clock"></i> Auto-Schedule</button>
-            <button class="btn-action" style="background:#ecfdf5; color:#065f46; border-color:#a7f3d0; font-weight:700;" onclick="handleSetAllClassrooms('force_on')"><i class="fas fa-play"></i> Force All ON</button>
-            <button class="btn-action" style="background:#fee2e2; color:#dc2626; border-color:#fca5a5; font-weight:700;" onclick="handleSetAllClassrooms('force_off')"><i class="fas fa-stop"></i> Stop All</button>
-          </div>
-        </div>
-        <div id="activityClassroomsMiniGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(310px, 1fr)); gap:1rem;">
-          <!-- Dynamically populated by renderClassroomsControlCenter() -->
-        </div>
-      </div>
-
-      <!-- SUB-SECTION 1: STUDENTS CURRENTLY ONLINE -->
-      <div style="margin-top:1.5rem; margin-bottom:2rem;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem;">
-          <h3 style="font-size:1.1rem; color:var(--navy-900); display:flex; align-items:center; gap:8px;">
-            <span style="display:inline-block; width:10px; height:10px; background:#22c55e; border-radius:50%;"></span>
-            Students Currently Online (<span id="activeSessionsCount">0</span>)
-          </h3>
-          <small style="color:#64748b; font-size:0.8rem;">Auto-expires after 5 minutes of inactivity</small>
-        </div>
-
-        <div class="table-responsive">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Student ID &amp; Name</th>
-                <th>Enrolled Course</th>
-                <th>Status</th>
-                <th>Login Time</th>
-                <th>Device / Client</th>
-                <th>Last Active (Heartbeat)</th>
-                <th style="text-align:right;">Super Admin Action</th>
-              </tr>
-            </thead>
-            <tbody id="activeSessionsTableBody">
-              <!-- Dynamically populated -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- SUB-SECTION 2: LOGIN & LOGOUT ACTIVITY AUDIT LOG -->
-      <div style="margin-top:2rem;">
-        <h3 style="font-size:1.1rem; color:var(--navy-900); margin-bottom:0.8rem; display:flex; align-items:center; gap:8px;">
-          <i class="fas fa-history" style="color:var(--accent-blue);"></i>
-          Complete Student Login / Logout Audit Log (<span id="activityLogCount">0</span> events)
-        </h3>
-        
-        <div class="table-responsive">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Timestamp</th>
-                <th>Student ID &amp; Name</th>
-                <th>Enrolled Course</th>
-                <th>Event Type</th>
-                <th>Session Duration</th>
-                <th>Trigger / Reason</th>
-                <th>Details</th>
-              </tr>
-            </thead>
-            <tbody id="studentActivityTableBody">
-              <!-- Dynamically populated -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
   
     <section id="tabStudents" class="admin-card">
       <div class="card-head">
@@ -1042,164 +891,216 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- TAB: BREVO & EMAIL AUTOMATION HUB -->
+    <!-- TAB: COMPREHENSIVE BREVO & EMAILS HUB -->
     <!-- ========================================== -->
     <section id="tabBrevo" class="admin-card" style="display:none;">
       <div class="card-head">
         <div>
-          <h2><i class="fas fa-paper-plane" style="color:var(--accent-teal);"></i> Brevo (Sendinblue) &amp; Email Automation Hub</h2>
+          <h2><i class="fas fa-paper-plane" style="color:var(--accent-teal);"></i> Brevo Email Center — Sent History &amp; Automated Templates</h2>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
-            Server-side Brevo integration. API credentials remain in server environment settings; send transactional welcome emails, reminders, and monitor dispatch logs.
+            Full visibility into every email already dispatched via Brevo and live previews of every automated email that will be sent to students and admins (even when triggered automatically without approval).
           </p>
         </div>
-        <div>
-          <span id="brevoApiStatusBadge" class="badge-status badge-cert"><i class="fas fa-circle-notch fa-spin"></i> Checking Brevo API...</span>
+        <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+          <span id="brevoApiStatusBadge" class="badge-status badge-cert"><i class="fas fa-circle-notch fa-spin"></i> Checking Brevo...</span>
+          <button type="button" class="btn-action" onclick="loadBrevoHub(true)"><i class="fas fa-sync-alt"></i> Refresh</button>
         </div>
       </div>
 
-      <!-- Brevo API Config & Connection Test Grid -->
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(360px, 1fr)); gap:1.5rem; margin-bottom:2rem;">
-        <!-- Configuration Card -->
-        <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:14px; padding:1.5rem;">
-          <h3 style="color:var(--navy-900); font-size:1.05rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
-            <i class="fas fa-lock" style="color:var(--gold-500);"></i> Server-managed Email Configuration
-          </h3>
-          <form id="brevoConfigForm" onsubmit="handleSaveBrevoConfig(event)">
-            <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
-              Brevo credentials, sender identity, and administrator recipient are configured on the server and are never stored in browser storage.
-            </p>
-            <div style="margin:1rem 0;">
-              <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer;">
-                <input type="checkbox" id="brevoAutoWelcome" checked style="accent-color:var(--navy-900);">
-                Automatically send Welcome Email &amp; Access Code on student registration
-              </label>
-              <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer; margin-top:0.4rem;">
-                <input type="checkbox" id="brevoAutoAdminAlert" checked style="accent-color:var(--navy-900);">
-                Automatically send New Order / Registration alert to Admin
-              </label>
-            </div>
-            <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">
-              <i class="fas fa-save"></i> Save Local Email Preferences
-            </button>
-          </form>
+      <!-- Live Cloud Email Summary Bar -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:0.85rem; margin-bottom:1.5rem;">
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:0.9rem; text-align:center;">
+          <div style="font-size:0.74rem; font-weight:800; color:#166534; text-transform:uppercase;">Delivered / Sent</div>
+          <div id="brevoCountSent" style="font-size:1.5rem; font-weight:800; color:#15803d;">0</div>
         </div>
+        <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:0.9rem; text-align:center;">
+          <div style="font-size:0.74rem; font-weight:800; color:#1e40af; text-transform:uppercase;">Pending / Retrying</div>
+          <div id="brevoCountPending" style="font-size:1.5rem; font-weight:800; color:#1d4ed8;">0</div>
+        </div>
+        <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:10px; padding:0.9rem; text-align:center;">
+          <div style="font-size:0.74rem; font-weight:800; color:#991b1b; text-transform:uppercase;">Failed</div>
+          <div id="brevoCountFailed" style="font-size:1.5rem; font-weight:800; color:#dc2626;">0</div>
+        </div>
+        <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:10px; padding:0.9rem; text-align:center;">
+          <div style="font-size:0.74rem; font-weight:800; color:#92400e; text-transform:uppercase;">Needs Review</div>
+          <div id="brevoCountRecon" style="font-size:1.5rem; font-weight:800; color:#b45309;">0</div>
+        </div>
+      </div>
 
-        <!-- Connection Test & Health Card -->
-        <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:14px; padding:1.5rem; display:flex; flex-direction:column; justify-content:space-between;">
+      <!-- SECTION 1: WHAT WILL BE SENT (INTERACTIVE AUTOMATED TEMPLATE PREVIEWER) -->
+      <div style="background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:14px; padding:1.4rem; margin-bottom:1.8rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem; margin-bottom:1rem;">
           <div>
-            <h3 style="color:var(--navy-900); font-size:1.05rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
-              <i class="fas fa-satellite-dish" style="color:var(--green-600);"></i> Live Connection Test
+            <h3 style="color:var(--navy-900); font-size:1.08rem; margin:0; display:flex; align-items:center; gap:0.5rem;">
+              <i class="fas fa-envelope-open-text" style="color:#0284c7;"></i> What Will Be Sent Automatically (Live Template Previews)
             </h3>
-            <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:1rem;">
-              Send a test message through the server-configured Brevo integration. This action requires a verified Super Admin session.
+            <p style="font-size:0.8rem; color:#64748b; margin-top:4px;">
+              Inspect the exact emails Brevo sends automatically at every stage of student enrollment and payment verification.
             </p>
-            <div class="form-group">
-              <label>Test Recipient Email:</label>
-              <input type="email" id="brevoTestEmail" class="form-control" placeholder="greachimpact@gmail.com" />
-            </div>
-            <button type="button" class="btn-gold" style="width:100%; justify-content:center;" onclick="runBrevoTest()">
-              <i class="fas fa-paper-plane"></i> Send Server-side Test Email
-            </button>
           </div>
-          <div id="brevoTestResultBox" style="margin-top:1rem; display:none; padding:1rem; border-radius:10px; font-size:0.85rem;">
-            <!-- Test output rendered here -->
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <label style="font-size:0.8rem; font-weight:700; color:#334155;">Preview Currency:</label>
+            <select id="brevoPreviewCurrency" class="filter-select" style="padding:0.4rem 0.7rem;" onchange="loadBrevoTemplatePreviews()">
+              <option value="NGN">NGN (GTBank Nigeria)</option>
+              <option value="GBP">GBP (Zenith Bank)</option>
+              <option value="USD">USD (Zenith Bank)</option>
+              <option value="EUR">EUR (Zenith Bank)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:minmax(240px, 310px) 1fr; gap:1.2rem; align-items:start;">
+          <div id="brevoTemplateList" style="display:flex; flex-direction:column; gap:0.55rem;">
+            <div style="font-size:0.82rem; color:#64748b; padding:0.75rem;">Loading automated email templates...</div>
+          </div>
+          <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; overflow:hidden;">
+            <div id="brevoPreviewMeta" style="background:#f1f5f9; border-bottom:1px solid #e2e8f0; padding:0.85rem 1rem; font-size:0.82rem; color:#334155; line-height:1.55;">
+              Select an email template on the left to inspect its trigger, recipient, subject, and rendered HTML body.
+            </div>
+            <iframe id="brevoPreviewFrame" title="Email Preview" sandbox="" style="width:100%; height:410px; border:none; background:#f8fafc;"></iframe>
           </div>
         </div>
       </div>
 
-      <!-- 1-Click Reminder & Broadcast Dispatchers -->
-      <div style="background:#ffffff; border:1.5px solid var(--border-slate); border-radius:14px; padding:1.5rem; margin-bottom:2rem;">
-        <h3 style="color:var(--navy-900); font-size:1.15rem; margin-bottom:1.2rem; display:flex; align-items:center; gap:0.6rem;">
-          <i class="fas fa-bullhorn" style="color:var(--red-600);"></i> 1-Click Automated Reminders &amp; Broadcast Dispatcher
+      <!-- SECTION 2: WHAT HAS BEEN SENT (SERVER-BACKED CLOUD LOGS FROM SUPABASE) -->
+      <div style="margin-bottom:1.8rem;">
+        <div class="card-head" style="margin-bottom:0.85rem; padding-bottom:0.75rem;">
+          <div>
+            <h3 style="font-size:1.1rem; color:var(--navy-900); margin:0;">
+              <i class="fas fa-history" style="color:var(--accent-blue);"></i> What Has Been Sent — Live Cloud Email Delivery Log
+            </h3>
+            <p style="color:var(--text-muted); font-size:0.8rem; margin-top:3px;">
+              Loaded directly from Production Supabase <code>email_notifications</code>. Includes automatic student emails, admin alerts, and order confirmations.
+            </p>
+          </div>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <button type="button" class="btn-action" style="background:#fef3c7; border-color:#f59e0b; color:#92400e;" onclick="handleRetryFailedEmails(this)">
+              <i class="fas fa-redo"></i> Retry Failed
+            </button>
+            <button type="button" class="btn-action" onclick="handleReconcilePendingEmails(this)">
+              <i class="fas fa-check-double"></i> Reconcile Pending
+            </button>
+            <a href="https://app.brevo.com/transactional/logs" target="_blank" rel="noopener noreferrer" class="btn-action" style="text-decoration:none;">
+              <i class="fas fa-external-link-alt"></i> Open Brevo Logs
+            </a>
+          </div>
+        </div>
+
+        <div class="controls-strip" style="margin-bottom:0.9rem;">
+          <input type="text" id="brevoLogSearch" class="search-input" placeholder="Search by recipient email, name, order ref, or email type..." oninput="filterAndRenderBrevoLogs()" />
+          <select id="brevoLogStatusFilter" class="filter-select" onchange="filterAndRenderBrevoLogs()">
+            <option value="all">All Statuses</option>
+            <option value="sent">Sent</option>
+            <option value="pending">Pending / Retrying</option>
+            <option value="failed">Failed</option>
+            <option value="requires_reconciliation">Needs Review</option>
+          </select>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Date &amp; Time</th>
+                <th>Email Type</th>
+                <th>Recipient</th>
+                <th>Order Reference</th>
+                <th>Status</th>
+                <th>Brevo Message ID / Notes</th>
+              </tr>
+            </thead>
+            <tbody id="dispatchLogsTableBody">
+              <tr><td colspan="6" style="text-align:center; color:#64748b; padding:1.5rem;">Loading live email delivery logs...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="dispatchLogsEmptyState" style="display:none; text-align:center; padding:2rem; color:var(--text-muted);">
+          <i class="fas fa-envelope-open" style="font-size:1.8rem; margin-bottom:0.5rem; color:#cbd5e1;"></i>
+          <p>No emails logged yet. As soon as a student registers or a payment is verified, every Brevo dispatch will appear here automatically.</p>
+        </div>
+      </div>
+
+      <!-- SECTION 3: LIVE SERVER-SIDE CONNECTION TEST -->
+      <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:14px; padding:1.35rem; max-width:560px;">
+        <h3 style="color:var(--navy-900); font-size:1rem; margin-bottom:0.5rem; display:flex; align-items:center; gap:0.5rem;">
+          <i class="fas fa-satellite-dish" style="color:var(--green-600);"></i> Send Live Test Email
         </h3>
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;">
-          
-          <!-- Class Reminder -->
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1.2rem;">
-            <h4 style="color:#b91c1c; font-size:0.95rem; margin-bottom:0.6rem;">
-              <i class="fas fa-video"></i> 1-Click Live Class Reminder
-            </h4>
-            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.8rem;">
-              Sends an instant reminder email to all active registered students with class start time, workbook checklist, and classroom link.
-            </p>
-            <div class="form-group">
-              <label style="font-size:0.8rem;">Session Schedule Time:</label>
-              <input type="text" id="reminderScheduleText" class="form-control" value="Saturday at 10:00 AM West Africa Time (WAT)" />
-            </div>
-            <button type="button" class="btn-primary" style="background:#dc2626; width:100%; justify-content:center;" onclick="dispatchClassReminderToAll()">
-              <i class="fas fa-bell"></i> Dispatch Live Class Reminder to All Students
-            </button>
-          </div>
-
-          <!-- Capstone Project Reminder -->
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1.2rem;">
-            <h4 style="color:var(--green-600); font-size:0.95rem; margin-bottom:0.6rem;">
-              <i class="fas fa-tasks"></i> Capstone Project &amp; Certificate Notice
-            </h4>
-            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.8rem;">
-              Notifies students to complete and submit their Capstone Project in the classroom hub so their Certificate of Excellence can be approved.
-            </p>
-            <div style="height:48px;"></div>
-            <button type="button" class="btn-primary" style="background:var(--green-600); width:100%; justify-content:center;" onclick="dispatchProjectReminderToAll()">
-              <i class="fas fa-award"></i> Dispatch Project &amp; Certificate Reminder
-            </button>
-          </div>
-
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.9rem;">
+          Sender identity: <strong id="brevoSenderIdentityText">Greach Impact Academy &lt;greachimpact@gmail.com&gt;</strong> (configured securely on Vercel).
+        </p>
+        <div style="display:flex; gap:0.6rem; flex-wrap:wrap; align-items:center;">
+          <input type="email" id="brevoTestEmail" class="form-control" style="flex:1; min-width:220px;" placeholder="greachimpact@gmail.com" />
+          <button type="button" class="btn-gold" onclick="runBrevoTest()">
+            <i class="fas fa-paper-plane"></i> Send Test Email
+          </button>
         </div>
-      </div>
-
-      <!-- Email Dispatch Audit Log -->
-      <div class="card-head" style="margin-bottom:1rem; padding-bottom:0.8rem;">
-        <div>
-          <h3 style="font-size:1.1rem; color:var(--navy-900);">
-            <i class="fas fa-history" style="color:var(--accent-blue);"></i> Dispatched Emails Audit Trail
-          </h3>
-          <p style="color:var(--text-muted); font-size:0.8rem;">
-            Real-time record of all student welcome credentials, admin alerts, and reminders sent through Brevo.
-          </p>
-        </div>
-        <button class="btn-action" onclick="clearDispatchLogs()"><i class="fas fa-trash-alt"></i> Clear Audit Log</button>
-      </div>
-
-      <div class="table-responsive">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Date &amp; Time</th>
-              <th>Dispatch Type</th>
-              <th>Recipient Email</th>
-              <th>Email Subject</th>
-              <th>Delivery Status</th>
-              <th>Brevo Message ID / Reference</th>
-            </tr>
-          </thead>
-          <tbody id="dispatchLogsTableBody">
-            <!-- Rendered dynamically -->
-          </tbody>
-        </table>
-      </div>
-      <div id="dispatchLogsEmptyState" style="display:none; text-align:center; padding:2.5rem; color:var(--text-muted);">
-        <i class="fas fa-envelope-open" style="font-size:2rem; margin-bottom:0.6rem; color:#cbd5e1;"></i>
-        <p>No emails logged yet. When registrations or reminders fire, they will be logged here.</p>
+        <div id="brevoTestResultBox" style="margin-top:0.85rem; display:none; padding:0.85rem; border-radius:8px; font-size:0.83rem;"></div>
       </div>
     </section>
 
 
     <!-- ========================================== -->
-    <!-- TAB 2: SUB-ADMINS MANAGER (Super Admin Exclusive) -->
+    <!-- TAB: SUB-ADMINS MANAGER (Server-Backed Supabase Auth) -->
     <!-- ========================================== -->
     <section id="tabAdmins" class="admin-card" style="display:none;">
       <div class="card-head">
         <div>
-          <h2><i class="fas fa-crown" style="color:var(--gold-500);"></i> Sub-Admin Delegation &amp; Privileges</h2>
+          <h2><i class="fas fa-user-shield" style="color:var(--accent-blue);"></i> Sub-Admins Manager (Supabase Auth)</h2>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
-            As Lead Super Admin (<code>Greachimpact</code>), you have the master privilege to create assistant admins and instructors to help you run the academy.
+            Create and manage delegated <code>sub_admin</code> accounts securely in Production Supabase Auth. Only your verified Super Admin + 2FA session can add or revoke administrators.
           </p>
         </div>
+        <button type="button" class="btn-action" onclick="renderSubAdminsTable()"><i class="fas fa-sync-alt"></i> Refresh List</button>
       </div>
 
-      <div role="status" style="max-width:760px; padding:1.25rem; background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; color:#7c2d12;">
-        Administrative accounts cannot be created or managed in browser storage. Use the approved server-side Supabase Auth workflow after separate authorization; no local administrator credentials or roles are saved here.
+      <div style="display:grid; grid-template-columns:minmax(290px, 380px) 1fr; gap:1.5rem; align-items:start;">
+        <!-- Create Sub-Admin Form -->
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1.35rem;">
+          <h3 style="margin:0 0 0.9rem; font-size:1.02rem; color:var(--navy-900);"><i class="fas fa-user-plus" style="color:#107C41;"></i> Create New Sub-Admin</h3>
+          <form id="createSubAdminForm" onsubmit="handleCreateSubAdmin(event)">
+            <div class="form-group">
+              <label>Full Name:</label>
+              <input type="text" id="subAdminName" class="form-control" placeholder="e.g. Chidi Okonkwo" minlength="2" required />
+            </div>
+            <div class="form-group">
+              <label>Email Address:</label>
+              <input type="email" id="subAdminEmail" class="form-control" placeholder="assistant@greachimpact.com" required />
+            </div>
+            <div class="form-group">
+              <label>Temporary Strong Password:</label>
+              <div style="display:flex; gap:0.4rem;">
+                <input type="password" id="subAdminPassword" class="form-control" minlength="12" placeholder="12+ chars, upper, lower, number, symbol" required />
+                <button type="button" class="btn-action" onclick="togglePasswordVisibility('subAdminPassword', this)" title="Show/Hide"><i class="fas fa-eye"></i></button>
+              </div>
+              <small style="font-size:0.74rem; color:#64748b;">Minimum 12 characters with uppercase, lowercase, a number, and a symbol.</small>
+            </div>
+            <div id="subAdminFormMsg" style="display:none; padding:0.65rem; border-radius:6px; font-size:0.82rem; margin-bottom:0.9rem;"></div>
+            <button type="submit" class="btn-primary" style="width:100%; justify-content:center; background:#107C41; border-color:#107C41;">
+              <i class="fas fa-user-check"></i> Create Sub-Admin Account
+            </button>
+          </form>
+        </div>
+
+        <!-- Active Sub-Admins List -->
+        <div>
+          <h3 style="margin:0 0 0.8rem; font-size:1.02rem; color:var(--navy-900);"><i class="fas fa-users-cog" style="color:#0284c7;"></i> Active Delegated Sub-Admins</h3>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Name &amp; Email</th>
+                  <th>Role</th>
+                  <th>Created</th>
+                  <th>Last Sign-In</th>
+                  <th style="text-align:right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="subAdminsTableBody">
+                <tr><td colspan="5" style="text-align:center; color:#64748b; padding:1.5rem;">Loading sub-admin accounts...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1279,56 +1180,6 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- TAB 5: BROADCAST & LIVE STREAM CONTROLLER -->
-    <!-- ========================================== -->
-    <section id="tabBroadcast" class="admin-card" style="display:none;">
-      <div class="card-head">
-        <div>
-          <h2><i class="fas fa-video" style="color:#ef4444;"></i> Classroom Live Stream &amp; Broadcast Controller</h2>
-          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
-            Manage the live video stream (YouTube Live Unlisted or Zoom) and publish instant announcement banners to all active students in the classroom hub.
-          </p>
-        </div>
-      </div>
-
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem;">
-        <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:14px; padding:1.5rem;">
-          <h3 style="font-size:1.1rem; color:var(--navy-900); margin-bottom:1rem; font-weight:800;">
-            <i class="fab fa-youtube" style="color:#ef4444;"></i> Live Stream Setup
-          </h3>
-          <form onsubmit="handleSaveLiveStream(event)">
-            <div class="form-group">
-              <label>Live Stream Link (YouTube Live / Zoom / Google Meet):</label>
-              <input type="url" id="inputLiveUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=YOUR_VIDEO_ID" value="https://www.youtube.com/watch?v=live_stream" required />
-            </div>
-            <div class="form-group">
-              <label>Next Live Class Date &amp; Time:</label>
-              <input type="text" id="inputLiveSchedule" class="form-control" placeholder="Saturday at 10:00 AM West Africa Time (WAT)" value="Saturday at 10:00 AM (WAT)" required />
-            </div>
-            <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">
-              <i class="fas fa-broadcast-tower"></i> Update Live Stream Link
-            </button>
-          </form>
-        </div>
-
-        <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:14px; padding:1.5rem;">
-          <h3 style="font-size:1.1rem; color:var(--navy-900); margin-bottom:1rem; font-weight:800;">
-            <i class="fas fa-bullhorn" style="color:var(--accent-blue);"></i> Classroom Announcement Banner
-          </h3>
-          <form onsubmit="handleSaveAnnouncement(event)">
-            <div class="form-group">
-              <label>Banner Notification Message:</label>
-              <textarea id="inputAnnouncement" class="form-control" rows="3" placeholder="Welcome Batch 2 students! The Capstone Project review starts this Friday.">Welcome Batch 2 students! Live session starts Saturday at 10:00 AM WAT. Remember to download your practice workbooks before class.</textarea>
-            </div>
-            <button type="submit" class="btn-gold" style="width:100%; justify-content:center;">
-              <i class="fas fa-paper-plane"></i> Publish Banner to Students
-            </button>
-          </form>
-        </div>
-      </div>
-    </section>
-
-      <!-- ========================================== -->
     <!-- TAB: COURSE DATES & CLASS TIMES MANAGER -->
     <!-- ========================================== -->
     <section id="tabSchedules" class="admin-card" style="display:none;">
@@ -1336,7 +1187,7 @@
         <div>
           <h2><i class="fas fa-calendar-alt" style="color:var(--accent-teal);"></i> Course Dates, Schedules &amp; Class Times</h2>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
-            Update course start dates, end dates, and daily class times (e.g. 10:00 AM – 12:30 PM WAT). Changes reflect across all website pages and student portals instantly.
+            Update course start dates, end dates, and daily class times (e.g. 10:00 AM – 12:30 PM WAT). Changes save directly to Production Supabase.
           </p>
         </div>
         <button class="btn-primary" onclick="resetDefaultSchedules()"><i class="fas fa-undo"></i> Reset to Default Schedules</button>
@@ -1347,24 +1198,6 @@
       </div>
     </section>
 
-    <!-- ========================================== -->
-    <!-- TAB: SUPERUSER CREDENTIALS & SETTINGS -->
-    <!-- ========================================== -->
-    <section id="tabSuperuser" class="admin-card" style="display:none;">
-      <div class="card-head">
-        <div>
-          <h2><i class="fas fa-crown" style="color:var(--gold-500);"></i> Superuser Account &amp; Master Password Settings</h2>
-          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
-            Manage your master administrative credentials. As the Super Administrator, you can change your master username and password anytime.
-          </p>
-        </div>
-      </div>
-
-      <div role="status" style="max-width:650px; padding:1.25rem; background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; color:#1e3a8a;">
-        Super Admin credentials are managed only by Supabase Auth. This browser interface does not read, save, or change administrator passwords.
-      </div>
-    </section>
-  
     <!-- ========================================== -->
     <!-- TAB: TEMPORARY LIVE SESSION PASSES -->
     <!-- ========================================== -->
@@ -1402,188 +1235,7 @@
       </div>
       <div id="sessionPassesEmptyState" style="display:none; text-align:center; padding:3rem; color:var(--text-muted);">
         <i class="fas fa-key" style="font-size:2.5rem; margin-bottom:0.8rem; color:#cbd5e1;"></i>
-        <p>No active temporary session passes. Click "+ Generate Temporary Session Code" to create one.</p>
-      </div>
-    </section>
-
-    <!-- ========================================== -->
-    <!-- ========================================== -->
-    <!-- TAB: BLOG ARTICLES PUBLISHING & MANAGEMENT -->
-    <!-- ========================================== -->
-    <section id="tabBlog" class="admin-card" style="display:none;">
-      <div class="card-head">
-        <div>
-          <h2><i class="fas fa-newspaper" style="color:#0284c7;"></i> Blog Articles Publishing &amp; Management</h2>
-          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
-            Write, edit, and publish articles on the Greach Impact blog. All updates reflect instantly on the live website and sync with the database.
-          </p>
-        </div>
-        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
-          <button class="btn-primary" style="background:#0284c7; border-color:#0284c7; font-weight:700;" onclick="openBlogModal()"><i class="fas fa-pen-nib"></i> + Write New Article</button>
-          <button class="btn-gold" onclick="exportBlogPostsJson()"><i class="fas fa-file-download"></i> Export posts.json</button>
-          <a href="blog.html" target="_blank" class="btn-action"><i class="fas fa-external-link-alt"></i> View Public Blog</a>
-        </div>
-      </div>
-
-      <!-- Blog Guidance Banner -->
-      <div style="background:#f0f9ff; border:1px solid #bae6fd; border-left:4px solid #0284c7; border-radius:8px; padding:0.9rem 1.1rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem;">
-        <div>
-          <div style="font-weight:700; color:#0369a1; font-size:0.92rem;"><i class="fas fa-info-circle"></i> How to Update Your Blog:</div>
-          <div style="color:#475569; font-size:0.84rem; margin-top:3px; line-height:1.5;">
-            Click <strong>"+ Write New Article"</strong> to create a new post, or click <strong>"Edit"</strong> on any article below. When you click Publish, your article saves to the database and syncs instantly to <a href="blog.html" target="_blank" style="color:#0284c7; font-weight:700;">blog.html</a> across all visitors worldwide.
-          </div>
-        </div>
-      </div>
-
-      <div class="controls-strip">
-        <input type="text" id="filterBlogSearch" class="search-input" placeholder=" Search articles by title, keyword, or excerpt..." oninput="renderBlogTable()" />
-        <select id="filterBlogCategory" class="filter-select" onchange="renderBlogTable()">
-          <option value="all">All Categories</option>
-          <option value="Excel & Data">Excel & Data</option>
-          <option value="Power BI">Power BI</option>
-          <option value="Data Analytics">Data Analytics</option>
-          <option value="Community Development">Community Development</option>
-          <option value="Data Analyst Career">Data Analyst Career</option>
-        </select>
-      </div>
-
-      <div class="table-responsive">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th style="width:50px;">#ID</th>
-              <th>Article Title</th>
-              <th>Category</th>
-              <th>Date</th>
-              <th>Read Time</th>
-              <th>Summary</th>
-              <th style="width:170px;">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="blogTableBody">
-            <!-- Dynamically populated -->
-          </tbody>
-        </table>
-      </div>
-      <div id="blogEmptyState" style="display:none; text-align:center; padding:3rem; color:var(--text-muted);">
-        <i class="fas fa-newspaper" style="font-size:2.5rem; margin-bottom:0.8rem; color:#cbd5e1;"></i>
-        <p>No blog articles found. Click "+ Write New Article" to publish your first post.</p>
-      </div>
-    </section>
-
-    
-    <!-- ========================================== -->
-    <!-- TAB: SUPABASE CLOUD DATABASE CONFIGURATION -->
-    <!-- ========================================== -->
-    <section id="tabSupabase" class="admin-card" style="display:none;">
-      <div class="card-head">
-        <div>
-          <h2><i class="fas fa-database" style="color:#22c55e;"></i> Supabase PostgreSQL Cloud Database Integration</h2>
-          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
-            Scale Greach Impact to an enterprise PostgreSQL database on Supabase. Universal real-time synchronization across all devices worldwide.
-          </p>
-        </div>
-        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
-          <button class="btn-primary" style="background:#22c55e; border-color:#22c55e; font-weight:700;" onclick="testSupabaseConnection()"><i class="fas fa-plug"></i> Test Connection</button>
-          <button class="btn-gold" onclick="syncAllToSupabase()"><i class="fas fa-cloud-upload-alt"></i> 1-Click Sync to Supabase</button>
-        </div>
-      </div>
-
-      <!-- Live Connection Status Banner -->
-      <div id="supabaseStatusBanner" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1.2rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div id="supabaseStatusDot" style="width:14px; height:14px; border-radius:50%; background:#94a3b8;"></div>
-          <div>
-            <div style="font-weight:700; color:var(--navy-900); font-size:1rem;" id="supabaseStatusText">Supabase Status: Not Configured (Using LocalStorage &amp; Serverless Sync)</div>
-            <div style="font-size:0.8rem; color:#64748b;" id="supabaseStatusSub">Enter your Supabase URL &amp; API Key below to scale to live PostgreSQL in the cloud.</div>
-          </div>
-        </div>
-        <a href="SUPABASE_SETUP_GUIDE.md" target="_blank" class="btn-action" style="font-size:0.85rem;"><i class="fas fa-book"></i> View 5-Min Setup Guide</a>
-      </div>
-
-      <!-- Supabase Credentials Form -->
-      <div style="background:white; border:1px solid var(--card-border); border-radius:12px; padding:1.5rem; margin-bottom:2rem;">
-        <h3 style="font-size:1.05rem; color:var(--navy-900); margin-bottom:1rem; display:flex; align-items:center; gap:8px;">
-          <i class="fas fa-key" style="color:var(--accent-blue);"></i> Supabase API Credentials
-        </h3>
-        
-        <form onsubmit="handleSaveSupabaseConfig(event)">
-          <div class="form-group">
-            <label style="font-weight:700; color:#334155;">Supabase Project URL:</label>
-            <input type="url" id="sbProjectUrl" class="form-control" placeholder="https://yourprojectid.supabase.co" required />
-            <small style="color:var(--text-muted); font-size:0.75rem;">Found in Supabase: Project Settings &rarr; API &rarr; Project URL.</small>
-          </div>
-
-          <div class="form-group">
-            <label style="font-weight:700; color:#334155;">Supabase Project API Key (anon / public):</label>
-            <div style="display:flex; gap:0.5rem;">
-              <input type="password" id="sbAnonKey" class="form-control" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." required />
-              <button type="button" onclick="togglePasswordVisibility('sbAnonKey', this)" class="btn-action" style="padding:0.7rem;"><i class="fas fa-eye"></i></button>
-            </div>
-            <small style="color:var(--text-muted); font-size:0.75rem;">Found in Supabase: Project Settings &rarr; API &rarr; Project API Keys &rarr; anon public.</small>
-          </div>
-
-          <div id="sbAlertBox" style="display:none; padding:0.85rem; border-radius:8px; margin-bottom:1.2rem; font-size:0.85rem;"></div>
-
-          <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
-            <button type="submit" class="btn-primary" style="background:#0A0A5E;">
-              <i class="fas fa-save"></i> Save Credentials
-            </button>
-            <button type="button" onclick="testSupabaseConnection()" class="btn-action">
-              <i class="fas fa-plug"></i> Test Connection
-            </button>
-            <button type="button" onclick="syncAllToSupabase()" class="btn-primary" style="background:#22c55e; border-color:#22c55e; font-weight:700;">
-              <i class="fas fa-cloud-upload-alt"></i> Upload All Local Data to Supabase
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Quick 4-Step Instructions Inside The Admin Page -->
-      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1.5rem;">
-        <h3 style="font-size:1.05rem; color:var(--navy-900); margin-bottom:0.8rem; display:flex; align-items:center; gap:8px;">
-          <i class="fas fa-list-ol" style="color:var(--accent-teal);"></i> How to Connect Supabase in 4 Quick Steps:
-        </h3>
-        <ol style="margin-left:1.2rem; color:#334155; font-size:0.9rem; line-height:1.7;">
-          <li>Create a free project at <a href="https://supabase.com" target="_blank" style="color:#0284c7; font-weight:700;">supabase.com</a> (Free forever, includes 500MB PostgreSQL database).</li>
-          <li>In your Supabase project, click <strong>SQL Editor</strong>, open <a href="supabase_schema.sql" target="_blank" style="color:#0284c7; font-weight:700;">supabase_schema.sql</a>, paste the SQL, and click <strong>Run</strong>.</li>
-          <li>Go to <strong>Project Settings &rarr; API</strong>, copy your <strong>Project URL</strong> and <strong>anon key</strong>.</li>
-          <li>Paste them above, click <strong>Save Credentials</strong>, and click <strong>Upload All Local Data to Supabase</strong>. All your students, prices, and blogs will immediately sync to the cloud!</li>
-        </ol>
-      </div>
-    </section>
-
-    <!-- TAB: DB AUDIT TRAIL & SYSTEM ACTIVITY -->
-    <!-- ========================================== -->
-    <section id="tabAudit" class="admin-card" style="display:none;">
-      <div class="card-head">
-        <div>
-          <h2><i class="fas fa-history" style="color:var(--accent-teal);"></i> Database Audit Trail &amp; Update History</h2>
-          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
-            Real-time record of all database updates, pricing changes, schedule adjustments, delivery modes, and admin actions with author attribution.
-          </p>
-        </div>
-        <button class="btn-action" onclick="clearAuditTrail()" style="color:#ef4444;"><i class="fas fa-trash-alt"></i> Clear Audit Trail</button>
-      </div>
-
-      <div class="table-responsive">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Timestamp</th>
-              <th>Administrator</th>
-              <th>Action Category</th>
-              <th>Exact Modification Details</th>
-            </tr>
-          </thead>
-          <tbody id="auditTableBody">
-            <!-- Dynamically populated -->
-          </tbody>
-        </table>
-      </div>
-      <div id="auditEmptyState" style="display:none; text-align:center; padding:3rem; color:var(--text-muted);">
-        <i class="fas fa-clipboard-list" style="font-size:2.5rem; margin-bottom:0.8rem; color:#cbd5e1;"></i>
-        <p>No audit events recorded yet. Every change made will appear here automatically.</p>
+        <p>No active temporary session passes. Click "+ Generate Access Code" to create one.</p>
       </div>
     </section>
 
@@ -3378,23 +3030,16 @@
       if (m) m.style.display = 'none';
     });
 
-    // Comprehensive Tab Switching Map
+    // Streamlined 8-Tab Switching Map (100% Working, Server-Backed)
     const ADMIN_TAB_MAP = {
       students: 'tabStudents',
-      classrooms: 'tabClassrooms',
       orders: 'tabOrders',
       session_passes: 'tabSessionPasses',
-      blog: 'tabBlog',
-      supabase: 'tabSupabase',
       prices: 'tabPrices',
       schedules: 'tabSchedules',
-      brevo: 'tabBrevo',
-      audit: 'tabAudit',
-      superuser: 'tabSuperuser',
-      admins: 'tabAdmins',
       certificates: 'tabCertificates',
-      activity: 'tabActivity',
-      broadcast: 'tabBroadcast'
+      admins: 'tabAdmins',
+      brevo: 'tabBrevo'
     };
 
     function switchAdminTab(tabKey) {
@@ -3416,125 +3061,59 @@
         if (el) el.style.display = (key === tabKey) ? 'block' : 'none';
       });
 
-      // Tab specific data hydration (Instant Local First!)
-      if (tabKey === 'classrooms') {
-        if (typeof renderClassroomsControlCenter === 'function') renderClassroomsControlCenter();
-      } else if (tabKey === 'blog') {
-        if (typeof renderBlogTable === 'function') renderBlogTable();
-      } else if (tabKey === 'session_passes') {
+      // Tab specific server-backed hydration
+      if (tabKey === 'session_passes') {
         if (typeof renderSessionPassesTable === 'function') renderSessionPassesTable();
-      } else if (tabKey === 'supabase') {
-        if (typeof loadSupabaseConfigUI === 'function') loadSupabaseConfigUI();
-      } else if (tabKey === 'activity') {
-        if (typeof renderStudentActivity === 'function') renderStudentActivity();
-      } else if (tabKey === 'superuser') {
-        if (!currentAdminSession || !currentAdminSession.isSuper) {
-          requireSuperAdminAuth('Access Super Administrator Security Settings', () => {
-            currentAdminSession = currentAdminSession || { username: 'Greachimpact', isSuper: true };
-            currentAdminSession.isSuper = true;
-          });
-        }
-      } else if (tabKey === 'admins') {
-        if (!currentAdminSession || !currentAdminSession.isSuper) {
-          requireSuperAdminAuth('Review Administrative Account Management Notice', () => {
-            currentAdminSession = currentAdminSession || { username: 'Greachimpact', isSuper: true };
-            currentAdminSession.isSuper = true;
-          });
-        }
+      } else if (tabKey === 'prices') {
+        if (typeof renderPricingCards === 'function') renderPricingCards();
+        if (typeof refreshAdminLiveRates === 'function') refreshAdminLiveRates();
       } else if (tabKey === 'schedules') {
         if (typeof renderScheduleCards === 'function') renderScheduleCards();
       } else if (tabKey === 'orders') {
-        if (typeof renderOrdersTable === 'function') renderOrdersTable();
+        if (typeof loadAndRenderOrders === 'function') loadAndRenderOrders();
+        else if (typeof renderOrdersTable === 'function') renderOrdersTable();
       } else if (tabKey === 'certificates') {
         if (typeof renderCertsTable === 'function') renderCertsTable();
-      } else if (tabKey === 'audit') {
-        if (typeof renderAuditTable === 'function') renderAuditTable();
+      } else if (tabKey === 'admins') {
+        if (typeof renderSubAdminsTable === 'function') renderSubAdminsTable();
       } else if (tabKey === 'brevo') {
-        if (typeof loadBrevoConfig === 'function') loadBrevoConfig();
-        if (typeof renderDispatchLogsTable === 'function') renderDispatchLogsTable();
-        if (typeof checkBrevoApiStatus === 'function') checkBrevoApiStatus();
+        if (typeof loadBrevoHub === 'function') loadBrevoHub(false);
       }
     }
 
     function syncSiteDataToCloud() {
-      requireSuperAdminAuth('Publish Live Updates & Sync All Data to Supabase Cloud', () => {
-        executeSyncSiteDataToCloud();
-      });
+      showToast('Auto-Synced', 'Pricing, schedules, passes, and orders save directly to Production Supabase automatically.', 'info');
     }
 
-    async function executeSyncSiteDataToCloud() {
-      if (window.GreachLoader) window.GreachLoader.show('Publishing Live Updates to Supabase Cloud...');
-      try {
-        if (typeof syncLocalToSupabase === 'function') {
-          await syncLocalToSupabase();
-        }
-        if (window.GreachSync && window.GreachSync.refresh) {
-          window.GreachSync.refresh();
-        }
-        showToast('Live Updates Published!', 'All course prices, schedules, and student records are synced to cloud.', 'success');
-      } catch(e) {
-        showToast('Publish Warning', e.message || 'Saved locally.', 'warning');
-      } finally {
-        if (window.GreachLoader) window.GreachLoader.hide();
-      }
-    }
-
-    // Refresh All Data (Ultra-Lite: Instant visible paint, zero background thread-lock)
+    // Refresh All Data (Instant paint + server stats hydration)
     function refreshAllData() {
       renderStats();
       if (typeof renderStudentsTable === 'function') renderStudentsTable();
+      if (typeof loadAndRenderOrders === 'function') loadAndRenderOrders();
+      if (typeof loadBrevoCloudNotifications === 'function') loadBrevoCloudNotifications(true);
     }
 
-    // 2. Render KPI Stats
+    // 2. Render KPI Stats (Null-Safe)
     function renderStats() {
-      const students = window.GreachDB.getAllStudents();
-      const orders = window.GreachBrevo ? window.GreachBrevo.getAllOrders() : [];
-      const dispatches = window.GreachBrevo ? window.GreachBrevo.getDispatchLogs() : [];
-
-      if (window.GreachDB && window.GreachDB.getAllClassrooms) {
-        const classrooms = window.GreachDB.getAllClassrooms();
-        const liveCount = classrooms.filter(c => c.isLive).length;
-        const statClsEl = document.getElementById('statClassroomsLive');
-        if (statClsEl) statClsEl.textContent = `${liveCount}/${classrooms.length}`;
-      }
-
-      let totalRevenue = 0;
-      orders.forEach(o => {
-        if (o.paymentStatus === 'Verified & Paid') {
-          totalRevenue += (Number(o.amount) || 0);
-        }
-      });
-
-      const statOrdersEl = document.getElementById('statTotalOrders');
-      if (statOrdersEl) statOrdersEl.textContent = orders.length.toLocaleString();
-      const statRevEl = document.getElementById('statRevenueText');
-      if (statRevEl) statRevEl.textContent = '₦' + totalRevenue.toLocaleString() + ' verified revenue';
-      const statDispEl = document.getElementById('statTotalDispatches');
-      if (statDispEl) statDispEl.textContent = dispatches.length.toLocaleString();
+      const students = window.GreachDB ? window.GreachDB.getAllStudents() : [];
       const now = new Date();
-
       let activeCount = 0;
-      let expiredCount = 0;
-      let freeCount = 0;
-
       students.forEach(s => {
-        if (s.accessType === 'free_grant' || s.accessType === 'free_lifetime' || s.isLifetime) {
-          freeCount++;
-        }
         const exp = s.expiresAt ? new Date(s.expiresAt) : null;
         if (s.isLifetime || s.accessType === 'free_lifetime' || !exp || now <= exp) {
           activeCount++;
-        } else {
-          expiredCount++;
         }
       });
 
-      document.getElementById('statTotalStudents').textContent = students.length.toLocaleString();
-      document.getElementById('statActiveStudents').textContent = activeCount.toLocaleString();
-      document.getElementById('statExpiredStudents').textContent = expiredCount.toLocaleString();
-      document.getElementById('statFreeGrants').textContent = freeCount.toLocaleString();
-      document.getElementById('statCertsIssued').textContent = '—';
-      document.getElementById('statCertsIssued').title = 'Open the Certificate Registry tab for the server-backed record list.';
+      const elTotalStu = document.getElementById('statTotalStudents');
+      if (elTotalStu) elTotalStu.textContent = students.length.toLocaleString();
+      const elActiveStu = document.getElementById('statActiveStudents');
+      if (elActiveStu) elActiveStu.textContent = activeCount.toLocaleString();
+      const elCerts = document.getElementById('statCertsIssued');
+      if (elCerts && !elCerts.dataset.loaded) {
+        elCerts.textContent = '—';
+        elCerts.title = 'Open the Certificates tab to view server-backed records.';
+      }
     }
 
     // ==============================================================
@@ -4328,15 +3907,19 @@ greachimpact@gmail.com`;
               <span class="pricing-slashed" style="color:#94a3b8; text-decoration:line-through; font-size:0.95rem;">₦${Number(item.regular).toLocaleString()}</span>
               <span class="pricing-current" style="color:#0A0A5E; font-size:1.6rem; font-weight:800;">₦${Number(item.current).toLocaleString()}</span>
             </div>
-            <div style="display:flex; gap:0.5rem; margin-top:1rem; align-items:center;">
-              <div style="position:relative; flex:1;">
-                <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#64748b; font-weight:700;">₦</span>
-                <input type="number" id="inputPrice_${crs.key}" value="${item.current}" class="form-control" style="padding-left:26px; font-weight:700;" placeholder="New Price" oninput="updateForeignEquivalents('${crs.key}', this.value)" />
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.85rem;">
+              <div>
+                <label style="display:block; font-size:0.72rem; font-weight:700; color:#475569; margin-bottom:3px;">Promo Price (₦)</label>
+                <input type="number" id="inputPrice_${crs.key}" value="${item.current}" class="form-control" style="font-weight:700;" placeholder="Promo ₦" oninput="updateForeignEquivalents('${crs.key}', this.value)" />
               </div>
-              <button id="btnSavePrice_${crs.key}" onclick="saveCoursePrice('${crs.key}', this)" class="btn-primary" style="padding:0.6rem 1.1rem; font-size:0.85rem; font-weight:700; white-space:nowrap;">
-                <i class="fas fa-save"></i> Save to Cloud
-              </button>
+              <div>
+                <label style="display:block; font-size:0.72rem; font-weight:700; color:#475569; margin-bottom:3px;">Regular Price (₦)</label>
+                <input type="number" id="inputRegularPrice_${crs.key}" value="${item.regular}" class="form-control" style="font-weight:600; color:#64748b;" placeholder="Regular ₦" />
+              </div>
             </div>
+            <button id="btnSavePrice_${crs.key}" onclick="saveCoursePrice('${crs.key}', this)" class="btn-primary" style="width:100%; justify-content:center; margin-top:0.65rem; padding:0.6rem 1.1rem; font-size:0.85rem; font-weight:700;">
+              <i class="fas fa-save"></i> Save Price to Cloud
+            </button>
             <!-- Auto-Calculated Dynamic Foreign Currency Equivalents -->
             <div id="foreignEquivContainer_${crs.key}" style="margin-top:0.6rem; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:6px 10px; font-size:0.78rem; color:#475569; display:flex; justify-content:space-between; align-items:center;">
               <span><strong>Foreign Eqv:</strong></span>
@@ -4367,20 +3950,36 @@ greachimpact@gmail.com`;
 
     async function executeSaveCoursePrice(courseKey, btn) {
       const inp = document.getElementById(`inputPrice_${courseKey}`);
-      const val = inp ? inp.value.trim() : '';
+      const regInp = document.getElementById(`inputRegularPrice_${courseKey}`);
+      const val = Number(inp ? inp.value.trim() : 0);
+      const regVal = Number(regInp ? regInp.value.trim() : 0) || Math.max(val, 10000);
       const courseDef = CANONICAL_COURSES.find(c => c.key === courseKey) || { label: courseKey };
       const buttonEl = btn || document.getElementById(`btnSavePrice_${courseKey}`);
       setButtonLoading(buttonEl, true, 'Saving...');
 
       try {
-        if (window.GreachDB && window.GreachDB.updateCoursePriceAsync) {
-          await window.GreachDB.updateCoursePriceAsync(courseKey, val, null, 'Super Admin');
-          setButtonLoading(buttonEl, false);
-          showToast('Price Updated Live!', `Fee for ${courseDef.label} set to ₦${Number(val).toLocaleString()} in Supabase Cloud!`, 'success');
-        } else if (window.GreachDB) {
-          window.GreachDB.updateCoursePrice(courseKey, val);
-          setButtonLoading(buttonEl, false);
-          showToast('Price Updated', `Fee for ${courseDef.label} updated to ₦${Number(val).toLocaleString()}`, 'success');
+        const discountPct = regVal > val ? Math.round((1 - (val / regVal)) * 100) : 0;
+        const canonicalId = window.GreachDB && window.GreachDB.getCanonicalPricingKey
+          ? window.GreachDB.getCanonicalPricingKey(courseKey)
+          : courseKey;
+
+        const apiRes = (window.GreachDB && window.GreachDB.callAdminApi)
+          ? await window.GreachDB.callAdminApi('update_price', {
+              courseId: canonicalId,
+              promoPrice: val,
+              originalPrice: regVal,
+              discountPct: discountPct
+            })
+          : { success: false, error: 'Admin API unavailable' };
+
+        if (window.GreachDB && window.GreachDB.updateCoursePrice) {
+          window.GreachDB.updateCoursePrice(courseKey, val, regVal, 'Super Admin');
+        }
+        setButtonLoading(buttonEl, false);
+        if (apiRes && apiRes.success) {
+          showToast('Price Updated Live!', `${courseDef.label} updated to ₦${val.toLocaleString()} (was ₦${regVal.toLocaleString()}) in Production Supabase!`, 'success');
+        } else {
+          showToast('Cloud Save Error', (apiRes && apiRes.error) || 'Could not save price to Supabase Cloud.', 'error');
         }
         renderPricingCards();
       } catch(err) {
@@ -4553,20 +4152,40 @@ greachimpact@gmail.com`;
       });
     }
 
-    function executeSaveCourseSchedule(key) {
+    async function executeSaveCourseSchedule(key) {
       const cohort = document.getElementById(`sch_cohort_${key}`).value.trim();
       const startDate = document.getElementById(`sch_start_${key}`).value;
       const endDate = document.getElementById(`sch_end_${key}`).value;
       const startTime = document.getElementById(`sch_time_start_${key}`).value.trim();
       const endTime = document.getElementById(`sch_time_end_${key}`).value.trim();
       const days = document.getElementById(`sch_days_${key}`).value.trim();
+      const modeRadio = document.querySelector(`input[name="mode_${key}"]:checked`);
+      const deliveryMode = modeRadio ? modeRadio.value : 'live';
 
       const res = window.GreachDB.updateSchedule(key, {
-        cohort, startDate, endDate, startTime, endTime, days
+        cohort, startDate, endDate, startTime, endTime, days, deliveryMode
       });
 
+      const canonicalId = window.GreachDB && window.GreachDB.getCanonicalPricingKey
+        ? window.GreachDB.getCanonicalPricingKey(key)
+        : key;
+
+      const apiRes = (window.GreachDB && window.GreachDB.callAdminApi)
+        ? await window.GreachDB.callAdminApi('update_schedule', {
+            courseId: canonicalId,
+            startDate: startDate || new Date().toISOString().slice(0, 10),
+            deliveryMode: deliveryMode,
+            timeSlot: `${days ? days + ' • ' : ''}${startTime}${endTime ? ' – ' + endTime : ''}`,
+            isSelfPaced: deliveryMode === 'self_paced'
+          })
+        : { success: false, error: 'Admin API unavailable' };
+
+      if (apiRes && apiRes.success) {
+        showToast('Schedule Saved Live!', `Schedule for ${key} saved to Production Supabase.`, 'success');
+      } else {
+        showToast('Cloud Sync Warning', (apiRes && apiRes.error) || 'Saved locally, but cloud update failed.', 'warning');
+      }
       if (res && res.success) {
-        alert(`Schedule updated for ${key}!\nStart: ${startDate} (${startTime})\nEnd: ${endDate} (${endTime})`);
         renderScheduleCards();
         if (window.GreachSync) window.GreachSync.refresh();
       }
@@ -5586,6 +5205,360 @@ greachimpact@gmail.com`;
       a.href = URL.createObjectURL(blob);
       a.download = 'posts.json';
       a.click();
+    }
+
+    // =========================================================================
+    // SERVER-BACKED SUB-ADMINS MANAGER (Supabase Auth Admin API via /api/auth)
+    // =========================================================================
+    async function renderSubAdminsTable() {
+      const tbody = document.getElementById('subAdminsTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#64748b; padding:1.5rem;"><i class="fas fa-spinner fa-spin"></i> Loading sub-admin accounts from Supabase Auth...</td></tr>';
+
+      const res = (window.GreachDB && window.GreachDB.callAdminApi)
+        ? await window.GreachDB.callAdminApi('list_sub_admins', {})
+        : { success: false, error: 'Admin API unavailable.' };
+
+      if (!res || !res.success) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#991b1b; padding:1.5rem;">${escapeHtml((res && res.error) || 'Could not load sub-admins. Ensure you are signed in as Super Admin with 2FA.')}</td></tr>`;
+        return;
+      }
+
+      const list = Array.isArray(res.subAdmins) ? res.subAdmins : [];
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#64748b; padding:2rem;">No delegated sub-admins yet. Use the form on the left to create one.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = list.map(sa => {
+        const created = sa.createdAt ? new Date(sa.createdAt).toLocaleDateString() : '—';
+        const lastIn = sa.lastSignInAt ? new Date(sa.lastSignInAt).toLocaleString() : 'Never';
+        return `
+          <tr>
+            <td>
+              <strong style="color:var(--navy-900);">${escapeHtml(sa.name)}</strong>
+              <div style="font-size:0.78rem; color:#64748b;">${escapeHtml(sa.email)}</div>
+            </td>
+            <td><span class="badge-status badge-active"><i class="fas fa-user-shield"></i> Sub-Admin</span></td>
+            <td style="font-size:0.82rem; color:#475569;">${escapeHtml(created)}</td>
+            <td style="font-size:0.82rem; color:#475569;">${escapeHtml(lastIn)}</td>
+            <td style="text-align:right;">
+              <button type="button" class="btn-action" style="color:#dc2626; border-color:#fecaca; background:#fef2f2;" onclick="handleRevokeSubAdmin('${escapeHtml(sa.id)}', '${escapeHtml(sa.email)}', this)">
+                <i class="fas fa-user-slash"></i> Revoke
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function handleCreateSubAdmin(e) {
+      e.preventDefault();
+      const nameEl = document.getElementById('subAdminName');
+      const emailEl = document.getElementById('subAdminEmail');
+      const passEl = document.getElementById('subAdminPassword');
+      const msgEl = document.getElementById('subAdminFormMsg');
+      const btn = e.target.querySelector('button[type="submit"]');
+
+      const name = (nameEl?.value || '').trim();
+      const email = (emailEl?.value || '').trim().toLowerCase();
+      const password = passEl?.value || '';
+
+      if (msgEl) {
+        msgEl.style.display = 'block';
+        msgEl.style.background = '#eff6ff';
+        msgEl.style.color = '#1e40af';
+        msgEl.textContent = 'Creating sub-admin account in Supabase Auth...';
+      }
+      setButtonLoading(btn, true, 'Creating...');
+
+      try {
+        const res = await window.GreachDB.callAdminApi('create_sub_admin', { name, email, password });
+        if (res && res.success) {
+          if (msgEl) {
+            msgEl.style.background = '#ecfdf5';
+            msgEl.style.color = '#065f46';
+            msgEl.textContent = `Sub-admin ${email} created! Share their email and temporary password securely.`;
+          }
+          document.getElementById('createSubAdminForm')?.reset();
+          showToast('Sub-Admin Created', `${name} (${email}) added with sub_admin role.`, 'success');
+          await renderSubAdminsTable();
+        } else {
+          if (msgEl) {
+            msgEl.style.background = '#fef2f2';
+            msgEl.style.color = '#991b1b';
+            msgEl.textContent = (res && res.error) || 'Could not create sub-admin.';
+          }
+        }
+      } catch (err) {
+        if (msgEl) {
+          msgEl.style.background = '#fef2f2';
+          msgEl.style.color = '#991b1b';
+          msgEl.textContent = 'Network error creating sub-admin.';
+        }
+      } finally {
+        setButtonLoading(btn, false);
+      }
+    }
+
+    function handleRevokeSubAdmin(userId, email, btn) {
+      requireSuperAdminAuth(`Revoke Sub-Admin access for ${email}`, async () => {
+        if (!confirm(`Revoke admin access for ${email}? They will no longer be able to sign in.`)) return;
+        if (btn) setButtonLoading(btn, true, 'Revoking...');
+        try {
+          const res = await window.GreachDB.callAdminApi('revoke_sub_admin', { userId });
+          if (res && res.success) {
+            showToast('Sub-Admin Revoked', `${email} no longer has admin access.`, 'warning');
+            await renderSubAdminsTable();
+          } else {
+            showToast('Revoke Failed', (res && res.error) || 'Could not revoke sub-admin.', 'error');
+          }
+        } finally {
+          if (btn) setButtonLoading(btn, false);
+        }
+      });
+    }
+
+    // =========================================================================
+    // COMPREHENSIVE BREVO & EMAILS HUB (Live Logs + Automated Template Previews)
+    // =========================================================================
+    let cachedBrevoNotifications = [];
+    let cachedBrevoTemplates = [];
+    let selectedBrevoTemplateType = 'registration_ack';
+
+    const EMAIL_TYPE_LABELS = {
+      registration_ack: 'Registration Received (Auto)',
+      payment_pending: 'Payment Instructions (Auto)',
+      admin_payment_alert: 'Admin Transfer Alert (Auto)',
+      payment_confirmed: 'Payment Confirmed & Code',
+      welcome: 'Welcome & Access Code',
+      payment_rejected: 'Payment Rejected Notice'
+    };
+
+    async function callBrevoAdminApi(body) {
+      const token = currentAdminSession ? currentAdminSession.token : '';
+      const res = await fetch('/api/brevo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': 'Bearer ' + token } : {})
+        },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json().catch(() => ({}));
+      return { ok: res.ok, status: res.status, data };
+    }
+
+    async function loadBrevoHub(forceRefresh = false) {
+      await Promise.all([
+        loadBrevoCloudNotifications(false),
+        loadBrevoTemplatePreviews()
+      ]);
+      if (forceRefresh) {
+        showToast('Brevo Refreshed', 'Loaded latest cloud delivery logs and email templates.', 'info', 2200);
+      }
+    }
+
+    async function loadBrevoCloudNotifications(silentKpiOnly = false) {
+      const badge = document.getElementById('brevoApiStatusBadge');
+      const senderEl = document.getElementById('brevoSenderIdentityText');
+      const kpiCount = document.getElementById('statTotalDispatches');
+      const kpiSub = document.getElementById('statBrevoStatus');
+
+      try {
+        const { ok, data } = await callBrevoAdminApi({ action: 'list_notifications', limit: 150 });
+        if (!ok || !data.success) {
+          if (!silentKpiOnly && badge) {
+            badge.className = 'badge-status badge-expired';
+            badge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Auth / Service Check Needed';
+          }
+          if (!silentKpiOnly) {
+            const tbody = document.getElementById('dispatchLogsTableBody');
+            if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#991b1b; padding:1.5rem;">${escapeHtml(data.error || 'Could not load cloud email logs.')}</td></tr>`;
+          }
+          return;
+        }
+
+        cachedBrevoNotifications = Array.isArray(data.notifications) ? data.notifications : [];
+        const s = data.summary || { total: 0, sent: 0, pending: 0, failed: 0, requires_reconciliation: 0 };
+
+        if (kpiCount) kpiCount.textContent = String(s.sent);
+        if (kpiSub) kpiSub.textContent = s.failed > 0 ? `${s.sent} sent • ${s.failed} failed` : `${s.total} total logged in cloud`;
+
+        const elSent = document.getElementById('brevoCountSent');
+        const elPend = document.getElementById('brevoCountPending');
+        const elFail = document.getElementById('brevoCountFailed');
+        const elRec = document.getElementById('brevoCountRecon');
+        if (elSent) elSent.textContent = String(s.sent);
+        if (elPend) elPend.textContent = String(s.pending);
+        if (elFail) elFail.textContent = String(s.failed);
+        if (elRec) elRec.textContent = String(s.requires_reconciliation);
+
+        if (senderEl && data.sender) {
+          senderEl.textContent = `${data.sender.name} <${data.sender.email}>`;
+        }
+        if (badge) {
+          if (data.configured) {
+            badge.className = 'badge-status badge-active';
+            badge.innerHTML = '<i class="fas fa-check-circle"></i> Brevo Live &amp; Configured';
+          } else {
+            badge.className = 'badge-status badge-expired';
+            badge.innerHTML = '<i class="fas fa-times-circle"></i> Brevo Key Missing on Server';
+          }
+        }
+
+        if (!silentKpiOnly) filterAndRenderBrevoLogs();
+      } catch (err) {
+        if (!silentKpiOnly) {
+          const tbody = document.getElementById('dispatchLogsTableBody');
+          if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#991b1b; padding:1.5rem;">Network error loading cloud email logs.</td></tr>';
+        }
+      }
+    }
+
+    function filterAndRenderBrevoLogs() {
+      const tbody = document.getElementById('dispatchLogsTableBody');
+      const emptyEl = document.getElementById('dispatchLogsEmptyState');
+      if (!tbody) return;
+
+      const q = (document.getElementById('brevoLogSearch')?.value || '').trim().toLowerCase();
+      const statusFilter = document.getElementById('brevoLogStatusFilter')?.value || 'all';
+
+      const filtered = cachedBrevoNotifications.filter(n => {
+        if (statusFilter !== 'all') {
+          if (statusFilter === 'pending') {
+            if (n.status !== 'pending' && n.status !== 'retrying') return false;
+          } else if (n.status !== statusFilter) {
+            return false;
+          }
+        }
+        if (q) {
+          const hay = `${n.recipient_email || ''} ${n.recipient_name || ''} ${n.order_reference || ''} ${n.notification_type || ''} ${n.status || ''}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      if (!filtered.length) {
+        tbody.innerHTML = '';
+        if (emptyEl) emptyEl.style.display = 'block';
+        return;
+      }
+      if (emptyEl) emptyEl.style.display = 'none';
+
+      tbody.innerHTML = filtered.map(n => {
+        const ts = n.sent_at || n.updated_at || n.created_at;
+        const tsStr = ts ? new Date(ts).toLocaleString() : '—';
+        const typeLabel = EMAIL_TYPE_LABELS[n.notification_type] || n.notification_type || 'Email';
+        let pill = '<span class="badge-status badge-cert">Pending</span>';
+        if (n.status === 'sent') pill = '<span class="badge-status badge-active"><i class="fas fa-check"></i> Sent</span>';
+        else if (n.status === 'failed') pill = '<span class="badge-status badge-expired"><i class="fas fa-times"></i> Failed</span>';
+        else if (n.status === 'requires_reconciliation') pill = '<span class="badge-status badge-cert"><i class="fas fa-exclamation"></i> Needs Review</span>';
+
+        const notes = n.provider_message_id
+          ? `<code style="font-size:0.74rem; color:#334155;">${escapeHtml(n.provider_message_id)}</code>`
+          : (n.error_message ? `<span style="font-size:0.78rem; color:#991b1b;">${escapeHtml(n.error_message)}</span>` : '<span style="color:#94a3b8;">—</span>');
+
+        return `
+          <tr>
+            <td style="font-size:0.8rem; color:#475569; white-space:nowrap;">${escapeHtml(tsStr)}</td>
+            <td><strong style="color:var(--navy-900); font-size:0.83rem;">${escapeHtml(typeLabel)}</strong></td>
+            <td>
+              <div style="font-weight:700; font-size:0.84rem; color:#0f172a;">${escapeHtml(n.recipient_name || 'Recipient')}</div>
+              <div style="font-size:0.76rem; color:#64748b;">${escapeHtml(n.recipient_email || '')}</div>
+            </td>
+            <td style="font-family:monospace; font-size:0.8rem;">${escapeHtml(n.order_reference || '—')}</td>
+            <td>${pill}</td>
+            <td>${notes}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function loadBrevoTemplatePreviews() {
+      const listEl = document.getElementById('brevoTemplateList');
+      if (!listEl) return;
+      const currency = document.getElementById('brevoPreviewCurrency')?.value || 'NGN';
+
+      const { ok, data } = await callBrevoAdminApi({ action: 'preview_templates', currency });
+      if (!ok || !data.success || !Array.isArray(data.templates)) {
+        listEl.innerHTML = `<div style="font-size:0.82rem; color:#991b1b; padding:0.75rem;">${escapeHtml(data.error || 'Could not load template previews.')}</div>`;
+        return;
+      }
+
+      cachedBrevoTemplates = data.templates;
+      renderBrevoTemplateButtons();
+      selectBrevoTemplatePreview(selectedBrevoTemplateType || cachedBrevoTemplates[0].type);
+    }
+
+    function renderBrevoTemplateButtons() {
+      const listEl = document.getElementById('brevoTemplateList');
+      if (!listEl) return;
+      listEl.innerHTML = cachedBrevoTemplates.map(tpl => {
+        const active = tpl.type === selectedBrevoTemplateType;
+        const badgeHtml = tpl.needsApproval
+          ? '<span style="font-size:0.68rem; font-weight:700; background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:10px;">After Admin Action</span>'
+          : '<span style="font-size:0.68rem; font-weight:700; background:#dcfce7; color:#166534; padding:2px 6px; border-radius:10px;">Automatic (No Approval)</span>';
+        return `
+          <button type="button" onclick="selectBrevoTemplatePreview('${escapeHtml(tpl.type)}')" style="text-align:left; padding:0.8rem 0.9rem; border-radius:10px; cursor:pointer; border:1.5px solid ${active ? '#0284c7' : '#e2e8f0'}; background:${active ? '#e0f2fe' : '#ffffff'}; transition:all 0.15s;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:4px;">
+              <strong style="font-size:0.85rem; color:#0f172a;">${escapeHtml(tpl.title)}</strong>
+            </div>
+            <div style="margin-bottom:4px;">${badgeHtml}</div>
+            <div style="font-size:0.75rem; color:#475569;">To: ${escapeHtml(tpl.recipient)}</div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectBrevoTemplatePreview(type) {
+      const tpl = cachedBrevoTemplates.find(t => t.type === type) || cachedBrevoTemplates[0];
+      if (!tpl) return;
+      selectedBrevoTemplateType = tpl.type;
+      renderBrevoTemplateButtons();
+
+      const metaEl = document.getElementById('brevoPreviewMeta');
+      const frame = document.getElementById('brevoPreviewFrame');
+      if (metaEl) {
+        metaEl.innerHTML = `
+          <div><strong>Trigger:</strong> ${escapeHtml(tpl.trigger)}</div>
+          <div><strong>Recipient:</strong> ${escapeHtml(tpl.recipient)} &bull; <strong>Mode:</strong> ${tpl.needsApproval ? 'Sent when Admin clicks Confirm / Reject' : 'Sent Automatically by Brevo'}</div>
+          <div><strong>Subject:</strong> <span style="color:#0A0A5E; font-weight:700;">${escapeHtml(tpl.subject)}</span></div>
+        `;
+      }
+      if (frame) {
+        frame.srcdoc = tpl.html;
+      }
+    }
+
+    async function handleRetryFailedEmails(btn) {
+      if (btn) setButtonLoading(btn, true, 'Retrying...');
+      try {
+        const { ok, data } = await callBrevoAdminApi({ action: 'retry_failed' });
+        if (ok && data.success) {
+          showToast('Retry Completed', `Retried: ${data.retried || 0}, Suppressed: ${data.suppressed || 0} (out of ${data.totalFailedFound || 0} failed).`, 'success');
+          await loadBrevoCloudNotifications(false);
+        } else {
+          showToast('Retry Error', data.error || 'Could not retry failed emails.', 'error');
+        }
+      } finally {
+        if (btn) setButtonLoading(btn, false);
+      }
+    }
+
+    async function handleReconcilePendingEmails(btn) {
+      if (btn) setButtonLoading(btn, true, 'Reconciling...');
+      try {
+        const { ok, data } = await callBrevoAdminApi({ action: 'reconcile_pending' });
+        if (ok && data.success) {
+          showToast('Reconciliation Complete', `Checked ${data.reconciled || 0} stale pending records (${data.alreadyDelivered || 0} confirmed delivered, ${data.transitionedFailed || 0} marked failed).`, 'info');
+          await loadBrevoCloudNotifications(false);
+        } else {
+          showToast('Reconcile Error', data.error || 'Could not reconcile pending records.', 'error');
+        }
+      } finally {
+        if (btn) setButtonLoading(btn, false);
+      }
     }
 
 </script>
