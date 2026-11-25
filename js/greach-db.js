@@ -1261,13 +1261,10 @@
         const discountPct = Math.round((1 - (prices[targetKey].current / prices[targetKey].regular)) * 100);
         prices[targetKey].discount = `${discountPct}% OFF`;
         
-        // Always mirror to alias keys for backward compatibility
-        prices.excel_dashboard = prices[targetKey].current ? { ...prices[targetKey] } : prices.excel_dashboard;
-        prices.dashboard = { ...prices.excel_dashboard };
-        prices.sql = prices[targetKey].current && canonicalKey === 'sql' ? { ...prices[targetKey] } : prices.sql;
-        prices.sql_beginners = { ...prices.sql };
-        prices.complete_course = prices[targetKey].current && canonicalKey === 'complete_course' ? { ...prices[targetKey] } : prices.complete_course;
-        prices.complete_package = { ...prices.complete_course };
+        // Mirror to alias keys ONLY for the matching course
+        if (canonicalKey === 'excel_dashboard') prices.dashboard = { ...prices[targetKey] };
+        if (canonicalKey === 'sql') prices.sql_beginners = { ...prices[targetKey] };
+        if (canonicalKey === 'complete_course') prices.complete_package = { ...prices[targetKey] };
         
         localStorage.setItem(PRICES_KEY, JSON.stringify(prices));
 
