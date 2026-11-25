@@ -1,0 +1,1246 @@
+/* ==========================================================================
+   Greach Impact Academy — Unified Clean Brand Theme & Motion System
+   Strictly 3-Color Palette:
+     1. Pure White Canvas  (#FFFFFF / #F8FAFC subtle surface)
+     2. Deep Brand Navy    (#0A0A5E)
+     3. Refined Brand Teal (#0E9AA7 readable accent / #64C7D4 soft highlight)
+   ========================================================================== */
+
+:root {
+  --gi-white: #ffffff;
+  --gi-surface: #f8fafc;
+  --gi-surface-tint: #f2fbfc;
+  --gi-navy: #0a0a5e;
+  --gi-navy-hover: #14147a;
+  --gi-navy-soft: rgba(10, 10, 94, 0.06);
+  --gi-teal: #0e9aa7;
+  --gi-teal-light: #64c7d4;
+  --gi-teal-soft: rgba(14, 154, 167, 0.10);
+  --gi-teal-border: rgba(14, 154, 167, 0.28);
+  --gi-ink: #0f172a;
+  --gi-muted: #475569;
+  --gi-subtle: #64748b;
+  --gi-border: #e2e8f0;
+  --gi-shadow-sm: 0 2px 10px rgba(10, 10, 94, 0.05);
+  --gi-shadow-md: 0 12px 32px rgba(10, 10, 94, 0.08);
+  --gi-shadow-lg: 0 20px 48px rgba(10, 10, 94, 0.11);
+  --gi-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Remap legacy page variables to the clean 3-color system */
+  --navy: #0a0a5e;
+  --slate: #1e2a6e;
+  --teal: #0e9aa7;
+  --aqua: #64c7d4;
+  --white: #ffffff;
+  --bg: #ffffff;
+  --text: #0f172a;
+  --card-bg: #ffffff;
+  --border: #e2e8f0;
+  --shadow: rgba(10, 10, 94, 0.08);
+  --navy-900: #0a0a5e;
+  --navy-800: #14147a;
+  --teal-400: #0e9aa7;
+  --teal-500: #0e9aa7;
+  --green-600: #0a0a5e;
+  --gold-500: #0e9aa7;
+}
+
+[data-theme="dark"] {
+  --gi-white: #0d111d;
+  --gi-surface: #13192b;
+  --gi-surface-tint: #132232;
+  --gi-ink: #f1f5f9;
+  --gi-muted: #cbd5e1;
+  --gi-subtle: #94a3b8;
+  --gi-border: #232d47;
+  --gi-teal: #64c7d4;
+  --gi-teal-soft: rgba(100, 199, 212, 0.14);
+  --gi-teal-border: rgba(100, 199, 212, 0.32);
+  --white: #0d111d;
+  --bg: #0d111d;
+  --text: #f1f5f9;
+  --card-bg: #13192b;
+  --border: #232d47;
+  --teal: #64c7d4;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--gi-white) !important;
+  color: var(--gi-ink) !important;
+}
+
+/* ===== SCROLL PROGRESS INDICATOR ===== */
+.gi-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--gi-navy) 0%, var(--gi-teal) 100%);
+  z-index: 2500;
+  pointer-events: none;
+  transition: width 0.08s linear;
+}
+
+/* ===== SLIM TOP ANNOUNCEMENT BAR ===== */
+.sticky-course-banner,
+.sticky-banner {
+  background: var(--gi-navy) !important;
+  color: #ffffff !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  padding: 9px 18px !important;
+  font-size: 0.84rem !important;
+  font-weight: 500 !important;
+}
+
+.sticky-course-banner i,
+.sticky-banner i {
+  color: var(--gi-teal-light) !important;
+}
+
+.sticky-course-banner strong,
+.sticky-banner strong {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.sticky-course-banner .banner-countdown,
+.sticky-banner .banner-countdown,
+.sticky-course-banner span[style*="border-radius: 50px"],
+.sticky-banner span[style*="border-radius: 50px"] {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(100, 199, 212, 0.35) !important;
+  font-weight: 600 !important;
+}
+
+.sticky-course-banner a,
+.sticky-banner a {
+  background: #ffffff !important;
+  color: var(--gi-navy) !important;
+  border: 1px solid transparent !important;
+  padding: 5px 16px !important;
+  border-radius: 50px !important;
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  transition: transform 0.25s var(--gi-ease), background-color 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.sticky-course-banner a:hover,
+.sticky-banner a:hover {
+  background: var(--gi-teal-light) !important;
+  color: var(--gi-navy) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16) !important;
+}
+
+/* ===== CLEAN WHITE FROSTED HEADER / NAVBAR ===== */
+header:not(.header) {
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--gi-border) !important;
+  box-shadow: none !important;
+  padding: 13px 0 !important;
+  transition: box-shadow 0.3s var(--gi-ease), background-color 0.3s ease !important;
+}
+
+header:not(.header).gi-header-scrolled {
+  background: rgba(255, 255, 255, 0.98) !important;
+  box-shadow: 0 8px 28px rgba(10, 10, 94, 0.08) !important;
+}
+
+[data-theme="dark"] header:not(.header) {
+  background: rgba(13, 17, 29, 0.94) !important;
+  border-bottom-color: var(--gi-border) !important;
+}
+
+header:not(.header) .logo {
+  color: var(--gi-navy) !important;
+  letter-spacing: -0.02em;
+}
+
+[data-theme="dark"] header:not(.header) .logo {
+  color: #ffffff !important;
+}
+
+header:not(.header) .logo .teal {
+  color: var(--gi-teal) !important;
+}
+
+header:not(.header) .logo img {
+  border-radius: 8px !important;
+  border: 1px solid var(--gi-border);
+}
+
+header:not(.header) .hamburger span {
+  background: var(--gi-navy) !important;
+}
+
+[data-theme="dark"] header:not(.header) .hamburger span {
+  background: #ffffff !important;
+}
+
+header:not(.header) nav a {
+  color: var(--gi-muted) !important;
+  font-weight: 600 !important;
+  position: relative;
+  transition: color 0.25s ease, transform 0.25s var(--gi-ease), background-color 0.25s ease !important;
+}
+
+header:not(.header) nav a:hover,
+header:not(.header) nav a.active,
+header:not(.header) nav a.active-link {
+  color: var(--gi-navy) !important;
+}
+
+[data-theme="dark"] header:not(.header) nav a:hover,
+[data-theme="dark"] header:not(.header) nav a.active,
+[data-theme="dark"] header:not(.header) nav a.active-link {
+  color: var(--gi-teal-light) !important;
+}
+
+header:not(.header) nav a.course-link {
+  color: var(--gi-teal) !important;
+}
+
+/* Subtle animated bottom line on plain text nav links */
+header:not(.header) nav a:not(.btn-back):not([href*="classroom"]):not([href*="admin.html"])::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--gi-teal);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.28s var(--gi-ease);
+}
+
+header:not(.header) nav a:not(.btn-back):not([href*="classroom"]):not([href*="admin.html"]):hover::after,
+header:not(.header) nav a.active:not(.btn-back)::after,
+header:not(.header) nav a.active-link:not(.btn-back)::after {
+  transform: scaleX(1);
+}
+
+/* Unified Nav Action Pills: Classroom (Navy) & Admin / Back (Clean Outlined) */
+header:not(.header) nav a[href*="classroom"] {
+  background: var(--gi-navy) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--gi-navy) !important;
+  box-shadow: 0 4px 12px rgba(10, 10, 94, 0.16) !important;
+  padding: 7px 16px !important;
+  border-radius: 50px !important;
+}
+
+header:not(.header) nav a[href*="classroom"]:hover {
+  background: var(--gi-navy-hover) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px rgba(10, 10, 94, 0.24) !important;
+}
+
+header:not(.header) nav a[href*="admin.html"] {
+  background: var(--gi-surface) !important;
+  color: var(--gi-navy) !important;
+  border: 1.5px solid var(--gi-border) !important;
+  padding: 6px 14px !important;
+  border-radius: 50px !important;
+}
+
+header:not(.header) nav a[href*="admin.html"]:hover {
+  background: var(--gi-teal-soft) !important;
+  border-color: var(--gi-teal) !important;
+  color: var(--gi-navy) !important;
+}
+
+[data-theme="dark"] header:not(.header) nav a[href*="admin.html"] {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #ffffff !important;
+  border-color: var(--gi-border) !important;
+}
+
+header:not(.header) .btn-back {
+  background: var(--gi-surface) !important;
+  color: var(--gi-navy) !important;
+  border: 1px solid var(--gi-border) !important;
+  padding: 7px 16px !important;
+  border-radius: 50px !important;
+  font-weight: 700 !important;
+}
+
+header:not(.header) .btn-back:hover {
+  background: var(--gi-teal-soft) !important;
+  border-color: var(--gi-teal) !important;
+  color: var(--gi-navy) !important;
+}
+
+header:not(.header) .theme-toggle {
+  background: var(--gi-surface) !important;
+  color: var(--gi-navy) !important;
+  border: 1px solid var(--gi-border) !important;
+  border-radius: 50px !important;
+}
+
+header:not(.header) .theme-toggle:hover {
+  border-color: var(--gi-teal) !important;
+  color: var(--gi-teal) !important;
+}
+
+[data-theme="dark"] header:not(.header) .theme-toggle {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: var(--gi-teal-light) !important;
+}
+
+/* ===== AIRY WHITE HERO SECTIONS WITH SUBTLE TEAL TOUCH ===== */
+.hero,
+.training-hero,
+.course-hero,
+.page-hero,
+.blog-hero {
+  background:
+    radial-gradient(ellipse 70% 55% at 50% -12%, rgba(100, 199, 212, 0.16), transparent 72%),
+    var(--gi-white) !important;
+  color: var(--gi-ink) !important;
+  border-bottom: 1px solid var(--gi-border) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .hero,
+[data-theme="dark"] .training-hero,
+[data-theme="dark"] .course-hero,
+[data-theme="dark"] .page-hero,
+[data-theme="dark"] .blog-hero {
+  background:
+    radial-gradient(ellipse 70% 55% at 50% -12%, rgba(100, 199, 212, 0.14), transparent 72%),
+    var(--gi-white) !important;
+}
+
+.hero h1,
+.training-hero h1,
+.course-hero h1,
+.page-hero h1,
+.blog-hero h1 {
+  color: var(--gi-navy) !important;
+  text-shadow: none !important;
+  letter-spacing: -0.03em !important;
+}
+
+[data-theme="dark"] .hero h1,
+[data-theme="dark"] .training-hero h1,
+[data-theme="dark"] .course-hero h1,
+[data-theme="dark"] .page-hero h1,
+[data-theme="dark"] .blog-hero h1 {
+  color: #ffffff !important;
+}
+
+.hero h1 .highlight,
+.hero h1 span,
+.training-hero h1 span,
+.course-hero h1 span,
+.page-hero h1 span,
+.blog-hero h1 span {
+  color: var(--gi-teal) !important;
+}
+
+.hero .subtitle,
+.hero p,
+.training-hero .hero-sub,
+.training-hero p,
+.course-hero .subtitle,
+.course-hero .hero-sub,
+.course-hero p,
+.page-hero p,
+.blog-hero p {
+  color: var(--gi-muted) !important;
+  opacity: 1 !important;
+}
+
+/* Hero Badges (Clean soft Teal tint, zero orange/yellow) */
+.hero .badge,
+.training-hero .badge,
+.course-hero .badge,
+.page-hero .badge,
+.blog-hero .badge {
+  background: var(--gi-teal-soft) !important;
+  color: var(--gi-navy) !important;
+  border: 1px solid var(--gi-teal-border) !important;
+  box-shadow: none !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="dark"] .hero .badge,
+[data-theme="dark"] .training-hero .badge,
+[data-theme="dark"] .course-hero .badge {
+  color: var(--gi-teal-light) !important;
+}
+
+/* Trust Badges on White Hero */
+.trust-badge span {
+  background: var(--gi-surface) !important;
+  color: var(--gi-navy) !important;
+  border: 1px solid var(--gi-border) !important;
+  padding: 6px 14px !important;
+  border-radius: 50px !important;
+  font-size: 0.88rem !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="dark"] .trust-badge span {
+  color: var(--gi-ink) !important;
+}
+
+.trust-badge i {
+  color: var(--gi-teal) !important;
+}
+
+/* Course Hero Price Pill on White Canvas */
+.course-hero .price-tag {
+  background: var(--gi-white) !important;
+  border: 1.5px solid var(--gi-border) !important;
+  box-shadow: var(--gi-shadow-md) !important;
+  color: var(--gi-navy) !important;
+  padding: 18px 30px !important;
+  border-radius: 20px !important;
+}
+
+.course-hero .price-tag del {
+  color: var(--gi-subtle) !important;
+}
+
+.course-hero .price-tag span:not(.early) {
+  color: var(--gi-navy) !important;
+}
+
+[data-theme="dark"] .course-hero .price-tag span:not(.early) {
+  color: #ffffff !important;
+}
+
+.course-hero .price-tag .early {
+  background: var(--gi-teal-soft) !important;
+  color: var(--gi-teal) !important;
+  border: 1px solid var(--gi-teal-border) !important;
+  font-weight: 700 !important;
+  display: inline-block !important;
+  padding: 5px 14px !important;
+  border-radius: 50px !important;
+  margin-top: 8px !important;
+}
+
+/* Training Hero Carousel on Light Canvas */
+.hero-carousel {
+  background: var(--gi-white) !important;
+  border: 1px solid var(--gi-border) !important;
+  box-shadow: var(--gi-shadow-lg) !important;
+}
+
+.carousel-indicators .dot {
+  background: rgba(10, 10, 94, 0.2) !important;
+}
+
+.carousel-indicators .dot.active {
+  background: var(--gi-navy) !important;
+}
+
+.carousel-nav-zone i {
+  color: rgba(10, 10, 94, 0.45) !important;
+}
+
+.slide-overlay {
+  border-left-color: var(--gi-teal) !important;
+}
+
+.pathway-step .step-label {
+  color: var(--gi-teal) !important;
+}
+
+/* ===== UNIFIED BUTTON SYSTEM (NAVY PRIMARY + CLEAN OUTLINED SECONDARY) ===== */
+.btn-primary,
+.btn-enroll,
+.btn-submit,
+.btn-submit-order,
+.btn-enter-classroom,
+main.card .btn {
+  background: var(--gi-navy) !important;
+  color: #ffffff !important;
+  border: 1.5px solid var(--gi-navy) !important;
+  box-shadow: 0 6px 20px rgba(10, 10, 94, 0.16) !important;
+  transition: transform 0.28s var(--gi-ease), box-shadow 0.28s var(--gi-ease), background-color 0.25s ease, border-color 0.25s ease !important;
+}
+
+.btn-primary:hover,
+.btn-enroll:hover,
+.btn-submit:hover,
+.btn-submit-order:hover,
+.btn-enter-classroom:hover,
+main.card .btn:hover {
+  background: var(--gi-navy-hover) !important;
+  border-color: var(--gi-navy-hover) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 28px rgba(10, 10, 94, 0.24) !important;
+}
+
+.btn-primary:active,
+.btn-enroll:active,
+.btn-secondary:active,
+.btn-submit-order:active {
+  transform: translateY(0) scale(0.985) !important;
+}
+
+.btn-secondary,
+.hero-buttons a.btn-primary:not(.btn-enroll)[href^="#"],
+.cta-banner a.btn-primary:not(.btn-enroll) {
+  background: var(--gi-white) !important;
+  color: var(--gi-navy) !important;
+  border: 1.5px solid var(--gi-navy) !important;
+  box-shadow: none !important;
+}
+
+.btn-secondary:hover,
+.hero-buttons a.btn-primary:not(.btn-enroll)[href^="#"]:hover,
+.cta-banner a.btn-primary:not(.btn-enroll):hover {
+  background: var(--gi-teal-soft) !important;
+  border-color: var(--gi-teal) !important;
+  color: var(--gi-navy) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: var(--gi-shadow-sm) !important;
+}
+
+/* Keep primary Start Learning on index hero solid Navy */
+.hero .hero-buttons a.btn-primary[href="#courses"] {
+  background: var(--gi-navy) !important;
+  color: #ffffff !important;
+  border-color: var(--gi-navy) !important;
+}
+
+.hero .hero-buttons a.btn-primary[href="#courses"]:hover {
+  background: var(--gi-navy-hover) !important;
+  color: #ffffff !important;
+}
+
+/* Refined WhatsApp Buttons (Strictly White + Navy + Teal, zero neon green clash) */
+.btn-whatsapp-channel,
+.btn-whatsapp-chat,
+.btn-whatsapp,
+.whatsapp-cta a.channel,
+.whatsapp-cta a.chat {
+  background: var(--gi-white) !important;
+  color: var(--gi-navy) !important;
+  border: 1.5px solid var(--gi-border) !important;
+  box-shadow: var(--gi-shadow-sm) !important;
+  transition: transform 0.25s var(--gi-ease), border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease !important;
+}
+
+.btn-whatsapp-channel i,
+.btn-whatsapp-chat i,
+.btn-whatsapp i,
+.whatsapp-cta a.channel i,
+.whatsapp-cta a.chat i {
+  color: var(--gi-teal) !important;
+}
+
+.btn-whatsapp-channel:hover,
+.btn-whatsapp-chat:hover,
+.btn-whatsapp:hover,
+.whatsapp-cta a.channel:hover,
+.whatsapp-cta a.chat:hover {
+  background: var(--gi-surface-tint) !important;
+  border-color: var(--gi-teal) !important;
+  color: var(--gi-navy) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: var(--gi-shadow-md) !important;
+}
+
+/* Subtle Arrow Glide on Button Hover */
+a .fa-arrow-right,
+button .fa-arrow-right {
+  transition: transform 0.28s var(--gi-ease);
+}
+
+a:hover .fa-arrow-right,
+button:hover .fa-arrow-right {
+  transform: translateX(4px);
+}
+
+/* ===== SECTION RHYTHM (ALTERNATING WHITE & WHISPER OFF-WHITE) ===== */
+.featured-courses,
+.why-us,
+.testimonials,
+.focus,
+.team,
+.contact,
+.features,
+.discount-info {
+  background: var(--gi-white) !important;
+}
+
+.learning-journey,
+.about,
+.blog-section,
+.pathway-section,
+.programs,
+.course-details,
+.curriculum,
+.faq-section,
+.portfolio {
+  background: var(--gi-surface) !important;
+}
+
+.section-title {
+  color: var(--gi-navy) !important;
+  letter-spacing: -0.025em !important;
+}
+
+[data-theme="dark"] .section-title {
+  color: #ffffff !important;
+}
+
+.section-title span {
+  color: var(--gi-teal) !important;
+}
+
+.section-sub {
+  color: var(--gi-muted) !important;
+  opacity: 1 !important;
+}
+
+.early-bird-note {
+  background: var(--gi-teal-soft) !important;
+  border: 1px solid var(--gi-teal-border) !important;
+  color: var(--gi-ink) !important;
+}
+
+.early-bird-note i,
+.early-bird-note strong {
+  color: var(--gi-navy) !important;
+}
+
+/* ===== CLEAN COURSE, PROGRAM & BLOG CARDS (NO HEAVY DARK HEADER WALLS) ===== */
+.course-card,
+.program-card,
+.blog-card,
+.portfolio-item,
+.detail-card,
+.feature-card,
+.week-card,
+.why-item,
+.journey-step,
+.focus-card,
+.testimonial-card,
+.team-card,
+.discount-item,
+.pathway-step,
+.faq-item {
+  background: var(--gi-white) !important;
+  border: 1px solid var(--gi-border) !important;
+  box-shadow: var(--gi-shadow-sm) !important;
+  transition: transform 0.32s var(--gi-ease), box-shadow 0.32s var(--gi-ease), border-color 0.25s ease !important;
+}
+
+.course-card:hover,
+.program-card:hover,
+.blog-card:hover,
+.portfolio-item:hover,
+.detail-card:hover,
+.feature-card:hover,
+.week-card:hover,
+.why-item:hover,
+.journey-step:hover,
+.focus-card:hover,
+.testimonial-card:hover,
+.team-card:hover,
+.pathway-step:hover {
+  transform: translateY(-6px) !important;
+  border-color: var(--gi-teal-light) !important;
+  box-shadow: var(--gi-shadow-lg) !important;
+}
+
+/* Replace dark navy card headers with crisp white + thin top brand accent line */
+.course-card .course-header,
+.program-card .program-header {
+  background: var(--gi-surface) !important;
+  color: var(--gi-navy) !important;
+  border-bottom: 1px solid var(--gi-border) !important;
+  border-top: 3px solid var(--gi-navy) !important;
+  padding: 26px 24px 20px !important;
+}
+
+[data-theme="dark"] .course-card .course-header,
+[data-theme="dark"] .program-card .program-header {
+  color: #ffffff !important;
+}
+
+.course-card:hover .course-header,
+.program-card:hover .program-header {
+  border-top-color: var(--gi-teal) !important;
+}
+
+.course-card .course-header i,
+.program-card .program-header i {
+  color: var(--gi-teal) !important;
+  font-size: 1.9rem !important;
+  background: var(--gi-teal-soft);
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px !important;
+  transition: transform 0.32s var(--gi-ease), background-color 0.25s ease;
+}
+
+.course-card:hover .course-header i,
+.program-card:hover .program-header i {
+  transform: scale(1.08);
+  background: rgba(14, 154, 167, 0.16);
+}
+
+.course-card .course-header h3,
+.program-card .program-header h3 {
+  color: var(--gi-navy) !important;
+}
+
+[data-theme="dark"] .course-card .course-header h3,
+[data-theme="dark"] .program-card .program-header h3 {
+  color: #ffffff !important;
+}
+
+.course-card .course-header .level,
+.program-card .program-header .level {
+  color: var(--gi-subtle) !important;
+  opacity: 1 !important;
+  font-weight: 600 !important;
+}
+
+/* Unified Soft Teal Status Badges (No orange/yellow pills) */
+.course-card .course-header .badge,
+.program-card .program-header .status-badge {
+  background: var(--gi-teal-soft) !important;
+  color: var(--gi-navy) !important;
+  border: 1px solid var(--gi-teal-border) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+}
+
+[data-theme="dark"] .course-card .course-header .badge,
+[data-theme="dark"] .program-card .program-header .status-badge {
+  color: var(--gi-teal-light) !important;
+}
+
+.program-card .program-header .status-badge.soon {
+  background: var(--gi-navy-soft) !important;
+  color: var(--gi-subtle) !important;
+  border-color: var(--gi-border) !important;
+}
+
+/* Pricing Typography Inside Cards (Navy + Teal, Zero Green/Orange) */
+.course-price,
+.price-section {
+  border-top: 1px solid var(--gi-border);
+  padding-top: 14px;
+}
+
+.course-price span:not(.early-price):not(.gi-discount-pill),
+.price-section .price-full span:not(.gi-discount-pill) {
+  color: var(--gi-navy) !important;
+}
+
+[data-theme="dark"] .course-price span:not(.early-price):not(.gi-discount-pill),
+[data-theme="dark"] .price-section .price-full span:not(.gi-discount-pill) {
+  color: #ffffff !important;
+}
+
+.course-price span[style*="background"],
+.price-section .price-full span[style*="background"],
+.gi-discount-pill {
+  background: var(--gi-teal-soft) !important;
+  color: var(--gi-teal) !important;
+  border: 1px solid var(--gi-teal-border) !important;
+  font-weight: 700 !important;
+}
+
+.course-price .early-price,
+.price-section .price-early {
+  color: var(--gi-teal) !important;
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+}
+
+/* Blog Card Header Placeholders (Light Surface + Teal Icon instead of Heavy Dark Wall) */
+.blog-card .blog-image,
+.blog-card .card-image-placeholder {
+  background: linear-gradient(135deg, var(--gi-surface) 0%, var(--gi-surface-tint) 100%) !important;
+  border-bottom: 1px solid var(--gi-border) !important;
+  color: var(--gi-navy) !important;
+}
+
+.blog-card .blog-image i,
+.blog-card .card-image-placeholder i {
+  color: var(--gi-navy) !important;
+}
+
+.blog-card .badge,
+.blog-card .card-image-placeholder .tag {
+  background: var(--gi-white) !important;
+  color: var(--gi-navy) !important;
+  border: 1px solid var(--gi-teal-border) !important;
+}
+
+/* Step Numbers & Icons */
+.journey-step .step-number {
+  background: var(--gi-navy) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(10, 10, 94, 0.16);
+}
+
+.why-item i,
+.focus-card i,
+.detail-card i,
+.feature-card i,
+.discount-item i,
+.week-card h4,
+.week-card ul li i {
+  color: var(--gi-teal) !important;
+}
+
+.week-card h4 {
+  color: var(--gi-navy) !important;
+}
+
+[data-theme="dark"] .week-card h4 {
+  color: var(--gi-teal-light) !important;
+}
+
+/* ===== LIGHT, AIRY STATS, IMPACT, CTA & NEWSLETTER SECTIONS ===== */
+.stats,
+.impact {
+  background: var(--gi-surface) !important;
+  color: var(--gi-ink) !important;
+  border-top: 1px solid var(--gi-border);
+  border-bottom: 1px solid var(--gi-border);
+}
+
+.stats h2,
+.impact h2 {
+  color: var(--gi-navy) !important;
+}
+
+[data-theme="dark"] .stats h2,
+[data-theme="dark"] .impact h2 {
+  color: #ffffff !important;
+}
+
+.stats .section-sub,
+.impact .section-sub {
+  color: var(--gi-muted) !important;
+}
+
+.stat-item,
+.impact-item {
+  background: var(--gi-white) !important;
+  border: 1px solid var(--gi-border) !important;
+  border-radius: 16px !important;
+  padding: 28px 20px !important;
+  box-shadow: var(--gi-shadow-sm) !important;
+  transition: transform 0.3s var(--gi-ease), border-color 0.25s ease, box-shadow 0.3s var(--gi-ease) !important;
+}
+
+.stat-item:hover,
+.impact-item:hover {
+  transform: translateY(-4px) !important;
+  border-color: var(--gi-teal-light) !important;
+  box-shadow: var(--gi-shadow-md) !important;
+}
+
+.stat-item .number,
+.impact-item .number {
+  color: var(--gi-navy) !important;
+}
+
+[data-theme="dark"] .stat-item .number,
+[data-theme="dark"] .impact-item .number {
+  color: var(--gi-teal-light) !important;
+}
+
+.stat-item .label,
+.impact-item .label {
+  color: var(--gi-muted) !important;
+  opacity: 1 !important;
+  font-weight: 600 !important;
+}
+
+/* CTA Banners & Newsletter: Crisp Light Tinted Surfaces with Navy Headings */
+.cta-banner,
+.newsletter {
+  background:
+    radial-gradient(ellipse 65% 75% at 50% 0%, rgba(100, 199, 212, 0.14), transparent 72%),
+    var(--gi-surface) !important;
+  color: var(--gi-ink) !important;
+  border-top: 1px solid var(--gi-border) !important;
+  border-bottom: 1px solid var(--gi-border) !important;
+}
+
+.cta-banner h2,
+.newsletter h2 {
+  color: var(--gi-navy) !important;
+}
+
+[data-theme="dark"] .cta-banner h2,
+[data-theme="dark"] .newsletter h2 {
+  color: #ffffff !important;
+}
+
+.cta-banner p,
+.newsletter .section-desc {
+  color: var(--gi-muted) !important;
+  opacity: 1 !important;
+}
+
+.newsletter-form-container {
+  background: var(--gi-white) !important;
+  border: 1px solid var(--gi-border) !important;
+  box-shadow: var(--gi-shadow-md) !important;
+}
+
+.newsletter-form-container label {
+  color: var(--gi-navy) !important;
+}
+
+.newsletter-form-container input[type="email"] {
+  border: 1.5px solid var(--gi-border) !important;
+  background: var(--gi-surface) !important;
+  color: var(--gi-ink) !important;
+}
+
+.newsletter-form-container input[type="email"]:focus {
+  border-color: var(--gi-navy) !important;
+  background: var(--gi-white) !important;
+}
+
+.newsletter-form-container button {
+  background: var(--gi-navy) !important;
+  color: #ffffff !important;
+}
+
+.newsletter-form-container button:hover {
+  background: var(--gi-navy-hover) !important;
+}
+
+.newsletter-form-container .privacy-note {
+  color: var(--gi-subtle) !important;
+  opacity: 1 !important;
+}
+
+.newsletter-status {
+  color: var(--gi-navy) !important;
+  background: var(--gi-surface) !important;
+  border-color: var(--gi-border) !important;
+}
+
+/* About Image Card — Keep tasteful single Navy brand card accent */
+.about-image {
+  background: var(--gi-navy) !important;
+  border: 1px solid rgba(100, 199, 212, 0.25);
+}
+
+/* Filter Tabs (Portfolio) */
+.filter-tabs button.active {
+  background: var(--gi-navy) !important;
+  border-color: var(--gi-navy) !important;
+  color: #ffffff !important;
+}
+
+.filter-tabs button:hover:not(.active) {
+  border-color: var(--gi-teal) !important;
+  color: var(--gi-navy) !important;
+}
+
+/* ===== CLEAN MINIMAL WHITE FOOTER ===== */
+footer {
+  background: var(--gi-white) !important;
+  color: var(--gi-muted) !important;
+  border-top: 2px solid var(--gi-navy) !important;
+}
+
+footer a {
+  color: var(--gi-navy) !important;
+}
+
+footer a:hover {
+  color: var(--gi-teal) !important;
+}
+
+footer .socials a {
+  color: var(--gi-subtle) !important;
+}
+
+footer .socials a:hover {
+  color: var(--gi-navy) !important;
+}
+
+[data-theme="dark"] footer a {
+  color: var(--gi-teal-light) !important;
+}
+
+/* ===== REFINED FLOATING WHATSAPP CONTROLS (MATCHES BRAND PALETTE) ===== */
+.whatsapp-float-group a.chat {
+  background: var(--gi-navy) !important;
+  color: #ffffff !important;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 24px rgba(10, 10, 94, 0.24) !important;
+}
+
+.whatsapp-float-group a.chat:hover {
+  background: var(--gi-navy-hover) !important;
+  box-shadow: 0 12px 30px rgba(10, 10, 94, 0.34) !important;
+}
+
+.whatsapp-float-group a.channel {
+  background: var(--gi-white) !important;
+  color: var(--gi-navy) !important;
+  border: 1.5px solid var(--gi-teal) !important;
+  box-shadow: 0 8px 22px rgba(10, 10, 94, 0.14) !important;
+}
+
+.whatsapp-float-group a.channel:hover {
+  background: var(--gi-teal-soft) !important;
+}
+
+/* ===== REGISTRATION, CONFIRMATION & THANK-YOU PAGES ===== */
+header.header {
+  background:
+    radial-gradient(ellipse 65% 60% at 50% -15%, rgba(100, 199, 212, 0.14), transparent 70%),
+    var(--gi-white) !important;
+  color: var(--gi-ink) !important;
+  border-bottom: 1px solid var(--gi-border) !important;
+}
+
+header.header h1 {
+  color: var(--gi-navy) !important;
+}
+
+header.header p {
+  color: var(--gi-muted) !important;
+}
+
+header.header .whatsapp-cta a[href*="admin.html"] {
+  background: var(--gi-surface) !important;
+  color: var(--gi-navy) !important;
+  border: 1.5px solid var(--gi-border) !important;
+}
+
+header.header .whatsapp-cta a[href*="admin.html"]:hover {
+  border-color: var(--gi-teal) !important;
+  background: var(--gi-teal-soft) !important;
+}
+
+.course-card-option .tag-popular,
+.course-card-option .tag-discount {
+  background: var(--gi-teal-soft) !important;
+  color: var(--gi-teal) !important;
+  border: 1px solid var(--gi-teal-border) !important;
+}
+
+.course-card-option .price-actual,
+.summary-total .total-amount {
+  color: var(--gi-navy) !important;
+}
+
+.bank-transfer-box {
+  background: var(--gi-surface) !important;
+  color: var(--gi-ink) !important;
+  border: 1.5px solid var(--gi-border) !important;
+  border-left: 4px solid var(--gi-navy) !important;
+  box-shadow: var(--gi-shadow-sm) !important;
+}
+
+.bank-transfer-box h4 {
+  color: var(--gi-navy) !important;
+}
+
+.bank-transfer-box .bank-grid {
+  background: var(--gi-white) !important;
+  border: 1px solid var(--gi-border) !important;
+}
+
+.bank-transfer-box .bank-item span {
+  color: var(--gi-subtle) !important;
+}
+
+.bank-transfer-box .bank-item strong {
+  color: var(--gi-navy) !important;
+}
+
+.bank-transfer-box p,
+.bank-transfer-box div {
+  color: var(--gi-muted) !important;
+}
+
+.bank-transfer-box #bankAmountDueNGN,
+.bank-transfer-box #intlAmountDueText,
+.bank-transfer-box #bankAccountNumberIntl {
+  color: var(--gi-navy) !important;
+  font-weight: 800 !important;
+}
+
+#bankDetailsInternational {
+  background: var(--gi-surface) !important;
+  border: 1.5px solid var(--gi-border) !important;
+  border-left: 4px solid var(--gi-teal) !important;
+}
+
+#bankDetailsInternational h4 {
+  color: var(--gi-navy) !important;
+}
+
+#intlPricingNotice {
+  background: var(--gi-teal-soft) !important;
+  border: 1px solid var(--gi-teal-border) !important;
+  color: var(--gi-ink) !important;
+}
+
+#intlPricingNotice i {
+  color: var(--gi-teal) !important;
+}
+
+.bank-transfer-box .btn-copy-account {
+  background: var(--gi-navy) !important;
+  color: #ffffff !important;
+  border-radius: 50px !important;
+  padding: 6px 14px !important;
+}
+
+.bank-transfer-box .btn-copy-account:hover {
+  background: var(--gi-teal) !important;
+}
+
+/* Thank-you standalone page override */
+body.gi-thankyou-page {
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(100, 199, 212, 0.14), transparent 70%),
+    var(--gi-white) !important;
+  color: var(--gi-ink) !important;
+}
+
+body.gi-thankyou-page .container {
+  background: var(--gi-white) !important;
+  border: 1px solid var(--gi-border) !important;
+  box-shadow: var(--gi-shadow-lg) !important;
+}
+
+body.gi-thankyou-page i {
+  color: var(--gi-teal) !important;
+}
+
+body.gi-thankyou-page h1 {
+  color: var(--gi-navy) !important;
+}
+
+body.gi-thankyou-page p {
+  color: var(--gi-muted) !important;
+  opacity: 1 !important;
+}
+
+body.gi-thankyou-page a {
+  background: var(--gi-navy) !important;
+  color: #ffffff !important;
+}
+
+body.gi-thankyou-page a:hover {
+  background: var(--gi-navy-hover) !important;
+}
+
+/* ===== SMOOTH GPU-ACCELERATED ANIMATIONS ===== */
+@keyframes giFadeUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.hero h1,
+.training-hero h1,
+.course-hero h1,
+.page-hero h1,
+.blog-hero h1 {
+  animation: giFadeUp 0.65s var(--gi-ease) both;
+}
+
+.hero .badge,
+.training-hero .badge,
+.course-hero .badge {
+  animation: giFadeUp 0.55s var(--gi-ease) both;
+}
+
+.hero .subtitle,
+.training-hero .hero-sub,
+.course-hero .subtitle,
+.course-hero .hero-sub,
+.course-hero p,
+.page-hero p,
+.blog-hero p {
+  animation: giFadeUp 0.65s var(--gi-ease) 0.08s both;
+}
+
+.hero .trust-badge,
+.course-hero .price-tag {
+  animation: giFadeUp 0.65s var(--gi-ease) 0.14s both;
+}
+
+.hero .hero-buttons,
+.training-hero .hero-buttons,
+.course-hero .hero-buttons,
+.hero .hero-whatsapp {
+  animation: giFadeUp 0.65s var(--gi-ease) 0.2s both;
+}
+
+/* Scroll-Reveal Utility (activated smoothly by greach-sync.js) */
+.gi-reveal {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition:
+    opacity 0.65s var(--gi-ease) var(--gi-delay, 0ms),
+    transform 0.65s var(--gi-ease) var(--gi-delay, 0ms) !important;
+  will-change: opacity, transform;
+}
+
+.gi-reveal.gi-visible {
+  opacity: 1 !important;
+  transform: translate3d(0, 0, 0) !important;
+  will-change: auto;
+}
+
+/* Respect User Reduced-Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .gi-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

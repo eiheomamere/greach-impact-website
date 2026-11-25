@@ -419,11 +419,11 @@
       const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbHR2eGhxaXpxcmJ2b2dvZHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjgwNzIsImV4cCI6MjEwODMwNDA3Mn0.qwinwaYPmLyGAGLm4bXq87wfbS1EtdTUiVv_dEe6xRM';
 
       let cloudPricesSynced = false;
-      // 0. Proactively hydrate live prices from Supabase Cloud PostgreSQL with fast non-blocking timeout
+      // 0. Proactively hydrate live prices from Supabase Cloud PostgreSQL with non-blocking timeout
       try {
         const prRes = await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/course_prices?select=*`, {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-        }, 1800);
+        }, 5000);
         if (prRes && prRes.ok) {
           const rows = await prRes.json();
           if (Array.isArray(rows) && rows.length > 0) {
@@ -432,11 +432,14 @@
               const cKey = r.course_id || r.course_key;
               if (cKey) {
                 const normKey = cKey === 'dashboard' ? 'excel_dashboard' : (cKey === 'sql_beginners' ? 'sql' : (cKey === 'complete_package' ? 'complete_course' : cKey));
+                const regPrice = Number(r.original_price) || 10000;
+                const curPrice = Number(r.promo_price) || 3000;
+                const computedPct = regPrice > curPrice ? Math.round((1 - (curPrice / regPrice)) * 100) : (Number(r.discount_pct) || 0);
                 const item = {
                   label: r.course_name || r.course_label || (currentPrices[normKey] ? currentPrices[normKey].label : normKey),
-                  regular: Number(r.original_price) || 10000,
-                  current: Number(r.promo_price) || 3000,
-                  discount: r.discount_label || (r.discount_pct ? `${r.discount_pct}% OFF` : 'Special Offer')
+                  regular: regPrice,
+                  current: curPrice,
+                  discount: computedPct > 0 ? `${computedPct}% OFF` : 'Special Offer'
                 };
                 currentPrices[normKey] = item;
                 // Keep aliases synchronized
@@ -524,9 +527,13 @@ function syncAll() {
           matchedDef = def;
           break;
         }
-        if (def.pageUrl && cardLinks.includes(def.pageUrl.toLowerCase())) {
-          matchedDef = def;
-          break;
+        if (def.pageUrl) {
+          const pageLower = def.pageUrl.toLowerCase();
+          const pageSlug = pageLower.replace(/\.html$/, '');
+          if (cardLinks.includes(pageLower) || cardLinks.includes(pageSlug)) {
+            matchedDef = def;
+            break;
+          }
         }
         for (const alias of def.aliases) {
           const h = card.querySelector('h3, h4');
@@ -554,14 +561,14 @@ function syncAll() {
           // Full price display
           const priceFullEl = priceBox.querySelector('.price-full');
           if (priceFullEl) {
-            priceFullEl.innerHTML = `<del style="color:#94a3b8; font-size:1rem; text-decoration:line-through;">₦${formattedReg}</del> <span style="color:#107c41; font-weight:800; font-size:1.4rem;">₦${formattedCur}</span> <span style="background:#ea580c; color:white; font-size:0.72rem; padding:2px 8px; border-radius:20px;">${pr.discount}</span>`;
+            priceFullEl.innerHTML = `<del style="color:#94a3b8; font-size:1rem; text-decoration:line-through;">₦${formattedReg}</del> <span style="color:#0A0A5E; font-weight:800; font-size:1.4rem;">₦${formattedCur}</span> <span class="gi-discount-pill" style="background:rgba(14,154,167,0.10); color:#0E9AA7; border:1px solid rgba(14,154,167,0.28); font-size:0.72rem; font-weight:700; padding:2px 9px; border-radius:20px;">${pr.discount}</span>`;
           } else {
             // In index.html format
             priceBox.innerHTML = `
               <del style="color:#94a3b8; font-size:1rem; text-decoration:line-through;">₦${formattedReg}</del>
-              <span style="color:#107c41; font-weight:800; font-size:1.5rem;">₦${formattedCur}</span>
-              <span style="background:#ea580c; color:white; font-size:0.7rem; font-weight:800; padding:2px 8px; border-radius:20px; vertical-align:middle;">${pr.discount}</span>
-              <span class="early-price" style="color:#107c41; font-weight:700; display:block; margin-top:4px;">Special Offer: ₦${formattedCur}</span>
+              <span style="color:#0A0A5E; font-weight:800; font-size:1.5rem;">₦${formattedCur}</span>
+              <span class="gi-discount-pill" style="background:rgba(14,154,167,0.10); color:#0E9AA7; border:1px solid rgba(14,154,167,0.28); font-size:0.7rem; font-weight:700; padding:2px 9px; border-radius:20px; vertical-align:middle;">${pr.discount}</span>
+              <span class="early-price" style="color:#0E9AA7; font-weight:700; display:block; margin-top:4px;">Special Offer: ₦${formattedCur}</span>
             `;
           }
 
@@ -578,8 +585,8 @@ function syncAll() {
       if (metaBox && sch) {
         if (sch.deliveryMode === 'self_paced') {
           metaBox.innerHTML = `
-            <span><i class="fas fa-play-circle" style="color:#0284c7;"></i> Self-Paced (Recorded)</span>
-            <span><i class="fas fa-clock" style="color:#107c41;"></i> 24/7 On-Demand Access</span>
+            <span><i class="fas fa-play-circle" style="color:#0E9AA7;"></i> Self-Paced (Recorded)</span>
+            <span><i class="fas fa-clock" style="color:#0A0A5E;"></i> 24/7 On-Demand Access</span>
           `;
         } else {
           metaBox.innerHTML = `
@@ -591,14 +598,17 @@ function syncAll() {
       }
     });
 
-    // 2. Synchronize Individual Course Detail Pages (e.g. excel-dashboard-beginners.html)
-    const currentPath = window.location.pathname.toLowerCase();
+    // 2. Synchronize Individual Course Detail Pages (supports both Vercel clean URLs like /excel-beginners and .html URLs)
+    const currentPath = window.location.pathname.toLowerCase().replace(/\/+$/, '').replace(/\.html$/, '');
     let currentCourseDef = null;
 
     for (const def of COURSE_DEFS) {
-      if (def.pageUrl && currentPath.endsWith(def.pageUrl.toLowerCase())) {
-        currentCourseDef = def;
-        break;
+      if (def.pageUrl) {
+        const slug = def.pageUrl.toLowerCase().replace(/\.html$/, '');
+        if (currentPath === '/' + slug || currentPath === slug || currentPath.endsWith('/' + slug)) {
+          currentCourseDef = def;
+          break;
+        }
       }
     }
 
@@ -614,15 +624,16 @@ function syncAll() {
         const priceTag = document.querySelector('.course-hero .price-tag, .price-tag');
         if (priceTag) {
           priceTag.innerHTML = `
-            <del style="color:#94a3b8; font-size:1.2rem; text-decoration:line-through;">₦${formattedReg}</del>
-            <span style="color:#107c41; font-weight:900; font-size:2.2rem;">₦${formattedCur}</span>
-            <span class="early" style="background:#ea580c; color:white; font-size:0.85rem; padding:4px 14px; border-radius:50px;">${pr.discount} · Special Offer</span>
+            <del style="color:#94a3b8; font-size:1.15rem; text-decoration:line-through;">₦${formattedReg}</del>
+            <span style="color:#0A0A5E; font-weight:900; font-size:2.2rem;">₦${formattedCur}</span>
+            <span class="early gi-discount-pill" style="background:rgba(14,154,167,0.10); color:#0E9AA7; border:1px solid rgba(14,154,167,0.28); font-size:0.85rem; padding:5px 14px; border-radius:50px;">${pr.discount} · Special Offer</span>
           `;
         }
 
-        // Update enrollment CTA buttons mentioning fee
+        // Update enrollment CTA buttons mentioning fee or Register Now
         document.querySelectorAll('a.btn-enroll, a.btn-primary').forEach(btn => {
-          if (btn.textContent.includes('Register Now') || btn.textContent.includes('₦')) {
+          const txt = btn.textContent || '';
+          if (txt.includes('₦') || (btn.classList.contains('btn-enroll') && txt.includes('Register Now'))) {
             btn.innerHTML = `<i class="fas fa-user-plus"></i> Register Now – ₦${formattedCur} Special Offer`;
           }
         });
@@ -653,12 +664,15 @@ function syncAll() {
 
     // 3. Synchronize Registration Page Course Selector (registration.html)
     const regCards = document.querySelectorAll('.course-card-option');
+    let selectedRegUpdate = null;
     regCards.forEach(rc => {
       const radio = rc.querySelector('input[type="radio"]');
       if (!radio) return;
       const val = radio.value;
-      const matchedKey = window.GreachDB.normalizeCourseKey(val);
-      const pr = prices[matchedKey];
+      const pricingKey = (window.GreachDB && window.GreachDB.getCanonicalPricingKey)
+        ? window.GreachDB.getCanonicalPricingKey(val)
+        : (val === 'sql_beginners' ? 'sql' : (val === 'complete_package' ? 'complete_course' : (val === 'dashboard' ? 'excel_dashboard' : val)));
+      const pr = prices[pricingKey] || prices[val];
       if (pr) {
         const actualEl = rc.querySelector('.price-actual');
         const slashedEl = rc.querySelector('.price-slashed');
@@ -667,10 +681,17 @@ function syncAll() {
         if (slashedEl) slashedEl.textContent = '₦' + Number(pr.regular).toLocaleString();
         if (tagEl) tagEl.textContent = pr.discount + ' SPECIAL';
 
-        // Update onclick attribute
-        rc.setAttribute('onclick', `selectCourseCard('${matchedKey}', ${pr.current}, ${pr.regular}, '${pr.label}')`);
+        // Keep original radio value for selection state, with live cloud pricing
+        const safeLabel = String(pr.label || '').replace(/'/g, "\\'");
+        rc.setAttribute('onclick', `selectCourseCard('${val}', ${pr.current}, ${pr.regular}, '${safeLabel}')`);
+        if (rc.classList.contains('selected') || radio.checked) {
+          selectedRegUpdate = { val, current: pr.current, regular: pr.regular, label: pr.label };
+        }
       }
     });
+    if (selectedRegUpdate && typeof window.selectCourseCard === 'function') {
+      window.selectCourseCard(selectedRegUpdate.val, selectedRegUpdate.current, selectedRegUpdate.regular, selectedRegUpdate.label);
+    }
 
     console.log('[GreachSync] Universal cards, prices, and schedules synchronized successfully.');
   }
@@ -687,20 +708,185 @@ function syncAll() {
     // GreachLoader remains fully available for explicit asynchronous operations (code verification, DB calls)
   }
 
+  function initGreachMotion() {
+    if (typeof document === 'undefined' || typeof window === 'undefined' || window.__greachMotionInit) return;
+    const p = (window.location && window.location.pathname || '').toLowerCase();
+    // Scope public motion system away from Admin Console and interactive Classroom workspaces
+    if (p.includes('admin') || p.includes('/classroom')) return;
+    window.__greachMotionInit = true;
+
+    const prefersReduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+    // 1. Ultra-thin scroll progress bar + scroll-aware header elevation
+    let progressBar = document.querySelector && document.querySelector('.gi-scroll-progress');
+    if (!progressBar && document.body && typeof document.createElement === 'function') {
+      progressBar = document.createElement('div');
+      progressBar.className = 'gi-scroll-progress';
+      if (typeof progressBar.setAttribute === 'function') {
+        progressBar.setAttribute('aria-hidden', 'true');
+      }
+      if (typeof document.body.prepend === 'function') {
+        document.body.prepend(progressBar);
+      } else if (typeof document.body.insertBefore === 'function') {
+        document.body.insertBefore(progressBar, document.body.firstChild || null);
+      } else if (typeof document.body.appendChild === 'function') {
+        document.body.appendChild(progressBar);
+      }
+    }
+
+    const headerEl = document.querySelector ? document.querySelector('header:not(.header)') : null;
+    let scrollTicking = false;
+    const updateScrollUI = () => {
+      scrollTicking = false;
+      const scrollY = window.scrollY || window.pageYOffset || 0;
+      if (headerEl && headerEl.classList && typeof headerEl.classList.toggle === 'function') {
+        headerEl.classList.toggle('gi-header-scrolled', scrollY > 18);
+      }
+      if (progressBar && progressBar.style && document.documentElement) {
+        const docHeight = Math.max(1, (document.documentElement.scrollHeight || 1) - (window.innerHeight || 0));
+        const pct = Math.min(100, Math.max(0, (scrollY / docHeight) * 100));
+        progressBar.style.width = pct.toFixed(2) + '%';
+      }
+    };
+    if (typeof window.addEventListener === 'function') {
+      window.addEventListener('scroll', () => {
+        if (!scrollTicking) {
+          scrollTicking = true;
+          if (typeof window.requestAnimationFrame === 'function') {
+            window.requestAnimationFrame(updateScrollUI);
+          } else {
+            updateScrollUI();
+          }
+        }
+      }, { passive: true });
+    }
+    updateScrollUI();
+
+    if (prefersReduced) return;
+
+    // 2. Smooth staggered scroll-reveal for cards, headings, and steps
+    const revealSelector = [
+      '.section-title',
+      '.section-sub',
+      '.course-card',
+      '.program-card',
+      '.journey-step',
+      '.why-item',
+      '.stat-item',
+      '.impact-item',
+      '.testimonial-card',
+      '.focus-card',
+      '.team-card',
+      '.blog-card',
+      '.detail-card',
+      '.feature-card',
+      '.week-card',
+      '.discount-item',
+      '.pathway-step',
+      '.faq-item',
+      '.about-text',
+      '.about-image',
+      '.cta-banner .container',
+      '.newsletter .container'
+    ].join(', ');
+
+    const targets = Array.from(document.querySelectorAll(revealSelector));
+    if (targets.length && typeof IntersectionObserver === 'function') {
+      const parentIndexMap = new WeakMap();
+      const viewportH = window.innerHeight || 800;
+
+      targets.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        // Immediately show anything already within the initial viewport
+        if (rect.top < viewportH * 0.92) return;
+
+        const parent = el.parentElement || document.body;
+        const idx = parentIndexMap.get(parent) || 0;
+        parentIndexMap.set(parent, idx + 1);
+        const delayMs = Math.min(idx * 65, 320);
+
+        el.style.setProperty('--gi-delay', delayMs + 'ms');
+        el.classList.add('gi-reveal');
+      });
+
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('gi-visible');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.08, rootMargin: '0px 0px -36px 0px' });
+
+      targets.forEach(el => {
+        if (el.classList.contains('gi-reveal')) observer.observe(el);
+      });
+
+      // Failsafe: never leave any element hidden if observer misses due to fast scroll/resize
+      setTimeout(() => {
+        document.querySelectorAll('.gi-reveal:not(.gi-visible)').forEach(el => {
+          const rect = el.getBoundingClientRect();
+          if (rect.top < (window.innerHeight || 800) + 120) {
+            el.classList.add('gi-visible');
+          }
+        });
+      }, 1200);
+    }
+
+    // 3. Smooth ease-out counter animation for stat numbers
+    const counterEls = Array.from(document.querySelectorAll('.stat-item .number, .impact-item .number'));
+    if (counterEls.length && typeof IntersectionObserver === 'function') {
+      const counterObserver = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target;
+          obs.unobserve(el);
+          if (el.dataset.giCounted) return;
+          el.dataset.giCounted = '1';
+
+          const raw = (el.textContent || '').trim();
+          const match = raw.match(/^([^\d]*)([\d,]+)(.*)$/);
+          if (!match) return;
+          const prefix = match[1] || '';
+          const endVal = parseInt(match[2].replace(/,/g, ''), 10);
+          const suffix = match[3] || '';
+          if (!Number.isFinite(endVal) || endVal <= 0) return;
+
+          const useCommas = match[2].includes(',');
+          const duration = 900;
+          const start = performance.now();
+          const tick = (now) => {
+            const t = Math.min(1, (now - start) / duration);
+            const eased = 1 - Math.pow(1 - t, 3);
+            const val = Math.round(endVal * eased);
+            el.textContent = prefix + (useCommas ? val.toLocaleString() : String(val)) + suffix;
+            if (t < 1) {
+              window.requestAnimationFrame(tick);
+            } else {
+              el.textContent = raw;
+            }
+          };
+          window.requestAnimationFrame(tick);
+        });
+      }, { threshold: 0.35 });
+
+      counterEls.forEach(el => counterObserver.observe(el));
+    }
+  }
+
   // Execute on load if in browser
   if (typeof document !== 'undefined') {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
-        injectTypographyAndBrandColors();
-        bindGlobalNavigationLoader();
-        syncAll();
-        if (typeof hydrateFromCloud === "function") hydrateFromCloud();
-      });
-    } else {
+    const bootGreachSync = () => {
       injectTypographyAndBrandColors();
       bindGlobalNavigationLoader();
+      initGreachMotion();
       syncAll();
       if (typeof hydrateFromCloud === "function") hydrateFromCloud();
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootGreachSync);
+    } else {
+      bootGreachSync();
     }
   }
 
